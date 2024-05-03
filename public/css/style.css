@@ -1,0 +1,201 @@
+html, body {
+  width: 100%;
+  min-height: 100%;
+  font-family: "Arial", sans-serif;
+  background: #a2a2f7;
+  text-align: center;
+}
+.container {
+    text-align: center;
+    margin-bottom: 150px;
+}
+.hidden {
+    display: none;;
+}
+#newList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 500px;
+    margin: auto;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    padding: 50px;
+    background-color: orange;
+}
+  
+.list-group-item {
+  align-items: center;
+  background-color: #fff;
+  justify-content: center;
+  display: flex;
+  height: 50px;
+  border-radius: 5px !important;
+  margin: 10px;
+}
+
+.ist-group-item .front{
+  background-color: blue;
+}
+
+.ist-group-item .back {
+  background-color: green;
+  transform: rotateY(180deg);
+}
+
+.ist-group-item  {
+  transform-style: preserve-3d;
+}
+
+.ist-group-item.flipped {
+  transition: transform 0.5s;
+}
+
+/*  */
+.metroBtn {
+  background-color: #2E7BCC;
+  color: #fff;
+  font-size: 1.1em;
+  padding: 10px;
+  display: inline-block;
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+.brackets > div {
+  vertical-align: top;
+  clear: both;
+}
+.brackets > div::after {
+  content: '';
+  display: inline-block;
+  clear: both;
+}
+.brackets > div > div {
+  float: left;
+}
+.brackets > div > div > div {
+  margin: 50px 0;
+}
+.brackets div.bracketbox {
+  position: relative;
+  width: 100%; height: 100%;
+  border-top: 1px solid #555;
+  border-right: 1px solid #555;
+  border-bottom: 1px solid #555;
+}
+.brackets div.bracketbox > span.info {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  font-size: 0.8em;
+  color: #BBB;
+}
+.brackets div.bracketbox > span {
+  position: absolute;
+  left: 20px;
+  font-size: 0.85em;
+  min-height: 40px;;
+}
+.brackets .r1 div.bracketbox > span {
+  left: 0;
+}
+.brackets div.bracketbox > span.teama {
+  top: -20px;
+}
+.brackets div.bracketbox > span.teamb {
+  bottom: -20px;
+}
+.brackets div.bracketbox > span.teamc {
+  bottom: -20px;
+}
+.brackets > .group2 {
+  height: 260px;
+}
+.brackets > .group2 > div {
+  width: 49%;
+}
+.brackets > .group3 {
+  height: 320px;
+}
+.brackets > .group3 > div {
+  width: 32.7%;
+}
+.brackets > .group4 > div {
+  width: 24.5%;
+}
+.brackets > .group5 > div {
+  width: 19.6%;
+}
+.brackets > .group6 {
+  height: 2000px;
+}
+.brackets > .group6 > div {
+  width: 16.3%;
+}
+.brackets > .group7 > div {
+  width: 14.2%;
+}
+.brackets > .group8 > div {
+  width: 12.5%;
+}
+.brackets > .group9 > div {
+  width: 11%;
+}
+.brackets > div > .r1 > div {
+  height: 60px;
+}
+.brackets > div > .r2 > div {
+  margin: 80px 0 110px 0;
+  height: 110px;
+}
+.brackets > div > .r3 > div {
+  margin: 135px 0 220px 0;
+  height: 220px;
+}
+.brackets > div > .r4 > div {
+  margin: 250px 0 440px;
+  height: 445px;
+}
+.brackets > div > .r5 > div {
+  margin: 465px 0 880px;
+  height: 880px;
+}
+.brackets > div > .r6 > div {
+  margin: 900px 0 1750;
+  height: 1750px;
+}
+.brackets > div > .r7 > div {
+  margin: 1750px 0 3500px;
+}
+.brackets > div div.final {
+  height: 100px;
+}
+.brackets div.final > div.bracketbox {
+  border-top: 0px;
+  border-right: 0px;
+  height: 0px;
+  width: 20px;
+}
+.brackets > div > .r4 > div.drop {
+  height: 180px;
+  margin-bottom: 0px;
+}
+.brackets > div > .r5 > div.final.drop {
+  margin-top: 345px;
+  margin-bottom: 0px;
+  height: 1px;
+}
+.brackets > div > div > div:last-of-type {
+  margin-bottom: 0px;
+}
+.brackets > div .bracket-team,
+.brackets > div .final span {
+  padding: 10px;
+  border: 1px solid #000;
+  background-color: #fff;
+  min-width: 150px;
+} 
+.brackets .bracket-team.winner {
+  color: red;
+  background-color: #fcb9b9;
+}

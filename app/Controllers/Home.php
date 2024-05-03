@@ -6,6 +6,16 @@ class Home extends BaseController
 {
     public function index(): string
     {
-        return view('welcome_message');
+        return view('brackets');
+    }
+
+    public function participants(): string
+    {
+        return view('participants-list');
+    }
+
+    public function brackets()
+    {
+        return view('brackets');
     }
 }
