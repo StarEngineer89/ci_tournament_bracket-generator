@@ -20,7 +20,7 @@ class CreateBracketsTable extends Migration
             'teamnames'         => ['type' => 'varchar', 'constraint' => 16, 'null' => true, 'default' => 0],
             'winner'         => ['type' => 'int', 'constraint' => 11, 'null' => true],
             'user_by'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
-            'final_result'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => true, 'default' => 0],
+            'final_match'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => true, 'default' => 0],
             'created_at'     => ['type' => 'datetime', 'null' => true],
             'updated_at'     => ['type' => 'datetime', 'null' => true],
             'deleted_at'     => ['type' => 'datetime', 'null' => true],

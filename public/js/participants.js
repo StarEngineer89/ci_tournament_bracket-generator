@@ -1,4 +1,5 @@
 let apiURL = "http://localhost:8080/api";
+let eleminationType = "Single";
 
 $(document).on('ready', function() {
 
@@ -174,7 +175,7 @@ $(document).on('ready', function() {
 
     $('#button').on('click', function() {
         eleminationType = "Single";
-        // audio.play();
+        audio.play();
         callShuffle();
     });
 
@@ -233,3 +234,21 @@ function saveParticipantList(list) {
     });
 }
 
+function generateBrackets() {
+    $.ajax({
+        type: "post",
+        url: apiURL + '/brackets/generate',
+        data: {'type': eleminationType},
+        dataType: "JSON",
+        success: function(result) {
+            if (result.result == 'success') window.location.href = '/brackets';
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+    });
+}

@@ -42,4 +42,8 @@
         </div>
     </div>
 
+    <audio id="myAudio" style="display:none">
+        <source src="<?php echo base_url('UEFA Champions League Anthem.mp3') ?>" type="audio/mpeg">
+    </audio>
+
 <?= $this->endSection() ?>

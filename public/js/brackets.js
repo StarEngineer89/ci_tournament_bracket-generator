@@ -73,7 +73,7 @@ $(document).on('ready', function() {
             bracketNo:	i,
             roundNo:	round,
             bye:		isBye,
-            final_result: true
+            final_match: true
         });        
             
         var struct = brackets;
@@ -178,7 +178,7 @@ $(document).on('ready', function() {
             bracketNo:	bracketNo++,
             roundNo:	round,
             bye:		null,
-            final_result: true
+            final_match: true
         });
 
         return doubleEliminationBrackets;
@@ -230,7 +230,7 @@ $(document).on('ready', function() {
 
                     var container = document.createElement('div');
                     
-                    if (gg.final_result) {
+                    if (gg.final_match) {
                         container.className = "final";
                         teama.className = 'teama';
                     }
@@ -240,7 +240,7 @@ $(document).on('ready', function() {
                     
                     bracket.append(teama);
 
-                    if (!gg.final_result || gg.final_result === undefined) 
+                    if (!gg.final_match || gg.final_match === undefined) 
                         bracket.append(teamb);
 
                     container.append(bracket);

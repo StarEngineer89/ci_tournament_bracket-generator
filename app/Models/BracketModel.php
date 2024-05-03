@@ -12,7 +12,7 @@ class BracketModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = ['bracketNo', 'bye', 'lastGames', 'nextGame', 'roundNo', 'teamnames', 'winner', 'user_by', 'final_result'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
