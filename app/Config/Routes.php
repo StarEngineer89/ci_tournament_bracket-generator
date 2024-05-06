@@ -16,7 +16,8 @@ $routes->group('api', static function ($routes) {
         $routes->put('update/(:num)', 'Api\BracketsController::updateBracket/$1');
         $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');
         $routes->get('clear', 'Api\BracketsController::clearBrackets');
-        $routes->post('generate', 'Api\BracketsController::generateBrackets/$s');
+        $routes->post('generate', 'Api\BracketsController::generateBrackets');
+        $routes->post('switch', 'Api\BracketsController::switchBrackets');
     });
 
     $routes->group('participants', static function ($routes) {

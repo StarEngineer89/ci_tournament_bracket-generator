@@ -81,7 +81,45 @@ class BracketsController extends BaseController
         return json_encode(array('result' => 'success'));
     }
 
-    public function generateBrackets($type) {
+    public function clearBrackets()
+    {
+        $this->bracketsModel->where('user_by', auth()->user()->id)->delete();
+
+        return json_encode(array('result' => 'success'));
+    }
+
+    public function generateBrackets() {
+        $brackets_type = $this->request->getPost('type');
+
+        $brackets = array();
+        if ($brackets_type == 'Single') {
+            $brackets = $this->createBrackets('s');
+        }
+
+        if ($brackets_type == 'Double') {
+            $brackets = $this->createBrackets('d');
+        }
+
+        return json_encode(array('result' => 'success', 'brackets' => $brackets ));
+    }
+
+    public function switchBrackets() {
+        $brackets_type = $this->request->getPost('type');
+
+        $this->bracketsModel->where(array('user_by' => auth()->user()->id))->delete();
+        
+        if ($brackets_type == 'Single') {
+            $brackets = $this->createBrackets('s');
+        }
+
+        if ($brackets_type == 'Double') {
+            $brackets = $this->createBrackets('d');
+        }
+
+        return json_encode(array('result' => $brackets_type));
+    }
+
+    public function createBrackets($type = 's') {
         $participants = $this->participantsModel->select(['id', 'name'])->where('user_by', auth()->user()->id)->orderBy('order')->findAll();
 
         $knownBrackets = array(2,4,8,16,32);
@@ -97,13 +135,18 @@ class BracketsController extends BaseController
             $participants[] = null;
         }
 
+        if ($type == 'd') {
+            $participants = array_merge($participants, $participants);
+            $this->_base = count($participants);
+        }
+
         $brackets 	= array();
         $round 		= 1;
         $baseT 		= $this->_base/2;
         $baseC 		= $this->_base/2;
         $teamMark	= 0;
         $nextInc		= $this->_base/2;
-        
+
         for($i = 1; $i <= ($this->_base - 1); $i++) {
             $baseR = $i/$baseT;
             $isBye = false;
@@ -157,6 +200,6 @@ class BracketsController extends BaseController
         array_push($brackets, $bracket);
         $bracket_id = $this->bracketsModel->insert($bracket);
             
-        return json_encode(array('result' => 'success'));
+        return $brackets;
     }
 }

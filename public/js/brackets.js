@@ -336,9 +336,7 @@ $(document).on('ready', function() {
                     bracketCount = result.length;
                     brackets = result;
 
-                    $('#team-list').addClass('hidden');
-                    drawBrackets();                    
-                    $('#brackets-box').removeClass('hidden');
+                    drawBrackets();
                 }
             },
             error: function(error) {
@@ -353,8 +351,9 @@ $(document).on('ready', function() {
 
     $('#reset-single').on('click', function() {
         $.ajax({
-            type: "GET",
-            url: apiURL + '/brackets/clear',
+            type: "POST",
+            url: apiURL + '/brackets/switch',
+            data: {type: 'Single'},
             success: function(result) {
                 alert("Brackets was cleared successfully.");
 
@@ -362,7 +361,7 @@ $(document).on('ready', function() {
                 brackets = [];
                 bracketCount = 0;
                 $('#brackets').html('');
-                drawBrackets ()
+                loadBrackets()
             },
             error: function(error) {
                 console.log(error);
@@ -376,8 +375,9 @@ $(document).on('ready', function() {
 
     $('#reset-double').on('click', function() {
         $.ajax({
-            type: "GET",
-            url: apiURL + '/bracket/clear',
+            type: "POST",
+            url: apiURL + '/brackets/switch',
+            data: {type: 'Double'},
             success: function(result) {
                 alert("Brackets was cleared successfully.");
 
@@ -385,7 +385,7 @@ $(document).on('ready', function() {
                 brackets = [];
                 bracketCount = 0;
                 $('#brackets').html('');
-                drawBrackets ()
+                loadBrackets()
             },
             error: function(error) {
                 console.log(error);
@@ -400,12 +400,11 @@ $(document).on('ready', function() {
     $('#clear').on('click', function() {
         $.ajax({
             type: "GET",
-            url: apiURL + '/bracket/clear',
+            url: apiURL + '/brackets/clear',
             success: function(result) {
                 alert("Brackets was cleared successfully.");
 
-                $('#team-list').removeClass('hidden');
-                $('#brackets-box').addClass('hidden');
+                window.location.href = '/';
             },
             error: function(error) {
                 console.log(error);
