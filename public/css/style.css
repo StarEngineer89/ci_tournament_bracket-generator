@@ -49,6 +49,7 @@
 }
 .brackets {
   max-width: 100%;
+  min-height: 80vh;
   overflow-x: scroll;
 }
 .brackets > div::after {
