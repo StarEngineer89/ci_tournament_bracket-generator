@@ -14,6 +14,7 @@
                 <div class="buttons d-flex justify-content-center">
                     <button id="add-participant" class="btn btn-default">Add Participant</button>
                     <button id="button" class="btn btn-default">Generate Elimination</button>
+                    <button id="clear" class="btn btn-default">Reset (Clear)</button>
                 </div>
 
                 <?php if (session('error') !== null) : ?>

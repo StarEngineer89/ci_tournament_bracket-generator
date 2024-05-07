@@ -211,6 +211,25 @@ $(document).on('ready', function() {
         } else
             alert('Please input the name of the participant.');
     });
+    
+    $('#clear').on('click', function() {
+        $.ajax({
+            type: "GET",
+            url: apiURL + '/brackets/clear',
+            success: function(result) {
+                alert("Brackets was cleared successfully.");
+
+                window.location.href = '/';
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+        });
+    });
 });
 
 function saveParticipantList(list) {
