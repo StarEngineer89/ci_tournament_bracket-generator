@@ -17,7 +17,7 @@
 <body class="bg-light">
 
     <main role="main" class="container">
-        <div class="header d-grid gap-2 d-md-flex justify-content-md-end">
+        <div class="header d-grid gap-2 d-md-flex justify-content-md-end p-2">
             <a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a>
         </div>
         <?= $this->renderSection('main') ?>
