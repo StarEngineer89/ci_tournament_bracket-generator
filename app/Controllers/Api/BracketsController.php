@@ -27,7 +27,7 @@ class BracketsController extends BaseController
     
     public function getBrackets()
     {
-        $brackets = $this->bracketsModel->orderBy('bracketNo')->findAll();
+        $brackets = $this->bracketsModel->where('user_by', auth()->user()->id)->orderBy('bracketNo')->findAll();
 
         $rounds = array();
         if (count($brackets) > 0) {
