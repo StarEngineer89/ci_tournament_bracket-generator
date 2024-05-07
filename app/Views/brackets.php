@@ -10,8 +10,8 @@
 
     <div class="card col-12 shadow-sm">
         <div class="card-body">
-            <h5 class="card-title mb-5"><?//= lang('Auth.login') ?>Tournament Brackets</h5>
-            <div class="btns">
+            <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>Tournament Brackets</h5>
+            <div class="btns d-flex justify-content-center">
                 <button id="reset-single" class="btn btn-default">Reset (Single)</button>
                 <button id="reset-double" class="btn btn-default">Reset (Double)</button>
                 <button id="clear" class="btn btn-default">Reset (Clear)</button>
@@ -36,7 +36,7 @@
             <div class="alert alert-success" role="alert"><?= session('message') ?></div>
             <?php endif ?>
 
-            <div id="brackets" class="brackets"></div>
+            <div id="brackets" class="brackets d-flex justify-content-md-center justify-content-lg-center"></div>
         </div>
     </div>
 

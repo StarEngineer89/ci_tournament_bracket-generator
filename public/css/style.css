@@ -47,6 +47,10 @@
   margin-bottom: 30px;
   cursor: pointer;
 }
+.brackets {
+  max-width: 100%;
+  overflow-x: scroll;
+}
 .brackets > div::after {
   content: '';
   display: block;
