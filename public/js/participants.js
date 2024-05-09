@@ -1,14 +1,7 @@
-let apiURL = "http://localhost:8080/api";
-let eleminationType = "Single";
-
 $(document).on('ready', function() {
 
-    const itemList = document.getElementById('newList');
-    
-    let audio = document.getElementById("myAudio");
-    
     loadParticipants();
-    // loadBrackets();
+});
     
     function callShuffle () {
         const numberOfRuns = 5; // You can adjust this to the desired number of runs
@@ -40,8 +33,6 @@ $(document).on('ready', function() {
             });
 
             saveParticipantList(exampleTeams);
-            
-            audio.pause();
         },
         function(error) {myDisplayer(error);}
     );
@@ -172,65 +163,6 @@ $(document).on('ready', function() {
             },500);
         });
     }
-
-    $('#button').on('click', function() {
-        eleminationType = "Single";
-        audio.play();
-        callShuffle();
-    });
-
-    $('#button-double').on('click', function() {
-        eleminationType = "Double";
-        audio.play();
-        callShuffle();
-    });
-
-    $('#add-participant').on('click', function() {
-        var opts = prompt('Participant Name:', 'Guild');
-        
-        if(!_.isNaN(opts)) {
-            $("#overlay").fadeIn(300);
-
-            $.ajax({
-                type: "POST",
-                url: apiURL + '/participants/new',
-                data: { 'name': opts },
-                dataType: "JSON",
-                success: function(result) {
-                    var participants = result.participant;
-                    renderParticipants(participants);
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            }).done(() => {
-                setTimeout(function(){
-                    $("#overlay").fadeOut(300);
-                },500);
-            });
-        } else
-            alert('Please input the name of the participant.');
-    });
-    
-    $('#clear').on('click', function() {
-        $.ajax({
-            type: "GET",
-            url: apiURL + '/brackets/clear',
-            success: function(result) {
-                alert("Brackets was cleared successfully.");
-
-                window.location.href = '/';
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function(){
-                $("#overlay").fadeOut(300);
-            },500);
-        });
-    });
-});
 
 function saveParticipantList(list) {
     $.ajax({

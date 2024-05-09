@@ -1,3 +1,6 @@
+#tournamentSettings input.form-control-sm {
+  max-width: 60px;
+}
 #newList {
     display: flex;
     flex-wrap: wrap;
