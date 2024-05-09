@@ -16,8 +16,8 @@ class CreateParticipantsTable extends Migration
             'user_by'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
             'order'         => ['type' => 'int', 'constraint' => 3, 'null' => true],
             'active'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => 0, 'default' => 0],
-            'created_at'     => ['type' => 'datetime', 'null' => true],
-            'updated_at'     => ['type' => 'datetime', 'null' => true],
+            'created_at'     => ['type' => 'datetime', 'null' => 0],
+            'updated_at'     => ['type' => 'datetime', 'null' => 0],
             'deleted_at'     => ['type' => 'datetime', 'null' => true],
         ]);
         $this->forge->addPrimaryKey('id');

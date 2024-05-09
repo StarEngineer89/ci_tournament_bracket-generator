@@ -15,6 +15,8 @@
         $("#preview").fadeIn();
     });
     $(document).ready(function() {
+        loadParticipants();
+
         $('#toggle-music-settings').on('change', function() {
             if ($(this).prop( "checked") == true) {
                 $('#music-settings-panel').find('input').attr('required', true);
@@ -26,35 +28,39 @@
         });
 
         $('#tournamentSettings input[type="radio"]').on('change', function() {
-            $('.music-source').attr('disabled', true);
+            $(this).parents('.music-setting').find('.music-source').attr('disabled', true);
             if ($(this).data('target') == 'file')
-                $('#file-input').attr('disabled', false);
+                $(this).parent().parent().children('[data-source="file"]').attr('disabled', false);
             if ($(this).data('target') == 'url')
-                $('#music-url').attr('disabled', false);
+                $(this).parent().parent().children('[data-source="url"]').attr('disabled', false);
         });
 
-        $('#startAt, #stopAt').on('change', function() {
-            const starttime = $('#startAt').val();
-            const stoptime = $('#stopAt').val();
+        $('.startAt, .stopAt').on('change', function() {
+            const starttime = $(this).parents('.preview').find('.startAt').val();
+            const stoptime = $(this).parents('.preview').find('.stopAt').val();
 
             if (starttime !== 'undefined' && stoptime !== 'undefined' && starttime !== '' && stoptime !== '') {
-                $('#duration').val(stoptime - starttime);
+                $(this).parents('.preview').find('.duration').val(stoptime - starttime);
             }
         });
 
-        $('#duration').on('change', function() {
-            const starttime = $('#startAt').val();
-            const duration = $('#duration').val();
+        $('.duration').on('change', function() {
+            const starttime = $(this).parents('.preview').find('.startAt').val();
+            const duration = $(this).parents('.preview').find('.duration').val();
 
             if (starttime !== 'undefined' && duration !== 'undefined' && starttime !== '' && duration !== '') {
-                $('#stopAt').val(parseInt(starttime) + parseInt(duration));
+                $(this).parents('.stopAt').find('.duration').val(parseInt(starttime) + parseInt(duration));
             }
         });
 
-        $('#file-input').on('change', function(e) {
+        $('.music-source[data-source="file"]').on('change', function(e) {
             e.preventDefault();
+
+            let panel = $(this).parent();
+            let index = $('.music-source[data-source="file"]').index($(this));
+
             var formData = new FormData();
-            formData.append('audio', $('#file-input')[0].files[0]);
+            formData.append('audio', $(this)[0].files[0]);
             $.ajax({
                 url: apiURL + '/tournaments/upload',
                 type: "POST",
@@ -77,11 +83,10 @@
                     }
                     else
                     {
-                        $('#filePath').val(data.path);
-                        $('#playerSource').attr('src', '<?= base_url('uploads/') ?>' + data.path);
-                        $('#player').load();
-                        // view uploaded file.
-                        $("#preview").fadeIn();
+                        panel.find('input[type="hidden"]').val(data.path);
+                        $('.playerSource').eq(index).attr('src', '<?= base_url('uploads/') ?>' + data.path);
+                        $('.player').eq(index).load();
+                        $(".preview").eq(index).fadeIn();
                     }
                 },
                 error: function(e) 
@@ -120,7 +125,7 @@
                     {
                         $('#tournamentSettings').modal('hide');
                         const eleminationType = (result.data.eliminationType == 1) ? "Single" : "Double";
-                        const audioSrc = (result.data.path == 1) ? '<?= base_url('uploads/') ?>' + result.data.path : 'https://www.youtube.com/' + result.data.path;
+                        const audioSrc = (result.data.path == 1) ? '<?= base_url('uploads/') ?>' + result.data[0].path : 'https://www.youtube.com/' + result.data[0].path;
                         const tournament_id = result.data.tournament_id;
 
                         let audio = document.getElementById("myAudio");
@@ -256,47 +261,100 @@
                         </label>
                     </div>
                     <div class="invisible" id="music-settings-panel">
-                        <div class="input-group mb-3">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" value="file" aria-label="Radio button for following text input" name="source" data-target="file" checked>
-                            </div>
-                            <input type="file" class="form-control music-source" id="file-input" name="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi">
-                            <label class="input-group-text" for="file-input">Upload</label>
-                            <input type="hidden" name="file-path" id="filePath">
-                        </div>
-                        <div class="mb-3">
-                            <div class="input-group">
+                        <!-- Music during the shuffling -->
+                        <h6 class="border-bottom"-1>Music during generating brackets</h6>
+                        <div class="music-setting p-2 mb-1">
+                            <input type="hidden" name="audioType[0]" value="1">
+                            <div class="input-group mb-3">
                                 <div class="input-group-text">
-                                    <input class="form-check-input mt-0" type="radio" value="youtube" aria-label="Radio button for following text input" name="source" data-target="url">
+                                    <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[0]" data-target="file" checked>
                                 </div>
-                                <span class="input-group-text" id="basic-addon3">https://www.youtube.com/</span>
-                                <input type="text" class="form-control music-source" id="music-url" aria-describedby="basic-addon3 basic-addon4" name="url" disabled>
+                                <input type="file" class="form-control music-source" data-source="file" name="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi">
+                                <label class="input-group-text" for="file-input">Upload</label>
+                                <input type="hidden" name="file-path[0]">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="radio" value="y" aria-label="Radio button for following text input" name="source[0]" data-target="url">
+                                </div>
+                                <span class="input-group-text">https://www.youtube.com/</span>
+                                <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[0]" disabled>
+                            </div>
+                            <div class="mb-3 preview">
+                                <audio controls class="w-100 player">
+                                    <source class="playerSource" src="" type="audio/mpeg" />
+                                </audio>
+
+                                <div class="row row-cols-lg-auto row-cols-md-auto g-3 align-items-center">
+                                    <div class="col-4">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Start</div>
+                                            <input type="text" class="form-control form-control-sm startAt" name="start[0]">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Stop</div>
+                                            <input type="text" class="form-control form-control-sm stopAt" name="stop[0]">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Duration</div>
+                                            <input type="text" class="form-control form-control-sm duration" name="duration[0]">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="mb-3" id="preview">
-                            <audio controls class="w-100" id="player">
-                                <source id="playerSource" src="" type="audio/mpeg" />
-                            </audio>
 
-                            <div class="row row-cols-lg-auto row-cols-md-auto g-3 align-items-center">
-                                <div class="col-4">
-                                    <div class="input-group">
-                                        <div class="input-group-text">Start</div>
-                                        <input type="text" class="form-control form-control-sm" id="startAt" name="start">
-                                    </div>
+                        <!-- Music for the Final Winner -->
+                        <h6 class="border-bottom"-1>Music for a Final Winner</h6>
+                        <div class="music-setting p-2 mb-1">
+                            <input type="hidden" name="audioType[1]" value="2">
+
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[1]" data-target="file" checked>
                                 </div>
+                                <input type="file" class="form-control music-source" data-source="file" name="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi">
+                                <label class="input-group-text" for="file-input">Upload</label>
+                                <input type="hidden" name="file-path[1]">
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="radio" value="y" aria-label="Radio button for following text input" name="source[1]" data-target="url">
+                                </div>
+                                <span class="input-group-text">https://www.youtube.com/</span>
+                                <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[1]" disabled>
+                            </div>
+                            <div class="mb-3 preview">
+                                <audio controls class="w-100 player">
+                                    <source class="playerSource" src="" type="audio/mpeg" />
+                                </audio>
 
-                                <div class="col-4">
-                                    <div class="input-group">
-                                        <div class="input-group-text">Stop</div>
-                                        <input type="text" class="form-control form-control-sm" id="stopAt" name="stop">
+                                <div class="row row-cols-lg-auto row-cols-md-auto g-3 align-items-center">
+                                    <div class="col-4">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Start</div>
+                                            <input type="text" class="form-control form-control-sm startAt" name="start[1]">
+                                        </div>
                                     </div>
 
-                                </div>
-                                <div class="col-4">
-                                    <div class="input-group">
-                                        <div class="input-group-text">Duration</div>
-                                        <input type="text" class="form-control form-control-sm" id="duration" name="duration">
+                                    <div class="col-4">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Stop</div>
+                                            <input type="text" class="form-control form-control-sm stopAt" name="stop[1]">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Duration</div>
+                                            <input type="text" class="form-control form-control-sm duration" name="duration[1]">
+                                        </div>
                                     </div>
                                 </div>
                             </div>

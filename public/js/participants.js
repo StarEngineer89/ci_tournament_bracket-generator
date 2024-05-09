@@ -1,8 +1,3 @@
-$(document).on('ready', function() {
-
-    loadParticipants();
-});
-    
     function callShuffle () {
         const numberOfRuns = 5; // You can adjust this to the desired number of runs
         const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
@@ -33,9 +28,9 @@ $(document).on('ready', function() {
             });
 
             saveParticipantList(exampleTeams);
-        },
-        function(error) {myDisplayer(error);}
-    );
+            },
+            function(error) {myDisplayer(error);}
+        );
     }
     
     function shuffleList(callback) {

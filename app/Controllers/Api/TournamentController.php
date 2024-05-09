@@ -37,26 +37,29 @@ class TournamentController extends BaseController
 
         if ($this->request->getPost('setting-toggle')) {
             $musicSettingsModel = model('\App\Models\MusicSettingModel');
-
-            $path = ($this->request->getPost('source') == 'file') ? $this->request->getPost('file-path') : $this->request->getPost('url');
-            $source = ($this->request->getPost('source') == 'file') ? 1 : 2;
-            $data = [
-                'path' => $path,
-                'tournament_id' => $tournament_id,
-                'user_by' => auth()->user()->id,
-                'type' => $source,
-                'duration' => $this->request->getPost('duration'),
-                'start' => $this->request->getPost('start'),
-                'end' => $this->request->getPost('stop')
-            ];
-
-            $music_setting = $musicSettingsModel->insert($data);
             
-            if (!$music_setting) {
-                return json_encode(['error' => "Failed to save the music settings."]);
+            foreach ($this->request->getPost('audioType') as $index => $value) {
+                $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
+                
+                $data = [
+                    'path' => $path,
+                    'source' => $this->request->getPost('source')[$index],
+                    'tournament_id' => $tournament_id,
+                    'user_by' => auth()->user()->id,
+                    'type' => $index,
+                    'duration' => $this->request->getPost('duration')[$index],
+                    'start' => $this->request->getPost('start')[$index],
+                    'end' => $this->request->getPost('stop')[$index]
+                ];
+    
+                $music_setting = $musicSettingsModel->insert($data);
+                
+                if (!$music_setting) {
+                    return json_encode(['error' => "Failed to save the music settings."]);
+                }
+    
+                $data[] = array_merge($data, ['name' => $this->request->getPost('title'), 'eliminationType' => $this->request->getPost('type')]);
             }
-
-            $data = array_merge($data, ['name' => $this->request->getPost('title'), 'eliminationType' => $this->request->getPost('type')]);
         }
 
         return json_encode(['msg' => "Success to save the tournament settings.", 'data' => $data]);

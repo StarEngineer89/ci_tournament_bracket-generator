@@ -21,8 +21,8 @@ class CreateBracketsTable extends Migration
             'winner'         => ['type' => 'int', 'constraint' => 11, 'null' => true],
             'user_by'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
             'final_match'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => true, 'default' => 0],
-            'created_at'     => ['type' => 'datetime', 'null' => true],
-            'updated_at'     => ['type' => 'datetime', 'null' => true],
+            'created_at'     => ['type' => 'datetime', 'null' => 0],
+            'updated_at'     => ['type' => 'datetime', 'null' => 0],
             'deleted_at'     => ['type' => 'datetime', 'null' => true],
         ]);
         $this->forge->addPrimaryKey('id');

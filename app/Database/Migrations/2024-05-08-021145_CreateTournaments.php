@@ -26,6 +26,7 @@ class CreateTournaments extends Migration
         $this->forge->addField([
             'id'             => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'path'       => ['type' => 'varchar', 'constraint' => 30, 'null' => 0],
+            'source'   => ['type' => 'varchar', 'constraint' => 1, 'null' => 0, 'default' => 'f'],
             'tournament_id'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
             'user_by'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
             'type'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => 0, 'default' => 1],
