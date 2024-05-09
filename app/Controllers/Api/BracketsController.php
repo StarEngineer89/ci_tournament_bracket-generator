@@ -81,9 +81,9 @@ class BracketsController extends BaseController
         return json_encode(array('result' => 'success'));
     }
 
-    public function clearBrackets()
+    public function clearBrackets($tournament_id)
     {
-        $this->bracketsModel->where('user_by', auth()->user()->id)->delete();
+        $this->bracketsModel->where(['tournament_id' => $tournament_id, 'user_by' => auth()->user()->id])->delete();
 
         return json_encode(array('result' => 'success'));
     }

@@ -9,20 +9,28 @@ class TournamentController extends BaseController
 {
     public function index()
     {
-        $TournamentModel = model('\App\Models\TournamentModel');
+        $tournamentModel = model('\App\Models\TournamentModel');
 
-        $brackets = $TournamentModel->where('user_by', auth()->user()->id)->findAll();
+        $tournaments = $tournamentModel->where('user_by', auth()->user()->id)->findAll();
 
-        return view('tournament/dashboard');
+        return view('tournament/dashboard', ['tournaments' => $tournaments]);
     }
 
     public function create()
     {
-        $ParticipantModel = model('\App\Models\ParticipantModel');
+        $participantModel = model('\App\Models\ParticipantModel');
 
-        $participants = $ParticipantModel->where('user_by', auth()->user()->id)->findAll();
+        $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
 
         return view('tournament/create', ['participants' => $participants]);
     }
 
+    public function view($id)
+    {
+        $bracketModel = model('\App\Models\BracketModel');
+
+        $participants = $bracketModel->where('tournament_id', $id)->findAll();
+
+        return view('tournament/create', ['participants' => $participants]);
+    }
 }

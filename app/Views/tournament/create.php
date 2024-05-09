@@ -27,75 +27,6 @@
             }
         });
 
-        $('#tournamentSettings input[type="radio"]').on('change', function() {
-            $(this).parents('.music-setting').find('.music-source').attr('disabled', true);
-            if ($(this).data('target') == 'file')
-                $(this).parent().parent().children('[data-source="file"]').attr('disabled', false);
-            if ($(this).data('target') == 'url')
-                $(this).parent().parent().children('[data-source="url"]').attr('disabled', false);
-        });
-
-        $('.startAt, .stopAt').on('change', function() {
-            const starttime = $(this).parents('.preview').find('.startAt').val();
-            const stoptime = $(this).parents('.preview').find('.stopAt').val();
-
-            if (starttime !== 'undefined' && stoptime !== 'undefined' && starttime !== '' && stoptime !== '') {
-                $(this).parents('.preview').find('.duration').val(stoptime - starttime);
-            }
-        });
-
-        $('.duration').on('change', function() {
-            const starttime = $(this).parents('.preview').find('.startAt').val();
-            const duration = $(this).parents('.preview').find('.duration').val();
-
-            if (starttime !== 'undefined' && duration !== 'undefined' && starttime !== '' && duration !== '') {
-                $(this).parents('.stopAt').find('.duration').val(parseInt(starttime) + parseInt(duration));
-            }
-        });
-
-        $('.music-source[data-source="file"]').on('change', function(e) {
-            e.preventDefault();
-
-            let panel = $(this).parent();
-            let index = $('.music-source[data-source="file"]').index($(this));
-
-            var formData = new FormData();
-            formData.append('audio', $(this)[0].files[0]);
-            $.ajax({
-                url: apiURL + '/tournaments/upload',
-                type: "POST",
-                data:  formData,
-                contentType: false,
-                cache: false,
-                processData:false,
-                beforeSend : function()
-                {
-                    //$("#preview").fadeOut();
-                    $("#err").fadeOut();
-                },
-                success: function(data)
-                {
-                    var data = JSON.parse(data);
-                    if(data.error)
-                    {
-                        // invalid file format.
-                        $("#err").html("Invalid File !").fadeIn();
-                    }
-                    else
-                    {
-                        panel.find('input[type="hidden"]').val(data.path);
-                        $('.playerSource').eq(index).attr('src', '<?= base_url('uploads/') ?>' + data.path);
-                        $('.player').eq(index).load();
-                        $(".preview").eq(index).fadeIn();
-                    }
-                },
-                error: function(e) 
-                {
-                    $("#err").html(e).fadeIn();
-                }          
-            });
-        });
-
         $('#submit').on('click', function() {
             if (!$('#tournamentForm').valid()) {
                 return false;
@@ -124,13 +55,19 @@
                     else
                     {
                         $('#tournamentSettings').modal('hide');
-                        const eleminationType = (result.data.eliminationType == 1) ? "Single" : "Double";
-                        const audioSrc = (result.data.path == 1) ? '<?= base_url('uploads/') ?>' + result.data[0].path : 'https://www.youtube.com/' + result.data[0].path;
                         const tournament_id = result.data.tournament_id;
+                        const eleminationType = (result.data.type == 1) ? "Single" : "Double";
+                        
+                        const audioSrc = '';
+                        if (result.data.music != undefined) {
+                            audioSrc = (result.data.music[0].path == 1) ? '<?= base_url('uploads/') ?>' + result.data.music[0].path : 'https://www.youtube.com/' + result.data.music[0].path;
 
-                        let audio = document.getElementById("myAudio");
-                        $('#shuffleMusic').attr('src', audioSrc);
-                        audio.play();
+                            $('#shuffleMusic').attr('src', audioSrc);
+
+                            let audio = document.getElementById("myAudio");
+                            audio.play();
+                        }
+                        
                         callShuffle();
                     }
                 },
@@ -264,7 +201,7 @@
                         <!-- Music during the shuffling -->
                         <h6 class="border-bottom"-1>Music during generating brackets</h6>
                         <div class="music-setting p-2 mb-1">
-                            <input type="hidden" name="audioType[0]" value="1">
+                            <input type="hidden" name="audioType[0]" value="0">
                             <div class="input-group mb-3">
                                 <div class="input-group-text">
                                     <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[0]" data-target="file" checked>
@@ -313,7 +250,7 @@
                         <!-- Music for the Final Winner -->
                         <h6 class="border-bottom"-1>Music for a Final Winner</h6>
                         <div class="music-setting p-2 mb-1">
-                            <input type="hidden" name="audioType[1]" value="2">
+                            <input type="hidden" name="audioType[1]" value="1">
 
                             <div class="input-group mb-3">
                                 <div class="input-group-text">

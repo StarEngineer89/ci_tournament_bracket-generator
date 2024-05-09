@@ -5,7 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index', ['filter' => 'checkbrackets']);
+$routes->get('/', 'Home::index');
 $routes->get('/participants', 'Home::participants');
 $routes->get('/brackets', 'Home::brackets', ['filter' => 'checkbrackets']);
 $routes->match(['get', 'post'], '/player/(:any)', 'RenderAudioController::index/$1');
@@ -21,8 +21,7 @@ $routes->group('api', static function ($routes) {
         $routes->get('/', 'Api\BracketsController::getBrackets');
         $routes->post('save-list', 'Api\BracketsController::createBrackets');
         $routes->put('update/(:num)', 'Api\BracketsController::updateBracket/$1');
-        $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');
-        $routes->get('clear', 'Api\BracketsController::clearBrackets');
+        $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');        
         $routes->post('generate', 'Api\BracketsController::generateBrackets');
         $routes->post('switch', 'Api\BracketsController::switchBrackets');
     });
@@ -37,7 +36,10 @@ $routes->group('api', static function ($routes) {
     $routes->group('tournaments', static function ($routes) {
         $routes->post('save', 'Api\TournamentController::save');
         $routes->post('(:num)/update', 'Api\TournamentController::update/$1');
+        $routes->post('(:num)/update-music', 'Api\TournamentController::updateMusic/$1');
         $routes->post('upload', 'Api\TournamentController::upload');
+        $routes->get('(:num)/music-settings', 'Api\TournamentController::getMusicSettings/$1');
+        $routes->get('(:num)/clear', 'Api\BracketsController::clearBrackets/$1');
     });
 });
 

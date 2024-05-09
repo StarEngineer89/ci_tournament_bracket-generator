@@ -12,7 +12,7 @@ class TournamentController extends BaseController
     {
         //
     }
-    
+
     public function save()
     {
         $tournamentModel = model('\App\Models\TournamentModel');
@@ -41,7 +41,7 @@ class TournamentController extends BaseController
             foreach ($this->request->getPost('audioType') as $index => $value) {
                 $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
                 
-                $data = [
+                $setting = [
                     'path' => $path,
                     'source' => $this->request->getPost('source')[$index],
                     'tournament_id' => $tournament_id,
@@ -58,20 +58,59 @@ class TournamentController extends BaseController
                     return json_encode(['error' => "Failed to save the music settings."]);
                 }
     
-                $data[] = array_merge($data, ['name' => $this->request->getPost('title'), 'eliminationType' => $this->request->getPost('type')]);
+                $data['music'][] = $setting;
             }
         }
 
         return json_encode(['msg' => "Success to save the tournament settings.", 'data' => $data]);
     }
 
-    public function update()
+    public function getMusicSettings($id)
     {
-        $TournamentModel = model('\App\Models\TournamentModel');
+        $musicSettingModel = model('\App\Models\MusicSettingModel');
 
-        $brackets = $TournamentModel->where('user_by', auth()->user()->id)->findAll();
+        $settings = $musicSettingModel->where(['tournament_id' => $id])->findAll();
 
-        return $this->redirect->route('tournaments');
+        return json_encode(['msg' => "Tournament was updated successfully.", 'data' => $settings]);
+    }
+
+    public function update($id)
+    {
+        $tournamentModel = model('\App\Models\TournamentModel');
+
+        $tournamentModel->update($id, $this->request->getPost());
+
+        return json_encode(['msg' => "Tournament was updated successfully.", 'data' => $this->request->getPost()]);
+    }
+
+    public function updateMusic($tournament_id)
+    {
+        $musicSettingModel = model('\App\Models\MusicSettingModel');
+
+        foreach ($this->request->getPost('audioType') as $index => $value) {
+            $settings = $musicSettingModel->where(['tournament_id' => $tournament_id, 'type' => $value])->findAll();
+            
+            if (count($settings)) {
+                $setting = $settings[0];
+            } else {
+                $setting = [];
+            }
+
+            $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
+            
+            $setting['path'] = $path;
+            $setting['source'] = $this->request->getPost('source')[$index];
+            $setting['tournament_id'] = $tournament_id;
+            $setting['user_by'] = auth()->user()->id;
+            $setting['type'] = $index;
+            $setting['duration'] = $this->request->getPost('duration')[$index];
+            $setting['start'] = $this->request->getPost('start')[$index];
+            $setting['end'] = $this->request->getPost('stop')[$index];
+
+            $musicSettingModel->save($setting);
+        }
+
+        return json_encode(['msg' => "Tournament was updated successfully.", 'data' => $this->request->getPost()]);
     }
 
     public function upload() {

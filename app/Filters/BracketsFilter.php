@@ -29,7 +29,7 @@ class BracketsFilter implements FilterInterface
         $brackets = $bracketsModel->where('user_by', auth()->user()->id)->findAll();
 
         if (count($brackets) == 0) {
-            return redirect()->route('participants');
+            return redirect()->route('tournaments');
         }
     }
 

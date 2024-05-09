@@ -198,3 +198,75 @@ function generateBrackets() {
         },500);
     });
 }
+
+$(document).ready(function() {
+    $('#tournamentSettings input[type="radio"]').on('change', function() {
+        if ($(this).data('target') == 'file')
+            $(this).parent().parent().children('[data-source="file"]').attr('disabled', false);
+        if ($(this).data('target') == 'url')
+            $(this).parent().parent().children('[data-source="url"]').attr('disabled', false);
+    });
+
+    $('.startAt, .stopAt').on('change', function() {
+        const starttime = $(this).parents('.preview').find('.startAt').val();
+        const stoptime = $(this).parents('.preview').find('.stopAt').val();
+
+        if (starttime !== 'undefined' && stoptime !== 'undefined' && starttime !== '' && stoptime !== '') {
+            $(this).parents('.preview').find('.duration').val(stoptime - starttime);
+        }
+    });
+
+    $('.duration').on('change', function() {
+        const starttime = $(this).parents('.preview').find('.startAt').val();
+        const duration = $(this).parents('.preview').find('.duration').val();
+
+        if (starttime !== 'undefined' && duration !== 'undefined' && starttime !== '' && duration !== '') {
+            $(this).parents('.stopAt').find('.duration').val(parseInt(starttime) + parseInt(duration));
+        }
+    });
+
+    $('.music-source[data-source="file"]').on('change', function(e) {
+        e.preventDefault();
+
+        let panel = $(this).parent();
+        let index = $('.music-source[data-source="file"]').index($(this));
+
+        var formData = new FormData();
+        formData.append('audio', $(this)[0].files[0]);
+        $.ajax({
+            url: apiURL + '/tournaments/upload',
+            type: "POST",
+            data:  formData,
+            contentType: false,
+            cache: false,
+            processData:false,
+            beforeSend : function()
+            {
+                //$("#preview").fadeOut();
+                $("#err").fadeOut();
+            },
+            success: function(data)
+            {
+                var data = JSON.parse(data);
+                if(data.error)
+                {
+                    // invalid file format.
+                    $("#err").html("Invalid File !").fadeIn();
+                }
+                else
+                {
+                    panel.find('input[type="hidden"]').val(data.path);
+                    $('.playerSource').eq(index).attr('src', '/uploads/' + data.path);
+                    $('.player').eq(index).load();
+                    $(".preview").eq(index).fadeIn();
+                }
+            },
+            error: function(e) 
+            {
+                $("#err").html(e).fadeIn();
+            }          
+        });
+    });
+});
+
+
