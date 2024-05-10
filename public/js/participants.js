@@ -265,6 +265,11 @@ $(document).ready(function() {
                     $('.playerSource').eq(index).attr('src', '/uploads/' + data.path);
                     $('.player').eq(index).load();
                     $(".preview").eq(index).fadeIn();
+
+                    if (index == 0) {
+                        document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
+                        document.getElementById('myAudio').load();
+                    }
                 }
             },
             error: function(e) 
