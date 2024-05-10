@@ -126,4 +126,4 @@ nb-configuration.xml
 /phpunit*.xml
 
 writable/database.db
-public/uploads/
+public/uploads
