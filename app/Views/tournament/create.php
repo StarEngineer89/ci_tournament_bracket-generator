@@ -9,6 +9,7 @@
     let eleminationType;
     let tournament_id;
     let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
+    let audio = document.getElementById("myAudio");
     
     const itemList = document.getElementById('newList');
 
@@ -68,9 +69,7 @@
                             audioSrc += result.data.music[0].path;
 
                             $('#audioSrc').attr('src', audioSrc);
-
-                            let audio = document.getElementById("myAudio");
-                            audio.play();
+                            audio.load();
                         }
                         
                         callShuffle();
@@ -89,16 +88,9 @@
                 eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
                 
                 <?php if (isset($settings) && count($settings)): ?>
-                // let audio = $("#myAudio");
-                // audio.prop("currentTime",12);
-                let audio = document.getElementById("myAudio");
-                audio.oncanplay = function() {
-                    this.currentTime = 10;
-                };
-                // audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
-                audio.play();
+                audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
                 <?php endif; ?>
-                // audio.trigger('play');                
+                                
                 callShuffle();
             <?php else: ?>
             $('#tournamentSettings').modal('show');

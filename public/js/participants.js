@@ -2,6 +2,7 @@
         const numberOfRuns = 5; // You can adjust this to the desired number of runs
         const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
         const startTime = new Date();
+        audio.play();
         
         exampleTeams = [];
         // Use a promise to coordinate the shuffling and displaying of the message
