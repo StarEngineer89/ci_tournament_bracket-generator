@@ -8,7 +8,7 @@
     let apiURL = "<?= base_url('api')?>";
     let eleminationType;
     let tournament_id;
-    let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 20 ?>);
+    let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
     
     const itemList = document.getElementById('newList');
 
@@ -59,7 +59,9 @@
                         $('#tournamentSettings').modal('hide');
                         tournament_id = result.data.tournament_id;
                         eleminationType = (result.data.type == 1) ? "Single" : "Double";
-                        shuffle_duration = parseInt(result.data.music[0].duration);
+                        if (result.data.music !== undefined) {
+                            shuffle_duration = parseInt(result.data.music[0].duration);
+                        }
                         
                         if (result.data.music != undefined) {
                             let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : 'https://www.youtube.com/';
@@ -82,10 +84,11 @@
         });
 
         $('#generate').on('click', function() {
-            <?php if (isset($settings) && count($settings)): ?>
+            <?php if (isset($tournament) && count($tournament)): ?>
                 tournament_id = "<?= $tournament['id'] ?>";
                 eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
-
+                
+                <?php if (isset($settings) && count($settings)): ?>
                 // let audio = $("#myAudio");
                 // audio.prop("currentTime",12);
                 let audio = document.getElementById("myAudio");
@@ -94,6 +97,7 @@
                 };
                 // audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
                 audio.play();
+                <?php endif; ?>
                 // audio.trigger('play');                
                 callShuffle();
             <?php else: ?>
