@@ -255,7 +255,7 @@
                                 panel.find('input.duration').val(item.duration);
                                 
                                 if (item.source == 'f') {
-                                    // panel.find('input.music-source[type="file"]').val(item.path);
+                                    panel.find('input[name="file-path['+i+']"]').val(item.path);
                                     panel.find('.playerSource').attr('src', '/uploads/' + item.path);
                                     panel.find('.player').load();
                                 } else {

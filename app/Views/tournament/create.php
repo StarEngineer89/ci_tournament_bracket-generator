@@ -131,7 +131,15 @@
 
         <div class="card col-12 shadow-sm">
             <div class="card-body">
-                <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>Tournament Participants</h5>
+                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="<?= base_url() ?>">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Create</li>
+                    </ol>
+                </nav>
+                <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>
+                    Tournament Participants
+                </h5>
                 <div class="buttons d-flex justify-content-center">
                     <button id="add-participant" class="btn btn-default">Add Participant</button>
                     <button id="generate" class="btn btn-default">Generate Elimination</button>
