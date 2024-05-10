@@ -185,6 +185,20 @@ $(document).on('ready', function() {
                                 opt.$trigger.addClass('winner');
                                 next_bracketObj.dataset.id = opt.$trigger.data('id');
                                 next_bracketObj.innerHTML = opt.$trigger.text();
+
+                                if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
+                                    var player = document.getElementById('myAudio');
+                                    player.addEventListener("timeupdate", function() {
+                                        if (player.currentTime - player._startTime >= player.value){    
+                                            player.pause(); 
+                                        };                                        
+                                    });
+
+                                    player.value=player.dataset.duration;
+                                    player._startTime=player.dataset.starttime;
+                                    player.currentTime = player.dataset.starttime;  
+                                    player.play();
+                                }
                             },
                             error: function(error) {
                                 console.log(error);

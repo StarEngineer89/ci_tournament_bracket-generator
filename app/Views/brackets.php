@@ -4,7 +4,9 @@
 
 <?= $this->section('pageScripts') ?>
 <script src="/js/brackets.js"></script>
-<script type="text/javascript">let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;</script>
+<script type="text/javascript">
+let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;
+</script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
@@ -46,5 +48,17 @@
             <div id="brackets" class="brackets d-flex justify-content-md-center justify-content-lg-center"></div>
         </div>
     </div>
+    
+    <?php if (isset($settings) && $settings): ?>
+    <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[1]['start']) ? $settings[1]['start'] : '' ?>" data-duration="<?= ($settings[1]['duration']) ? $settings[1]['duration'] : '' ?>">
+        <source src="<?= ($settings[1]['source'] == 'f') ? '/uploads//' . $settings[1]['path'] : 'https://www.youtube.com/' . $settings[1]['path'] ?>" type="audio/mpeg" id="audioSrc">
+    </audio>
+    <?php else: ?>
+    <audio id="myAudio" preload="auto">
+        <source src="" type="audio/mpeg" id="audioSrc">
+    </audio>
+    <?php endif; ?>
+        
+    
 
 <?= $this->endSection() ?>
