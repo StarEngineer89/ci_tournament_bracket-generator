@@ -25,9 +25,9 @@ class BracketsController extends BaseController
         $this->participantsModel = model('\App\Models\ParticipantModel');
     }
     
-    public function getBrackets()
+    public function getBrackets($id)
     {
-        $brackets = $this->bracketsModel->where('user_by', auth()->user()->id)->orderBy('bracketNo')->findAll();
+        $brackets = $this->bracketsModel->where('tournament_id', $id)->orderBy('bracketNo')->findAll();
 
         $rounds = array();
         if (count($brackets) > 0) {
@@ -100,20 +100,27 @@ class BracketsController extends BaseController
             $brackets = $this->createBrackets('d');
         }
 
-        return json_encode(array('result' => 'success', 'brackets' => $brackets ));
+        return json_encode(array('result' => 'success', 'brackets' => $brackets, 'request' => $this->request->getPost()));
     }
 
     public function switchBrackets() {
         $brackets_type = $this->request->getPost('type');
+        $tournament_id = $this->request->getPost('tournament_id');
 
-        $this->bracketsModel->where(array('user_by' => auth()->user()->id))->delete();
+        $this->bracketsModel->where(array('tournament_id' => $tournament_id))->delete();
         
         if ($brackets_type == 'Single') {
             $brackets = $this->createBrackets('s');
+            
+            $tournamentModel = model('\App\Models\TournamentModel');
+            $tournament = $tournamentModel->update($tournament_id, ['type' => 1]);
         }
 
         if ($brackets_type == 'Double') {
             $brackets = $this->createBrackets('d');
+            
+            $tournamentModel = model('\App\Models\TournamentModel');
+            $tournament = $tournamentModel->update($tournament_id, ['type' => 2]);
         }
 
         return json_encode(array('result' => $brackets_type));
@@ -170,7 +177,8 @@ class BracketsController extends BaseController
                 'bracketNo' => $i,
                 'roundNo' => $round,
                 'bye' => $isBye,
-                'user_by' => auth()->user()->id
+                'user_by' => auth()->user()->id,
+                'tournament_id' => $this->request->getPost('tournament_id')
             );
 
             array_push($brackets, $bracket);
@@ -194,7 +202,8 @@ class BracketsController extends BaseController
             'roundNo' => $round,
             'bye' => $isBye,
             'final_match' => 1,
-            'user_by' => auth()->user()->id
+            'user_by' => auth()->user()->id,
+            'tournament_id' => $this->request->getPost('tournament_id')
         );        
 
         array_push($brackets, $bracket);

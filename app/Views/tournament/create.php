@@ -8,6 +8,7 @@
     let apiURL = "<?= base_url('api')?>";
     let eleminationType;
     let tournament_id;
+    let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 20 ?>);
     
     const itemList = document.getElementById('newList');
 
@@ -34,6 +35,7 @@
 
             const values = $('#tournamentForm').serializeArray();
             const data = Object.fromEntries(values.map(({name, value}) => [name, value]));
+            shuffle_duration = parseInt(data['duration[0]']);
             
             $.ajax({
                 url: apiURL + '/tournaments/save',
@@ -55,14 +57,15 @@
                     else
                     {
                         $('#tournamentSettings').modal('hide');
-                        const tournament_id = result.data.tournament_id;
-                        const eleminationType = (result.data.type == 1) ? "Single" : "Double";
+                        tournament_id = result.data.tournament_id;
+                        eleminationType = (result.data.type == 1) ? "Single" : "Double";
+                        shuffle_duration = parseInt(result.data.music[0].duration);
                         
-                        const audioSrc = '';
                         if (result.data.music != undefined) {
-                            audioSrc = (result.data.music[0].path == 1) ? '<?= base_url('uploads/') ?>' + result.data.music[0].path : 'https://www.youtube.com/' + result.data.music[0].path;
+                            let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : 'https://www.youtube.com/';
+                            audioSrc += result.data.music[0].path;
 
-                            $('#shuffleMusic').attr('src', audioSrc);
+                            $('#audioSrc').attr('src', audioSrc);
 
                             let audio = document.getElementById("myAudio");
                             audio.play();
@@ -79,7 +82,23 @@
         });
 
         $('#generate').on('click', function() {
+            <?php if (isset($settings) && count($settings)): ?>
+                tournament_id = "<?= $tournament['id'] ?>";
+                eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
+
+                // let audio = $("#myAudio");
+                // audio.prop("currentTime",12);
+                let audio = document.getElementById("myAudio");
+                audio.oncanplay = function() {
+                    this.currentTime = 10;
+                };
+                // audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
+                audio.play();
+                // audio.trigger('play');                
+                callShuffle();
+            <?php else: ?>
             $('#tournamentSettings').modal('show');
+            <?php endif; ?>
         });
 
         $('#add-participant').on('click', function() {
@@ -108,25 +127,6 @@
             } else
                 alert('Please input the name of the participant.');
         });
-        
-        $('#clear').on('click', function() {
-            $.ajax({
-                type: "GET",
-                url: apiURL + '/brackets/clear',
-                success: function(result) {
-                    alert("Brackets was cleared successfully.");
-
-                    window.location.href = '/';
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            }).done(() => {
-                setTimeout(function(){
-                    $("#overlay").fadeOut(300);
-                },500);
-            });
-        });
     });
 </script>
 <?= $this->endSection() ?>
@@ -139,7 +139,6 @@
                 <div class="buttons d-flex justify-content-center">
                     <button id="add-participant" class="btn btn-default">Add Participant</button>
                     <button id="generate" class="btn btn-default">Generate Elimination</button>
-                    <button id="clear" class="btn btn-default">Reset (Clear)</button>
                 </div>
 
                 <?php if (session('error') !== null) : ?>
@@ -165,8 +164,13 @@
             </div>
         </div>
 
-    <audio id="myAudio" style="display:none">
-        <source src="" type="audio/mpeg" id="shuffleMusic">
+    <audio id="myAudio" controls style="display:none" preload="auto">
+        <?php if (isset($settings) && $settings): ?>
+            <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads//' . $settings[0]['path'] : 'https://www.youtube.com/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+        <?php else: ?>
+            <source src="" type="audio/mpeg" id="audioSrc">
+        <?php endif; ?>
+        
     </audio>
 
     <!-- Modal -->

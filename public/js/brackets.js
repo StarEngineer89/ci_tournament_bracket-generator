@@ -1,10 +1,5 @@
-let apiURL = "http://localhost:8080/api";
-
-var knownBrackets = [2,4,8,16,32], // brackets with "perfect" proportions (full fields, no byes)
-    
-bracketCount = 0,
-
-brackets = [];
+let bracketCount = 0,
+    brackets = [];
 
 let eleminationType = "Single";
 let editing_mode = false;
@@ -331,7 +326,7 @@ $(document).on('ready', function() {
     
         $.ajax({
             type: "get",
-            url: apiURL + '/brackets/',
+            url: apiURL + '/tournaments/' + tournament_id + '/brackets',
             success: function(result) {
                 result = JSON.parse(result);
                 if (result.length > 0) {
@@ -355,7 +350,7 @@ $(document).on('ready', function() {
         $.ajax({
             type: "POST",
             url: apiURL + '/brackets/switch',
-            data: {type: 'Single'},
+            data: {'type': 'Single', 'tournament_id': tournament_id},
             success: function(result) {
                 alert("Brackets was cleared successfully.");
 
@@ -379,7 +374,7 @@ $(document).on('ready', function() {
         $.ajax({
             type: "POST",
             url: apiURL + '/brackets/switch',
-            data: {type: 'Double'},
+            data: {type: 'Double', 'tournament_id': tournament_id},
             success: function(result) {
                 alert("Brackets was cleared successfully.");
 
@@ -402,11 +397,11 @@ $(document).on('ready', function() {
     $('#clear').on('click', function() {
         $.ajax({
             type: "GET",
-            url: apiURL + '/brackets/clear',
+            url: apiURL + '/tournaments/' + tournament_id + '/clear',
             success: function(result) {
                 alert("Brackets was cleared successfully.");
 
-                window.location.href = '/';
+                window.location.href = '/tournaments/' + tournament_id + '/view';
             },
             error: function(error) {
                 console.log(error);

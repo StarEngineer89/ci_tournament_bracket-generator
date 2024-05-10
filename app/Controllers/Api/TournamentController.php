@@ -52,7 +52,7 @@ class TournamentController extends BaseController
                     'end' => $this->request->getPost('stop')[$index]
                 ];
     
-                $music_setting = $musicSettingsModel->insert($data);
+                $music_setting = $musicSettingsModel->insert($setting);
                 
                 if (!$music_setting) {
                     return json_encode(['error' => "Failed to save the music settings."]);
@@ -61,6 +61,8 @@ class TournamentController extends BaseController
                 $data['music'][] = $setting;
             }
         }
+
+        $data['tournament_id'] = $tournament_id;
 
         return json_encode(['msg' => "Success to save the tournament settings.", 'data' => $data]);
     }

@@ -4,6 +4,7 @@
 
 <?= $this->section('pageScripts') ?>
 <script src="/js/brackets.js"></script>
+<script type="text/javascript">let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;</script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>

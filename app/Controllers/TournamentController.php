@@ -27,10 +27,22 @@ class TournamentController extends BaseController
 
     public function view($id)
     {
-        $bracketModel = model('\App\Models\BracketModel');
+        $tournamentModel = model('\App\Models\TournamentModel');        
+        $bracketModel = model('\App\Models\BracketModel');        
+        $musicSettingModel = model('\App\Models\MusicSettingModel');
 
-        $participants = $bracketModel->where('tournament_id', $id)->findAll();
+        $tournament = $tournamentModel->find($id);
+        $brackets = $bracketModel->where('tournament_id', $id)->findAll();
+        $settings = $musicSettingModel->where('tournament_id', $id)->findAll();
 
-        return view('tournament/create', ['participants' => $participants]);
+        if ($brackets) {
+            return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings]);
+        }
+
+        $participantModel = model('\App\Models\ParticipantModel');
+
+        $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
+
+        return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings]);
     }
 }

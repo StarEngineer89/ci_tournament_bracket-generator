@@ -1,15 +1,17 @@
     function callShuffle () {
         const numberOfRuns = 5; // You can adjust this to the desired number of runs
         const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
+        const startTime = new Date();
         
         exampleTeams = [];
         // Use a promise to coordinate the shuffling and displaying of the message
         const shufflingPromise = new Promise(resolve => {
-            function runFlipFuncSequentially(count) {
-                if (count < numberOfRuns) {
+            const currentTime = new Date();
+            function runFlipFuncSequentially(currentTime) {                
+                if ((currentTime - startTime) < shuffle_duration * 1000) {
                     setTimeout(function () {
                         shuffleList(() => {
-                            runFlipFuncSequentially(count + 1);
+                            runFlipFuncSequentially(new Date());
                         });
                     }, delayBetweenRuns);
                 } else {
@@ -17,8 +19,8 @@
                     resolve();
                 }
             }
-    
-            runFlipFuncSequentially(0);
+            
+            runFlipFuncSequentially(new Date());
         });
 
         shufflingPromise.then(() => {
@@ -34,6 +36,8 @@
     }
     
     function shuffleList(callback) {
+        const itemList = document.getElementById('newList');
+
         let children = Array.from(itemList.children);
 
         const keys = {}; // Reset keys object for each click
@@ -184,10 +188,10 @@ function generateBrackets() {
     $.ajax({
         type: "post",
         url: apiURL + '/brackets/generate',
-        data: {'type': eleminationType},
+        data: {'type': eleminationType, 'tournament_id': tournament_id},
         dataType: "JSON",
         success: function(result) {
-            if (result.result == 'success') window.location.href = '/brackets';
+            if (result.result == 'success') window.location.href = '/tournaments/' + tournament_id + '/view';
         },
         error: function(error) {
             console.log(error);
@@ -230,6 +234,7 @@ $(document).ready(function() {
 
         let panel = $(this).parent();
         let index = $('.music-source[data-source="file"]').index($(this));
+        $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
 
         var formData = new FormData();
         formData.append('audio', $(this)[0].files[0]);
