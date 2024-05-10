@@ -13,7 +13,9 @@ class TournamentController extends BaseController
 
         $tournaments = $tournamentModel->where('user_by', auth()->user()->id)->findAll();
 
-        return view('tournament/dashboard', ['tournaments' => $tournaments]);
+        $musicSettingsBlock = view('tournament/music-setting', []);
+
+        return view('tournament/dashboard', ['tournaments' => $tournaments, 'musicSettingsBlock' => $musicSettingsBlock]);
     }
 
     public function create()
@@ -22,7 +24,9 @@ class TournamentController extends BaseController
 
         $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
 
-        return view('tournament/create', ['participants' => $participants]);
+        $musicSettingsBlock = view('tournament/music-setting', []);
+
+        return view('tournament/create', ['participants' => $participants, 'musicSettingsBlock' => $musicSettingsBlock]);
     }
 
     public function view($id)
@@ -43,6 +47,8 @@ class TournamentController extends BaseController
 
         $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
 
-        return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings]);
+        $musicSettingsBlock = view('tournament/music-setting', []);
+
+        return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings, 'musicSettingsBlock' => $musicSettingsBlock]);
     }
 }

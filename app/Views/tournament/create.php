@@ -19,18 +19,12 @@
     $(document).ready(function() {
         loadParticipants();
 
-        $('#toggle-music-settings').on('change', function() {
-            if ($(this).prop( "checked") == true) {
-                $('#music-settings-panel').find('input').attr('required', true);
-                $('#music-settings-panel').removeClass('invisible');
-            } else {
-                $('#music-settings-panel').find('input').attr('required', false);
-                $('#music-settings-panel').addClass('invisible');
-            }
-        });
-
-        $('#submit').on('click', function() {
-            if (!$('#tournamentForm').valid()) {
+        $('#submit').on('click', function(event) {
+            const form = document.getElementById('tournamentForm');
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+                form.classList.add('was-validated');
                 return false;
             }
 
@@ -65,7 +59,7 @@
                         }
                         
                         if (result.data.music != undefined) {
-                            let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : 'https://www.youtube.com/';
+                            let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '';
                             audioSrc += result.data.music[0].path;
 
                             $('#audioSrc').attr('src', audioSrc);
@@ -125,6 +119,27 @@
         });
     });
 </script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.toggle-music-settings').on('change', function() {
+            const settingPanel = $(this).parents('.music-setting').find('.setting');
+            if ($(this).prop( "checked") == true) {
+                settingPanel.find('.preview input').attr('disabled', false);
+                settingPanel.find('.preview input').attr('required', true);
+                settingPanel.find('.music-source').attr('required', true);
+                settingPanel.removeClass('visually-hidden');
+            } else {
+                settingPanel.find('.preview input').attr('disabled', true);
+                settingPanel.find('.preview input').attr('required', false);
+                settingPanel.find('.music-source').attr('required', false);
+                settingPanel.addClass('visually-hidden');
+            }
+
+            settingPanel.find('.duration[type="text"]').attr('disabled', true);
+        });
+    });
+</script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
@@ -168,14 +183,15 @@
             </div>
         </div>
 
-    <audio id="myAudio" controls style="display:none" preload="auto">
-        <?php if (isset($settings) && $settings): ?>
-            <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads//' . $settings[0]['path'] : 'https://www.youtube.com/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
-        <?php else: ?>
-            <source src="" type="audio/mpeg" id="audioSrc">
-        <?php endif; ?>
-        
+    <?php if (isset($settings) && $settings): ?>
+    <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
+        <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
     </audio>
+    <?php else: ?>
+    <audio id="myAudio" controls style="display:none" preload="auto">
+        <source src="https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l" type="audio/mpeg" id="audioSrc">
+    </audio>
+    <?php endif; ?>
 
     <!-- Modal -->
     <div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -187,10 +203,11 @@
                 </div>
                 <div class="modal-body">
 
-                <form id="tournamentForm" method="POST" endtype="multipart/form-data">
+                <form id="tournamentForm" class="needs-validation" method="POST" endtype="multipart/form-data">
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="title">Title</span>
                         <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title" name="title" required>
+                        <div class="invalid-feedback">This field is required.</div>
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="type">Elimination Type</span>
@@ -199,111 +216,9 @@
                             <option value="2">Double</option>
                         </select>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="toggle-music-settings" name="setting-toggle">
-                        <label class="form-check-label" for="toggle-music-settings">
-                            Enable music settings
-                        </label>
-                    </div>
-                    <div class="invisible" id="music-settings-panel">
-                        <!-- Music during the shuffling -->
-                        <h6 class="border-bottom"-1>Music during generating brackets</h6>
-                        <div class="music-setting p-2 mb-1">
-                            <input type="hidden" name="audioType[0]" value="0">
-                            <div class="input-group mb-3">
-                                <div class="input-group-text">
-                                    <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[0]" data-target="file" checked>
-                                </div>
-                                <input type="file" class="form-control music-source" data-source="file" name="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi">
-                                <label class="input-group-text" for="file-input">Upload</label>
-                                <input type="hidden" name="file-path[0]">
-                            </div>
-                            <div class="input-group mb-3">
-                                <div class="input-group-text">
-                                    <input class="form-check-input mt-0" type="radio" value="y" aria-label="Radio button for following text input" name="source[0]" data-target="url">
-                                </div>
-                                <span class="input-group-text">https://www.youtube.com/</span>
-                                <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[0]" disabled>
-                            </div>
-                            <div class="mb-3 preview">
-                                <audio controls class="w-100 player">
-                                    <source class="playerSource" src="" type="audio/mpeg" />
-                                </audio>
-
-                                <div class="row row-cols-lg-auto row-cols-md-auto g-3 align-items-center">
-                                    <div class="col-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text">Start</div>
-                                            <input type="text" class="form-control form-control-sm startAt" name="start[0]">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text">Stop</div>
-                                            <input type="text" class="form-control form-control-sm stopAt" name="stop[0]">
-                                        </div>
-
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text">Duration</div>
-                                            <input type="text" class="form-control form-control-sm duration" name="duration[0]">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Music for the Final Winner -->
-                        <h6 class="border-bottom"-1>Music for a Final Winner</h6>
-                        <div class="music-setting p-2 mb-1">
-                            <input type="hidden" name="audioType[1]" value="1">
-
-                            <div class="input-group mb-3">
-                                <div class="input-group-text">
-                                    <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[1]" data-target="file" checked>
-                                </div>
-                                <input type="file" class="form-control music-source" data-source="file" name="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi">
-                                <label class="input-group-text" for="file-input">Upload</label>
-                                <input type="hidden" name="file-path[1]">
-                            </div>
-                            <div class="input-group mb-3">
-                                <div class="input-group-text">
-                                    <input class="form-check-input mt-0" type="radio" value="y" aria-label="Radio button for following text input" name="source[1]" data-target="url">
-                                </div>
-                                <span class="input-group-text">https://www.youtube.com/</span>
-                                <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[1]" disabled>
-                            </div>
-                            <div class="mb-3 preview">
-                                <audio controls class="w-100 player">
-                                    <source class="playerSource" src="" type="audio/mpeg" />
-                                </audio>
-
-                                <div class="row row-cols-lg-auto row-cols-md-auto g-3 align-items-center">
-                                    <div class="col-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text">Start</div>
-                                            <input type="text" class="form-control form-control-sm startAt" name="start[1]">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text">Stop</div>
-                                            <input type="text" class="form-control form-control-sm stopAt" name="stop[1]">
-                                        </div>
-
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="input-group">
-                                            <div class="input-group-text">Duration</div>
-                                            <input type="text" class="form-control form-control-sm duration" name="duration[1]">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    
+                    <div id="music-settings-panel">
+                        <?= $musicSettingsBlock ?>
                     </div>
                 </form>
                 </div>

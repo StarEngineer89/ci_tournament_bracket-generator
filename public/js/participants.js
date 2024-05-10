@@ -206,10 +206,16 @@ function generateBrackets() {
 
 $(document).ready(function() {
     $('#tournamentSettings input[type="radio"]').on('change', function() {
-        if ($(this).data('target') == 'file')
-            $(this).parent().parent().children('[data-source="file"]').attr('disabled', false);
-        if ($(this).data('target') == 'url')
-            $(this).parent().parent().children('[data-source="url"]').attr('disabled', false);
+        $(this).parents('.setting').find('.music-source').attr('disabled', true);
+
+        if ($(this).data('target') == 'file') {            
+            $(this).parent().parent().children('[data-source="file"]').attr('disabled', false).attr('required', true);
+        }
+            
+        if ($(this).data('target') == 'url') {
+            $(this).parent().parent().children('[data-source="url"]').attr('disabled', false).attr('required', false);
+        }
+            
     });
 
     $('.startAt, .stopAt').on('change', function() {
