@@ -272,10 +272,19 @@ function musicFileUpload(element) {
                 $('.player').eq(index).load();
                 $(".preview").eq(index).fadeIn();
 
-                if (index == 0) {
+                if (index == 0 && document.getElementById('myAudio')) {
                     document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
                     document.getElementById('myAudio').load();
                 }
+
+                const date = new Date(null);
+                date.setSeconds(0);
+                panel.parents('.music-setting').find('.startAt[type="hidden"]').val(0);
+                panel.parents('.music-setting').find('.startAt[type="text"]').val("00:00:00");
+
+                date.setSeconds($('.player').eq(index).duration);
+                panel.parents('.music-setting').find('.stopAt[type="hidden"]').val($('.player').eq(index).duration);
+                panel.parents('.music-setting').find('.stopAt[type="text"]').val(date.toISOString().slice(11, 19));
             }
         },
         error: function(e) 
