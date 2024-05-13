@@ -270,7 +270,7 @@ function musicFileUpload(element) {
                 panel.find('input[type="hidden"]').val(data.path);
                 
                 let audioElement = panel.parents('.music-setting').find('.player');
-                audioElement[0].setAttribute('src', '/uploads/' + data.path);
+                panel.parents('.music-setting').find('.playerSource').attr('src', '/uploads/' + data.path);
                 applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
                 audioElement[0].load();
 
@@ -292,11 +292,11 @@ function musicFileUpload(element) {
 
 function musicDurationChange(element) {
     const starttime = getSeconds( $(element).parents('.preview').find('.startAt').val() );
-    $(this).parent().children('.startAt[type="hidden"]').val(starttime);
+    $(element).parents('.preview').find('.startAt[type="hidden"]').val(starttime);
     const stoptime = getSeconds( $(element).parents('.preview').find('.stopAt').val() );
-    $(this).parent().children('.stopAt[type="hidden"]').val(stoptime);
+    $(element).parents('.preview').find('.stopAt[type="hidden"]').val(stoptime);
 
-    if (starttime > 0 && stoptime > 0) {
+    if (starttime >= 0 && stoptime >= 0) {
         $(element).parents('.preview').find('.duration').val(stoptime - starttime);
     }
 }
