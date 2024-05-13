@@ -45,13 +45,8 @@
                         <input type="hidden" class="form-control form-control-sm stopAt" name="stop[0]">
                     </div>
                 </div>
-                
-                <div class="col-12">
-                    <div class="input-group">
-                        <div class="input-group-text">Duration</div>
-                        <input type="hidden" class="duration" name="duration[0]">
-                    </div>
-                </div>
+
+                <input type="hidden" class="duration" name="duration[0]">
             </div>
         </div>
     </div>    
@@ -90,11 +85,11 @@
                 <source class="playerSource" src="" type="audio/mpeg" />
             </audio>
 
-            <div class="row row-cols-lg-auto row-cols-md-auto g-3 align-items-center">
+            <div class="row g-3">
                 <div class="col-6">
                     <div class="input-group">
                         <div class="input-group-text">Start</div>
-                        <input type="text" class="form-control form-control-sm time startAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
+                        <input type="text" class="form-control time startAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
                         <input type="hidden" class="form-control form-control-sm startAt" name="start[1]">
                     </div>
                 </div>
@@ -102,17 +97,12 @@
                 <div class="col-6">
                     <div class="input-group">
                         <div class="input-group-text">Stop</div>
-                        <input type="text" class="form-control form-control-sm time stopAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
+                        <input type="text" class="form-control time stopAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
                         <input type="hidden" class="form-control form-control-sm stopAt" name="stop[1]">
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="input-group">
-                        <div class="input-group-text">Duration</div>
-                        <input type="hidden" class="duration" name="duration[1]">
-                    </div>
-                </div>
+                <input type="hidden" class="duration" name="duration[1]">
             </div>
         </div>
     </div>
