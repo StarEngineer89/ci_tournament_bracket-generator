@@ -166,7 +166,7 @@
         <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
     </audio>
     <?php else: ?>
-    <audio id="myAudio" controls style="display:none" preload="auto">
+    <audio id="myAudio" controls style="display:none" data-starttime="0" data-duration="10" preload="auto">
         <source src="https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l" type="audio/mpeg" id="audioSrc">
     </audio>
     <?php endif; ?>
