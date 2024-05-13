@@ -272,6 +272,7 @@ function musicFileUpload(element) {
                 let audioElement = panel.parents('.music-setting').find('.player');
                 audioElement[0].setAttribute('src', '/uploads/' + data.path);
                 applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
+                audioElement[0].load();
 
                 if (index == 0 && document.getElementById('myAudio')) {
                     document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
@@ -307,6 +308,7 @@ function applyDuration(src, obj) {
         date.setSeconds(audio.duration);
         obj.find('.stopAt[type="hidden"]').val(audio.duration);
         obj.find('.stopAt[type="text"]').val(date.toISOString().slice(11, 19));
+        obj.find('.duration').val(audio.duration);
     });
     audio.src = src;
 }
