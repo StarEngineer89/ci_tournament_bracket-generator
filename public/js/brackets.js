@@ -162,8 +162,7 @@ $(document).on('ready', function() {
                             url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
                             contentType: "application/json",
                             data: JSON.stringify({winner: opt.$trigger.data('id')}),
-                            success: function(result) {
-                                opt.$trigger.addClass('winner');                                
+                            success: function(result) {                               
                                 document.querySelectorAll('[data-order="' + opt.$trigger.data('next') + '"]')[index].innerHTML = opt.$trigger.text();
                             },
                             error: function(error) {
@@ -185,11 +184,13 @@ $(document).on('ready', function() {
                                 opt.$trigger.addClass('winner');
                                 next_bracketObj.dataset.id = opt.$trigger.data('id');
                                 next_bracketObj.innerHTML = opt.$trigger.text();
-
+                                
                                 if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
+                                    next_bracketObj.classList.add('winner');  
+
                                     var player = document.getElementById('myAudio');
                                     player.addEventListener("timeupdate", function() {
-                                        if (player.currentTime - player._startTime >= player.value){    
+                                        if ((player.currentTime - player._startTime) >= player.value){    
                                             player.pause(); 
                                         };                                        
                                     });

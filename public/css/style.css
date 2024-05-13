@@ -164,7 +164,7 @@
   background-color: #fff;
   min-width: 150px;
 } 
-.brackets .bracket-team.winner {
+.brackets .bracketbox .winner {
   color: red;
   background-color: #fcb9b9;
 }
