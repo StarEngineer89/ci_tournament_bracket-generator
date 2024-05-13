@@ -56,7 +56,7 @@
                         tournament_id = result.data.tournament_id;
                         eleminationType = (result.data.type == 1) ? "Single" : "Double";
                         if (result.data.music !== undefined) {
-                            shuffle_duration = parseInt(result.data.music[0].duration);
+                            shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
                         }
                         
                         if (result.data.music != undefined) {
