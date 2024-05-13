@@ -37,7 +37,7 @@ class TournamentController extends BaseController
 
         $tournament = $tournamentModel->find($id);
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
-        $settings = $musicSettingModel->where('tournament_id', $id)->findAll();
+        $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => 0])->findAll();
 
         if ($brackets) {
             return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings]);
