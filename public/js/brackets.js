@@ -120,7 +120,7 @@ $(document).on('ready', function() {
                     
                     if (gg.final_match) {
                         container.className = "final";
-                        teama.className = (gg.teamnames[0]) ? "teama winner" : 'teama';
+                        teama.className = (teams[0]) ? "teama winner" : 'teama';
                     }
                     
                     var bracket = document.createElement('div')
