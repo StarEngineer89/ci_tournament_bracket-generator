@@ -214,9 +214,8 @@ function musicSettingToggleChange(element) {
     const settingPanel = $(element).parents('.music-setting').find('.setting');
     if ($(element).prop( "checked") == true) {
         settingPanel.find('input[type="radio"], .preview input').attr('disabled', false);
-        if (settingPanel.find('.file-path').val() != '') settingPanel.find('input[data-source="file"]').attr('disabled', false);
-        if (settingPanel.find('input[data-source="url"]').val() != '') settingPanel.find('input[data-source="url"]').attr('disabled', false);
-        if (settingPanel.find('.file-path').val() == '' && settingPanel.find('input[data-source="url"]').val() == '') settingPanel.find('input[data-source="file"]').attr('disabled', false);
+        const radioElement = $(element).parent().parent().find('input[type="radio"]:checked');
+        radioElement.parent().parent().children('.music-source').attr('disabled', false);
         settingPanel.removeClass('visually-hidden');
     } else {
         settingPanel.find('input[type!="hidden"]').attr('disabled', true);
@@ -231,11 +230,11 @@ function musicSourceChange(element) {
     const panel = $(element).parent().parent();
 
     if ($(element).data('target') == 'file') {            
-        panel.children('[data-source="file"]').attr('disabled', false).attr('required', true);
+        panel.children('[data-source="file"]').attr('disabled', false);
     }
         
     if ($(element).data('target') == 'url') {
-        panel.children('[data-source="url"]').attr('disabled', false).attr('required', true);
+        panel.children('[data-source="url"]').attr('disabled', false);
     }
         
 };
