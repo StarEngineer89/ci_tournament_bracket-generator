@@ -204,85 +204,112 @@ function generateBrackets() {
     });
 }
 
+function getSeconds(time) {
+    const timeArray = time.split(":");
+
+    return parseInt(timeArray[0] * 3600) + parseInt(timeArray[1] * 60) + parseInt(timeArray[2]);
+}
+
+function musicSettingToggleChange(element) {
+    const settingPanel = $(element).parents('.music-setting').find('.setting');
+    if ($(element).prop( "checked") == true) {
+        settingPanel.find('input[type="radio"], .preview input').attr('disabled', false);
+        if (settingPanel.find('.file-path').val() != '') settingPanel.find('input[data-source="file"]').attr('disabled', false);
+        if (settingPanel.find('input[data-source="url"]').val() != '') settingPanel.find('input[data-source="url"]').attr('disabled', false);
+        if (settingPanel.find('.file-path').val() == '' && settingPanel.find('input[data-source="url"]').val() == '') settingPanel.find('input[data-source="file"]').attr('disabled', false);
+        settingPanel.removeClass('visually-hidden');
+    } else {
+        settingPanel.find('input[type!="hidden"]').attr('disabled', true);
+        settingPanel.addClass('visually-hidden');
+    }
+
+    settingPanel.find('.duration[type="text"]').attr('disabled', true);
+};
+
+function musicSourceChange(element) {
+    $(element).parents('.setting').find('.music-source').attr('disabled', true);
+    const panel = $(element).parent().parent();
+
+    if ($(element).data('target') == 'file') {            
+        panel.children('[data-source="file"]').attr('disabled', false).attr('required', true);
+    }
+        
+    if ($(element).data('target') == 'url') {
+        panel.children('[data-source="url"]').attr('disabled', false).attr('required', true);
+    }
+        
+};
+
+
+function musicFileUpload(element) {
+    let panel = $(element).parent();
+    let index = $('.music-source[data-source="file"]').index($(element));
+    $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
+
+    var formData = new FormData();
+    formData.append('audio', $(element)[0].files[0]);
+    $.ajax({
+        url: apiURL + '/tournaments/upload',
+        type: "POST",
+        data:  formData,
+        contentType: false,
+        cache: false,
+        processData:false,
+        beforeSend : function()
+        {
+            $("#err").fadeOut();
+        },
+        success: function(data)
+        {
+            var data = JSON.parse(data);
+            if(data.error)
+            {
+                // invalid file format.
+                $("#err").html("Invalid File !").fadeIn();
+            }
+            else
+            {
+                panel.find('input[type="hidden"]').val(data.path);
+                $('.playerSource').eq(index).attr('src', '/uploads/' + data.path);
+                $('.player').eq(index).load();
+                $(".preview").eq(index).fadeIn();
+
+                if (index == 0) {
+                    document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
+                    document.getElementById('myAudio').load();
+                }
+            }
+        },
+        error: function(e) 
+        {
+            $("#err").html(e).fadeIn();
+        }          
+    });
+}
+
+function musicDurationChange(element) {
+    const starttime = getSeconds( $(element).parents('.preview').find('.startAt').val() );
+    $(this).parent().children('.startAt[type="hidden"]').val(starttime);
+    const stoptime = getSeconds( $(element).parents('.preview').find('.stopAt').val() );
+    $(this).parent().children('.stopAt[type="hidden"]').val(stoptime);
+
+    if (starttime > 0 && stoptime > 0) {
+        $(element).parents('.preview').find('.duration').val(stoptime - starttime);
+    }
+}
 $(document).ready(function() {
-    $('#tournamentSettings input[type="radio"]').on('change', function() {
-        $(this).parents('.setting').find('.music-source').attr('disabled', true);
-
-        if ($(this).data('target') == 'file') {            
-            $(this).parent().parent().children('[data-source="file"]').attr('disabled', false).attr('required', true);
+    $(".music-setting .time").inputmask(
+        "99:59:59", 
+        {
+        placeholder: "00:00:00",
+        insertMode: false,
+        showMaskOnHover: false,
+        definitions: {
+            '5': {
+                validator: "[0-5]",
+                cardinality: 1
+            }
         }
-            
-        if ($(this).data('target') == 'url') {
-            $(this).parent().parent().children('[data-source="url"]').attr('disabled', false).attr('required', false);
-        }
-            
-    });
-
-    $('.startAt, .stopAt').on('change', function() {
-        const starttime = $(this).parents('.preview').find('.startAt').val();
-        const stoptime = $(this).parents('.preview').find('.stopAt').val();
-
-        if (starttime !== 'undefined' && stoptime !== 'undefined' && starttime !== '' && stoptime !== '') {
-            $(this).parents('.preview').find('.duration').val(stoptime - starttime);
-        }
-    });
-
-    $('.duration').on('change', function() {
-        const starttime = $(this).parents('.preview').find('.startAt').val();
-        const duration = $(this).parents('.preview').find('.duration').val();
-
-        if (starttime !== 'undefined' && duration !== 'undefined' && starttime !== '' && duration !== '') {
-            $(this).parents('.stopAt').find('.duration').val(parseInt(starttime) + parseInt(duration));
-        }
-    });
-
-    $('.music-source[data-source="file"]').on('change', function(e) {
-        e.preventDefault();
-
-        let panel = $(this).parent();
-        let index = $('.music-source[data-source="file"]').index($(this));
-        $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
-
-        var formData = new FormData();
-        formData.append('audio', $(this)[0].files[0]);
-        $.ajax({
-            url: apiURL + '/tournaments/upload',
-            type: "POST",
-            data:  formData,
-            contentType: false,
-            cache: false,
-            processData:false,
-            beforeSend : function()
-            {
-                //$("#preview").fadeOut();
-                $("#err").fadeOut();
-            },
-            success: function(data)
-            {
-                var data = JSON.parse(data);
-                if(data.error)
-                {
-                    // invalid file format.
-                    $("#err").html("Invalid File !").fadeIn();
-                }
-                else
-                {
-                    panel.find('input[type="hidden"]').val(data.path);
-                    $('.playerSource').eq(index).attr('src', '/uploads/' + data.path);
-                    $('.player').eq(index).load();
-                    $(".preview").eq(index).fadeIn();
-
-                    if (index == 0) {
-                        document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
-                        document.getElementById('myAudio').load();
-                    }
-                }
-            },
-            error: function(e) 
-            {
-                $("#err").html(e).fadeIn();
-            }          
-        });
     });
 });
 

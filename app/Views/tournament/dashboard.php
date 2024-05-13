@@ -89,6 +89,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/participants.js"></script>
     <script type="text/javascript">
         let apiURL = "<?= base_url('api')?>";
@@ -139,34 +140,58 @@
             
             $('.music-setting-link').on('click', function() {
                 const tournament_id = $(this).data('id');
-                $('#tournamentSettings').modal('show');
-                $('#tournamentForm').data('id', tournament_id);
-                $('#tournamentForm input[type="text"]').val('');
 
                 $.ajax({
                     type: "GET",
                     url: apiURL + '/tournaments/' +  tournament_id + '/music-settings',
                     success: function(result) {
                         result = JSON.parse(result);
+                        $('#music-settings-panel').html(result.html);
+                        $('#tournamentForm').data('id', tournament_id);
 
                         if (result.data.length > 0) {
                             result.data.forEach((item, i) => {
-                                let panel = $('.music-setting').eq(i);
+                                let panel = $('.music-setting').eq(item.type);
+                                panel.find("#toggle-music-settings-" + item.type).prop('checked', true);
+                                panel.find('.setting').removeClass('visually-hidden');
                                 panel.find('input[type="radio"][value="' + item.source + '"]').prop('checked', true);
-                                panel.find('input.startAt').val(item.start);
-                                panel.find('input.stopAt').val(item.end);
-                                panel.find('input.duration').val(item.duration);
-                                
+
                                 if (item.source == 'f') {
-                                    panel.find('input[name="file-path['+i+']"]').val(item.path);
+                                    panel.find('input[data-source="file"]').attr('disabled', false);
+                                    
+                                    if (item.path != '') {
+                                        panel.find('input[data-source="file"]').attr('required', false);
+                                    }
+
+                                    panel.find('input[name="file-path['+item.type+']"]').val(item.path);
                                     panel.find('.playerSource').attr('src', '/uploads/' + item.path);
-                                    panel.find('.player').load();
-                                } else {
-                                    panel.find('input.music-source[type="text"]').val(item.path);
-                                }   
+
+                                }
+                                if (item.source == 'y') {
+                                    panel.find('input[data-source="url"]').val(item.path).attr('disabled', false);
+                                    panel.find('.playerSource').attr('src', item.path);
+                                }
+                                
+                                panel.find('.player').load();
+
+                                panel.find('.preview input').attr('disabled', false);
+                                
+                                const date = new Date(null);
+                                date.setSeconds(item.start); // specify value for SECONDS here
+                                panel.find('input.startAt[type="text"]').val(date.toISOString().slice(11, 19));
+                                panel.find('input.startAt[type="hidden"]').val(item.start);
+                                
+                                date.setSeconds(item.end);
+                                panel.find('input.stopAt').val(date.toISOString().slice(11, 19));
+                                panel.find('input.stopAt[type="hidden"]').val(item.end);
+
+                                panel.find('input.duration').val(item.duration);
+                                panel.find('input.duration[type="text"]').attr('disabled', true);
+
                             });
                         }
-                        console.log(result);
+                        
+                        $('#tournamentSettings').modal('show');
                     },
                     error: function(error) {
                         console.log(error);
@@ -219,27 +244,6 @@
                 });
             });
 
-        });
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('.toggle-music-settings').on('change', function() {
-                const settingPanel = $(this).parents('.music-setting').find('.setting');
-                if ($(this).prop( "checked") == true) {
-                    settingPanel.find('.preview input').attr('disabled', false);
-                    settingPanel.find('.preview input').attr('required', true);
-                    settingPanel.find('.music-source').attr('required', true);
-                    settingPanel.removeClass('visually-hidden');
-                } else {
-                    settingPanel.find('.preview input').attr('disabled', true);
-                    settingPanel.find('.preview input').attr('required', false);
-                    settingPanel.find('.music-source').attr('required', false);
-                    settingPanel.addClass('visually-hidden');
-                }
-
-                settingPanel.find('.duration[type="text"]').attr('disabled', true);
-            });
         });
     </script>
 <?= $this->endSection() ?>

@@ -75,7 +75,9 @@ class TournamentController extends BaseController
 
         $settings = $musicSettingModel->where(['tournament_id' => $id])->findAll();
 
-        return json_encode(['msg' => "Tournament was updated successfully.", 'data' => $settings]);
+        $html = view('tournament/music-setting', []);
+
+        return json_encode(['msg' => "Tournament was updated successfully.", 'data' => $settings, 'html' => $html]);
     }
 
     public function update($id)

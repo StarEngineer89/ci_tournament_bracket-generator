@@ -3,6 +3,7 @@
 <?= $this->section('title') ?>Tournament Participants<?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="/js/participants.js"></script>
 <script type="text/javascript">
     let apiURL = "<?= base_url('api')?>";
@@ -120,26 +121,6 @@
     });
 </script>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('.toggle-music-settings').on('change', function() {
-            const settingPanel = $(this).parents('.music-setting').find('.setting');
-            if ($(this).prop( "checked") == true) {
-                settingPanel.find('.preview input').attr('disabled', false);
-                settingPanel.find('.preview input').attr('required', true);
-                settingPanel.find('.music-source').attr('required', true);
-                settingPanel.removeClass('visually-hidden');
-            } else {
-                settingPanel.find('.preview input').attr('disabled', true);
-                settingPanel.find('.preview input').attr('required', false);
-                settingPanel.find('.music-source').attr('required', false);
-                settingPanel.addClass('visually-hidden');
-            }
-
-            settingPanel.find('.duration[type="text"]').attr('disabled', true);
-        });
-    });
-</script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
