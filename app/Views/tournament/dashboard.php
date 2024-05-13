@@ -186,7 +186,6 @@
                                 panel.find('input.stopAt[type="hidden"]').val(item.end);
 
                                 panel.find('input.duration').val(item.duration);
-                                panel.find('input.duration[type="text"]').attr('disabled', true);
 
                             });
                         }

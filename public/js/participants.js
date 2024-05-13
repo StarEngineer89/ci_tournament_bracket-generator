@@ -239,7 +239,6 @@ function musicSourceChange(element) {
         
 };
 
-
 function musicFileUpload(element) {
     let panel = $(element).parent();
     let index = $('.music-source[data-source="file"]').index($(element));
