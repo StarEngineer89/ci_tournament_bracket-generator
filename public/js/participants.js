@@ -268,23 +268,18 @@ function musicFileUpload(element) {
             else
             {
                 panel.find('input[type="hidden"]').val(data.path);
-                $('.playerSource').eq(index).attr('src', '/uploads/' + data.path);
-                $('.player').eq(index).load();
-                $(".preview").eq(index).fadeIn();
+                
+                let audioElement = panel.parents('.music-setting').find('.player');
+                audioElement[0].setAttribute('src', '/uploads/' + data.path);
+                applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
 
                 if (index == 0 && document.getElementById('myAudio')) {
                     document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
                     document.getElementById('myAudio').load();
                 }
-
-                const date = new Date(null);
-                date.setSeconds(0);
+                
                 panel.parents('.music-setting').find('.startAt[type="hidden"]').val(0);
                 panel.parents('.music-setting').find('.startAt[type="text"]').val("00:00:00");
-
-                date.setSeconds($('.player').eq(index).duration);
-                panel.parents('.music-setting').find('.stopAt[type="hidden"]').val($('.player').eq(index).duration);
-                panel.parents('.music-setting').find('.stopAt[type="text"]').val(date.toISOString().slice(11, 19));
             }
         },
         error: function(e) 
@@ -304,6 +299,18 @@ function musicDurationChange(element) {
         $(element).parents('.preview').find('.duration').val(stoptime - starttime);
     }
 }
+
+function applyDuration(src, obj) {
+    var audio = new Audio();
+    $(audio).on("loadedmetadata", function(){
+        const date = new Date(null);
+        date.setSeconds(audio.duration);
+        obj.find('.stopAt[type="hidden"]').val(audio.duration);
+        obj.find('.stopAt[type="text"]').val(date.toISOString().slice(11, 19));
+    });
+    audio.src = src;
+}
+
 $(document).ready(function() {
     $(".music-setting .time").inputmask(
         "99:59:59", 
