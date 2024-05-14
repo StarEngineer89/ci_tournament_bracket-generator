@@ -280,7 +280,7 @@ $(document).on('ready', function() {
                     }
                 },
                 delete: {
-                    name: "Delete a bracket",
+                    name: "Delete Bracket",
                     callback: (key, opt, e) => {
                         var element_id = opt.$trigger.data('bracket');
                         $.ajax({

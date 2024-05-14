@@ -19,11 +19,10 @@ let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;
                     <li class="breadcrumb-item active" aria-current="page">Brackets</li>
                 </ol>
             </nav>
-            <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>Tournament Brackets</h5>
+            <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?><?= $tournament['name'] ?> Brackets</h5>
             <div class="btns d-flex justify-content-center">
                 <button id="reset-single" class="btn btn-default">Reset (Single)</button>
                 <button id="reset-double" class="btn btn-default">Reset (Double)</button>
-                <button id="clear" class="btn btn-default">Reset (Clear)</button>
             </div>
 
             <?php if (session('error') !== null) : ?>

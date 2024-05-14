@@ -135,7 +135,7 @@
                 </h5>
                 <div class="buttons d-flex justify-content-center">
                     <button id="add-participant" class="btn btn-default">Add Participant</button>
-                    <button id="generate" class="btn btn-default">Generate Elimination</button>
+                    <button id="generate" class="btn btn-default">Generate Brackets</button>
                 </div>
 
                 <?php if (session('error') !== null) : ?>
