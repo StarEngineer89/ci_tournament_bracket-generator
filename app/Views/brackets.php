@@ -44,6 +44,11 @@ let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;
             <div class="alert alert-success" role="alert"><?= session('message') ?></div>
             <?php endif ?>
 
+            <div class="container alert alert-success" role="alert">
+                Note: <br/>
+                The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
+You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box.
+            </div>
             <div id="brackets" class="brackets d-flex justify-content-md-center justify-content-lg-center"></div>
         </div>
     </div>
