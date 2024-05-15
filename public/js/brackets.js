@@ -143,73 +143,18 @@ $(document).on('ready', function() {
         
         $.contextMenu({
             selector: '.bracket-team',
+            build: function($triggerElement, e){
+                let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
+                return {
             items: {
                 mark: {
-                    name: "Mark as Winner",
+                    name: (!isWinner) ? "Mark as Winner" : "Unmark as winner",
                     callback: (key, opt, e) => {
-                        if (editing_mode) {
-                            alert('You should change the participant first');
-                            return;
-                        }
-
-                        let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + opt.$trigger.data('next') + "']"), function(ele) {return ele.dataset.order}));
-                        let index = orders.findIndex((value) => {return value == opt.$trigger.data('order')});
-                        let next_bracketObj = document.querySelectorAll('[data-order="' + opt.$trigger.data('next') + '"]')[index];
-                        next_bracket = next_bracketObj.dataset.bracket;
-
-                        $.ajax({
-                            type: "PUT",
-                            url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
-                            contentType: "application/json",
-                            data: JSON.stringify({winner: opt.$trigger.data('id')}),
-                            success: function(result) {                               
-                                document.querySelectorAll('[data-order="' + opt.$trigger.data('next') + '"]')[index].innerHTML = opt.$trigger.text();
-                            },
-                            error: function(error) {
-                                console.log(error);
-                            }
-                        }).done(() => {
-                            setTimeout(function(){
-                                $("#overlay").fadeOut(300);
-                            },500);
-                        });
-
-                        $.ajax({
-                            type: "PUT",
-                            url: apiURL + '/brackets/update/' + next_bracket,
-                            contentType: "application/json",
-                            data: JSON.stringify({index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.text()}),
-                            success: function(result) {
-                                opt.$trigger.parent().contents().removeClass('winner')
-                                opt.$trigger.addClass('winner');
-                                next_bracketObj.dataset.id = opt.$trigger.data('id');
-                                next_bracketObj.innerHTML = opt.$trigger.text();
-                                
-                                if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
-                                    next_bracketObj.classList.add('winner');  
-
-                                    var player = document.getElementById('myAudio');
-                                    player.addEventListener("timeupdate", function() {
-                                        if ((player.currentTime - player._startTime) >= player.value){    
-                                            player.pause(); 
-                                        };                                        
-                                    });
-
-                                    player.value=player.dataset.duration;
-                                    player._startTime=player.dataset.starttime;
-                                    player.currentTime = player.dataset.starttime;  
-                                    player.play();
-                                }
-                            },
-                            error: function(error) {
-                                console.log(error);
-                            }
-                        }).done(() => {
-                            setTimeout(function(){
-                                $("#overlay").fadeOut(300);
-                            },500);
-                        });
-                    }
+                        if (!isWinner)
+                            markWinner(key, opt, e)
+                        else 
+                            unmarkWinner(key, opt, e)
+                    },
                 },
                 change: {
                     name: "Change a participant",
@@ -303,7 +248,8 @@ $(document).on('ready', function() {
                         });
                     }
                 }
-            }
+                }
+            }}
         });
 
         // group.append('<div class="r'+(groupCount+1)+'"><div class="final"><div class="bracketbox"><span class="bracket-team teamc">&nbsp;</span></div></div></div>');
@@ -458,6 +404,119 @@ function updateBracket(element, data) {
             box.append(data.name);
 
             editing_mode = false;
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+    });
+}
+
+function markWinner(key, opt, e) {
+    if (editing_mode) {
+        alert('You should change the participant first');
+        return;
+    }
+
+    let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + opt.$trigger.data('next') + "']"), function(ele) {return ele.dataset.order}));
+    let index = orders.findIndex((value) => {return value == opt.$trigger.data('order')});
+    const next_id = opt.$trigger.data('next');
+    let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
+    next_bracket = next_bracketObj.dataset.bracket;
+    const text = opt.$trigger.text();
+
+    $.ajax({
+        type: "PUT",
+        url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
+        contentType: "application/json",
+        data: JSON.stringify({winner: opt.$trigger.data('id')}),
+        success: function(result) {                               
+            document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = text;
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+    });
+
+    const ele = opt.$trigger;
+    $.ajax({
+        type: "PUT",
+        url: apiURL + '/brackets/update/' + next_bracket,
+        contentType: "application/json",
+        data: JSON.stringify({index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.text()}),
+        success: function(result) {
+            ele.parent().contents().removeClass('winner')
+            ele.addClass('winner');
+            next_bracketObj.dataset.id = ele.data('id');
+            next_bracketObj.innerHTML = ele.text();
+            
+            if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
+                next_bracketObj.classList.add('winner');  
+
+                var player = document.getElementById('myAudio');
+                player.addEventListener("timeupdate", function() {
+                    if ((player.currentTime - player._startTime) >= player.value){    
+                        player.pause(); 
+                    };                                        
+                });
+
+                player.value=player.dataset.duration;
+                player._startTime=player.dataset.starttime;
+                player.currentTime = player.dataset.starttime;  
+                player.play();
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+    });
+}
+
+function unmarkWinner(key, opt, e) {
+    const next_id = opt.$trigger.data('next');
+    let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + next_id + "']"), function(ele) {return ele.dataset.order}));
+    let index = orders.findIndex((value) => {return value == opt.$trigger.data('order')});
+    let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
+    next_bracket = next_bracketObj.dataset.bracket;
+
+    $.ajax({
+        type: "PUT",
+        url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
+        contentType: "application/json",
+        data: JSON.stringify({winner: ''}),
+        success: function(result) {                               
+            document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = '';
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+    });
+
+    const ele = opt.$trigger;
+    $.ajax({
+        type: "PUT",
+        url: apiURL + '/brackets/update/' + next_bracket,
+        contentType: "application/json",
+        data: JSON.stringify({index: index, participant: opt.$trigger.data('id'), name: ''}),
+        success: function(result) {
+            ele.parent().contents().removeClass('winner')
+            next_bracketObj.dataset.id = '';
+            next_bracketObj.innerHTML = '';
         },
         error: function(error) {
             console.log(error);
