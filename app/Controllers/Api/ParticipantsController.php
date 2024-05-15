@@ -24,7 +24,7 @@ class ParticipantsController extends BaseController
 
     public function getParticipants()
     {
-        $participants = $this->participantsModel->findAll();
+        $participants = $this->participantsModel->where('user_by', auth()->user()->id)->findAll();
 
         return json_encode($participants);
     }
