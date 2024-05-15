@@ -92,3 +92,11 @@ define('EVENT_PRIORITY_NORMAL', 100);
  * @deprecated Use \CodeIgniter\Events\Events::PRIORITY_HIGH instead.
  */
 define('EVENT_PRIORITY_HIGH', 10);
+
+/**
+ * Tournament Status
+ */
+define('TOURNAMENT_STATUS_INPROGRESS', 1);
+define('TOURNAMENT_STATUS_COMPLETED', 2);
+define('TOURNAMENT_STATUS_ABANDONED', 3);
+define('TOURNAMENT_STATUS_LABELS', ['', 'In progress', 'Completed', 'Abandoned']);

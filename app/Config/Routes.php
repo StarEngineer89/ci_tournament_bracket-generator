@@ -40,6 +40,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('upload', 'Api\TournamentController::upload');
         $routes->get('(:num)/music-settings', 'Api\TournamentController::getMusicSettings/$1');
         $routes->get('(:num)/clear', 'Api\BracketsController::clearBrackets/$1');
+        $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
     });
 });
 

@@ -125,6 +125,19 @@ class TournamentController extends BaseController
 
         return json_encode(['msg' => "Tournament was updated successfully."]);
     }
+    
+    public function delete($id)
+    {
+        $tournamentModel = model('\App\Models\TournamentModel');
+        $bracketModel = model('\App\Models\BracketModel');
+        $musicSettingModel = model('\App\Models\MusicSettingModel');
+
+        $musicSettingModel->where('tournament_id', $id)->delete();
+        $bracketModel->where('tournament_id', $id)->delete();
+        $tournamentModel->delete($id);
+
+        return json_encode(['msg' => "Tournament was deleted successfully."]);
+    }
 
     public function upload() {
         $validationRule = [

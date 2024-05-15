@@ -42,19 +42,23 @@
             </thead>
             <tbody>
                 <?php foreach ($tournaments as $index => $tournament): ?>
-            <tr>
+            <tr data-id="<?= $tournament['id'] ?>">
                 <th scope="row"><?= $index + 1 ?></th>
                 <td>
-                    <a class="name" href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
+                    <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
                 </td>
                 <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
-                <td><?= ($tournament['status'] == 1) ? "In progress" : "Completed" ?></td>
+                <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
                 <td>
-                    <div class="list-group">
+                    <div class="btn-groups list-group">
                         <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
                         <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>">Reset</a>
+                        <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
+                        <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
                         <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music Settings</a>
                     </div>
+                    
+                    <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
                 </td>
             </tr>
                 <?php endforeach; ?>
@@ -64,6 +68,24 @@
     </div>
 
     <!-- Modal -->
+    <div class="modal fade" id="deleteConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>Are you sure you want to delete this tournament "<span class="tournament-name"></span>"?</h1>
+                    <h5>This action cannot be undone!</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="confirmDelete">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -95,32 +117,6 @@
         let apiURL = "<?= base_url('api')?>";
 
         $(document).ready(function() {
-            $('.rename').on('click', function() {
-                const nameElement = $(this).parents('tr').find('.name');
-                var opts = prompt('Tournament Name:', nameElement.html());
-
-                if(!_.isNaN(opts)) {
-                    $("#overlay").fadeIn(300);
-                } else
-                    alert('Please input the name of the participant.');
-                $.ajax({
-                    type: "POST",
-                    url: apiURL + '/tournaments/' +  $(this).data('id') + '/update',
-                    data: {'name': opts},
-                    success: function(result) {
-                        const data = JSON.parse(result).data;
-                        nameElement.html(data.name);
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                }).done(() => {
-                    setTimeout(function(){
-                        $("#overlay").fadeOut(300);
-                    },500);
-                });
-            });
-
             $('.reset').on('click', function() {
                 $.ajax({
                     type: "GET",
@@ -138,6 +134,78 @@
                 });
             });
             
+            const deleteModal = document.getElementById('deleteConfirm');
+            if (deleteModal) {
+                deleteModal.addEventListener('show.bs.modal', event => {
+                    deleteModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
+                    const modalTitle = deleteModal.querySelector('.modal-body .tournament-name');
+                    modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
+                })
+            }
+
+            const renameBtn = document.querySelectorAll('.rename');
+            if (renameBtn) {
+                renameBtn.forEach((element, i) => {
+                    element.addEventListener('click', event => {
+                        const nameBox = document.createElement('input');
+                        const name = $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('td a').eq(0).html();
+                        nameBox.classList.add('name', 'form-control');
+                        nameBox.value = name;
+
+                        $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('td').eq(0).html(nameBox);
+                        $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.btn-groups').addClass('visually-hidden');
+                        $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.save').removeClass('visually-hidden');
+                    })
+                }) 
+            }
+
+            const statusChange = document.querySelectorAll('.change-status');
+            if (statusChange) {
+                statusChange.forEach((element, i) => {
+                    element.addEventListener('click', event => {
+                        const statusBox = document.createElement('select');
+                        statusBox.classList.add('status', 'form-control');
+                        const currentStatus = event.target.getAttribute('data-status');
+
+                        const statusOptions = {'<?= TOURNAMENT_STATUS_INPROGRESS ?>': 'In progress', '<?= TOURNAMENT_STATUS_COMPLETED ?>': 'Completed', '<?= TOURNAMENT_STATUS_ABANDONED ?>': 'Abandoned'}
+                        for (const [key, value] of Object.entries(statusOptions)) {
+                            let el = document.createElement("option");
+                            el.textContent = value;
+                            el.value = key;
+                            if (key == currentStatus) {
+                                el.selected = true;
+                            }
+                            statusBox.appendChild(el);
+                        }
+
+                        $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('td[data-label="status"]').html(statusBox);
+                        $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.btn-groups').addClass('visually-hidden');
+                        $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.save').removeClass('visually-hidden');
+                    })
+                }) 
+            }
+
+            $('#confirmDelete').on('click', function() {
+                const tournament_id = deleteModal.getAttribute('data-id');
+
+                $.ajax({
+                    type: "get",
+                    url: `${apiURL}/tournaments/${tournament_id}/delete`,
+                    success: function(result) {
+                        const msg = JSON.parse(result).msg;
+                        alert(msg);
+                        window.location.href="/tournaments";
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                }).done(() => {
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+                });
+            });
+
             $('.music-setting-link').on('click', function() {
                 const tournament_id = $(this).data('id');
 
@@ -244,5 +312,51 @@
             });
 
         });
+        
+        function saveChange() {
+            let data = {};
+            const tournament_id = event.target.getAttribute('data-id');
+            if ($(event.target).parents('tr').find('.name').length > 0)
+                data['name'] = $(event.target).parents('tr').find('.name').val();
+            if ($(event.target).parents('tr').find('.status').length > 0)
+                data['status'] = $(event.target).parents('tr').find('.status').val();
+
+            $.ajax({
+                type: "POST",
+                url: `${apiURL}/tournaments/${tournament_id}/update`,
+                data: data,
+                success: function(result) {
+                    const data = JSON.parse(result).data;
+
+                    if (data.name != undefined && data.name != '') {
+                        const nameElement = document.createElement('a');
+                        nameElement.href = '<?= base_url('tournaments') ?>/' + tournament_id + '/view';
+                        nameElement.textContent = data.name
+                        $(`tr[data-id="${tournament_id}"]`).find('td').eq(0).html(nameElement);
+                    }
+
+                    if (data.status != undefined && data.status != '') {
+                        let statusLabel = '<?= TOURNAMENT_STATUS_LABELS[TOURNAMENT_STATUS_INPROGRESS] ?>';
+                        if (data.status == '<?= TOURNAMENT_STATUS_COMPLETED ?>') 
+                            statusLabel = '<?= TOURNAMENT_STATUS_LABELS[TOURNAMENT_STATUS_COMPLETED] ?>';
+                        if (data.status == '<?= TOURNAMENT_STATUS_ABANDONED ?>') 
+                            statusLabel = '<?= TOURNAMENT_STATUS_LABELS[TOURNAMENT_STATUS_ABANDONED] ?>';
+
+                        $(`tr[data-id="${tournament_id}"]`).find('td[data-label="status"]').html(statusLabel);
+                    }
+                    
+
+                    $(`tr[data-id="${tournament_id}"]`).find('.btn-groups').removeClass('visually-hidden');
+                    $(`tr[data-id="${tournament_id}"]`).find('.save').addClass('visually-hidden');
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            }).done(() => {
+                setTimeout(function(){
+                    $("#overlay").fadeOut(300);
+                },500);
+            });
+        }
     </script>
 <?= $this->endSection() ?>
