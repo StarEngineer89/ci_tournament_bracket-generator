@@ -24,7 +24,7 @@ class ParticipantsController extends BaseController
 
     public function getParticipants()
     {
-        $participants = $this->participantsModel->orderBy('order')->findAll();
+        $participants = $this->participantsModel->findAll();
 
         return json_encode($participants);
     }
