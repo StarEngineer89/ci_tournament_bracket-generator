@@ -28,6 +28,7 @@ $routes->group('api', static function ($routes) {
     $routes->group('participants', static function ($routes) {
         $routes->get('/', 'Api\ParticipantsController::getParticipants');
         $routes->post('new', 'Api\ParticipantsController::addParticipant');
+        $routes->post('update/(:num)', 'Api\ParticipantsController::updateParticipant/$1');
         $routes->post('updateList', 'Api\ParticipantsController::updateParticipants');
         $routes->delete('delete/(:num)', 'Api\ParticipantsController::deleteParticipant/$1');
     });

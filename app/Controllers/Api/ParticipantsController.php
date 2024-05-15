@@ -47,6 +47,13 @@ class ParticipantsController extends BaseController
         return json_encode(array('result' => 'success', 'participant' => $participants_array));
     }
 
+    public function updateParticipant($id)
+    {
+        $this->participantsModel->update($id, $this->request->getPost());
+
+        return json_encode(array('result' => 'success', 'data' => $this->request->getPost()));
+    }
+
     public function updateParticipants()
     {
         $list = json_decode($this->request->getPost('list'));

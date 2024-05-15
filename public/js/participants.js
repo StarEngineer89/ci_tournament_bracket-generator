@@ -27,7 +27,7 @@
         shufflingPromise.then(() => {
 
             Array.from(itemList.children).forEach((item, i) => {
-                exampleTeams.push({'id': item.id, 'name': item.textContent, 'order': i});
+                exampleTeams.push({'id': item.id, 'name': item.lastChild.textContent, 'order': i});
             });
 
             saveParticipantList(exampleTeams);
@@ -105,7 +105,7 @@
             item.setAttribute('id', participant.id);
             item.setAttribute('class', "list-group-item");
             item.setAttribute('data-id', participant.id);
-            item.innerHTML = participant.name;
+            item.innerHTML = `<span class="col-1">${i + 1}.</span><span class="p-name col-10 justify-content-center">` + participant.name + '</span>';
 
             if (itemList.length > 0)
                 itemList.insertBefore(item);
@@ -117,6 +117,35 @@
         $('#newList').contextMenu({
             selector: '.list-group-item',
             items: {
+                edit: {
+                    name: "Edit",
+                    callback: (key, opt, e) => {
+                        var element_id = opt.$trigger.data('id');
+                        const nameBox = document.createElement('input');
+                        const name = opt.$trigger.children().last().text();
+                        nameBox.classList.add('name-input', 'form-control');
+                        nameBox.value = name;
+
+                        const inputBox = document.createElement('div');
+                        inputBox.appendChild(nameBox);
+                        inputBox.classList.add('col-auto');
+                        
+                        const buttonBox = document.createElement('div');
+                        const button = document.createElement('button');
+                        button.setAttribute('onClick', `saveParticipant(event, ${element_id})`);
+                        button.classList.add('btn', 'btn-primary');
+                        button.textContent = "Save";
+                        buttonBox.appendChild(button);
+                        buttonBox.classList.add('col-auto');
+                        
+                        const html = document.createElement('div');
+                        html.appendChild(inputBox);
+                        html.appendChild(buttonBox);
+                        html.classList.add('row', 'g-3', 'align-items-center');
+
+                        opt.$trigger.children().last().html(html);
+                    }
+                },
                 delete: {
                     name: "Delete",
                     callback: (key, opt, e) => {
@@ -163,6 +192,27 @@
             },500);
         });
     }
+
+function saveParticipant(e, element_id) {
+    const name = $(e.target).parents('.list-group-item').find('.name-input').val();
+
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/participants/update/' + element_id,
+        data: {'name': name},
+        success: function(result) {
+            result = JSON.parse(result);
+            $(e.target).parents('.list-group-item').children().last().html(result.data.name);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+    });
+}
 
 function saveParticipantList(list) {
     $.ajax({
