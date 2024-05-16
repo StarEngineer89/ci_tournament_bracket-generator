@@ -52,7 +52,7 @@
                 <td>
                     <div class="btn-groups list-group">
                         <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
-                        <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>">Reset</a>
+                        <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
                         <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
                         <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
                         <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music Settings</a>
@@ -68,11 +68,11 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="deleteConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+                    <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -82,6 +82,24 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-danger" id="confirmDelete">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="resetConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="resetModalLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>Are you sure you want to reset this tournament "<span class="tournament-name"></span>"?</h1>
+                    <h5 class="text-danger">This action cannot be undone!</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="confirmReset">Confirm</button>
                 </div>
             </div>
         </div>
@@ -117,12 +135,16 @@
         let apiURL = "<?= base_url('api')?>";
 
         $(document).ready(function() {
-            $('.reset').on('click', function() {
+            $('#confirmReset').on('click', function() {
+                const tournament_id = resetModal.getAttribute('data-id');
                 $.ajax({
                     type: "GET",
-                    url: apiURL + '/tournaments/' +  $(this).data('id') + '/clear',
+                    url: apiURL + '/tournaments/' +  tournament_id + '/clear',
                     success: function(result) {
-                        alert("Brackets was cleared successfully.");
+                        $('#resetConfirm').modal('hide');
+                        setTimeout(() => {
+                            alert("Brackets was cleared successfully.")
+                        }, 500);;
                     },
                     error: function(error) {
                         console.log(error);
@@ -134,6 +156,15 @@
                 });
             });
             
+            const resetModal = document.getElementById('resetConfirm');
+            if (resetModal) {
+                resetModal.addEventListener('show.bs.modal', event => {
+                    resetModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
+                    const modalTitle = resetModal.querySelector('.modal-body .tournament-name');
+                    modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
+                })
+            }
+
             const deleteModal = document.getElementById('deleteConfirm');
             if (deleteModal) {
                 deleteModal.addEventListener('show.bs.modal', event => {
