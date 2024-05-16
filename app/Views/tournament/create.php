@@ -5,12 +5,16 @@
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="/js/participants.js"></script>
+<script src="/js/player.js"></script>
 <script type="text/javascript">
     let apiURL = "<?= base_url('api')?>";
     let eleminationType;
     let tournament_id;
     let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
     let audio = document.getElementById("myAudio");
+    let videoUrl = "https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l";
+    let videoStartTime = 0;
+    let videoDuration = 20;
     
     const itemList = document.getElementById('newList');
 
@@ -170,7 +174,7 @@
         <source src="https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l" type="audio/mpeg" id="audioSrc">
     </audio>
     <?php endif; ?>
-
+        <div id="YTplayer"></div>
     <!-- Modal -->
     <div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
