@@ -19,12 +19,8 @@ let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;
                     <li class="breadcrumb-item active" aria-current="page">Brackets</li>
                 </ol>
             </nav>
-            <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?><?= $tournament['name'] ?> Brackets</h5>
-            <div class="btns d-flex justify-content-center">
-                <button id="reset-single" class="btn btn-default">Reset (Single)</button>
-                <button id="reset-double" class="btn btn-default">Reset (Double)</button>
-            </div>
-
+            <h5 class="card-title d-flex justify-content-center mb-5"><?//= lang('Auth.login') ?><?= $tournament['name'] ?> Brackets</h5>
+            
             <?php if (session('error') !== null) : ?>
                 <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
             <?php elseif (session('errors') !== null) : ?>
@@ -47,7 +43,8 @@ let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;
             <div class="container alert alert-success" role="alert">
                 Note: <br/>
                 The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
-You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box.
+                <br/>
+                You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box.
             </div>
             <div id="brackets" class="brackets d-flex justify-content-md-center justify-content-lg-center"></div>
         </div>
