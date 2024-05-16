@@ -105,7 +105,7 @@
             item.setAttribute('id', participant.id);
             item.setAttribute('class', "list-group-item");
             item.setAttribute('data-id', participant.id);
-            item.innerHTML = `<span class="col-1">${i + 1}.</span><span class="p-name col-10 justify-content-center">` + participant.name + '</span>';
+            item.innerHTML = `<span class="col-1">${i + 1}.</span><span class="p-name col-10 text-center">` + participant.name + '</span>';
 
             if (itemList.length > 0)
                 itemList.insertBefore(item);

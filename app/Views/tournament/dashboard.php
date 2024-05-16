@@ -8,7 +8,7 @@
         <div class="card-body">
             <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>Tournament Dashboard</h5>
             <div class="buttons d-flex justify-content-end">
-            <a class="btn btn-primary" href="<?php echo base_url('/tournaments/create') ?>">Create</a>
+            <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
             </div>
 
             <?php if (session('error') !== null) : ?>
@@ -77,11 +77,11 @@
                 </div>
                 <div class="modal-body">
                     <h5>Are you sure you want to delete this tournament "<span class="tournament-name"></span>"?</h1>
-                    <h5>This action cannot be undone!</h5>
+                    <h5 class="text-danger">This action cannot be undone!</h5>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="confirmDelete">Confirm</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Confirm</button>
                 </div>
             </div>
         </div>
