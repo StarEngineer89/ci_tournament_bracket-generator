@@ -144,6 +144,8 @@
                     $('#confirmSave .names').html(nameString);
                     $('#confirmSave').modal('show');
                 }
+
+                renderParticipants(result.participants);
             },
             error: function(error) {
                 console.log(error);
@@ -164,6 +166,8 @@
                 result = JSON.parse(result);
 
                 appendAlert('Duplicated records was removed!', 'success')
+
+                renderParticipants(result.participants);
             },
             error: function(error) {
                 console.log(error);

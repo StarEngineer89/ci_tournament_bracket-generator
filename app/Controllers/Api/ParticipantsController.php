@@ -55,7 +55,9 @@ class ParticipantsController extends BaseController
             }
         }
 
-        return json_encode(array('result' => 'success', 'duplicated' => $duplicated));
+        $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
+
+        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated));
     }
 
     public function updateParticipant($id)
@@ -163,7 +165,9 @@ class ParticipantsController extends BaseController
             }
         }
 
-        return json_encode(array('result' => 'success'));
+        $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
+
+        return json_encode(['result' => 'success', 'participants' => $participants]);
     }
     
 }
