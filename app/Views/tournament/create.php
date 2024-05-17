@@ -278,14 +278,14 @@
                     </div>
                     <div class="collapse" id="collapseAddParticipant">
                         <div class="card card-body">
-                            <form class="row row-cols-lg-auto g-3 align-items-center">
-                                <div class="input-group">
-                                    <div class="input-group-text">Name</div>
-                                    <input type="text" class="form-control form-control-lg" id="participantNames" placeholder="">
-                                    <button type="button" class="btn btn-primary" id="addParticipants">Save</button>
+                            <form class="row g-3 align-items-center">
+                                <div class="col-12">
+                                    <label class="form-label">Name</label>
+                                    <textarea class="form-control form-control-lg" id="participantNames" placeholder="For example: name1,name2,name3"></textarea>
+                                    <button type="button" class="btn btn-primary mt-2 float-end" id="addParticipants">Save</button>
                                 </div>
                                 <div id="namesdHelpBlock" class="form-text">
-                                    Names delimited by comma(,). For example: name1,name2,name3
+                                    Names delimited by comma(,). 
                                 </div>
                             </form>
 
