@@ -100,6 +100,7 @@
      * Render the list of Participants
      */
     function renderParticipants(participantsArray) {
+        itemList.innerHTML = '';
         participantsArray.forEach((participant, i) => {
             var item = document.createElement('div');
             item.setAttribute('id', participant.id);

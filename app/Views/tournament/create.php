@@ -5,7 +5,7 @@
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="/js/participants.js"></script>
-<script src="/js/player.js"></script>
+<!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
     let apiURL = "<?= base_url('api')?>";
     let eleminationType;
@@ -15,7 +15,8 @@
     let videoUrl = "https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l";
     let videoStartTime = 0;
     let videoDuration = 20;
-    
+    let duplicates = [];
+        
     const itemList = document.getElementById('newList');
 
     $(window).on('load', function() {
@@ -93,40 +94,146 @@
             <?php endif; ?>
         });
 
-        $('#add-participant').on('click', function() {
-            var opts = prompt('Participant Name:', 'Guild');
-            
-            if(!_.isNaN(opts)) {
-                $("#overlay").fadeIn(300);
+        $('#addParticipants').on('click', function() {
+            var opts = $('#participantNames').val();
+            names = opts.replaceAll(', ', ',').split(',');
 
-                $.ajax({
-                    type: "POST",
-                    url: apiURL + '/participants/new',
-                    data: { 'name': opts },
-                    dataType: "JSON",
-                    success: function(result) {
-                        var participants = result.participant;
-                        renderParticipants(participants);
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                }).done(() => {
-                    setTimeout(function(){
-                        $("#overlay").fadeOut(300);
-                    },500);
-                });
-            } else
-                alert('Please input the name of the participant.');
+            if (names.length) {
+                saveParticipants(names);
+            }
         });
+
+        $('#confirmSave .include').on('click', () => {
+            $('#participantNames').val(null);
+            $('input.csv-import').val(null)
+            $('#confirmSave').modal('hide');
+            $('#collapseAddParticipant').removeClass('show');
+        })
+
+        $('#confirmSave .remove').on('click', () => {
+            if (duplicates.length) {
+                removeDuplicates(duplicates);
+            }
+
+            $('#participantNames').val(null);
+            $('input.csv-import').val(null)
+            $('#confirmSave').modal('hide');
+            $('#collapseAddParticipant').removeClass('show');
+        })
     });
+
+    var saveParticipants = (data) => {
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/participants/new',
+            data: { 'name': data },
+            success: function(result) {
+                result = JSON.parse(result);
+                duplicates = result.duplicated;
+                if (duplicates.length) {
+                    let nameString = '';
+
+                    duplicates.forEach((ele, i) => {
+                        nameString += ele.name;
+
+                        if (i < (duplicates.length - 1)) {
+                            nameString += ', ';
+                        }
+                    })
+
+                    $('#confirmSave .names').html(nameString);
+                    $('#confirmSave').modal('show');
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+        });
+    }
+
+    var removeDuplicates = (data) => {
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/participants/removeDuplicates',
+            data: { 'names': data },
+            success: function(result) {
+                result = JSON.parse(result);
+
+                appendAlert('Duplicated records was removed!', 'success')
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+        });
+    }
+
+    var csvUpload = (element) => {
+        var formData = new FormData();
+        formData.append('file', $(element)[0].files[0]);
+        $.ajax({
+            url: apiURL + '/participants/import',
+            type: "POST",
+            data:  formData,
+            contentType: false,
+            cache: false,
+            processData:false,
+            beforeSend : function()
+            {
+                $("#err").fadeOut();
+            },
+            success: function(result)
+            {
+                result = JSON.parse(result);
+                duplicates = result.duplicated;
+                if (duplicates.length) {
+                    let nameString = '';
+
+                    duplicates.forEach((ele, i) => {
+                        nameString += ele.name;
+
+                        if (i < (duplicates.length - 1)) {
+                            nameString += ', ';
+                        }
+                    })
+
+                    $('#confirmSave .names').html(nameString);
+                    $('#confirmSave').modal('show');
+                }
+            },
+            error: function(e) 
+            {
+                $("#err").html(e).fadeIn();
+            }          
+        });
+    }
+    
+    const appendAlert = (message, type) => {
+        const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        alertPlaceholder.append(wrapper)
+    }
 </script>
 
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
 
-        <div class="card col-12 shadow-sm">
+        <div class="card container shadow-sm">
             <div class="card-body">
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -134,13 +241,6 @@
                         <li class="breadcrumb-item active" aria-current="page">Create</li>
                     </ol>
                 </nav>
-                <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>
-                    Tournament Participants
-                </h5>
-                <div class="buttons d-flex justify-content-center">
-                    <button id="add-participant" class="btn btn-default">Add Participant</button>
-                    <button id="generate" class="btn btn-default">Generate Brackets</button>
-                </div>
 
                 <?php if (session('error') !== null) : ?>
                     <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
@@ -161,9 +261,63 @@
                 <div class="alert alert-success" role="alert"><?= session('message') ?></div>
                 <?php endif ?>
 
-                <div id="newList" class="list-group"></div>
+                <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>
+                    Tournament Participants
+                </h5>
+
+                <div id="liveAlertPlaceholder"></div>
+
+                <div class="participants-box m-auto">
+                    <div class="buttons d-flex justify-content-center">
+                        <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant">Add Participant</button>
+                        <button id="generate" class="btn btn-default">Generate Brackets</button>
+                    </div>
+                    <div class="collapse" id="collapseAddParticipant">
+                        <div class="card card-body">
+                            <form class="row row-cols-lg-auto g-3 align-items-center">
+                                <div class="input-group">
+                                    <div class="input-group-text">Name</div>
+                                    <input type="text" class="form-control form-control-lg" id="participantNames" placeholder="">
+                                    <button type="button" class="btn btn-primary" id="addParticipants">Save</button>
+                                </div>
+                                <div id="namesdHelpBlock" class="form-text">
+                                    Names delimited by comma(,). For example: name1,name2,name3
+                                </div>
+                            </form>
+
+                            <form class="row row-cols-lg-auto g-3 align-items-center mt-1" enctype="multipart/form-data" method="post">
+                                <div class="input-group mb-3">
+                                    <input type="file" class="form-control csv-import" onChange="csvUpload(this)" data-source="file" name="file" onChange="" accept=".csv" required>
+                                    <label class="input-group-text" for="file-input">Upload</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div id="newList" class="list-group"></div>
+                </dvi>
             </div>
         </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmSave" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteModalLabel">Duplicated names detected!</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>The following names are already existing.</h1>
+                    <h6 class="text-danger"><span class="names"></span></h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary include">Include duplicate record</button>
+                    <button type="button" class="btn btn-danger remove">Remove duplicate record</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?php if (isset($settings) && $settings): ?>
     <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">

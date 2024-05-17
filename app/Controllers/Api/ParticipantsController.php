@@ -29,22 +29,33 @@ class ParticipantsController extends BaseController
         return json_encode($participants);
     }
 
-    public function addParticipant()
+    public function addParticipant($names = null)
     {
-        $data = [
-            'name' => $this->request->getPost('name'),
-            'user_by' => auth()->user()->id,
-            'active' => 1
-        ];
-        
-        $participant_id = $this->participantsModel->insert($data);
-        $participants_array = array();
-
-        if ($participant_id) {
-            $participants_array = $this->participantsModel->where('id', $participant_id)->findAll();
+        if (!$names) {
+            $names = $this->request->getPost('name');
         }
 
-        return json_encode(array('result' => 'success', 'participant' => $participants_array));
+        $duplicated = [];
+        if ($names) {
+            foreach ($names as $name) {
+                $data = [
+                    'name' => $name,
+                    'user_by' => auth()->user()->id,
+                    'active' => 1
+                ];
+
+                $record = $this->participantsModel->where($data)->findAll();
+
+                $inserted_id = $this->participantsModel->insert($data);
+
+                if (count($record)) {
+                    $data['id'] = $inserted_id;
+                    $duplicated[] = $data;
+                }
+            }
+        }
+
+        return json_encode(array('result' => 'success', 'duplicated' => $duplicated));
     }
 
     public function updateParticipant($id)
@@ -82,4 +93,77 @@ class ParticipantsController extends BaseController
 
         return json_encode(array('result' => 'success'));
     }
+    
+    public function importParticipants()
+    {
+        $validationRule = [
+            'file' => [
+                'label' => 'CSV File',
+                'rules' => [
+                    'uploaded[file]',
+                    'mime_in[file,text/csv]',
+                ],
+            ],
+        ];
+        if (! $this->validateData([], $validationRule)) {
+            $data = ['errors' => $this->validator->getErrors()];
+
+            return json_encode($data);
+        }
+
+        $path = WRITEPATH . 'uploads/';
+		$file = $this->request->getFile('file');
+        $filepath = '';
+        if (! $file->hasMoved()) {
+            $filepath = $path . $file->store();
+        }
+
+        if (!file_exists($filepath)) {
+            return json_encode(['errors' => "Imported file was not saved correctly"]);
+        }
+
+		$arr_file 		= explode('.', $filepath);
+		$extension 		= end($arr_file);
+		if('csv' == $extension) {
+			$reader 	= new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+		} else {
+			$reader 	= new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		}
+		$spreadsheet 	= $reader->load($filepath);
+		$sheet_data 	= $spreadsheet->getActiveSheet()->toArray();
+        
+		$data 			= [];
+		foreach($sheet_data as $key => $val) {
+			if($key != 0) {
+                $data[] = $val[0];
+			}
+		}
+        
+        if (count($data)) {
+            $result = $this->addParticipant($data);
+
+            return $result;
+        }
+
+        return json_encode(['result' => 'success']);
+    }
+
+    public function removeDuplicates()
+    {
+        $rows = $this->request->getPost('names');
+
+        if ($rows) {
+            $ids = [];
+            foreach ($rows as $row) {
+                $ids[] = $row['id'];
+            }
+
+            if (count($ids)) {
+                $this->participantsModel->whereIn('id', $ids)->delete();
+            }
+        }
+
+        return json_encode(array('result' => 'success'));
+    }
+    
 }

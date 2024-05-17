@@ -1,6 +1,9 @@
 #tournamentSettings input.form-control-sm {
   max-width: 60px;
 }
+.participants-box {
+  max-width: 500px;
+}
 #newList {
     display: flex;
     flex-wrap: wrap;
