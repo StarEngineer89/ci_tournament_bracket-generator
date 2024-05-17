@@ -52,7 +52,7 @@
                 <td>
                     <div class="btn-groups list-group">
                         <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
-                        <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                        <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
                         <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
                         <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
                         <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music Settings</a>

@@ -6,8 +6,12 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
 function onYouTubeIframeAPIReady() {
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var match = videoUrl.match(regExp);
+    const videoID = (match&&match[7].length==11)? match[7] : false;
+
     player = new YT.Player('YTplayer', {
-        videoUrl: videoUrl.replace('youtu.be/', 'www.youtube.com/embed/'),
+        videoId: videoID,
         events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange

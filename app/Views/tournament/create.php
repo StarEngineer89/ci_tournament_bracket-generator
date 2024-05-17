@@ -165,7 +165,7 @@
             success: function(result) {
                 result = JSON.parse(result);
 
-                appendAlert('Duplicated records was removed!', 'success')
+                appendAlert('Duplicate record discarded!', 'success')
 
                 renderParticipants(result.participants);
             },
