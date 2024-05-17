@@ -107,11 +107,11 @@ class ParticipantsController extends BaseController
                 ],
             ],
         ];
-        if (! $this->validateData([], $validationRule)) {
-            $data = ['errors' => $this->validator->getErrors()];
+        // if (! $this->validateData([], $validationRule)) {
+        //     $data = ['errors' => $this->validator->getErrors()];
 
-            return json_encode($data);
-        }
+        //     return json_encode($data);
+        // }
 
         $path = WRITEPATH . 'uploads/';
 		$file = $this->request->getFile('file');

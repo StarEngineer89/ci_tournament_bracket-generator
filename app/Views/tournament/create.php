@@ -96,6 +96,11 @@
 
         $('#addParticipants').on('click', function() {
             var opts = $('#participantNames').val();
+
+            if (opts == '') {
+                return false;
+            }
+
             names = opts.replaceAll(', ', ',').split(',');
 
             if (names.length) {
@@ -128,6 +133,11 @@
             url: apiURL + '/participants/new',
             data: { 'name': data },
             success: function(result) {
+                appendAlert('Records inserted successfully!', 'success');
+                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
+                    $("div.alert").slideUp(500);
+                });
+
                 result = JSON.parse(result);
                 duplicates = result.duplicated;
                 if (duplicates.length) {
@@ -165,7 +175,10 @@
             success: function(result) {
                 result = JSON.parse(result);
 
-                appendAlert('Duplicate record discarded!', 'success')
+                appendAlert('Duplicate record discarded!', 'success');
+                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
+                    $("div.alert").slideUp(500);
+                });
 
                 renderParticipants(result.participants);
             },
@@ -181,7 +194,7 @@
 
     var csvUpload = (element) => {
         var formData = new FormData();
-        formData.append('file', $(element)[0].files[0]);
+        formData.append('file', $('.csv-import')[0].files[0]);
         $.ajax({
             url: apiURL + '/participants/import',
             type: "POST",
@@ -284,15 +297,17 @@
                                     <textarea class="form-control form-control-lg" id="participantNames" placeholder="For example: name1,name2,name3"></textarea>
                                     <button type="button" class="btn btn-primary mt-2 float-end" id="addParticipants">Save</button>
                                 </div>
-                                <div id="namesdHelpBlock" class="form-text">
-                                    Names delimited by comma(,). 
-                                </div>
                             </form>
+                            <div id="namesdHelpBlock" class="form-text">
+                                Or, upload a csv file of participant names. <a href="<?= base_url('/uploads/sample.csv') ?>">Download sample template file</a>
+                                <br/>
+                                Note that the first row header, as well as any other columns besides 1st column are ignored.
+                            </div>
 
                             <form class="row row-cols-lg-auto g-3 align-items-center mt-1" enctype="multipart/form-data" method="post">
                                 <div class="input-group mb-3">
-                                    <input type="file" class="form-control csv-import" onChange="csvUpload(this)" data-source="file" name="file" onChange="" accept=".csv" required>
-                                    <label class="input-group-text" for="file-input">Upload</label>
+                                    <input type="file" class="form-control csv-import" data-source="file" onChange="csvUpload(this)" name="file" accept=".csv" required>
+                                    <button type="button" class="input-group-text btn btn-primary" for="file-input" onClick="csvUpload(this)">Upload</button>
                                 </div>
                             </form>
                         </div>
@@ -308,11 +323,11 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="deleteModalLabel">Duplicated names detected!</h1>
+                    <h1 class="modal-title fs-5" id="deleteModalLabel">Duplicate record(s) detected!</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5>The following names are already existing.</h1>
+                    <h5>The following name(s) already exists.</h1>
                     <h6 class="text-danger"><span class="names"></span></h6>
                 </div>
                 <div class="modal-footer">
