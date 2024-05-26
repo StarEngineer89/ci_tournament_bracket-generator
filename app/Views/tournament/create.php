@@ -7,7 +7,7 @@
 <script src="/js/participants.js"></script>
 <!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
-    let apiURL = "<?= base_url('api')?>";
+    let apiURL = "<?= base_url('api') ?>";
     let eleminationType;
     let tournament_id;
     let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
@@ -16,7 +16,7 @@
     let videoStartTime = 0;
     let videoDuration = 20;
     let duplicates = [];
-        
+
     const itemList = document.getElementById('newList');
 
     $(window).on('load', function() {
@@ -35,28 +35,26 @@
             }
 
             const values = $('#tournamentForm').serializeArray();
-            const data = Object.fromEntries(values.map(({name, value}) => [name, value]));
+            const data = Object.fromEntries(values.map(({
+                name,
+                value
+            }) => [name, value]));
             shuffle_duration = parseInt(data['duration[0]']);
-            
+
             $.ajax({
                 url: apiURL + '/tournaments/save',
                 type: "POST",
-                data:  data,
-                beforeSend : function()
-                {
+                data: data,
+                beforeSend: function() {
                     //$("#preview").fadeOut();
                     $("#err").fadeOut();
                 },
-                success: function(result)
-                {
+                success: function(result) {
                     var result = JSON.parse(result);
-                    if(result.error)
-                    {
+                    if (result.error) {
                         // invalid file format.
                         $("#err").html("Invalid File !").fadeIn();
-                    }
-                    else
-                    {
+                    } else {
                         $('#tournamentSettings').modal('hide');
                         tournament_id = result.data.tournament_id;
                         eleminationType = (result.data.type == 1) ? "Single" : "Double";
@@ -68,29 +66,28 @@
                             $('#audioSrc').attr('src', audioSrc);
                             audio.load();
                         }
-                        
+
                         callShuffle();
                     }
                 },
-                error: function(e) 
-                {
+                error: function(e) {
                     $("#err").html(e).fadeIn();
-                }          
+                }
             });
         });
 
         $('#generate').on('click', function() {
-            <?php if (isset($tournament) && count($tournament)): ?>
+            <?php if (isset($tournament) && count($tournament)) : ?>
                 tournament_id = "<?= $tournament['id'] ?>";
                 eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
-                
-                <?php if (isset($settings) && count($settings)): ?>
-                audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
+
+                <?php if (isset($settings) && count($settings)) : ?>
+                    audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
                 <?php endif; ?>
-                                
+
                 callShuffle();
-            <?php else: ?>
-            $('#tournamentSettings').modal('show');
+            <?php else : ?>
+                $('#tournamentSettings').modal('show');
             <?php endif; ?>
         });
 
@@ -131,15 +128,16 @@
         $.ajax({
             type: "POST",
             url: apiURL + '/participants/new',
-            data: { 'name': data },
+            data: {
+                'name': data
+            },
             success: function(result) {
-                appendAlert('Records inserted successfully!', 'success');
-                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
-                    $("div.alert").slideUp(500);
-                });
-
                 result = JSON.parse(result);
+
+                renderParticipants(result.participants);
+
                 duplicates = result.duplicated;
+
                 if (duplicates.length) {
                     let nameString = '';
 
@@ -153,17 +151,22 @@
 
                     $('#confirmSave .names').html(nameString);
                     $('#confirmSave').modal('show');
+
+                    return false;
                 }
 
-                renderParticipants(result.participants);
+                appendAlert('Records inserted successfully!', 'success');
+                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
+                    $("div.alert").slideUp(500);
+                });
             },
             error: function(error) {
                 console.log(error);
             }
         }).done(() => {
-            setTimeout(function(){
+            setTimeout(function() {
                 $("#overlay").fadeOut(300);
-            },500);
+            }, 500);
         });
     }
 
@@ -171,11 +174,13 @@
         $.ajax({
             type: "POST",
             url: apiURL + '/participants/removeDuplicates',
-            data: { 'names': data },
+            data: {
+                'names': data
+            },
             success: function(result) {
                 result = JSON.parse(result);
 
-                appendAlert('Duplicate record discarded!', 'success');
+                appendAlert('Records inserted successfully!', 'success');
                 $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
                     $("div.alert").slideUp(500);
                 });
@@ -186,9 +191,9 @@
                 console.log(error);
             }
         }).done(() => {
-            setTimeout(function(){
+            setTimeout(function() {
                 $("#overlay").fadeOut(300);
-            },500);
+            }, 500);
         });
     }
 
@@ -198,16 +203,14 @@
         $.ajax({
             url: apiURL + '/participants/import',
             type: "POST",
-            data:  formData,
+            data: formData,
             contentType: false,
             cache: false,
-            processData:false,
-            beforeSend : function()
-            {
+            processData: false,
+            beforeSend: function() {
                 $("#err").fadeOut();
             },
-            success: function(result)
-            {
+            success: function(result) {
                 result = JSON.parse(result);
                 duplicates = result.duplicated;
                 if (duplicates.length) {
@@ -225,13 +228,12 @@
                     $('#confirmSave').modal('show');
                 }
             },
-            error: function(e) 
-            {
+            error: function(e) {
                 $("#err").html(e).fadeIn();
-            }          
+            }
         });
     }
-    
+
     const appendAlert = (message, type) => {
         const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
         const wrapper = document.createElement('div')
@@ -250,73 +252,74 @@
 
 <?= $this->section('main') ?>
 
-        <div class="card container shadow-sm">
-            <div class="card-body">
-                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="<?= base_url() ?>">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Create</li>
-                    </ol>
-                </nav>
+<div class="card container shadow-sm">
+    <div class="card-body">
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="<?= base_url() ?>">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
 
-                <?php if (session('error') !== null) : ?>
-                    <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
-                <?php elseif (session('errors') !== null) : ?>
-                    <div class="alert alert-danger" role="alert">
-                        <?php if (is_array(session('errors'))) : ?>
-                            <?php foreach (session('errors') as $error) : ?>
-                                <?= $error ?>
-                                <br>
-                            <?php endforeach ?>
-                        <?php else : ?>
-                            <?= session('errors') ?>
-                        <?php endif ?>
-                    </div>
+        <?php if (session('error') !== null) : ?>
+            <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
+        <?php elseif (session('errors') !== null) : ?>
+            <div class="alert alert-danger" role="alert">
+                <?php if (is_array(session('errors'))) : ?>
+                    <?php foreach (session('errors') as $error) : ?>
+                        <?= $error ?>
+                        <br>
+                    <?php endforeach ?>
+                <?php else : ?>
+                    <?= session('errors') ?>
                 <?php endif ?>
-
-                <?php if (session('message') !== null) : ?>
-                <div class="alert alert-success" role="alert"><?= session('message') ?></div>
-                <?php endif ?>
-
-                <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>
-                    Tournament Participants
-                </h5>
-
-                <div id="liveAlertPlaceholder"></div>
-
-                <div class="participants-box m-auto">
-                    <div class="buttons d-flex justify-content-center">
-                        <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant">Add Participant</button>
-                        <button id="generate" class="btn btn-default">Generate Brackets</button>
-                    </div>
-                    <div class="collapse" id="collapseAddParticipant">
-                        <div class="card card-body">
-                            <form class="row g-3 align-items-center">
-                                <div class="col-12">
-                                    <label class="form-label">Name</label>
-                                    <textarea class="form-control form-control-lg" id="participantNames" placeholder="For example: name1,name2,name3"></textarea>
-                                    <button type="button" class="btn btn-primary mt-2 float-end" id="addParticipants">Save</button>
-                                </div>
-                            </form>
-                            <div id="namesdHelpBlock" class="form-text">
-                                Or, upload a csv file of participant names. <a href="<?= base_url('/uploads/sample.csv') ?>">Download sample template file</a>
-                                <br/>
-                                Note that the first row header, as well as any other columns besides 1st column are ignored.
-                            </div>
-
-                            <form class="row row-cols-lg-auto g-3 align-items-center mt-1" enctype="multipart/form-data" method="post">
-                                <div class="input-group mb-3">
-                                    <input type="file" class="form-control csv-import" data-source="file" onChange="csvUpload(this)" name="file" accept=".csv" required>
-                                    <button type="button" class="input-group-text btn btn-primary" for="file-input" onClick="csvUpload(this)">Upload</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    
-                    <div id="newList" class="list-group"></div>
-                </dvi>
             </div>
+        <?php endif ?>
+
+        <?php if (session('message') !== null) : ?>
+            <div class="alert alert-success" role="alert"><?= session('message') ?></div>
+        <?php endif ?>
+
+        <h5 class="card-title d-flex justify-content-center"><? //= lang('Auth.login') 
+                                                                ?>
+            Tournament Participants
+        </h5>
+
+        <div id="liveAlertPlaceholder"></div>
+
+        <div class="participants-box m-auto">
+            <div class="buttons d-flex justify-content-center">
+                <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant">Add Participant</button>
+                <button id="generate" class="btn btn-default">Generate Brackets</button>
+            </div>
+            <div class="collapse" id="collapseAddParticipant">
+                <div class="card card-body">
+                    <form class="row g-3 align-items-center">
+                        <div class="col-12">
+                            <label class="form-label">Name</label>
+                            <textarea class="form-control form-control-lg" id="participantNames" placeholder="For example: name1,name2,name3"></textarea>
+                            <button type="button" class="btn btn-primary mt-2 float-end" id="addParticipants">Save</button>
+                        </div>
+                    </form>
+                    <div id="namesdHelpBlock" class="form-text">
+                        Or, upload a csv file of participant names. <a href="<?= base_url('/uploads/sample.csv') ?>">Download sample template file</a>
+                        <br />
+                        Note that the first row header, as well as any other columns besides 1st column are ignored.
+                    </div>
+
+                    <form class="row row-cols-lg-auto g-3 align-items-center mt-1" enctype="multipart/form-data" method="post">
+                        <div class="input-group mb-3">
+                            <input type="file" class="form-control csv-import" data-source="file" onChange="csvUpload(this)" name="file" accept=".csv" required>
+                            <button type="button" class="input-group-text btn btn-primary" for="file-input" onClick="csvUpload(this)">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="newList" class="list-group"></div>
+            </dvi>
         </div>
+    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="confirmSave" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -328,7 +331,7 @@
                 </div>
                 <div class="modal-body">
                     <h5>The following name(s) already exists.</h1>
-                    <h6 class="text-danger"><span class="names"></span></h6>
+                        <h6 class="text-danger"><span class="names"></span></h6>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary include">Include duplicate record</button>
@@ -338,16 +341,16 @@
         </div>
     </div>
 
-    <?php if (isset($settings) && $settings): ?>
-    <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
-        <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
-    </audio>
-    <?php else: ?>
-    <audio id="myAudio" controls style="display:none" data-starttime="0" data-duration="10" preload="auto">
-        <source src="https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l" type="audio/mpeg" id="audioSrc">
-    </audio>
+    <?php if (isset($settings) && $settings) : ?>
+        <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
+            <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+        </audio>
+    <?php else : ?>
+        <audio id="myAudio" controls style="display:none" data-starttime="0" data-duration="10" preload="auto">
+            <source src="https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l" type="audio/mpeg" id="audioSrc">
+        </audio>
     <?php endif; ?>
-        <div id="YTplayer"></div>
+    <div id="YTplayer"></div>
     <!-- Modal -->
     <div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -358,24 +361,24 @@
                 </div>
                 <div class="modal-body">
 
-                <form id="tournamentForm" class="needs-validation" method="POST" endtype="multipart/form-data">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="title">Title</span>
-                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title" name="title" required>
-                        <div class="invalid-feedback">This field is required.</div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="type">Elimination Type</span>
-                        <select class="form-select" name="type" aria-label="type" required>
-                            <option value="1" selected>Single</option>
-                            <option value="2">Double</option>
-                        </select>
-                    </div>
-                    
-                    <div id="music-settings-panel">
-                        <?= $musicSettingsBlock ?>
-                    </div>
-                </form>
+                    <form id="tournamentForm" class="needs-validation" method="POST" endtype="multipart/form-data">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="title">Title</span>
+                            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title" name="title" required>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="type">Elimination Type</span>
+                            <select class="form-select" name="type" aria-label="type" required>
+                                <option value="1" selected>Single</option>
+                                <option value="2">Double</option>
+                            </select>
+                        </div>
+
+                        <div id="music-settings-panel">
+                            <?= $musicSettingsBlock ?>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -385,4 +388,4 @@
         </div>
     </div>
 
-<?= $this->endSection() ?>
+    <?= $this->endSection() ?>
