@@ -69,7 +69,7 @@ class ParticipantsController extends BaseController
 
     public function updateParticipants()
     {
-        $list = json_decode($this->request->getPost('list'));
+        $list = $this->request->getPost('list');
 
         if (count($list) > 0) {
             foreach ($list as $item) {

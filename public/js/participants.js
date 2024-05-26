@@ -219,9 +219,7 @@ function saveParticipantList(list) {
     $.ajax({
         type: "post",
         url: apiURL + '/participants/updateList/',
-        data: {'list' : JSON.stringify(list)},
-        // contentType: 'application/json',
-        dataType: "JSON",
+        data: {'list' : list},
         success: function(result) {
             if (result.result == 'success')
                 generateBrackets();
