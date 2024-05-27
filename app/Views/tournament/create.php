@@ -106,7 +106,7 @@
             }
         });
 
-        $('#confirmSave .include').on('click', () => {            
+        $('#confirmSave .include').on('click', () => {
             if (duplicates.length) {
                 saveDuplicates(duplicates);
             }
@@ -222,6 +222,11 @@
                 result = JSON.parse(result);
                 duplicates = result.duplicated;
                 insert_count = result.count;
+
+                if (insert_count) {
+                    appendAlert('Records inserted successfully!', 'success');
+                }
+
                 if (duplicates.length) {
                     let nameString = '';
 
