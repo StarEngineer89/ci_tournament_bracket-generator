@@ -106,7 +106,11 @@
             }
         });
 
-        $('#confirmSave .include').on('click', () => {
+        $('#confirmSave .include').on('click', () => {            
+            if (duplicates.length) {
+                saveDuplicates(duplicates);
+            }
+
             $('#participantNames').val(null);
             $('input.csv-import').val(null)
             $('#confirmSave').modal('hide');
@@ -115,14 +119,20 @@
         })
 
         $('#confirmSave .remove').on('click', () => {
-            if (duplicates.length) {
-                removeDuplicates(duplicates);
-            }
 
             $('#participantNames').val(null);
             $('input.csv-import').val(null)
             $('#confirmSave').modal('hide');
             $('#collapseAddParticipant').removeClass('show');
+            
+            if (insert_count == 0) {
+                appendAlert('Duplicate records discarded!', 'success');
+            } else {
+                appendAlert([
+                    'Records inserted successfully!',
+                    'Duplicate records discarded!'
+                ], 'success');
+            }
         })
     });
 
@@ -145,7 +155,7 @@
                     let nameString = '';
 
                     duplicates.forEach((ele, i) => {
-                        nameString += ele.name;
+                        nameString += ele;
 
                         if (i < (duplicates.length - 1)) {
                             nameString += ', ';
@@ -172,24 +182,16 @@
         });
     }
 
-    var removeDuplicates = (data) => {
+    var saveDuplicates = (data) => {
         $.ajax({
             type: "POST",
-            url: apiURL + '/participants/removeDuplicates',
+            url: apiURL + '/participants/new',
             data: {
-                'names': data
+                'name': data,
+                'duplicateCheck': 0
             },
             success: function(result) {
                 result = JSON.parse(result);
-
-                if (insert_count == result.count) {
-                    appendAlert('Duplicate records discarded!', 'success');
-                } else {
-                    appendAlert([
-                        'Records inserted successfully!',
-                        'Duplicate records discarded!'
-                    ], 'success');
-                }
 
                 renderParticipants(result.participants);
             },
@@ -224,7 +226,7 @@
                     let nameString = '';
 
                     duplicates.forEach((ele, i) => {
-                        nameString += ele.name;
+                        nameString += ele;
 
                         if (i < (duplicates.length - 1)) {
                             nameString += ', ';

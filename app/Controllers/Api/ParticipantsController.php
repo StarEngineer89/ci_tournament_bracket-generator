@@ -29,13 +29,17 @@ class ParticipantsController extends BaseController
         return json_encode($participants);
     }
 
-    public function addParticipant($names = null)
+    public function addParticipant($names = null, $duplicateCheck = true)
     {
         if (!$names) {
             $names = $this->request->getPost('name');
         }
 
-        $duplicated = []; $inserted_count = 0;
+        if ($this->request->getPost('duplicateCheck') !== null) {
+            $duplicateCheck = $this->request->getPost('duplicateCheck');
+        }
+
+        $duplicated = []; $inserted_count = 0;$test = 0;
         if ($names) {
             foreach ($names as $name) {
                 $data = [
@@ -44,22 +48,26 @@ class ParticipantsController extends BaseController
                     'active' => 1
                 ];
 
-                $record = $this->participantsModel->where($data)->findAll();
+                if ($duplicateCheck) {
+                    $test = 1;
+                    $record = $this->participantsModel->where($data)->findAll();
 
-                $inserted_id = $this->participantsModel->insert($data);
-
-                if (count($record)) {
-                    $data['id'] = $inserted_id;
-                    $duplicated[] = $data;
+                    if (count($record)) {
+                        $duplicated[] = $name;
+                    } else {
+                        $this->participantsModel->insert($data);
+                        $inserted_count++;
+                    }
+                } else {$test = 2;
+                    $this->participantsModel->insert($data);
+                    $inserted_count++;
                 }
-
-                $inserted_count++;
             }
         }
 
         $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
 
-        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated, 'count' => $inserted_count));
+        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated, 'count' => $inserted_count, 'test' => $test));
     }
 
     public function updateParticipant($id)
@@ -144,32 +152,11 @@ class ParticipantsController extends BaseController
 		}
         
         if (count($data)) {
-            $result = $this->addParticipant($data);
+            $result = $this->addParticipant($data, true);
 
             return $result;
         }
 
         return json_encode(['result' => 'success']);
     }
-
-    public function removeDuplicates()
-    {
-        $rows = $this->request->getPost('names');
-
-        if ($rows) {
-            $ids = [];
-            foreach ($rows as $row) {
-                $ids[] = $row['id'];
-            }
-
-            if (count($ids)) {
-                $this->participantsModel->whereIn('id', $ids)->delete();
-            }
-        }
-
-        $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
-
-        return json_encode(['result' => 'success', 'participants' => $participants, 'count' => count($rows)]);
-    }
-    
 }
