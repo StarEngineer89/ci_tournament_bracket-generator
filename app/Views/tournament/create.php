@@ -364,8 +364,8 @@
                         <h6 class="text-danger"><span class="names"></span></h6>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary include">Include duplicate record</button>
-                    <button type="button" class="btn btn-danger remove">Discard duplicate record</button>
+                    <button type="button" class="btn btn-secondary include">Include duplicate record(s)</button>
+                    <button type="button" class="btn btn-danger remove">Discard duplicate record(s)</button>
                 </div>
             </div>
         </div>
