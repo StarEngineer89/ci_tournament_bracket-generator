@@ -6,8 +6,7 @@
 
 <div class="card col-12 shadow-sm">
     <div class="card-body">
-        <h5 class="card-title d-flex justify-content-center"><? //= lang('Auth.login') 
-                                                                ?>Tournament Dashboard</h5>
+        <h5 class="card-title d-flex justify-content-center"><? //= lang('Auth.login') ?>Tournament Dashboard</h5>
         <div class="buttons d-flex justify-content-end">
             <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
         </div>
@@ -155,7 +154,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" id="tournamentURL" value="" aria-label="Tournament URL" aria-describedby="urlCopy" readonly>
-                    <button class="btn btn-outline-secondary" type="button" id="urlCopyBtn">Copy</button>
+                    <button class="btn btn-outline-secondary" type="button" id="urlCopyBtn" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="Link Copied!">Copy</button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -315,6 +314,9 @@
                 $('#tournamentURL').val(base_url + tournament_id + '/view');
 
                 changeSwitchState($(this));
+
+                const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+                const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
             })
         }
 
@@ -453,6 +455,10 @@
         $('#urlCopyBtn').on('click', function() {
             copyClipboard();
         });
+
+        $('#confirmShare').on('click', function() {
+            
+        });
     });
 
     function saveChange() {
@@ -521,9 +527,6 @@
 
         // Copy the text inside the text field
         navigator.clipboard.writeText(copyText.value);
-
-        // Alert the copied text
-        alert("Link Copied");
     }
 </script>
 <?= $this->endSection() ?>
