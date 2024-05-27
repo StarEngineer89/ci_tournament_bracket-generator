@@ -151,6 +151,10 @@
                 insert_count = result.count;
                 duplicates = result.duplicated;
 
+                if (insert_count) {
+                    appendAlert('Records inserted successfully!', 'success');
+                }
+
                 if (duplicates.length) {
                     let nameString = '';
 
@@ -168,8 +172,6 @@
                     return false;
                 }
 
-                appendAlert('Records inserted successfully!', 'success');
-                
                 $('#collapseAddParticipant').removeClass('show');
             },
             error: function(error) {
