@@ -110,6 +110,7 @@
             $('input.csv-import').val(null)
             $('#confirmSave').modal('hide');
             $('#collapseAddParticipant').removeClass('show');
+            appendAlert('Records inserted successfully!', 'success');
         })
 
         $('#confirmSave .remove').on('click', () => {
@@ -159,6 +160,8 @@
                 $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
                     $("div.alert").slideUp(500);
                 });
+                
+                $('#collapseAddParticipant').removeClass('show');
             },
             error: function(error) {
                 console.log(error);
@@ -236,6 +239,7 @@
 
     const appendAlert = (message, type) => {
         const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+        alertPlaceholder.innerHTML = ''
         const wrapper = document.createElement('div')
         wrapper.innerHTML = [
             `<div class="alert alert-${type} alert-dismissible" role="alert">`,
@@ -335,7 +339,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary include">Include duplicate record</button>
-                    <button type="button" class="btn btn-danger remove">Remove duplicate record</button>
+                    <button type="button" class="btn btn-danger remove">Discard duplicate record</button>
                 </div>
             </div>
         </div>
