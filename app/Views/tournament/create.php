@@ -16,6 +16,7 @@
     let videoStartTime = 0;
     let videoDuration = 20;
     let duplicates = [];
+    let insert_count = 0;
 
     const itemList = document.getElementById('newList');
 
@@ -137,6 +138,7 @@
 
                 renderParticipants(result.participants);
 
+                insert_count = result.count;
                 duplicates = result.duplicated;
 
                 if (duplicates.length) {
@@ -157,9 +159,6 @@
                 }
 
                 appendAlert('Records inserted successfully!', 'success');
-                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
-                    $("div.alert").slideUp(500);
-                });
                 
                 $('#collapseAddParticipant').removeClass('show');
             },
@@ -183,10 +182,14 @@
             success: function(result) {
                 result = JSON.parse(result);
 
-                appendAlert('Records inserted successfully!', 'success');
-                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
-                    $("div.alert").slideUp(500);
-                });
+                if (insert_count == result.count) {
+                    appendAlert('Duplicate records discarded!', 'success');
+                } else {
+                    appendAlert([
+                        'Records inserted successfully!',
+                        'Duplicate records discarded!'
+                    ], 'success');
+                }
 
                 renderParticipants(result.participants);
             },
@@ -216,6 +219,7 @@
             success: function(result) {
                 result = JSON.parse(result);
                 duplicates = result.duplicated;
+                insert_count = result.count;
                 if (duplicates.length) {
                     let nameString = '';
 
@@ -230,6 +234,8 @@
                     $('#confirmSave .names').html(nameString);
                     $('#confirmSave').modal('show');
                 }
+
+                renderParticipants(result.participants);
             },
             error: function(e) {
                 $("#err").html(e).fadeIn();
@@ -241,14 +247,32 @@
         const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
         alertPlaceholder.innerHTML = ''
         const wrapper = document.createElement('div')
-        wrapper.innerHTML = [
-            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-            `   <div>${message}</div>`,
-            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-            '</div>'
-        ].join('')
+
+        if (Array.isArray(message)) {
+            wrapper.innerHTML = ''
+            message.forEach((item, i) => {
+                wrapper.innerHTML += [
+                    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                    `   <div>${item}</div>`,
+                    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                    '</div>'
+                ].join('')
+            })
+        } else {
+            wrapper.innerHTML = [
+                `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                `   <div>${message}</div>`,
+                '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                '</div>'
+            ].join('')
+        }
+        
 
         alertPlaceholder.append(wrapper)
+
+        $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
+            $("div.alert").slideUp(500);
+        });
     }
 </script>
 

@@ -35,7 +35,7 @@ class ParticipantsController extends BaseController
             $names = $this->request->getPost('name');
         }
 
-        $duplicated = [];
+        $duplicated = []; $inserted_count = 0;
         if ($names) {
             foreach ($names as $name) {
                 $data = [
@@ -52,12 +52,14 @@ class ParticipantsController extends BaseController
                     $data['id'] = $inserted_id;
                     $duplicated[] = $data;
                 }
+
+                $inserted_count++;
             }
         }
 
         $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
 
-        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated));
+        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated, 'count' => $inserted_count));
     }
 
     public function updateParticipant($id)
@@ -167,7 +169,7 @@ class ParticipantsController extends BaseController
 
         $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
 
-        return json_encode(['result' => 'success', 'participants' => $participants]);
+        return json_encode(['result' => 'success', 'participants' => $participants, 'count' => count($rows)]);
     }
     
 }
