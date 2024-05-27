@@ -125,14 +125,7 @@
             $('#confirmSave').modal('hide');
             $('#collapseAddParticipant').removeClass('show');
             
-            if (insert_count == 0) {
-                appendAlert('Duplicate records discarded!', 'success');
-            } else {
-                appendAlert([
-                    'Records inserted successfully!',
-                    'Duplicate records discarded!'
-                ], 'success');
-            }
+            appendAlert('Duplicate records discarded!', 'success');
         })
     });
 
