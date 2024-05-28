@@ -169,4 +169,27 @@ class TournamentController extends BaseController
 
         return json_encode($data);
     }
+
+    public function share($id)
+    {
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+
+        $data = $this->request->getPost();
+        $data['user_by'] = auth()->user()->id;
+
+        $setting = $shareSettingsModel->where('tournament_id', $data['tournament_id'])->first();
+        if ($setting) {
+            $data['id'] = $setting['id'];
+        }
+
+        $setting_id = $shareSettingsModel->save($data);
+
+        if (!$setting_id) {
+            return json_encode(['error' => "Failed to save the settings."]);
+        }
+
+        $data['share_id'] = $setting_id;
+
+        return json_encode(['msg' => "Success to save the sharing information.", 'data' => $data]);
+    }
 }

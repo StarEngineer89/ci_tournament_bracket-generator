@@ -141,25 +141,25 @@
                     <label class="form-check-label" for="enableSharing">Share this Tournament</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="usertype" id="share-users" value="users" checked>
+                    <input class="form-check-input" type="radio" name="usertype" id="share-users" value="<?= SHARE_TO_USERS ?>" checked>
                     <label class="form-check-label" for="share-users">
                         Users
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="usertype" id="share-guest" value="everyone">
+                    <input class="form-check-input" type="radio" name="usertype" id="share-guest" value="<?= SHARE_TO_EVERYONE ?>">
                     <label class="form-check-label" for="share-guest">
                         Everyone
                     </label>
                 </div>
-                <div class="input-group mb-3">
+                <div class="share-url input-group mb-3">
                     <input type="text" class="form-control" id="tournamentURL" value="" aria-label="Tournament URL" aria-describedby="urlCopy" readonly>
                     <button class="btn btn-outline-secondary" type="button" id="urlCopyBtn" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="Link Copied!">Copy</button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" id="confirmShare">Done</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmShare" disabled>Confirm</button>
             </div>
         </div>
     </div>
@@ -312,6 +312,8 @@
                 modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
 
                 $('#tournamentURL').val(base_url + tournament_id + '/view');
+                $('#confirmShare').data('id', tournament_id);
+                $('#enableSharing').prop('checked', false);
 
                 changeSwitchState($(this));
 
@@ -457,7 +459,26 @@
         });
 
         $('#confirmShare').on('click', function() {
-            
+            if (!$('#enableSharing').is(':checked')) {
+                return false
+            }
+
+            const tournament_id = $(this).data('id');
+            $.ajax({
+                url: apiURL + '/tournaments/' + tournament_id + '/share',
+                type: "POST",
+                data: {'tournament_id': tournament_id, 'target': $('input[name="usertype"]:checked').val()},
+                beforeSend: function() {
+                    //$("#preview").fadeOut();
+                    $("#err").fadeOut();
+                },
+                success: function(result) {
+                    $('#shareModal').modal('hide');
+                },
+                error: function(e) {
+                    $("#err").html(e).fadeIn();
+                }
+            });
         });
     });
 
@@ -510,10 +531,12 @@
     function changeSwitchState(e) {
         if ($(e).is(':checked')) {
             $('input[type="radio"][name="usertype"]').prop('disabled', false);
-            $('#tournamentURL').prop('disabled', false);
+            $('.share-url').removeClass('visually-hidden');
+            $('#confirmShare').prop('disabled', false);
         } else {
             $('input[type="radio"][name="usertype"]').prop('disabled', true);
-            $('#tournamentURL').prop('disabled', true);
+            $('.share-url').addClass('visually-hidden');
+            $('#confirmShare').prop('disabled', true);
         }
     }
 

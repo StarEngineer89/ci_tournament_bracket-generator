@@ -106,3 +106,6 @@ define('BRACKET_ACTIONCODE_UNMARK_WINNER', 'unmark');
 define('BRACKET_ACTIONCODE_CHANGE_PARTICIPANT', 'change');
 define('BRACKET_ACTIONCODE_ADD_PARTICIPANT', 'add');
 define('BRACKET_ACTIONCODE_DELETE', 'delete');
+
+define('SHARE_TO_USERS', 'u');
+define('SHARE_TO_EVERYONE', 'a');
