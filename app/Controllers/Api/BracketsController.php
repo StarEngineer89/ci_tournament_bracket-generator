@@ -43,9 +43,9 @@ class BracketsController extends BaseController
     {
         $data = $this->request->getJSON();
         $result = array();
+        $bracket = $this->bracketsModel->find($id);
 
         if (isset($data->index)) {
-            $bracket = $this->bracketsModel->find($id);
             $teamnames = json_decode($bracket['teamnames']);
             
             if (!isset($data->participant)) {
@@ -64,12 +64,37 @@ class BracketsController extends BaseController
 
             $teamnames[$data->index] = ['id' => $participant_id, 'name' => $data->name];
 
-            $data = array('teamnames' => json_encode($teamnames));
+            $insert_data = array('teamnames' => json_encode($teamnames));
             
             $result['participant_id'] = $participant_id;;
         }
 
-        $this->bracketsModel->update($id, $data);
+        if (!isset($insert_data)) {
+            $insert_data = $data;
+        }
+
+        $this->bracketsModel->update($id, $insert_data);
+
+        /**
+         * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
+         */
+        if (isset($data->action_code) && $data->action_code) {
+            $logActionsModel = model('\App\Models\LogActionsModel');
+            $insert_data = ['tournament_id' => $bracket['tournament_id'], 'action' => $data->action_code, 'params'];
+            if (auth()->user()->id) {
+                $insert_data['user_by'] = auth()->user()->id;
+            } else {
+                $insert_data['user_by'] = 0;
+            }
+
+            $data = (array)$data;
+            $data['bracket_id'] = $id;
+            unset($data['action_code']);
+
+            $insert_data['params'] = json_encode($data);
+
+            $logActionsModel->insert($insert_data);
+        }
 
         return json_encode(array('result' => 'success', 'data' => $result));
     }
@@ -196,7 +221,7 @@ class BracketsController extends BaseController
 
         $bracket = array(
             'lastGames' => $i - 1,
-            'nextGame' => ($nextInc+$i >= $this->_base) ? null : $nextInc + i,
+            'nextGame' => ($nextInc+$i >= $this->_base) ? null : $nextInc + $i,
             'teamnames' => json_encode( ($round == 1) ? [$participants[$teamMark], $participants[$teamMark+1]] : [null, null] ),
             'bracketNo' => $i,
             'roundNo' => $round,

@@ -159,15 +159,16 @@ $(document).on('ready', function() {
                 change: {
                     name: "Change a participant",
                     callback: (key, opt, e) => {
+                        const element = opt.$trigger;
                         $.ajax({
                             type: "GET",
                             url: apiURL + '/participants/',
                             success: function(result) {
                                 var select = document.createElement('select');
                                 select.setAttribute('class', "form-select");
-                                var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
+                                var index = (element.hasClass("teama")) ? 0 : 1;
                                 
-                                select.setAttribute('onChange', "changeParticipant($(this), '" + opt.$trigger.data('bracket') + "', " + index + ")");
+                                select.setAttribute('onChange', "changeParticipant($(this), '" + element.data('bracket') + "', " + index + ")");
 
                                 var option = document.createElement('option');
                                 select.appendChild(option);
@@ -182,8 +183,8 @@ $(document).on('ready', function() {
                                         select.appendChild(option);
                                     });
 
-                                    opt.$trigger.contents().remove();
-                                    opt.$trigger.append(select);
+                                    element.contents().remove();
+                                    element.append(select);
 
                                     editing_mode = true;
                                 } else {
@@ -218,7 +219,7 @@ $(document).on('ready', function() {
                             });
 
                             if (!duplicated || force_add) {
-                                updateBracket(opt.$trigger, { name: opts, index: index });
+                                updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode });
                             }
                         } else
                             alert('Please input the name of the participant.');
@@ -377,15 +378,21 @@ $(document).on('ready', function() {
 });
 
 function changeParticipant(ele, bracket_id, index) {
+    let ability = true;
     $('.bracketbox span[data-round=' + ele.parent().data("round") + ']').each((i, e) => {
         if (e.dataset.id == ele.val()) {
             let confirm_result = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
 
-            if (confirm_result == true) {
-                updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val() });
+            if (confirm_result == false) {
+                ability = false;
+                return false;
             }
         }
     });
+
+    if (ability) {
+        updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode });
+    }
 }
 
 function updateBracket(element, data) {
@@ -432,7 +439,7 @@ function markWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
         contentType: "application/json",
-        data: JSON.stringify({winner: opt.$trigger.data('id')}),
+        data: JSON.stringify({winner: opt.$trigger.data('id'), action_code: markWinnerActionCode}),
         success: function(result) {                               
             document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = text;
         },
@@ -494,7 +501,7 @@ function unmarkWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
         contentType: "application/json",
-        data: JSON.stringify({winner: ''}),
+        data: JSON.stringify({winner: '', action_code: unmarkWinnerActionCode}),
         success: function(result) {                               
             document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = '';
         },

@@ -5,7 +5,12 @@
 <?= $this->section('pageScripts') ?>
 <script src="/js/brackets.js"></script>
 <script type="text/javascript">
-let apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;
+const apiURL = "<?= base_url('api') ?>", tournament_id = <?= $tournament['id'] ?>;
+const markWinnerActionCode = '<?= BRACKET_ACTIONCODE_MARK_WINNER ?>';
+const unmarkWinnerActionCode = '<?= BRACKET_ACTIONCODE_UNMARK_WINNER ?>';
+const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?>';
+const addParticipantActionCode = '<?= BRACKET_ACTIONCODE_ADD_PARTICIPANT ?>';
+const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
 </script>
 <?= $this->endSection() ?>
 
