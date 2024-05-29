@@ -172,34 +172,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <table class="table table-striped">
+                <table class="action-history table table-striped">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">First</th>
-                            <th scope="col">Last</th>
-                            <th scope="col">Handle</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Action</th>
+                            <th scope="col">Time</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td colspan="2">Larry the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
             <div class="modal-footer">
@@ -326,8 +308,8 @@
         if (viewLogModal) {
             viewLogModal.addEventListener('show.bs.modal', event => {
                 viewLogModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
-                const modalTitle = viewLogModal.querySelector('.modal-body .tournament-name');
-                modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
+
+                drawActionHistoryTable(event.relatedTarget.getAttribute('data-id'));
             })
         }
 
@@ -550,6 +532,37 @@
 
         // Copy the text inside the text field
         navigator.clipboard.writeText(copyText.value);
+    }
+
+    function drawActionHistoryTable(tournament_id) {
+        $.ajax({
+            type: "get",
+            url: `${apiURL}/tournaments/${tournament_id}/getActionHistory`,
+            success: function(result) {
+                result = JSON.parse(result);
+                let tbody = $('.action-history tbody');
+                if (result.history) {
+                    let rows = '';
+                    result.history.forEach((record, i) => {
+                        rows += '<tr>';
+                        rows += '<td>' + (i + 1) + '</td>';
+                        rows += '<td>' + record.name + '</td>';
+                        rows += '<td>' + record.action + '</td>';
+                        rows += '<td>' + record.time + '</td>';
+                        rows += '</tr>';
+                    })
+
+                    tbody.html(rows);
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function() {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
     }
 </script>
 <?= $this->endSection() ?>

@@ -43,4 +43,12 @@ class LogActionsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getLogs() {
+        $this->select('log_actions.*, users.username as username, tournaments.name as tournamentname');
+        $this->join('users', 'log_actions.user_by = users.id');
+        $this->join('tournaments', 'log_actions.tournament_id = tournaments.id');
+
+        return $this;
+    }
 }

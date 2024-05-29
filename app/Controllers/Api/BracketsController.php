@@ -24,7 +24,7 @@ class BracketsController extends BaseController
         $this->bracketsModel = model('\App\Models\BracketModel');
         $this->participantsModel = model('\App\Models\ParticipantModel');
     }
-    
+
     public function getBrackets($id)
     {
         $brackets = $this->bracketsModel->where('tournament_id', $id)->orderBy('bracketNo')->findAll();
@@ -41,36 +41,36 @@ class BracketsController extends BaseController
 
     public function updateBracket($id)
     {
-        $data = $this->request->getJSON();
+        $req = $this->request->getJSON();
         $result = array();
         $bracket = $this->bracketsModel->find($id);
 
-        if (isset($data->index)) {
+        if (isset($req->index)) {
             $teamnames = json_decode($bracket['teamnames']);
-            
-            if (!isset($data->participant)) {
-                $participant = $this->participantsModel->where(array('name' => $data->name, 'user_by' => auth()->user()->id))->first();
+
+            if (!isset($req->participant)) {
+                $participant = $this->participantsModel->where(array('name' => $req->name, 'user_by' => auth()->user()->id))->first();
 
                 if (!$participant) {
                     $participant_id = $this->participantsModel->insert(
-                        array('name' => $data->name, 'user_by' => auth()->user()->id, )
+                        array('name' => $req->name, 'user_by' => auth()->user()->id,)
                     );
                 } else {
                     $participant_id = $participant['id'];
                 }
             } else {
-                $participant_id = $data->participant;
+                $participant_id = $req->participant;
             }
 
-            $teamnames[$data->index] = ['id' => $participant_id, 'name' => $data->name];
+            $teamnames[$req->index] = ['id' => $participant_id, 'name' => $req->name];
 
             $insert_data = array('teamnames' => json_encode($teamnames));
-            
+
             $result['participant_id'] = $participant_id;;
         }
 
         if (!isset($insert_data)) {
-            $insert_data = $data;
+            $insert_data = $req;
         }
 
         $this->bracketsModel->update($id, $insert_data);
@@ -78,18 +78,32 @@ class BracketsController extends BaseController
         /**
          * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
          */
-        if (isset($data->action_code) && $data->action_code) {
+        if (isset($req->action_code) && $req->action_code) {
             $logActionsModel = model('\App\Models\LogActionsModel');
-            $insert_data = ['tournament_id' => $bracket['tournament_id'], 'action' => $data->action_code, 'params'];
+            $insert_data = ['tournament_id' => $bracket['tournament_id'], 'action' => $req->action_code];
             if (auth()->user()->id) {
                 $insert_data['user_by'] = auth()->user()->id;
             } else {
                 $insert_data['user_by'] = 0;
             }
 
-            $data = (array)$data;
-            $data['bracket_id'] = $id;
-            unset($data['action_code']);
+            $data = [];
+            $data['bracket_no'] = $bracket['bracketNo'];
+            $data['round_no'] = $bracket['roundNo'];
+
+            if ($req->action_code == BRACKET_ACTIONCODE_MARK_WINNER || $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
+                $participant = $this->participantsModel->find($req->winner);
+                $data['participants'] = [$participant['name']];
+            }
+
+            $original = json_decode($bracket['teamnames']);
+            if ($req->action_code == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
+                $data['participants'] = [$original[$req->index]->name, $req->name];
+            }
+
+            if ($req->action_code == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
+                $data['participants'] = [$req->name];
+            }
 
             $insert_data['params'] = json_encode($data);
 
@@ -101,7 +115,26 @@ class BracketsController extends BaseController
 
     public function deleteBracket($id)
     {
+        $bracket = $this->bracketsModel->find($id);
         $this->bracketsModel->where('id', $id)->delete();
+
+        $logActionsModel = model('\App\Models\LogActionsModel');
+        $insert_data = ['tournament_id' => $bracket['tournament_id'], 'action' => BRACKET_ACTIONCODE_DELETE];
+        if (auth()->user()->id) {
+            $insert_data['user_by'] = auth()->user()->id;
+        } else {
+            $insert_data['user_by'] = 0;
+        }
+
+        $data = [];
+        $data['bracket_no'] = $bracket['bracketNo'];
+        $data['round_no'] = $bracket['roundNo'];
+
+        $original = json_decode($bracket['teamnames']);
+        $data['participants'] = [$original[0]->name, $original[1]->name];
+        $insert_data['params'] = json_encode($data);
+
+        $logActionsModel->insert($insert_data);
 
         return json_encode(array('result' => 'success'));
     }
@@ -113,8 +146,9 @@ class BracketsController extends BaseController
         return json_encode(array('result' => 'success'));
     }
 
-    public function generateBrackets() {
-        
+    public function generateBrackets()
+    {
+
         $list = $this->request->getPost('list');
 
         if (count($list) > 0) {
@@ -126,7 +160,7 @@ class BracketsController extends BaseController
                 $this->participantsModel->update($item['id'], $data);
             }
         }
-        
+
         $brackets_type = $this->request->getPost('type');
 
         $brackets = array();
@@ -141,22 +175,23 @@ class BracketsController extends BaseController
         return json_encode(array('result' => 'success', 'brackets' => $brackets, 'request' => $this->request->getPost()));
     }
 
-    public function switchBrackets() {
+    public function switchBrackets()
+    {
         $brackets_type = $this->request->getPost('type');
         $tournament_id = $this->request->getPost('tournament_id');
 
         $this->bracketsModel->where(array('tournament_id' => $tournament_id))->delete();
-        
+
         if ($brackets_type == 'Single') {
             $brackets = $this->createBrackets('s');
-            
+
             $tournamentModel = model('\App\Models\TournamentModel');
             $tournament = $tournamentModel->update($tournament_id, ['type' => 1]);
         }
 
         if ($brackets_type == 'Double') {
             $brackets = $this->createBrackets('d');
-            
+
             $tournamentModel = model('\App\Models\TournamentModel');
             $tournament = $tournamentModel->update($tournament_id, ['type' => 2]);
         }
@@ -164,18 +199,21 @@ class BracketsController extends BaseController
         return json_encode(array('result' => $brackets_type));
     }
 
-    public function createBrackets($type = 's') {
+    public function createBrackets($type = 's')
+    {
         $participants = $this->participantsModel->select(['id', 'name'])->where('user_by', auth()->user()->id)->orderBy('order')->findAll();
 
-        $knownBrackets = array(2,4,8,16,32);
+        $knownBrackets = array(2, 4, 8, 16, 32);
 
         $this->_base = count($participants);
 
-        $closest = current(array_filter($knownBrackets, function($e) { return $e >= $this->_base; }));
+        $closest = current(array_filter($knownBrackets, function ($e) {
+            return $e >= $this->_base;
+        }));
         $byes = $closest - $this->_base;
 
-        if($byes > 0)	$this->_base = $closest;
-    
+        if ($byes > 0)    $this->_base = $closest;
+
         for ($i = 1; $i <= $byes; $i++) {
             $participants[] = null;
         }
@@ -185,33 +223,37 @@ class BracketsController extends BaseController
             $this->_base = count($participants);
         }
 
-        $brackets 	= array();
-        $round 		= 1;
-        $baseT 		= $this->_base/2;
-        $baseC 		= $this->_base/2;
-        $teamMark	= 0;
-        $nextInc		= $this->_base/2;
+        $brackets     = array();
+        $round         = 1;
+        $baseT         = $this->_base / 2;
+        $baseC         = $this->_base / 2;
+        $teamMark    = 0;
+        $nextInc        = $this->_base / 2;
 
-        for($i = 1; $i <= ($this->_base - 1); $i++) {
-            $baseR = $i/$baseT;
+        for ($i = 1; $i <= ($this->_base - 1); $i++) {
+            $baseR = $i / $baseT;
             $isBye = false;
             $this->_bracketNo = $i;
-                
-            if($byes>0 && ($i%2!=0 || $byes>=($baseT-$i))) {
+
+            if ($byes > 0 && ($i % 2 != 0 || $byes >= ($baseT - $i))) {
                 $isBye = true;
                 $byes--;
             }
-            
+
             $last = array();
             $last = array_map(
-                        function($b) { return array('game' => $b['bracketNo'], 'teams' => $b['teamnames']); },
-                        array_values(array_filter($brackets, function($b) { return $b['nextGame'] == $this->_bracketNo; }))
-                    );
+                function ($b) {
+                    return array('game' => $b['bracketNo'], 'teams' => $b['teamnames']);
+                },
+                array_values(array_filter($brackets, function ($b) {
+                    return $b['nextGame'] == $this->_bracketNo;
+                }))
+            );
 
             $bracket = array(
                 'lastGames' => ($round == 1) ? null : json_encode([$last[0]['game'], $last[1]['game']]),
                 'nextGame' => ($nextInc + $i) > $this->_base ? null : $nextInc + $i,
-                'teamnames' => json_encode( ($round == 1) ? [$participants[$teamMark], $participants[$teamMark+1]] : [null, null] ),
+                'teamnames' => json_encode(($round == 1) ? [$participants[$teamMark], $participants[$teamMark + 1]] : [null, null]),
                 'bracketNo' => $i,
                 'roundNo' => $round,
                 'bye' => $isBye,
@@ -223,30 +265,30 @@ class BracketsController extends BaseController
             $bracket_id = $this->bracketsModel->insert($bracket);
 
             $teamMark += 2;
-            if($i%2 != 0)	$nextInc--;
-            while($baseR>=1) {
+            if ($i % 2 != 0)    $nextInc--;
+            while ($baseR >= 1) {
                 $round++;
-                $baseC/= 2;
+                $baseC /= 2;
                 $baseT = $baseT + $baseC;
-                $baseR = $i/$baseT;
+                $baseR = $i / $baseT;
             }
         }
 
         $bracket = array(
             'lastGames' => $i - 1,
-            'nextGame' => ($nextInc+$i >= $this->_base) ? null : $nextInc + $i,
-            'teamnames' => json_encode( ($round == 1) ? [$participants[$teamMark], $participants[$teamMark+1]] : [null, null] ),
+            'nextGame' => ($nextInc + $i >= $this->_base) ? null : $nextInc + $i,
+            'teamnames' => json_encode(($round == 1) ? [$participants[$teamMark], $participants[$teamMark + 1]] : [null, null]),
             'bracketNo' => $i,
             'roundNo' => $round,
             'bye' => $isBye,
             'final_match' => 1,
             'user_by' => auth()->user()->id,
             'tournament_id' => $this->request->getPost('tournament_id')
-        );        
+        );
 
         array_push($brackets, $bracket);
         $bracket_id = $this->bracketsModel->insert($bracket);
-            
+
         return $brackets;
     }
 }

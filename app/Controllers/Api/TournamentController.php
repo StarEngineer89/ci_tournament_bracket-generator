@@ -37,11 +37,11 @@ class TournamentController extends BaseController
 
         if ($this->request->getPost('setting-toggle')) {
             $musicSettingsModel = model('\App\Models\MusicSettingModel');
-            
+
             foreach ($this->request->getPost('audioType') as $index => $value) {
                 if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
                     $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
-                    
+
                     $setting = [
                         'path' => $path,
                         'source' => $this->request->getPost('source')[$index],
@@ -52,13 +52,13 @@ class TournamentController extends BaseController
                         'start' => $this->request->getPost('start')[$index],
                         'end' => $this->request->getPost('stop')[$index]
                     ];
-        
+
                     $music_setting = $musicSettingsModel->insert($setting);
-                    
+
                     if (!$music_setting) {
                         return json_encode(['error' => "Failed to save the music settings."]);
                     }
-        
+
                     $data['music'][] = $setting;
                 }
             }
@@ -94,9 +94,9 @@ class TournamentController extends BaseController
         $musicSettingModel = model('\App\Models\MusicSettingModel');
 
         foreach ($this->request->getPost('audioType') as $index => $value) {
-            
+
             $settings = $musicSettingModel->where(['tournament_id' => $tournament_id, 'type' => $value])->findAll();
-            
+
             if (count($settings)) {
                 $setting = $settings[0];
             } else {
@@ -105,7 +105,7 @@ class TournamentController extends BaseController
 
             if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
                 $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
-                
+
                 $setting['path'] = $path;
                 $setting['source'] = $this->request->getPost('source')[$index];
                 $setting['tournament_id'] = $tournament_id;
@@ -125,7 +125,7 @@ class TournamentController extends BaseController
 
         return json_encode(['msg' => "Tournament was updated successfully."]);
     }
-    
+
     public function delete($id)
     {
         $tournamentModel = model('\App\Models\TournamentModel');
@@ -139,7 +139,8 @@ class TournamentController extends BaseController
         return json_encode(['msg' => "Tournament was deleted successfully."]);
     }
 
-    public function upload() {
+    public function upload()
+    {
         $validationRule = [
             'audio' => [
                 'label' => 'Audio File',
@@ -149,7 +150,7 @@ class TournamentController extends BaseController
                 ],
             ],
         ];
-        if (! $this->validateData([], $validationRule)) {
+        if (!$this->validateData([], $validationRule)) {
             $data = ['errors' => $this->validator->getErrors()];
 
             return json_encode($data);
@@ -157,9 +158,9 @@ class TournamentController extends BaseController
 
         $audio = $this->request->getFile('audio');
 
-        if (! $audio->hasMoved()) {
+        if (!$audio->hasMoved()) {
             $filepath = $audio->store();
-            
+
             $data = ['uploaded_fileinfo' => new File($filepath), 'path' => $filepath];
 
             return json_encode($data);
@@ -191,5 +192,47 @@ class TournamentController extends BaseController
         $data['share_id'] = $setting_id;
 
         return json_encode(['msg' => "Success to save the sharing information.", 'data' => $data]);
+    }
+
+    public function getActionHistory($tournament_id)
+    {
+        $logActionsModel = model('\App\Models\LogActionsModel');
+
+        $history = $logActionsModel->getLogs()->where('tournament_id', $tournament_id)->findAll();
+
+        $data = [];
+        if ($history && count($history)) {
+            foreach ($history as $row) {
+                $params = json_decode($row['params']);
+                $participants = $params->participants;
+                if ($row['action'] == BRACKET_ACTIONCODE_MARK_WINNER) {
+                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no marked as a winner in round $params->round_no";
+                }
+
+                if ($row['action'] == BRACKET_ACTIONCODE_UNMARK_WINNER) {
+                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no unmarked winner in round $params->round_no";
+                }
+
+                if ($row['action'] == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
+                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no changed to the following Participant: \"$participants[1]\" in round $params->round_no";
+                }
+
+                if ($row['action'] == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
+                    $action = "Participant \"$participants[0]\" added in bracket #$params->bracket_no in round $params->round_no";
+                }
+
+                if ($row['action'] == BRACKET_ACTIONCODE_DELETE) {
+                    $action = "Bracket #$params->bracket_no containing participants [\"$participants[0]\", \"$participants[1]\"] in round $params->round_no deleted";
+                }
+
+                $data[] = [
+                    'name' => $row['username'],
+                    'action' => $action,
+                    'time' => $row['updated_at']
+                ];
+            }
+        }
+
+        return json_encode(['result' => 'success', 'history' => $data, 'tournament_id' => $tournament_id]);
     }
 }

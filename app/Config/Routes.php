@@ -44,6 +44,7 @@ $routes->group('api', static function ($routes) {
         $routes->get('(:num)/clear', 'Api\BracketsController::clearBrackets/$1');
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
         $routes->post('(:num)/share', 'Api\TournamentController::share/$1');
+        $routes->get('(:num)/getActionHistory', 'Api\TournamentController::getActionHistory/$1');
     });
 });
 
