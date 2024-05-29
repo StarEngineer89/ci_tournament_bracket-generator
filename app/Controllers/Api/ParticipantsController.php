@@ -77,28 +77,6 @@ class ParticipantsController extends BaseController
         return json_encode(array('result' => 'success', 'data' => $this->request->getPost()));
     }
 
-    public function updateParticipants()
-    {
-        $list = $this->request->getPost('list');
-
-        if (count($list) > 0) {
-            foreach ($list as $item) {
-                $data = [
-                    'order' => $item->order
-                ];
-
-                $this->participantsModel->update($item->id, $data);
-            }
-        }
-
-        // $userModel
-        //     ->whereIn('id', [1, 2, 3])
-        //     ->set(['active' => 1])
-        //     ->update();
-        
-        return json_encode(array('result' => 'success'));
-    }
-
     public function deleteParticipant($id)
     {
         $this->participantsModel->where('id', $id)->delete();

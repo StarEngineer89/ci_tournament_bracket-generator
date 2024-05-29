@@ -30,7 +30,7 @@
                 exampleTeams.push({'id': item.id, 'name': item.lastChild.textContent, 'order': i});
             });
 
-            saveParticipantList(exampleTeams);
+            generateBrackets(exampleTeams);
             },
             function(error) {myDisplayer(error);}
         );
@@ -215,30 +215,11 @@ function saveParticipant(e, element_id) {
     });
 }
 
-function saveParticipantList(list) {
-    $.ajax({
-        type: "post",
-        url: apiURL + '/participants/updateList/',
-        data: {'list' : list},
-        success: function(result) {
-            if (result.result == 'success')
-                generateBrackets();
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function(){
-            $("#overlay").fadeOut(300);
-        },500);
-    });
-}
-
-function generateBrackets() {
+function generateBrackets(list) {
     $.ajax({
         type: "post",
         url: apiURL + '/brackets/generate',
-        data: {'type': eleminationType, 'tournament_id': tournament_id},
+        data: {'type': eleminationType, 'tournament_id': tournament_id, 'list' : list},
         dataType: "JSON",
         success: function(result) {
             if (result.result == 'success') window.location.href = '/tournaments/' + tournament_id + '/view';

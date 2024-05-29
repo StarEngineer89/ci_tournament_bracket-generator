@@ -114,6 +114,19 @@ class BracketsController extends BaseController
     }
 
     public function generateBrackets() {
+        
+        $list = $this->request->getPost('list');
+
+        if (count($list) > 0) {
+            foreach ($list as $item) {
+                $data = [
+                    'order' => $item['order']
+                ];
+
+                $this->participantsModel->update($item['id'], $data);
+            }
+        }
+        
         $brackets_type = $this->request->getPost('type');
 
         $brackets = array();
