@@ -548,6 +548,7 @@
                 let rows = '<td colspan="4">History was not found.</td>';
 
                 if (result.history) {
+                    rows = '';
                     result.history.forEach((record, i) => {
                         rows += '<tr>';
                         rows += '<td>' + (i + 1) + '</td>';
