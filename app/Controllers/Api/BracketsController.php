@@ -91,8 +91,13 @@ class BracketsController extends BaseController
             $data['bracket_no'] = $bracket['bracketNo'];
             $data['round_no'] = $bracket['roundNo'];
 
-            if ($req->action_code == BRACKET_ACTIONCODE_MARK_WINNER || $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
+            if ($req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
                 $participant = $this->participantsModel->find($req->winner);
+                $data['participants'] = [$participant['name']];
+            }
+
+            if ($req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
+                $participant = $this->participantsModel->find($req->participant);
                 $data['participants'] = [$participant['name']];
             }
 

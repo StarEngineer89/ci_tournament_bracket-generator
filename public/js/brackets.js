@@ -501,7 +501,7 @@ function unmarkWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
         contentType: "application/json",
-        data: JSON.stringify({winner: '', action_code: unmarkWinnerActionCode}),
+        data: JSON.stringify({winner: ''}),
         success: function(result) {                               
             document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = '';
         },
@@ -519,7 +519,7 @@ function unmarkWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + next_bracket,
         contentType: "application/json",
-        data: JSON.stringify({index: index, participant: opt.$trigger.data('id'), name: ''}),
+        data: JSON.stringify({index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode}),
         success: function(result) {
             ele.parent().contents().removeClass('winner')
             next_bracketObj.dataset.id = '';
