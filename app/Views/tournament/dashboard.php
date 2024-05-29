@@ -6,7 +6,8 @@
 
 <div class="card col-12 shadow-sm">
     <div class="card-body">
-        <h5 class="card-title d-flex justify-content-center"><? //= lang('Auth.login') ?>Tournament Dashboard</h5>
+        <h5 class="card-title d-flex justify-content-center"><? //= lang('Auth.login') 
+                                                                ?>Tournament Dashboard</h5>
         <div class="buttons d-flex justify-content-end">
             <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
         </div>
@@ -449,7 +450,10 @@
             $.ajax({
                 url: apiURL + '/tournaments/' + tournament_id + '/share',
                 type: "POST",
-                data: {'tournament_id': tournament_id, 'target': $('input[name="usertype"]:checked').val()},
+                data: {
+                    'tournament_id': tournament_id,
+                    'target': $('input[name="usertype"]:checked').val()
+                },
                 beforeSend: function() {
                     //$("#preview").fadeOut();
                     $("#err").fadeOut();
@@ -541,8 +545,9 @@
             success: function(result) {
                 result = JSON.parse(result);
                 let tbody = $('.action-history tbody');
+                let rows = '<td colspan="4">History was not found.</td>';
+
                 if (result.history) {
-                    let rows = '';
                     result.history.forEach((record, i) => {
                         rows += '<tr>';
                         rows += '<td>' + (i + 1) + '</td>';
@@ -551,9 +556,9 @@
                         rows += '<td>' + record.time + '</td>';
                         rows += '</tr>';
                     })
-
-                    tbody.html(rows);
                 }
+
+                tbody.html(rows);
             },
             error: function(error) {
                 console.log(error);
