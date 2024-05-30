@@ -288,7 +288,7 @@
         const shareModal = document.getElementById('shareModal');
         if (shareModal) {
             shareModal.addEventListener('show.bs.modal', event => {
-                const base_url = "<?= base_url('tournaments/') ?>";
+                const base_url = "<?= base_url('tournaments/shared/') ?>";
                 const tournament_id = event.relatedTarget.getAttribute('data-id');
                 shareModal.setAttribute('data-id', tournament_id);
                 const modalTitle = shareModal.querySelector('.modal-header .tournament-name');

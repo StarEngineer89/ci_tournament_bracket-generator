@@ -14,7 +14,7 @@ $routes->group('tournaments', static function ($routes) {
     $routes->get('/', 'TournamentController::index');
     $routes->get('create', 'TournamentController::create');
     $routes->get('(:num)/view', 'TournamentController::view/$1');
-    $routes->get('share/(:num)', 'TournamentController::view/$1');
+    $routes->get('shared/(:num)', 'TournamentController::view/$1');
 });
 
 $routes->group('api', static function ($routes) {
@@ -46,6 +46,14 @@ $routes->group('api', static function ($routes) {
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
         $routes->post('(:num)/share', 'Api\TournamentController::share/$1');
         $routes->get('(:num)/getActionHistory', 'Api\TournamentController::getActionHistory/$1');
+    });
+});
+
+$routes->group('api/shared', static function ($routes) {
+    $routes->group('tournaments', static function ($routes) {
+        $routes->get('(:num)/brackets', 'Api\BracketsController::getBrackets/$1');
+        $routes->post('(:num)/update', 'Api\TournamentController::update/$1');
+        $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
     });
 });
 
