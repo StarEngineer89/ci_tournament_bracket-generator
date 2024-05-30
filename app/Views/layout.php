@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,7 +20,9 @@
 
     <main role="main" class="container-fluid">
         <div class="header d-grid gap-2 d-md-flex justify-content-md-end p-2">
-            <a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a>
+            <?php if (auth()->user() && auth()->user()->id) : ?>
+                <a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a>
+            <?php endif; ?>
         </div>
         <?= $this->renderSection('main') ?>
     </main>
@@ -32,7 +35,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <script src="http://underscorejs.org/underscore-min.js"></script>
-    
-<?= $this->renderSection('pageScripts') ?>
+
+    <?= $this->renderSection('pageScripts') ?>
 </body>
+
 </html>

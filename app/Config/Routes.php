@@ -14,13 +14,14 @@ $routes->group('tournaments', static function ($routes) {
     $routes->get('/', 'TournamentController::index');
     $routes->get('create', 'TournamentController::create');
     $routes->get('(:num)/view', 'TournamentController::view/$1');
+    $routes->get('share/(:num)', 'TournamentController::view/$1');
 });
 
 $routes->group('api', static function ($routes) {
-    $routes->group('brackets', static function ($routes) {        
+    $routes->group('brackets', static function ($routes) {
         $routes->post('save-list', 'Api\BracketsController::createBrackets');
         $routes->put('update/(:num)', 'Api\BracketsController::updateBracket/$1');
-        $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');        
+        $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');
         $routes->post('generate', 'Api\BracketsController::generateBrackets');
         $routes->post('switch', 'Api\BracketsController::switchBrackets');
     });
@@ -33,7 +34,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('import', 'Api\ParticipantsController::importParticipants');
         $routes->post('removeDuplicates', 'Api\ParticipantsController::removeDuplicates');
     });
-    
+
     $routes->group('tournaments', static function ($routes) {
         $routes->post('save', 'Api\TournamentController::save');
         $routes->get('(:num)/brackets', 'Api\BracketsController::getBrackets/$1');
