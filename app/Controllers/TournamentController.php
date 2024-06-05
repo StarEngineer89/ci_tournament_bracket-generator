@@ -88,7 +88,7 @@ class TournamentController extends BaseController
         $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => 0])->findAll();
 
         if (!$brackets) {
-            if ($tournament['user_by'] != auth()->user()->id) {
+            if (empty(auth()->user()) || $tournament['user_by'] != auth()->user()->id) {
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "The brackets was not generated yet."]);
 
