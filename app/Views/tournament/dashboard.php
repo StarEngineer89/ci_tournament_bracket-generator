@@ -779,20 +779,20 @@ function updateShareSetting(ele) {
             result = JSON.parse(result);
 
             if (result.data) {
-                const targetHtml = '';
+                let targetHtml = '';
                 if (result.data.target == "<?= SHARE_TO_PUBLIC ?>") targetHtml = 'Public';
                 if (result.data.target == "<?= SHARE_TO_EVERYONE ?>") targetHtml = 'Everyone';
                 if (result.data.target == "<?= SHARE_TO_USERS ?>") targetHtml = 'Private';
                 row.find('td.target').html(targetHtml);
 
-                const permissionHtml = '';
+                let permissionHtml = '';
                 if (result.data.permission == "<?= SHARE_PERMISSION_VIEW ?>") permissionHtml = 'View';
                 if (result.data.permission == "<?= SHARE_PERMISSION_EDIT ?>") permissionHtml = 'Edit';
                 row.find('td.permission').html(permissionHtml);
 
                 const actionHtml = `<a href="javascript:;" onClick="resetShare(this)">Reset</a><br/>
                             <a href="javascript:;" onClick="purgeShare('${share_id}')">Purge</a>`;
-                row.find('td.actions').html();
+                row.find('td.actions').html(actionHtml);
             }
         },
         error: function(e) {
