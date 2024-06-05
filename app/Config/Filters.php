@@ -34,7 +34,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-        'checkbrackets' => \App\Filters\BracketsFilter::class,
+        'tournamentAccessPermission' => \App\Filters\TournamentAccessPermissionFilter::class,
     ];
 
     /**
@@ -73,7 +73,7 @@ class Filters extends BaseFilters
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
-            'session' => ['except' => ['login*', 'register', 'auth/a/*', 'logout', 'tournaments/shared/*', 'api/shared/tournaments/*']],
+            'session' => ['except' => ['login*', 'register', 'auth/a/*', 'logout', 'tournaments/shared/*',  'api/shared/tournaments/*']],
         ],
         'after' => [
             // 'honeypot',
@@ -105,5 +105,7 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'tournamentAccessPermission' => ['before' => ['tournaments/shared/*']]
+    ];
 }

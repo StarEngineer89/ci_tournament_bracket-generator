@@ -10,9 +10,9 @@ class ShareSettingsModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_by', 'tournament_id', 'target'];
+    protected $allowedFields    = ['user_by', 'tournament_id', 'target', 'permission', 'token'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

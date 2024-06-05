@@ -171,6 +171,28 @@ class TournamentController extends BaseController
         return json_encode($data);
     }
 
+    public function fetchShareSettings($tournament_id) {
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+        $tournamentModel = model('\App\Models\TournamentModel');
+
+        $tournament = $tournamentModel->find($tournament_id);
+        if (!$tournament) {
+            return json_encode(['status'=> 'failed', 'msg'=> 'Tournament was not found!']);
+        }
+
+        $settings = $shareSettingsModel->where('tournament_id', $tournament_id)->findAll();
+        if (!$settings) {
+            $config = new \Config\Encryption();
+            // $encrypter = \Config\Services::encrypter();
+            $token = hash_hmac('sha256', 'tournament_' . $tournament_id . '_created_by_' . auth()->user()->id, $config->key);
+            // $token = $encrypter->encrypt('tournament_' . $tournament_id . '_user_by_' . auth()->user()->id);
+        } else {
+            $token = $settings[count($settings) -1]['token'];
+        }
+
+        return json_encode(['status' => 'success','settings'=> $settings, 'token' => $token]);
+    }
+
     public function share($id)
     {
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
@@ -178,20 +200,28 @@ class TournamentController extends BaseController
         $data = $this->request->getPost();
         $data['user_by'] = auth()->user()->id;
 
-        $setting = $shareSettingsModel->where('tournament_id', $data['tournament_id'])->first();
+        $setting = $shareSettingsModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
         if ($setting) {
             $data['id'] = $setting['id'];
         }
-
+        log_message('debug', json_encode($data));
         $setting_id = $shareSettingsModel->save($data);
 
         if (!$setting_id) {
             return json_encode(['error' => "Failed to save the settings."]);
         }
 
-        $data['share_id'] = $setting_id;
+        $shareSettings = $shareSettingsModel->where('tournament_id', $data['tournament_id'])->findAll();
 
-        return json_encode(['msg' => "Success to save the sharing information.", 'data' => $data]);
+        return json_encode(['msg' => "Success to save the sharing information.", 'shareSettings' => $shareSettings, 'share_id' => $setting_id, 'data' => $data]);
+    }
+
+    public function purgechShareSettings($share_id) {
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+
+        $shareSettingsModel->delete([$share_id]);
+
+        return json_encode(['status'=> 'success']);
     }
 
     public function getActionHistory($tournament_id)

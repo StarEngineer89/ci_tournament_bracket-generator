@@ -109,3 +109,6 @@ define('BRACKET_ACTIONCODE_DELETE', 'delete');
 
 define('SHARE_TO_USERS', 'u');
 define('SHARE_TO_EVERYONE', 'a');
+define('SHARE_TO_PUBLIC', 'p');
+define('SHARE_PERMISSION_EDIT', 'e');
+define('SHARE_PERMISSION_VIEW', 'v');
