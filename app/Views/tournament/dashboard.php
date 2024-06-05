@@ -628,7 +628,11 @@ function copyClipboard() {
     copyText.setSelectionRange(0, 99999); // For mobile devices
 
     // Copy the text inside the text field
-    navigator.clipboard.writeText(copyText.value);
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(copyText.value);
+    } else {
+        document.execCommand('copy');
+    }
 }
 
 function drawActionHistoryTable(tournament_id) {
