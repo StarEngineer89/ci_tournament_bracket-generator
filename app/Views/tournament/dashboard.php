@@ -387,7 +387,10 @@ $(document).ready(function() {
             const modalTitle = shareModal.querySelector('.modal-header .tournament-name');
             modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
 
-            fetchShareSettings(tournament_id);
+            if (tournament_id) {
+                fetchShareSettings(tournament_id);
+            }
+
             $('#confirmShare').data('id', tournament_id);
 
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
