@@ -33,9 +33,7 @@ Options -Indexes
 	RewriteCond %{REQUEST_FILENAME} !-d
 	# RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
 	# Remove index.php from URL
-	# RewriteCond %{HTTP:X-Requested-With}    !^XMLHttpRequest$
-	RewriteCond %{THE_REQUEST}              ^[^/]*/index\.php [NC]
-	RewriteRule ^index\.php(.*)$            $1 [R=301,NS,L]
+	RewriteRule ^(.*)$ index.php/$1 [L]
 
 	# Ensure Authorization header is passed along
 	RewriteCond %{HTTP:Authorization} .
