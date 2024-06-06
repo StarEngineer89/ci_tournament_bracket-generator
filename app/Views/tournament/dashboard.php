@@ -242,7 +242,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-target="#shareModal"
+                <button type="button" class="close-share-history btn btn-secondary" data-bs-target="#shareModal"
                     data-bs-toggle="modal">Cancel</button>
             </div>
         </div>
@@ -391,7 +391,7 @@ $(document).ready(function() {
                 fetchShareSettings(tournament_id);
             }
 
-            $('#confirmShare').data('id', tournament_id);
+            $('#shareHistoryModal .close-share-history').attr('data-id', tournament_id);
 
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(
@@ -546,7 +546,7 @@ $(document).ready(function() {
     });
 
     $('#confirmShare').on('click', function() {
-        const tournament_id = $(this).data('id');
+        const tournament_id = shareModal.dataset.id;
         const url = new URL($('#tournamentURL').val());
         var path = url.pathname.split("/");
 
@@ -706,6 +706,7 @@ function fetchShareSettings(tournament_id) {
                 });
 
                 $('table.share-settings tbody').html(tbody);
+                $('.close-share-history').data('id', tournament_id);
             } else {
                 $('table.share-settings tbody').html(
                     '<tr><td colspan="8">No share settings found.</td></tr>');
