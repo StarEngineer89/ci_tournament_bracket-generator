@@ -147,6 +147,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="shareModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -181,7 +182,7 @@
                         <div class="form-text">Only people explicitly granted</div>
                     </label>
                 </div>
-                <div class="input-group row gy-2 gx-3 align-items-center mb-3">
+                <div class="private-users input-group row gy-2 gx-3 align-items-center mb-3">
                     <label for="userTagsInput" class="form-label col-form-label col-sm-4">Share to</label>
                     <div class="col-sm-8"><input type="text" id="userTagsInput" class="form-control" /></div>
                 </div>
@@ -407,10 +408,25 @@ $(document).ready(function() {
 
             $('#shareHistoryModal .close-share-history').attr('data-id', tournament_id);
 
+            if (document.getElementById('share-users').checked) {
+                $('.private-users').show();
+            } else {
+                $('.private-users').hide();
+            }
+
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(
                 popoverTriggerEl))
+
+            $('input[name="usertype"]').on('change', event => {
+                if (document.getElementById('share-users').checked) {
+                    $('.private-users').show();
+                } else {
+                    $('.private-users').hide();
+                }
+            })
         })
+
     }
 
     const viewLogModal = document.getElementById('viewLogModal');
