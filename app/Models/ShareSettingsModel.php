@@ -12,7 +12,7 @@ class ShareSettingsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_by', 'tournament_id', 'target', 'permission', 'token'];
+    protected $allowedFields    = ['user_by', 'tournament_id', 'target', 'permission', 'token', 'users'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

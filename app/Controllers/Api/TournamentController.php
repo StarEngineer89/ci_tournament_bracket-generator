@@ -265,4 +265,17 @@ class TournamentController extends BaseController
 
         return json_encode(['result' => 'success', 'history' => $data, 'tournament_id' => $tournament_id]);
     }
+
+    public function fetchUsersList()
+    {
+        $userModel = model('CodeIgniter\Shield\Models\UserModel');
+
+        if ($this->request->getPost('query')) {
+            $userModel->like('username', $this->request->getPost('query'));
+        }        
+        
+        $users = $userModel->select(['id', 'username'])->findAll();
+
+        return json_encode(['result'=> 'success','users'=> $users, 'query' => $this->request->getPost()]);
+    }
 }

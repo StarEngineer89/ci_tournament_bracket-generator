@@ -48,6 +48,7 @@ $routes->group('api', static function ($routes) {
         $routes->get('(:num)/share', 'Api\TournamentController::fetchShareSettings/$1');
         $routes->get('purge-share/(:num)', 'Api\TournamentController::purgechShareSettings/$1');
         $routes->get('(:num)/getActionHistory', 'Api\TournamentController::getActionHistory/$1');
+        $routes->get('fetchUsersList', 'Api\TournamentController::fetchUsersList');
     });
 });
 

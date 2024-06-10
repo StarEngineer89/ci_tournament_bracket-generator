@@ -15,7 +15,10 @@ class TournamentController extends BaseController
 
         $musicSettingsBlock = view('tournament/music-setting', []);
 
-        return view('tournament/dashboard', ['tournaments' => $tournaments, 'musicSettingsBlock' => $musicSettingsBlock]);
+        $userModel = model('CodeIgniter\Shield\Models\UserModel');
+        $users = $userModel->select(['id', 'username'])->findAll();
+
+        return view('tournament/dashboard', ['tournaments' => $tournaments, 'musicSettingsBlock' => $musicSettingsBlock, 'users' => $users]);
     }
 
     public function create()

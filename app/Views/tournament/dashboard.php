@@ -182,6 +182,10 @@
                     </label>
                 </div>
                 <div class="input-group row gy-2 gx-3 align-items-center mb-3">
+                    <label for="userTagsInput" class="form-label col-form-label col-sm-4">Share to</label>
+                    <div class="col-sm-8"><input type="text" id="userTagsInput" class="form-control" /></div>
+                </div>
+                <div class="input-group row gy-2 gx-3 align-items-center mb-3">
                     <label class="form-label col-form-label col-sm-4">Access: Anyone</label>
                     <div class="col-auto">
                         <select class="form-select" name="permission" aria-label="Access permission">
@@ -215,6 +219,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="shareHistoryModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -225,21 +230,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <table class="share-settings table table-striped table-responsive">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">URL</th>
-                            <th scope="col">Created</th>
-                            <th scope="col">Modified</th>
-                            <th scope="col">Accessible</th>
-                            <th scope="col">Permission</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="share-settings table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col" class="resizable">URL</th>
+                                <th scope="col">Created</th>
+                                <th scope="col">Modified</th>
+                                <th scope="col">Accessible</th>
+                                <th scope="col">Permission</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="close-share-history btn btn-secondary" data-bs-target="#shareModal"
@@ -248,6 +255,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="viewLogModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="logModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -278,9 +286,15 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+    integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
     integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+
 <script src="/js/participants.js"></script>
 <script type="text/javascript">
 let apiURL = "<?= base_url('api') ?>";
@@ -549,13 +563,14 @@ $(document).ready(function() {
         const tournament_id = shareModal.dataset.id;
         const url = new URL($('#tournamentURL').val());
         var path = url.pathname.split("/");
-
+        console.log($('#userTagsInput').val());
         $.ajax({
             url: apiURL + '/tournaments/' + tournament_id + '/share',
             type: "POST",
             data: {
                 'tournament_id': tournament_id,
                 'target': $('input[name="usertype"]:checked').val(),
+                'users': $('#userTagsInput').val(),
                 'permission': $('select[name="permission"]').val(),
                 'token': path[3]
             },
@@ -570,6 +585,55 @@ $(document).ready(function() {
                 $("#err").html(e).fadeIn();
             }
         });
+    });
+
+    var data = '<?= json_encode($users) ?>';
+
+    //get data pass to json
+    var task = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace("username"),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        prefetch: {
+            url: apiURL + '/tournaments/fetchUsersList',
+            filter: function(list) {
+                return $.map(list, function(cityname) {
+                    console.log(cityname)
+                    return {
+                        name: cityname
+                    };
+                });
+            }
+        },
+        local: jQuery.parseJSON(data), //your can use json type
+        // remote: {
+        //     url: apiURL + '/tournaments/fetchUsersList',
+        //     prepare: function(query, settings) {
+        //         settings.type = 'POST';
+        //         settings.contentType = 'application/json';
+        //         settings.data = JSON.stringify({
+        //             query: query
+        //         });
+        //         console.log(query);
+        //         return settings;
+        //     },
+        //     transform: function(response) {
+        //         // Process the response to fit the expected format if needed
+        //         return response;
+        //     }
+        // }
+    });
+
+    task.initialize();
+
+    var elt = $("#userTagsInput");
+    elt.tagsinput({
+        itemValue: "id",
+        itemText: "username",
+        typeaheadjs: {
+            name: "task",
+            displayKey: "username",
+            source: task.ttAdapter()
+        }
     });
 });
 
@@ -705,8 +769,47 @@ function fetchShareSettings(tournament_id) {
                     </tr>`;
                 });
 
+                // document.addEventListener('DOMContentLoaded', () => {
+                // const resizables = document.querySelectorAll('.resizable');
+
+                // resizables.forEach(header => {
+                //     header.style.position = 'relative';
+
+                //     const resizer = document.createElement('div');
+                //     resizer.style.width = '50px';
+                //     resizer.style.height = '100%';
+                //     resizer.style.position = 'absolute';
+                //     resizer.style.top = '0';
+                //     resizer.style.right = '0';
+                //     resizer.style.cursor = 'col-resize';
+                //     header.appendChild(resizer);
+
+                //     resizer.addEventListener('mousedown', (e) => {
+                //         const startX = e.pageX;
+                //         const startWidth = header.offsetWidth;
+
+                //         const onMouseMove = (e) => {
+                //             const newWidth = startWidth + (e.pageX -
+                //                 startX);
+                //             header.style.width = `${newWidth}px`;
+                //         };
+
+                //         const onMouseUp = () => {
+                //             document.removeEventListener('mousemove',
+                //                 onMouseMove);
+                //             document.removeEventListener('mouseup',
+                //                 onMouseUp);
+                //         };
+
+                //         document.addEventListener('mousemove', onMouseMove);
+                //         document.addEventListener('mouseup', onMouseUp);
+                //     });
+                // });
+                // });
+
                 $('table.share-settings tbody').html(tbody);
                 $('.close-share-history').data('id', tournament_id);
+
             } else {
                 $('table.share-settings tbody').html(
                     '<tr><td colspan="8">No share settings found.</td></tr>');
@@ -815,4 +918,37 @@ function generateURL() {
     $('#shareModal #tournamentURL').val("<?= base_url('/tournaments/shared/') ?>" + token);
 }
 </script>
+<?= $this->endSection() ?>
+
+<?= $this->section('pageScripts') ?>
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+
+<style>
+.resizable {
+    position: relative;
+}
+
+.resizable:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+}
+
+.path {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    /* Adjust the width as needed */
+    display: inline-block;
+}
+</style>
+
 <?= $this->endSection() ?>
