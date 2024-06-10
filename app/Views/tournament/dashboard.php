@@ -429,6 +429,17 @@ $(document).ready(function() {
 
     }
 
+    const shareHistoryModal = document.getElementById('shareHistoryModal');
+    if (shareHistoryModal) {
+        shareHistoryModal.addEventListener('show.bs.modal', event => {
+            document.getElementById('shareHistoryModal').querySelectorAll('td .path')
+                .forEach((ele, i) => {
+                    const tooltip = bootstrap.Tooltip.getOrCreateInstance(ele)
+                })
+        })
+
+    }
+
     const viewLogModal = document.getElementById('viewLogModal');
     if (viewLogModal) {
         viewLogModal.addEventListener('show.bs.modal', event => {
@@ -772,7 +783,7 @@ function fetchShareSettings(tournament_id) {
 
                     tbody += `<tr data-id="${item.id}" data-tournament-id="${item.tournament_id}">
                         <td>${i + 1}</td>
-                        <td><span class="path"><?= base_url('/tournaments/shared/') ?>${item.token}</span></td>
+                        <td><span class="path" data-bs-toggle="tooltip" data-bs-title="<?= base_url('/tournaments/shared/') ?>${item.token}"><?= base_url('/tournaments/shared/') ?>${item.token}</span></td>
                         <td><span class="date">${item.created_at}</span></td>
                         <td><span class="date">${item.updated_at}</span></td>
                         <td class="target">${target}</td>
