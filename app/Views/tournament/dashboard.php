@@ -11,8 +11,7 @@
                                                                 ?>Tournament Dashboard
         </h5>
         <div class="buttons d-flex justify-content-end">
-            <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i
-                    class="fa-sharp fa-solid fa-plus"></i> Create</a>
+            <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
         </div>
 
         <?php if (session('error') !== null) : ?>
@@ -49,34 +48,23 @@
                 <tr data-id="<?= $tournament['id'] ?>">
                     <th scope="row"><?= $index + 1 ?></th>
                     <td>
-                        <a
-                            href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
+                        <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
                     </td>
                     <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
                     <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
                     <td>
                         <div class="btn-groups list-group">
                             <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
-                            <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>"
-                                data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal"
-                                data-bs-target="#resetConfirm">Reset</a>
-                            <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>"
-                                data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal"
-                                data-bs-target="#deleteConfirm">Delete</a>
-                            <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>"
-                                data-status="<?= $tournament['status'] ?>">Change Status</a>
+                            <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                            <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
+                            <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
                             <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music
                                 Settings</a>
-                            <a href="javascript:;" class="share" data-id="<?= $tournament['id'] ?>"
-                                data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal"
-                                data-bs-target="#shareModal">Share</a>
-                            <a href="javascript:;" class="view-log" data-id="<?= $tournament['id'] ?>"
-                                data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal"
-                                data-bs-target="#viewLogModal">View Log</a>
+                            <a href="javascript:;" class="share" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
+                            <a href="javascript:;" class="view-log" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
                         </div>
 
-                        <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>"
-                            data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
+                        <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -86,8 +74,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="deleteConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="deleteConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -105,8 +92,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="resetConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="resetModalLabel"
-    aria-hidden="true">
+
+<div class="modal fade" id="resetConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -124,8 +111,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+<div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -148,46 +135,46 @@
     </div>
 </div>
 
-<div class="modal fade" id="shareModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="shareModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteModalLabel">Share Tournament "<span
-                        class="tournament-name"></span>"</h1>
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Share Tournament "<span class="tournament-name"></span>"</h1><br />
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <label class="mb-3">Select a sharing option, generate url, and click save to share the
+                    tournament.</label>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="usertype" id="share-public"
-                        value="<?= SHARE_TO_PUBLIC ?>" checked>
+                    <input class="form-check-input" type="radio" name="usertype" id="share-public" value="<?= SHARE_TO_PUBLIC ?>" data-target="Public">
                     <label class="form-check-label" for="share-public">
                         Public on the web
                         <div class="form-text">Anyone on the internet can find and access. No sign-in required</div>
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="usertype" id="share-guest"
-                        value="<?= SHARE_TO_EVERYONE ?>">
+                    <input class="form-check-input" type="radio" name="usertype" id="share-guest" value="<?= SHARE_TO_EVERYONE ?>" data-target="Anyone">
                     <label class="form-check-label" for="share-guest">
                         Anyone with the link
                         <div class="form-text">Anyone who has the link can access.</div>
                     </label>
                 </div>
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="radio" name="usertype" id="share-users"
-                        value="<?= SHARE_TO_USERS ?>" checked>
+                    <input class="form-check-input" type="radio" name="usertype" id="share-users" value="<?= SHARE_TO_USERS ?>" data-target="Private" checked>
                     <label class="form-check-label" for="share-users">
                         Private
                         <div class="form-text">Only people explicitly granted</div>
                     </label>
                 </div>
-                <div class="private-users input-group row gy-2 gx-3 align-items-center mb-3">
-                    <label for="userTagsInput" class="form-label col-form-label col-sm-4">Share to</label>
-                    <div class="col-sm-8"><input type="text" id="userTagsInput" class="form-control" /></div>
-                </div>
+                <form id="privateUserTagsInputForm" method="post" class="form-horizontal">
+                    <div class="private-users input-group row gy-2 gx-3 align-items-center mb-3">
+                        <label for="userTagsInput" class="form-label col-form-label col-sm-4">Share with</label>
+                        <div class="col-sm-8"><input type="text" id="userTagsInput" name="private-users" class="form-control" placeholder="Enter registered username(s)" required /></div>
+                    </div>
+                </form>
                 <div class="input-group row gy-2 gx-3 align-items-center mb-3">
-                    <label class="form-label col-form-label col-sm-4">Access: Anyone</label>
+                    <label class="form-label col-form-label col-sm-4">Access: <span class="selected-target">Private</span></label>
                     <div class="col-auto">
                         <select class="form-select" name="permission" aria-label="Access permission">
                             <option value="<?= SHARE_PERMISSION_EDIT ?>">Can edit</option>
@@ -197,11 +184,8 @@
                 </div>
                 <div class="share-url row mb-3 d-flex flex-row-reverse">
                     <div class="col-auto input-group">
-                        <input type="text" class="form-control" id="tournamentURL" value="" aria-label="Tournament URL"
-                            aria-describedby="urlCopy" readonly>
-                        <button class="btn btn-outline-secondary input-group-text" type="button" id="urlCopyBtn"
-                            data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top"
-                            data-bs-content="Link Copied!">Copy</button>
+                        <input type="text" class="form-control" id="tournamentURL" value="" aria-label="Tournament URL" aria-describedby="urlCopy" readonly>
+                        <button class="btn btn-outline-secondary input-group-text" type="button" id="urlCopyBtn" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="Link Copied!">Copy</button>
                     </div>
                     <div class="col-auto">
                         <a href="javascript:;" onClick="generateURL()">Generate URL</a>
@@ -215,19 +199,18 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmShare">Save</button>
+                <button type="button" class="btn btn-primary" id="confirmShare">Save</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="shareHistoryModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="shareHistoryModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteModalLabel">Share Tournament "<span
-                        class="tournament-name"></span>"</h1>
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Tournament "<span class="tournament-name"></span>"
+                    Sharings</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -239,7 +222,7 @@
                                 <th scope="col" class="resizable">URL</th>
                                 <th scope="col">Created</th>
                                 <th scope="col">Modified</th>
-                                <th scope="col">Accessible</th>
+                                <th scope="col">Accessiblility</th>
                                 <th scope="col">Permission</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Action</th>
@@ -250,15 +233,32 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="close-share-history btn btn-secondary" data-bs-target="#shareModal"
-                    data-bs-toggle="modal">Cancel</button>
+                <button type="button" class="close-share-history btn btn-secondary" data-bs-target="#shareModal" data-bs-toggle="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="viewLogModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="logModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="purgeShareConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Are you sure you want to purge this link?</h1>
+                    <h5 class="text-danger">This action cannot be undone!</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="confirmPurgeShare">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewLogModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -287,11 +287,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-    integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
-    integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
@@ -399,8 +396,12 @@ $(document).ready(function() {
             const base_url = "<?= base_url('tournaments/shared/') ?>";
             const tournament_id = event.relatedTarget.getAttribute('data-id');
             shareModal.setAttribute('data-id', tournament_id);
+
             const modalTitle = shareModal.querySelector('.modal-header .tournament-name');
             modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
+
+            document.getElementById('shareHistoryModal').querySelector('.tournament-name').textContent = event.relatedTarget.getAttribute('data-name');
+            document.getElementById('shareHistoryModal').querySelector('.close-share-history').dataset.name = event.relatedTarget.getAttribute('data-name');
 
             if (tournament_id) {
                 fetchShareSettings(tournament_id);
@@ -419,12 +420,52 @@ $(document).ready(function() {
                 popoverTriggerEl))
 
             $('input[name="usertype"]').on('change', event => {
+                shareModal.querySelectorAll('.selected-target')[0].textContent = event.delegateTarget.dataset.target;
+
                 if (document.getElementById('share-users').checked) {
                     $('.private-users').show();
                 } else {
                     $('.private-users').hide();
                 }
             })
+
+
+            $('#privateUserTagsInputForm')
+                .find('[name="private-users"]')
+                // Revalidate the cities field when it is changed
+                .change(function(e) {
+                    $('#bootstrapTagsInputForm').formValidation('revalidateField', 'private-users');
+                }).end()
+                .formValidation({
+                    framework: 'bootstrap',
+                    excluded: ':disabled',
+                    icon: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        cities: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Please select at least one user.'
+                                }
+                            }
+                        },
+                        countries: {
+                            validators: {
+                                callback: {
+                                    message: 'Please  select at least one user.',
+                                    callback: function(value, validator, $field) {
+                                        // Get the entered elements
+                                        var options = validator.getFieldElements('private-users').tagsinput('items');
+                                        return (options !== null && options.length >= 1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
         })
 
     }
@@ -432,12 +473,21 @@ $(document).ready(function() {
     const shareHistoryModal = document.getElementById('shareHistoryModal');
     if (shareHistoryModal) {
         shareHistoryModal.addEventListener('show.bs.modal', event => {
-            document.getElementById('shareHistoryModal').querySelectorAll('td .path')
-                .forEach((ele, i) => {
-                    const tooltip = bootstrap.Tooltip.getOrCreateInstance(ele)
-                })
+
+            document.getElementById('shareHistoryModal').querySelectorAll('td .path').forEach((ele, i) => {
+                const tooltip = bootstrap.Tooltip.getOrCreateInstance(ele)
+            })
         })
 
+    }
+
+    const purgeConfirmModal = document.getElementById('purgeShareConfirm');
+    if (purgeConfirmModal) {
+        purgeConfirmModal.addEventListener('show.bs.modal', event => {
+            purgeConfirmModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
+            const modalTitle = purgeConfirmModal.querySelector('.modal-body .tournament-name');
+            modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
+        })
     }
 
     const viewLogModal = document.getElementById('viewLogModal');
@@ -590,7 +640,14 @@ $(document).ready(function() {
         const tournament_id = shareModal.dataset.id;
         const url = new URL($('#tournamentURL').val());
         var path = url.pathname.split("/");
-        console.log($('#userTagsInput').val());
+
+        if ($('#userTagsInput').val() == '') {
+            $('#shareModal .private-users').addClass('was-validated');
+            $('#shareModal .tt-input').attr('isvalid', false);
+
+            return false;
+        }
+
         $.ajax({
             url: apiURL + '/tournaments/' + tournament_id + '/share',
             type: "POST",
@@ -614,6 +671,10 @@ $(document).ready(function() {
         });
     });
 
+    $('#confirmPurgeShare').on('click', function() {
+        const shareSettingId = purgeConfirmModal.getAttribute('data-id');
+        purgeShare(shareSettingId);
+    })
     var data = '<?= json_encode($users) ?>';
 
     //get data pass to json
@@ -791,7 +852,7 @@ function fetchShareSettings(tournament_id) {
                         <td>${item.deleted_at ? 'Purged' : 'Active'}</td>
                         <td class="actions">
                             <a href="javascript:;" onClick="resetShare(this)">Reset</a><br/>
-                            <a href="javascript:;" onClick="purgeShare('${item.id}')">Purge</a>
+                            <a href="javascript:;" data-id="${item.id}" data-bs-toggle="modal" data-bs-target="#purgeShareConfirm">Purge</a>
                         </td>
                     </tr>`;
                 });
@@ -856,6 +917,7 @@ function purgeShare(id) {
             const data = JSON.parse(result).data;
 
             $(`tr[data-id="${id}"]`).remove();
+            $('#purgeShareConfirm').modal('hide');
         },
         error: function(error) {
             console.log(error);
@@ -948,8 +1010,7 @@ function generateURL() {
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
-<link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
 
