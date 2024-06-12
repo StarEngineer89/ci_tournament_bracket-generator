@@ -289,9 +289,10 @@
 <?= $this->section('pageScripts') ?>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.1/js/bootstrapValidator.min.js"></script>
 
 <script src="/js/participants.js"></script>
 <script type="text/javascript">
@@ -429,14 +430,14 @@ $(document).ready(function() {
                 }
             })
 
-
             $('#privateUserTagsInputForm')
                 .find('[name="private-users"]')
                 // Revalidate the cities field when it is changed
                 .change(function(e) {
-                    $('#bootstrapTagsInputForm').formValidation('revalidateField', 'private-users');
+                    console.log($(e.target).val())
+                    $('#privateUserTagsInputForm').bootstrapValidator('revalidateField', 'private-users');
                 }).end()
-                .formValidation({
+                .bootstrapValidator({
                     framework: 'bootstrap',
                     excluded: ':disabled',
                     icon: {
@@ -445,25 +446,13 @@ $(document).ready(function() {
                         validating: 'glyphicon glyphicon-refresh'
                     },
                     fields: {
-                        cities: {
+                        "private-users": {
                             validators: {
                                 notEmpty: {
                                     message: 'Please select at least one user.'
                                 }
                             }
                         },
-                        countries: {
-                            validators: {
-                                callback: {
-                                    message: 'Please  select at least one user.',
-                                    callback: function(value, validator, $field) {
-                                        // Get the entered elements
-                                        var options = validator.getFieldElements('private-users').tagsinput('items');
-                                        return (options !== null && options.length >= 1);
-                                    }
-                                }
-                            }
-                        }
                     }
                 });
         })
@@ -637,16 +626,16 @@ $(document).ready(function() {
     });
 
     $('#confirmShare').on('click', function() {
+        var validator = $("#privateUserTagsInputForm").data("bootstrapValidator");
+        validator.validate();
+
+        if (!validator.isValid()) {
+            return;
+        }
+
         const tournament_id = shareModal.dataset.id;
         const url = new URL($('#tournamentURL').val());
         var path = url.pathname.split("/");
-
-        if ($('#userTagsInput').val() == '') {
-            $('#shareModal .private-users').addClass('was-validated');
-            $('#shareModal .tt-input').attr('isvalid', false);
-
-            return false;
-        }
 
         $.ajax({
             url: apiURL + '/tournaments/' + tournament_id + '/share',
