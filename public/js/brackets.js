@@ -230,15 +230,23 @@ $(document).on('ready', function () {
                                 name: "Delete Bracket",
                                 callback: (key, opt, e) => {
                                     var element_id = opt.$trigger.data('bracket');
+                                    let triggerElement = opt.$trigger
                                     $.ajax({
                                         type: "delete",
                                         url: apiURL + '/brackets/delete/' + element_id,
                                         success: function (result) {
-                                            var orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + opt.$trigger.data('next') + "']"), function (ele) { return ele.dataset.order }));
-                                            var index = orders.findIndex((value) => { return value == opt.$trigger.data('order') });
-                                            document.querySelectorAll('[data-order="' + opt.$trigger.data('next') + '"]')[index].innerHTML = '&nbsp;';
+                                            // var orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + triggerElement.data('next') + "']"), function (ele) { return ele.dataset.order }));
+                                            // var index = orders.findIndex((value) => { return value == triggerElement.data('order') });
+                                            // document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]')[index].innerHTML = '&nbsp;';
+                                            document.querySelectorAll('[data-order="' + triggerElement.data('order') + '"]').forEach((ele, i) => {
+                                                ele.innerHTML = '';
+                                                ele.classList.remove("winner");
+                                            })
+                                            document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]').forEach((ele, i) => {
+                                                // ele.innerHTML = '';
+                                            })
 
-                                            opt.$trigger.parent().parent().remove();
+                                            // triggerElement.parent().parent().remove();
                                         },
                                         error: function (error) {
                                             console.log(error);

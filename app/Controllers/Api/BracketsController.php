@@ -81,7 +81,7 @@ class BracketsController extends BaseController
         if (isset($req->action_code) && $req->action_code) {
             $logActionsModel = model('\App\Models\LogActionsModel');
             $insert_data = ['tournament_id' => $bracket['tournament_id'], 'action' => $req->action_code];
-            if (auth()->user()->id) {
+            if (auth()->user()) {
                 $insert_data['user_by'] = auth()->user()->id;
             } else {
                 $insert_data['user_by'] = 0;
@@ -121,11 +121,15 @@ class BracketsController extends BaseController
     public function deleteBracket($id)
     {
         $bracket = $this->bracketsModel->find($id);
-        $this->bracketsModel->where('id', $id)->delete();
+        // $this->bracketsModel->where('id', $id)->delete();
+        $bracket['teamnames'] = json_encode([null, null]);
+        $bracket['deleted_by'] = (auth()->user()) ? auth()->user()->id : 0;
+
+        $this->bracketsModel->update($id, $bracket);
 
         $logActionsModel = model('\App\Models\LogActionsModel');
         $insert_data = ['tournament_id' => $bracket['tournament_id'], 'action' => BRACKET_ACTIONCODE_DELETE];
-        if (auth()->user()->id) {
+        if (auth()->user()) {
             $insert_data['user_by'] = auth()->user()->id;
         } else {
             $insert_data['user_by'] = 0;
@@ -136,7 +140,20 @@ class BracketsController extends BaseController
         $data['round_no'] = $bracket['roundNo'];
 
         $original = json_decode($bracket['teamnames']);
-        $data['participants'] = [$original[0]->name, $original[1]->name];
+
+        $participants_in_bracket = [];
+        if ($original[0]) {
+            $participants_in_bracket[] = $original[0]->name;
+        } else {
+            $participants_in_bracket[] = null;
+        }
+        if ($original[1]) {
+            $participants_in_bracket[] = $original[0]->name;
+        } else {
+            $participants_in_bracket[] = null;
+        }
+
+        $data['participants'] = $participants_in_bracket;
         $insert_data['params'] = json_encode($data);
 
         $logActionsModel->insert($insert_data);

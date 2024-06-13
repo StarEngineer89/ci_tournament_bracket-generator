@@ -46,8 +46,8 @@ class LogActionsModel extends Model
 
     public function getLogs() {
         $this->select('log_actions.*, users.username as username, tournaments.name as tournamentname');
-        $this->join('users', 'log_actions.user_by = users.id');
-        $this->join('tournaments', 'log_actions.tournament_id = tournaments.id');
+        $this->join('users', 'log_actions.user_by = users.id', 'LEFT');
+        $this->join('tournaments', 'log_actions.tournament_id = tournaments.id', 'LEFT');
 
         return $this;
     }

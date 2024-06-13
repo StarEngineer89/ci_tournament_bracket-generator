@@ -804,6 +804,7 @@ function drawActionHistoryTable(tournament_id) {
             if (result.history) {
                 rows = '';
                 result.history.forEach((record, i) => {
+                    if (!record.name) record.name = 'Guest'
                     rows += '<tr>';
                     rows += '<td>' + (i + 1) + '</td>';
                     rows += '<td>' + record.name + '</td>';
