@@ -532,15 +532,6 @@ $(document).ready(function() {
 
     }
 
-    const purgeConfirmModal = document.getElementById('purgeShareConfirm');
-    if (purgeConfirmModal) {
-        purgeConfirmModal.addEventListener('show.bs.modal', event => {
-            purgeConfirmModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
-            const modalTitle = purgeConfirmModal.querySelector('.modal-body .tournament-name');
-            modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
-        })
-    }
-
     const viewLogModal = document.getElementById('viewLogModal');
     if (viewLogModal) {
         viewLogModal.addEventListener('show.bs.modal', event => {
@@ -723,7 +714,7 @@ $(document).ready(function() {
     });
 
     $('#confirmPurgeShare').on('click', function() {
-        const shareSettingId = purgeConfirmModal.getAttribute('data-id');
+        const shareSettingId = $('#purgeShareConfirm').data('id');
         purgeShare(shareSettingId);
     })
 
@@ -868,7 +859,7 @@ function fetchShareSettings(tournament_id) {
                         <td class="actions">
                             <div class="btns">
                                 <a href="javascript:;" onClick="resetShare(this)">Reset</a><br/>
-                                <a href="javascript:;" data-id="${item.id}" data-bs-toggle="modal" data-bs-target="#purgeShareConfirm">Purge</a>
+                                <a href="javascript:;" data-id="${item.id}" onclick="purgeShareConfirm(${item.id})">Purge</a>
                             </div>
                         </td>
                     </tr>`;
@@ -886,6 +877,11 @@ function fetchShareSettings(tournament_id) {
             $("#err").html(e).fadeIn();
         }
     });
+}
+
+function purgeShareConfirm(item_id) {
+    $('#purgeShareConfirm').attr('data-id', item_id);
+    $('#purgeShareConfirm').modal('show')
 }
 
 function purgeShare(id) {
