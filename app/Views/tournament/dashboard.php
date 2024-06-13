@@ -922,7 +922,7 @@ function resetShare(ele) {
 
             let targetHtml = `<form id="privateUserUpdateForm" class="row">
                 <div class="col-md-4 col-sm-4">
-                    <select class="target form-select" aria-label="Default select example" onchange="changeShareUpdateTarget(this)">
+                    <select class="target form-select" aria-label="Default select example" onchange="changeShareUpdate(this)">
                         <option value="<?= SHARE_TO_PUBLIC ?>" ${share.target == "<?= SHARE_TO_PUBLIC ?>" ? "selected" : ""}>Public</option>
                         <option value="<?= SHARE_TO_EVERYONE ?>" ${share.target == "<?= SHARE_TO_EVERYONE ?>" ? "selected" : ""}>Everyone</option>
                         <option value="<?= SHARE_TO_USERS ?>" ${share.target == "<?= SHARE_TO_USERS ?>" ? "selected" : ""}>Private</option>
@@ -931,7 +931,7 @@ function resetShare(ele) {
                 <div class="shareEditUsersWrapper col-md-8 col-sm-8" ${share.target == "<?= SHARE_TO_USERS ?>" ? "" : 'style="display: none"'}><input type="text" id="userTagsInputUpdate" name="private-users" class="form-control" placeholder="Enter registered username(s)" required /></div>
                 </form>`;
 
-            let permissionHtml = `<select class="permission form-select" aria-label="Default select example">
+            let permissionHtml = `<select class="permission form-select" aria-label="Default select example" onchange="changeShareUpdate(this)">
                 <option value="<?= SHARE_PERMISSION_VIEW ?>" ${share.permission == "<?= SHARE_PERMISSION_VIEW ?>" ? "selected" : ""}>View</option>
                 <option value="<?= SHARE_PERMISSION_EDIT ?>" ${share.permission == "<?= SHARE_PERMISSION_EDIT ?>" ? "selected" : ""}>Edit</option>
                 </select>`;
@@ -1001,8 +1001,9 @@ function resetShare(ele) {
     });
 }
 
-function changeShareUpdateTarget(ele) {
-    if ($(ele).val() == "<?= SHARE_TO_USERS ?>") {
+function changeShareUpdate(ele) {
+    let row = $(ele).parents('tr')
+    if (row.find('select.target').val() == "<?= SHARE_TO_USERS ?>") {
         $('.shareEditUsersWrapper').show()
         $('#userTagsInputUpdate').attr('disabled', false)
     } else {
