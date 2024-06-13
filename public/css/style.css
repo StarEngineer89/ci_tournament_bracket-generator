@@ -220,6 +220,10 @@
   width: 100%;
 }
 
+.bootstrap-tagsinput~.help-block {
+  color: #dc3545;
+}
+
 .tt-menu {
   position: absolute;
   top: 100%;
