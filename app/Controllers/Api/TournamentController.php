@@ -183,12 +183,7 @@ class TournamentController extends BaseController
         $settings = $shareSettingsModel->where('tournament_id', $tournament_id)->findAll();
         
         $settings_with_users = [];
-        if (!$settings) {
-            $config = new \Config\Encryption();
-            // $encrypter = \Config\Services::encrypter();
-            $token = hash_hmac('sha256', 'tournament_' . $tournament_id . '_created_by_' . auth()->user()->id, $config->key);
-            // $token = $encrypter->encrypt('tournament_' . $tournament_id . '_user_by_' . auth()->user()->id);
-        } else {
+        if ($settings) {
             $userModel = model('CodeIgniter\Shield\Models\UserModel');
 
             foreach ($settings as $setting) {
@@ -202,9 +197,10 @@ class TournamentController extends BaseController
 
                 $settings_with_users[] = $setting;
             }
-            
-            $token = $settings_with_users[count($settings) -1]['token'];
         }
+        
+        $config = new \Config\Encryption();
+        $token = hash_hmac('sha256', 'tournament_' . $tournament_id . '_created_by_' . auth()->user()->id . '_' . time(), $config->key);
 
         return json_encode(['status' => 'success','settings'=> $settings_with_users, 'token' => $token]);
     }
