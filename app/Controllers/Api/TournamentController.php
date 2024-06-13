@@ -187,10 +187,25 @@ class TournamentController extends BaseController
             $token = hash_hmac('sha256', 'tournament_' . $tournament_id . '_created_by_' . auth()->user()->id, $config->key);
             // $token = $encrypter->encrypt('tournament_' . $tournament_id . '_user_by_' . auth()->user()->id);
         } else {
-            $token = $settings[count($settings) -1]['token'];
+            $userModel = model('CodeIgniter\Shield\Models\UserModel');
+
+            $settings_with_users = [];
+            foreach ($settings as $setting) {
+                $setting['private_users'] = null;
+                
+                if ($setting['target'] == SHARE_TO_USERS) {
+                    $users = explode(',', $setting['users']);
+                    
+                    $setting['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
+                }
+
+                $settings_with_users[] = $setting;
+            }
+            
+            $token = $settings_with_users[count($settings) -1]['token'];
         }
 
-        return json_encode(['status' => 'success','settings'=> $settings, 'token' => $token]);
+        return json_encode(['status' => 'success','settings'=> $settings_with_users, 'token' => $token]);
     }
 
     public function share($id)
@@ -204,16 +219,20 @@ class TournamentController extends BaseController
         if ($setting) {
             $data['id'] = $setting['id'];
         }
-        log_message('debug', json_encode($data));
-        $setting_id = $shareSettingsModel->save($data);
+        
+        $shareSettingsModel->save($data);
 
-        if (!$setting_id) {
-            return json_encode(['error' => "Failed to save the settings."]);
+        $share = $shareSettingsModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
+        
+        $share['private_users'] = null;
+        if ($share['target'] == SHARE_TO_USERS) {
+            $userModel = model('CodeIgniter\Shield\Models\UserModel');
+            $users = explode(',', $share['users']);
+            
+            $share['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
         }
-
-        $shareSettings = $shareSettingsModel->where('tournament_id', $data['tournament_id'])->findAll();
-
-        return json_encode(['msg' => "Success to save the sharing information.", 'shareSettings' => $shareSettings, 'share_id' => $setting_id, 'data' => $data]);
+        log_message('debug', json_encode($share));
+        return json_encode(['msg' => "Success to save the sharing information.", 'share' => $share]);
     }
 
     public function purgechShareSettings($share_id) {
@@ -222,6 +241,21 @@ class TournamentController extends BaseController
         $shareSettingsModel->delete([$share_id]);
 
         return json_encode(['status'=> 'success']);
+    }
+
+    public function fetchShareSetting($share_id) {
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+
+        $share = $shareSettingsModel->find($share_id);
+        $share['private_users'] = null;
+        if ($share['target'] == SHARE_TO_USERS) {
+            $userModel = model('CodeIgniter\Shield\Models\UserModel');
+            $users = explode(',', $share['users']);
+            
+            $share['private_users'] = $userModel->find($users);
+        }
+
+        return json_encode(['status'=> 'success', 'share' => $share]);
     }
 
     public function getActionHistory($tournament_id)

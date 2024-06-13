@@ -298,6 +298,43 @@
 <script type="text/javascript">
 let apiURL = "<?= base_url('api') ?>";
 
+var users_json = '<?= json_encode($users) ?>';
+
+//get data pass to json
+var task = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace("username"),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    prefetch: {
+        url: apiURL + '/tournaments/fetchUsersList',
+        filter: function(list) {
+            return $.map(list, function(username) {
+                return {
+                    name: username
+                };
+            });
+        }
+    },
+    local: jQuery.parseJSON(users_json), //you can use json type
+    // remote: {
+    //     url: apiURL + '/tournaments/fetchUsersList',
+    //     prepare: function(query, settings) {
+    //         settings.type = 'POST';
+    //         settings.contentType = 'application/json';
+    //         settings.data = JSON.stringify({
+    //             query: query
+    //         });
+    //         console.log(query);
+    //         return settings;
+    //     },
+    //     transform: function(response) {
+    //         // Process the response to fit the expected format if needed
+    //         return response;
+    //     }
+    // }
+});
+
+task.initialize();
+
 $(document).ready(function() {
     $('#confirmReset').on('click', function() {
         const tournament_id = resetModal.getAttribute('data-id');
@@ -664,43 +701,6 @@ $(document).ready(function() {
         const shareSettingId = purgeConfirmModal.getAttribute('data-id');
         purgeShare(shareSettingId);
     })
-    var data = '<?= json_encode($users) ?>';
-
-    //get data pass to json
-    var task = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace("username"),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: {
-            url: apiURL + '/tournaments/fetchUsersList',
-            filter: function(list) {
-                return $.map(list, function(cityname) {
-                    console.log(cityname)
-                    return {
-                        name: cityname
-                    };
-                });
-            }
-        },
-        local: jQuery.parseJSON(data), //your can use json type
-        // remote: {
-        //     url: apiURL + '/tournaments/fetchUsersList',
-        //     prepare: function(query, settings) {
-        //         settings.type = 'POST';
-        //         settings.contentType = 'application/json';
-        //         settings.data = JSON.stringify({
-        //             query: query
-        //         });
-        //         console.log(query);
-        //         return settings;
-        //     },
-        //     transform: function(response) {
-        //         // Process the response to fit the expected format if needed
-        //         return response;
-        //     }
-        // }
-    });
-
-    task.initialize();
 
     var elt = $("#userTagsInput");
     elt.tagsinput({
@@ -830,6 +830,7 @@ function fetchShareSettings(tournament_id) {
                     let target = 'Private';
                     if (item.target == "<?= SHARE_TO_EVERYONE ?>") target = 'Anyone';
                     if (item.target == "<?= SHARE_TO_PUBLIC ?>") target = 'Public';
+                    if (item.target == "<?= SHARE_TO_USERS ?>") target += `<br/>Share with: ${item.private_users}`;
 
                     tbody += `<tr data-id="${item.id}" data-tournament-id="${item.tournament_id}">
                         <td>${i + 1}</td>
@@ -840,49 +841,13 @@ function fetchShareSettings(tournament_id) {
                         <td class="permission">${permission}</td>
                         <td>${item.deleted_at ? 'Purged' : 'Active'}</td>
                         <td class="actions">
-                            <a href="javascript:;" onClick="resetShare(this)">Reset</a><br/>
-                            <a href="javascript:;" data-id="${item.id}" data-bs-toggle="modal" data-bs-target="#purgeShareConfirm">Purge</a>
+                            <div class="btns">
+                                <a href="javascript:;" onClick="resetShare(this)">Reset</a><br/>
+                                <a href="javascript:;" data-id="${item.id}" data-bs-toggle="modal" data-bs-target="#purgeShareConfirm">Purge</a>
+                            </div>
                         </td>
                     </tr>`;
                 });
-
-                // document.addEventListener('DOMContentLoaded', () => {
-                // const resizables = document.querySelectorAll('.resizable');
-
-                // resizables.forEach(header => {
-                //     header.style.position = 'relative';
-
-                //     const resizer = document.createElement('div');
-                //     resizer.style.width = '50px';
-                //     resizer.style.height = '100%';
-                //     resizer.style.position = 'absolute';
-                //     resizer.style.top = '0';
-                //     resizer.style.right = '0';
-                //     resizer.style.cursor = 'col-resize';
-                //     header.appendChild(resizer);
-
-                //     resizer.addEventListener('mousedown', (e) => {
-                //         const startX = e.pageX;
-                //         const startWidth = header.offsetWidth;
-
-                //         const onMouseMove = (e) => {
-                //             const newWidth = startWidth + (e.pageX -
-                //                 startX);
-                //             header.style.width = `${newWidth}px`;
-                //         };
-
-                //         const onMouseUp = () => {
-                //             document.removeEventListener('mousemove',
-                //                 onMouseMove);
-                //             document.removeEventListener('mouseup',
-                //                 onMouseUp);
-                //         };
-
-                //         document.addEventListener('mousemove', onMouseMove);
-                //         document.addEventListener('mouseup', onMouseUp);
-                //     });
-                // });
-                // });
 
                 $('table.share-settings tbody').html(tbody);
                 $('.close-share-history').data('id', tournament_id);
@@ -921,23 +886,125 @@ function purgeShare(id) {
 function resetShare(ele) {
     let row = $(ele).parents('tr');
     let url = row.find('span.path').html();
+    const id = row.data('id');
+    const tournament_id = row.data('tournament-id');
 
-    let targetHtml = `<select class="form-select" aria-label="Default select example">
-            <option value="<?= SHARE_TO_PUBLIC ?>">Public</option>
-            <option value="<?= SHARE_TO_EVERYONE ?>">Everyone</option>
-            <option value="<?= SHARE_TO_USERS ?>">Private</option>
-            </select>`;
-    let permissionHtml = `<select class="form-select" aria-label="Default select example">
-            <option value="<?= SHARE_PERMISSION_VIEW ?>">View</option>
-            <option value="<?= SHARE_PERMISSION_EDIT ?>">Edit</option>
-            </select>`;
+    $.ajax({
+        type: "GET",
+        url: `${apiURL}/tournaments/fetchShareSetting/${id}`,
+        success: function(result) {
+            const share = JSON.parse(result).share;
 
-    row.find('td.target').html(targetHtml);
-    row.find('td.permission').html(permissionHtml);
-    row.find('td.actions').html(`<a href="javascript:;" onclick="updateShareSetting(this)">Save</a>`);
+            const table = row.parents('table')
+            row.find('td.actions .btns').hide()
+            table.find('tr.editable').remove()
+
+            let targetHtml = `<form id="privateUserUpdateForm" class="row">
+                <div class="col-md-4 col-sm-4">
+                    <select class="target form-select" aria-label="Default select example" onchange="changeShareUpdateTarget(this)">
+                        <option value="<?= SHARE_TO_PUBLIC ?>" ${share.target == "<?= SHARE_TO_PUBLIC ?>" ? "selected" : ""}>Public</option>
+                        <option value="<?= SHARE_TO_EVERYONE ?>" ${share.target == "<?= SHARE_TO_EVERYONE ?>" ? "selected" : ""}>Everyone</option>
+                        <option value="<?= SHARE_TO_USERS ?>" ${share.target == "<?= SHARE_TO_USERS ?>" ? "selected" : ""}>Private</option>
+                    </select>
+                </div>
+                <div class="shareEditUsersWrapper col-md-8 col-sm-8" ${share.target == "<?= SHARE_TO_USERS ?>" ? "" : 'style="display: none"'}><input type="text" id="userTagsInputUpdate" name="private-users" class="form-control" placeholder="Enter registered username(s)" required /></div>
+                </form>`;
+
+            let permissionHtml = `<select class="permission form-select" aria-label="Default select example">
+                <option value="<?= SHARE_PERMISSION_VIEW ?>" ${share.permission == "<?= SHARE_PERMISSION_VIEW ?>" ? "selected" : ""}>View</option>
+                <option value="<?= SHARE_PERMISSION_EDIT ?>" ${share.permission == "<?= SHARE_PERMISSION_EDIT ?>" ? "selected" : ""}>Edit</option>
+                </select>`;
+
+            let html = `<tr class="editable" data-id="${id}" data-tournament-id="${tournament_id}">
+                <td></td>
+                <td><span class="path" data-bs-toggle="tooltip" data-bs-title="<?= base_url('/tournaments/shared/') ?>${share.token}"><?= base_url('/tournaments/shared/') ?>${share.token}</span></td>
+                <td colspan="3">${targetHtml}</td>
+                <td>${permissionHtml}</td>
+                <td colspan="2"><a href="javascript:;" onclick="updateShareSetting(this)">Save</a> <a href="javascript:;" onclick="cancelUpdateSharing(this)">Cancel</a></td>
+                </tr>`
+
+            $(html).insertAfter(row);
+
+
+            $("#userTagsInputUpdate").tagsinput({
+                itemValue: "id",
+                itemText: "username",
+                typeaheadjs: {
+                    name: "task",
+                    displayKey: "username",
+                    source: task.ttAdapter()
+                }
+            });
+
+            if (share.target == "<?= SHARE_TO_USERS ?>") {
+                share.private_users.forEach((user) => {
+                    $("#userTagsInputUpdate").tagsinput('add', {
+                        id: user.id,
+                        username: user.username
+                    });
+                })
+            }
+
+            $('#privateUserUpdateForm')
+                .find('[name="private-users"]')
+                // Revalidate the cities field when it is changed
+                .change(function(e) {
+                    $('#privateUserUpdateForm').bootstrapValidator('revalidateField', 'private-users');
+                }).end()
+                .bootstrapValidator({
+                    framework: 'bootstrap',
+                    excluded: ':disabled',
+                    icon: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        "private-users": {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Please select at least one user.'
+                                }
+                            }
+                        },
+                    }
+                });
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+}
+
+function changeShareUpdateTarget(ele) {
+    if ($(ele).val() == "<?= SHARE_TO_USERS ?>") {
+        $('.shareEditUsersWrapper').show()
+        $('#userTagsInputUpdate').attr('disabled', false)
+    } else {
+        $('.shareEditUsersWrapper').hide()
+        $('#userTagsInputUpdate').attr('disabled', true)
+    }
+}
+
+function cancelUpdateSharing(ele) {
+    const row = $(ele).parents('tr');
+    const id = row.data('id')
+    row.parents('table').find('tr[data-id="' + id + '"] .actions .btns').show()
+    row.remove()
 }
 
 function updateShareSetting(ele) {
+    var validator = $("#privateUserUpdateForm").data("bootstrapValidator");
+    validator.validate();
+
+    if (!validator.isValid()) {
+        return;
+    }
+
     let row = $(ele).parents('tr');
     const tournament_id = row.data('tournament-id');
     const share_id = row.data('id');
@@ -949,9 +1016,10 @@ function updateShareSetting(ele) {
         type: "POST",
         data: {
             'tournament_id': tournament_id,
-            'target': row.find('td.target select').val(),
-            'permission': row.find('td.permission select').val(),
-            'token': path[3]
+            'target': row.find('td select.target').val(),
+            'permission': row.find('td select.permission').val(),
+            'token': path[3],
+            'users': $('#userTagsInputUpdate').val()
         },
         beforeSend: function() {
             //$("#preview").fadeOut();
@@ -959,23 +1027,25 @@ function updateShareSetting(ele) {
         },
         success: function(result) {
             result = JSON.parse(result);
+            row = row.parents('tbody').find('tr[data-id="' + result.share.id + '"]').first()
 
-            if (result.data) {
-                let targetHtml = '';
-                if (result.data.target == "<?= SHARE_TO_PUBLIC ?>") targetHtml = 'Public';
-                if (result.data.target == "<?= SHARE_TO_EVERYONE ?>") targetHtml = 'Everyone';
-                if (result.data.target == "<?= SHARE_TO_USERS ?>") targetHtml = 'Private';
+            if (result.share) {
+                let permission = 'View';
+                if (result.share.permission == "<?= SHARE_PERMISSION_EDIT ?>") permission = 'Edit';
+
+                let targetHtml = 'Private';
+                if (result.share.target == "<?= SHARE_TO_PUBLIC ?>") targetHtml = 'Public';
+                if (result.share.target == "<?= SHARE_TO_EVERYONE ?>") targetHtml = 'Everyone';
+                if (result.share.target == "<?= SHARE_TO_USERS ?>") targetHtml += `<br/>Share with: ${result.share.private_users}`;
                 row.find('td.target').html(targetHtml);
 
                 let permissionHtml = '';
-                if (result.data.permission == "<?= SHARE_PERMISSION_VIEW ?>") permissionHtml = 'View';
-                if (result.data.permission == "<?= SHARE_PERMISSION_EDIT ?>") permissionHtml = 'Edit';
+                if (result.share.permission == "<?= SHARE_PERMISSION_VIEW ?>") permissionHtml = 'View';
+                if (result.share.permission == "<?= SHARE_PERMISSION_EDIT ?>") permissionHtml = 'Edit';
                 row.find('td.permission').html(permissionHtml);
-
-                const actionHtml = `<a href="javascript:;" onClick="resetShare(this)">Reset</a><br/>
-                            <a href="javascript:;" onClick="purgeShare('${share_id}')">Purge</a>`;
-                row.find('td.actions').html(actionHtml);
             }
+
+            cancelUpdateSharing(ele)
         },
         error: function(e) {
             $("#err").html(e).fadeIn();
