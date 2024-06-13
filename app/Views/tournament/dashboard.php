@@ -157,7 +157,7 @@
                     <input class="form-check-input" type="radio" name="usertype" id="share-guest" value="<?= SHARE_TO_EVERYONE ?>" data-target="Anyone">
                     <label class="form-check-label" for="share-guest">
                         Anyone with the link
-                        <div class="form-text">Anyone who has the link can access.</div>
+                        <div class="form-text">Anyone who has the link can access. (Signin required) </div>
                     </label>
                 </div>
                 <div class="form-check mb-3">
@@ -181,6 +181,7 @@
                             <option value="<?= SHARE_PERMISSION_VIEW ?>" selected>Can view</option>
                         </select>
                     </div>
+                    <div id="sharePermissionHelpBlock" class="form-text"></div>
                 </div>
                 <div class="share-url row mb-3 d-flex flex-row-reverse">
                     <div class="col-auto input-group">
@@ -457,6 +458,14 @@ $(document).ready(function() {
 
             $('#userTagsInput').tagsinput('removeAll');
 
+            if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_VIEW?>") {
+                shareModal.querySelector('#sharePermissionHelpBlock').textContent = "User(s) can view the tournament brackets."
+            }
+
+            if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_EDIT?>") {
+                shareModal.querySelector('#sharePermissionHelpBlock').innerHTML = 'User(s) can view and execute actions on the tournament brackets. <br/> Note that actions are logged for tracking purposes in the "View Log" feature of the tournament.'
+            }
+
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(
                 popoverTriggerEl))
@@ -470,6 +479,16 @@ $(document).ready(function() {
                 } else {
                     $('.private-users').hide();
                     $('#userTagsInput').attr('disabled', true)
+                }
+            })
+
+            $('select[name="permission"]').on('change', event => {
+                if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_VIEW?>") {
+                    shareModal.querySelector('#sharePermissionHelpBlock').textContent = "User(s) can view the tournament brackets."
+                }
+
+                if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_EDIT?>") {
+                    shareModal.querySelector('#sharePermissionHelpBlock').innerHTML = 'User(s) can view and execute actions on the tournament brackets. <br/> Note that actions are logged for tracking purposes in the "View Log" feature of the tournament.'
                 }
             })
 
