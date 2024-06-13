@@ -449,9 +449,13 @@ $(document).ready(function() {
 
             if (document.getElementById('share-users').checked) {
                 $('.private-users').show();
+                $('#userTagsInput').attr('disabled', false)
             } else {
                 $('.private-users').hide();
+                $('#userTagsInput').attr('disabled', true)
             }
+
+            $('#userTagsInput').tagsinput('removeAll');
 
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(
@@ -462,8 +466,10 @@ $(document).ready(function() {
 
                 if (document.getElementById('share-users').checked) {
                     $('.private-users').show();
+                    $('#userTagsInput').attr('disabled', false)
                 } else {
                     $('.private-users').hide();
+                    $('#userTagsInput').attr('disabled', true)
                 }
             })
 
@@ -836,7 +842,7 @@ function fetchShareSettings(tournament_id) {
                         <td>${i + 1}</td>
                         <td><span class="path" data-bs-toggle="tooltip" data-bs-title="<?= base_url('/tournaments/shared/') ?>${item.token}"><?= base_url('/tournaments/shared/') ?>${item.token}</span></td>
                         <td><span class="date">${item.created_at}</span></td>
-                        <td><span class="date">${item.updated_at}</span></td>
+                        <td><span class="date modified">${item.created_at == item.updated_at ? '' : item.updated_at}</span></td>
                         <td class="target">${target}</td>
                         <td class="permission">${permission}</td>
                         <td>${item.deleted_at ? 'Purged' : 'Active'}</td>
@@ -1043,6 +1049,8 @@ function updateShareSetting(ele) {
                 if (result.share.permission == "<?= SHARE_PERMISSION_VIEW ?>") permissionHtml = 'View';
                 if (result.share.permission == "<?= SHARE_PERMISSION_EDIT ?>") permissionHtml = 'Edit';
                 row.find('td.permission').html(permissionHtml);
+
+                row.find('td span.modified').html(result.share.updated_at);
             }
 
             cancelUpdateSharing(ele)
