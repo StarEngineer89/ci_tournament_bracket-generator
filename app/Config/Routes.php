@@ -60,6 +60,19 @@ $routes->group('api/shared', static function ($routes) {
         $routes->post('(:num)/update', 'Api\TournamentController::update/$1');
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
     });
+
+    $routes->group('brackets', static function ($routes) {
+        $routes->post('save-list', 'Api\BracketsController::createBrackets');
+        $routes->put('update/(:num)', 'Api\BracketsController::updateBracket/$1');
+        $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');
+    });
+    
+    $routes->group('participants', static function ($routes) {
+        $routes->get('/', 'Api\ParticipantsController::getParticipants');
+        $routes->post('new', 'Api\ParticipantsController::addParticipant');
+        $routes->post('update/(:num)', 'Api\ParticipantsController::updateParticipant/$1');
+    });
+
 });
 
 /** Shield routs for authentication */
