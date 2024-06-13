@@ -181,6 +181,8 @@ class TournamentController extends BaseController
         }
 
         $settings = $shareSettingsModel->where('tournament_id', $tournament_id)->findAll();
+        
+        $settings_with_users = [];
         if (!$settings) {
             $config = new \Config\Encryption();
             // $encrypter = \Config\Services::encrypter();
@@ -189,7 +191,6 @@ class TournamentController extends BaseController
         } else {
             $userModel = model('CodeIgniter\Shield\Models\UserModel');
 
-            $settings_with_users = [];
             foreach ($settings as $setting) {
                 $setting['private_users'] = null;
                 
