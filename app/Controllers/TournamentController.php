@@ -13,12 +13,24 @@ class TournamentController extends BaseController
 
         $tournaments = $tournamentModel->where('user_by', auth()->user()->id)->findAll();
 
+        if ($this->request->getGet('filter') == 'archived') {
+            $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_COMPLETED])->findAll();
+        }
+
+        if ($this->request->getGet('filter') == 'shared') {
+            $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+            $shared_tournament_ids = array_column($shareSettingsModel->select('tournament_id')->where('user_by', auth()->user()->id)->findAll(), 'tournament_id');
+            $tournaments = $tournamentModel->find($shared_tournament_ids);
+        }
+
         $musicSettingsBlock = view('tournament/music-setting', []);
 
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $users = $userModel->select(['id', 'username'])->findAll();
 
-        return view('tournament/dashboard', ['tournaments' => $tournaments, 'musicSettingsBlock' => $musicSettingsBlock, 'users' => $users]);
+        $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';
+
+        return view('tournament/dashboard', ['tournaments' => $tournaments, 'musicSettingsBlock' => $musicSettingsBlock, 'users' => $users, 'navActive' => $navActive]);
     }
 
     public function create()

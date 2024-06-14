@@ -92,6 +92,13 @@ class TournamentAccessPermissionFilter implements FilterInterface
             return redirect()->route('login');
         }
 
+        if ($shareSetting && $shareSetting['target'] == SHARE_TO_USERS) {
+            $session->setFlashdata(['error' => "It looks like a private tournament link was shared with you. To proceed, please signin first to validate your identity."]);
+            $session->setTempdata('beforeLoginUrl', current_url(), 300);
+
+            return redirect()->route('login');
+        }
+
         $session->setFlashdata(['error' => "You don't have permission to view this tournament!"]);
         $session->setTempdata('beforeLoginUrl', current_url(), 300);
         

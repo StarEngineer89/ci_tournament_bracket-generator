@@ -60,19 +60,19 @@ const hasEditPermission =
             The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket
             advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament
             structure.
+            <?php if ((auth()->user() && auth()->user()->id == $tournament['user_by']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
             <br />
             You also have actions available to you by right clicking (or holding on mobile devices) the individual
             bracket box.
+            <?php endif ?>
         </div>
         <div id="brackets" class="brackets d-flex justify-content-md-center justify-content-lg-center"></div>
     </div>
 </div>
 
 <?php if (isset($settings) && $settings && isset($settings[1])) : ?>
-<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[1]['start']) ? $settings[1]['start'] : '' ?>"
-    data-duration="<?= ($settings[1]['duration']) ? $settings[1]['duration'] : '' ?>">
-    <source src="<?= ($settings[1]['source'] == 'f') ? '/uploads/' . $settings[1]['path'] : $settings[1]['path'] ?>"
-        type="audio/mpeg" id="audioSrc">
+<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[1]['start']) ? $settings[1]['start'] : '' ?>" data-duration="<?= ($settings[1]['duration']) ? $settings[1]['duration'] : '' ?>">
+    <source src="<?= ($settings[1]['source'] == 'f') ? '/uploads/' . $settings[1]['path'] : $settings[1]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 <?php else : ?>
 <audio id="myAudio" preload="auto">

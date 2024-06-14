@@ -122,11 +122,10 @@ class BracketsController extends BaseController
     {
         $bracket = $this->bracketsModel->find($id);
         // $this->bracketsModel->where('id', $id)->delete();
-        $bracket['teamnames'] = json_encode([null, null]);
-        $bracket['deleted_by'] = (auth()->user()) ? auth()->user()->id : 0;
 
-        $this->bracketsModel->update($id, $bracket);
-
+        /**
+         * Prepare the log data
+         */
         $logActionsModel = model('\App\Models\LogActionsModel');
         $insert_data = ['tournament_id' => $bracket['tournament_id'], 'action' => BRACKET_ACTIONCODE_DELETE];
         if (auth()->user()) {
@@ -148,7 +147,7 @@ class BracketsController extends BaseController
             $participants_in_bracket[] = null;
         }
         if ($original[1]) {
-            $participants_in_bracket[] = $original[0]->name;
+            $participants_in_bracket[] = $original[1]->name;
         } else {
             $participants_in_bracket[] = null;
         }
@@ -156,6 +155,12 @@ class BracketsController extends BaseController
         $data['participants'] = $participants_in_bracket;
         $insert_data['params'] = json_encode($data);
 
+        /** Delete a bracket - Delete the participants in a bracket */
+        $bracket['teamnames'] = json_encode([null, null]);
+        $bracket['deleted_by'] = (auth()->user()) ? auth()->user()->id : 0;
+        $this->bracketsModel->update($id, $bracket);
+
+        /** Record a delete action log */
         $logActionsModel->insert($insert_data);
 
         return json_encode(array('result' => 'success'));
