@@ -21,8 +21,8 @@ class TournamentController extends BaseController
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
             $tempRows = $shareSettingsModel->tournamentDetails()->like('users', strval(auth()->user()->id))->findAll();
         
+            $tournaments = [];
             if ($tempRows) {
-                $tournaments = [];
                 foreach ($tempRows as $tempRow) {
                     $user_ids = explode(',', $tempRow['users']);
                     if (in_array(auth()->user()->id, $user_ids)) {
