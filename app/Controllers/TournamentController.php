@@ -16,11 +16,20 @@ class TournamentController extends BaseController
         if ($this->request->getGet('filter') == 'archived') {
             $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_COMPLETED])->findAll();
         }
-
+        
         if ($this->request->getGet('filter') == 'shared') {
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-            $shared_tournament_ids = array_column($shareSettingsModel->select('tournament_id')->where('user_by', auth()->user()->id)->findAll(), 'tournament_id');
-            $tournaments = $tournamentModel->find($shared_tournament_ids);
+            $tempRows = $shareSettingsModel->tournamentDetails()->like('users', strval(auth()->user()->id))->findAll();
+        
+            if ($tempRows) {
+                $tournaments = [];
+                foreach ($tempRows as $tempRow) {
+                    $user_ids = explode(',', $tempRow['users']);
+                    if (in_array(auth()->user()->id, $user_ids)) {
+                        $tournaments[] = $tempRow;
+                    }
+                }
+            }
         }
 
         $musicSettingsBlock = view('tournament/music-setting', []);

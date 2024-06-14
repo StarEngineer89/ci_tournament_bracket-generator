@@ -5,7 +5,7 @@
 <?= $this->section('main') ?>
 
 <div class="d-flex align-items-start">
-    <div class="nav card flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+    <div class="nav card flex-column nav-pills me-3 p-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
         <a class="nav-link <?= ($navActive == 'all') ? 'active' : '' ?>" id="v-pills-home-tab" href="<?= base_url('tournaments')?>">Current Tournaments</a>
         <a class="nav-link <?= ($navActive == 'archived') ? 'active' : '' ?>" id="v-pills-profile-tab" href="<?= base_url('tournaments?filter=archived')?>">Archived Tournaments</a>
         <a class="nav-link <?= ($navActive == 'shared') ? 'active' : '' ?>" id="v-pills-settings-tab" href="<?= base_url('tournaments?filter=shared')?>">Shared Tournaments</a>
@@ -46,7 +46,12 @@
                             <th scope="col">Tournament Name</th>
                             <th scope="col">Type</th>
                             <th scope="col">Status</th>
+                            <?php if ($navActive !== 'shared') : ?>
                             <th scope="col">Actions</th>
+                            <?php else : ?>
+                            <th scope="col">Shared By</th>
+                            <th scope="col">Time</th>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,24 +59,36 @@
                         <tr data-id="<?= $tournament['id'] ?>">
                             <th scope="row"><?= $index + 1 ?></th>
                             <td>
+                                <?php if ($navActive !== 'shared') : ?>
                                 <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
+                                <?php else : ?>
+                                <a href="<?= base_url('tournaments/shared/' . $tournament['token']) ?>"><?= $tournament['name'] ?></a>
+                                <?php endif ?>
                             </td>
                             <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
                             <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
+                            <?php if ($navActive !== 'shared') : ?>
                             <td>
                                 <div class="btn-groups list-group">
                                     <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
                                     <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
                                     <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
                                     <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
-                                    <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music
-                                        Settings</a>
+                                    <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music Settings</a>
                                     <a href="javascript:;" class="share" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
                                     <a href="javascript:;" class="view-log" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
                                 </div>
 
                                 <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
                             </td>
+                            <?php else : ?>
+                            <td>
+                                <?= $tournament['username'] ?>
+                            </td>
+                            <td>
+                                <?= $tournament['created_at'] ?>
+                            </td>
+                            <?php endif; ?>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
