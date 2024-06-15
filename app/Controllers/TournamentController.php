@@ -24,13 +24,14 @@ class TournamentController extends BaseController
             $tournaments = [];
             if ($tempRows) {
                 foreach ($tempRows as $tempRow) {
+                    $user_ids = explode(',', $tempRow['users']);
+
                     if ($tempRow['target'] == SHARE_TO_EVERYONE) {
                         $tournaments[] = $tempRow;
-                    }
-
-                    $user_ids = explode(',', $tempRow['users']);
-                    if (in_array(auth()->user()->id, $user_ids)) {
+                    } else {
+                        if (in_array(auth()->user()->id, $user_ids)) {
                         $tournaments[] = $tempRow;
+                    }
                     }
                 }
             }
