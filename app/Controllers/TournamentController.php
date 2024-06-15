@@ -27,10 +27,10 @@ class TournamentController extends BaseController
                     $user_ids = explode(',', $tempRow['users']);
 
                     if ($tempRow['target'] == SHARE_TO_EVERYONE) {
-                        $tournaments[] = $tempRow;
+                        $tournaments[$tempRow['tournament_id']] = $tempRow;
                     } else {
                         if (in_array(auth()->user()->id, $user_ids)) {
-                        $tournaments[] = $tempRow;
+                        $tournaments[$tempRow['tournament_id']] = $tempRow;
                     }
                     }
                 }
