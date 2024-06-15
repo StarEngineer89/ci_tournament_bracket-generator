@@ -19,11 +19,15 @@ class TournamentController extends BaseController
         
         if ($this->request->getGet('filter') == 'shared') {
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-            $tempRows = $shareSettingsModel->tournamentDetails()->like('users', strval(auth()->user()->id))->findAll();
-        
+            $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
+            
             $tournaments = [];
             if ($tempRows) {
                 foreach ($tempRows as $tempRow) {
+                    if ($tempRow['target'] == SHARE_TO_EVERYONE) {
+                        $tournaments[] = $tempRow;
+                    }
+
                     $user_ids = explode(',', $tempRow['users']);
                     if (in_array(auth()->user()->id, $user_ids)) {
                         $tournaments[] = $tempRow;

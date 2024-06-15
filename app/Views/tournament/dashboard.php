@@ -49,6 +49,7 @@
                     <?php if ($navActive !== 'shared') : ?>
                     <th scope="col">Actions</th>
                     <?php else : ?>
+                    <th scope="col">Accessibility</th>
                     <th scope="col">Shared By</th>
                     <th scope="col">Time</th>
                     <?php endif; ?>
@@ -82,6 +83,9 @@
                         <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
                     </td>
                     <?php else : ?>
+                    <td>
+                        <?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'Can Edit' : 'Can View' ?>
+                    </td>
                     <td>
                         <?= $tournament['username'] ?>
                     </td>
