@@ -687,6 +687,14 @@ $(document).ready(function() {
         purgeShare(shareSettingId);
     })
 
+    $('input[name="share-type"]').on('change', function(ele) {
+        if ($(this).val() == 'wh') {
+            window.location = "<?= base_url('tournaments?filter=shared&type=wh') ?>"
+        } else {
+            window.location = "<?= base_url('tournaments?filter=shared') ?>"
+        }
+    })
+
     var elt = $("#userTagsInput");
     elt.tagsinput({
         itemValue: "id",

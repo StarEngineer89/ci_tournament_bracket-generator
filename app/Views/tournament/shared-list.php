@@ -1,8 +1,8 @@
 <div class="buttons d-flex justify-content-end mb-3">
-    <input type="radio" class="btn-check" name="share-type" id="shared-by" autocomplete="off" checked>
+    <input type="radio" class="btn-check" name="share-type" id="shared-by" value="by" autocomplete="off" <?= ($shareType != 'wh') ? 'checked' : '' ?>>
     <label class="btn" for="shared-by">Shared by me</label>
 
-    <input type="radio" class="btn-check" name="share-type" id="shared-with" autocomplete="off">
+    <input type="radio" class="btn-check" name="share-type" id="shared-with" value="wh" autocomplete="off" <?= ($shareType == 'wh') ? 'checked' : '' ?>>
     <label class="btn" for="shared-with">Shared with me</label>
 </div>
 

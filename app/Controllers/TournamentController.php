@@ -17,44 +17,42 @@ class TournamentController extends BaseController
             $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_COMPLETED])->findAll();
         }
 
-        $table = view('tournament/list', ['tournaments' => $tournaments]);
+        $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';
 
         if ($this->request->getGet('filter') == 'shared') {
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
             // $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
-            $tempRows = $shareSettingsModel->tournamentDetails()->where('user_by', auth()->user()->id)->orLike('users', strval(auth()->user()->id))->findAll();
-            if ($this->request->getGet('type') == 'by') {
-                $tempRows = $shareSettingsModel->tournamentDetails()->where('user_by', auth()->user()->id)->findAll();
-            }
-
-            if ($this->request->getGet('type') == 'wh') {
-                $tempRows = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
-            }
             
-            $tournaments = [];
-            if ($tempRows) {
-                foreach ($tempRows as $tempRow) {
-                    $user_ids = explode(',', $tempRow['users']);
+            if ($this->request->getGet('type') == 'wh') {
+                $tournaments = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
 
-                    if ($this->request->getGet('type') == 'by') {
-                        $tournaments[$tempRow['tournament_id']] = $tempRow;
-                    } else {
+                $table = view('tournament/list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'navActive' => $navActive]);
+            } else {
+                $tempRows = $shareSettingsModel->tournamentDetails()->where('share_settings.user_by', auth()->user()->id)->findAll();
+
+                $tournaments = [];
+                if ($tempRows) {
+                    foreach ($tempRows as $tempRow) {
+                        $user_ids = explode(',', $tempRow['users']);
+
                         if (in_array(auth()->user()->id, $user_ids)) {
-                        $tournaments[$tempRow['tournament_id']] = $tempRow;
-                    }
+                            $tournaments[$tempRow['tournament_id']] = $tempRow;
+                        }
                     }
                 }
+
+                $table = view('tournament/shared-list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type')]);
             }
 
-            $table = view('tournament/shared-list', ['tournaments' => $tournaments]);
+            
+        } else {
+            $table = view('tournament/list', ['tournaments' => $tournaments, 'navActive' => $navActive]);
         }
 
         $musicSettingsBlock = view('tournament/music-setting', []);
 
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $users = $userModel->select(['id', 'username'])->findAll();
-
-        $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';
 
         return view('tournament/dashboard', ['table' => $table, 'musicSettingsBlock' => $musicSettingsBlock, 'users' => $users, 'navActive' => $navActive]);
     }
