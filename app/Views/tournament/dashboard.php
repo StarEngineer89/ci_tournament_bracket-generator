@@ -16,9 +16,6 @@
         <h5 class="card-title d-flex justify-content-center">
             <? //= lang('Auth.login') ?>Tournament Dashboard
         </h5>
-        <div class="buttons d-flex justify-content-end">
-            <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
-        </div>
 
         <?php if (session('error') !== null) : ?>
         <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
@@ -39,64 +36,7 @@
         <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
-        <table class="table align-middle">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Tournament Name</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Status</th>
-                    <?php if ($navActive !== 'shared') : ?>
-                    <th scope="col">Actions</th>
-                    <?php else : ?>
-                    <th scope="col">Accessibility</th>
-                    <th scope="col">Shared By</th>
-                    <th scope="col">Time</th>
-                    <?php endif; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($tournaments as $index => $tournament) : ?>
-                <tr data-id="<?= $tournament['id'] ?>">
-                    <th scope="row"><?= $index + 1 ?></th>
-                    <td>
-                        <?php if ($navActive !== 'shared') : ?>
-                        <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
-                        <?php else : ?>
-                        <a href="<?= base_url('tournaments/shared/' . $tournament['token']) ?>"><?= $tournament['name'] ?></a>
-                        <?php endif ?>
-                    </td>
-                    <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
-                    <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
-                    <?php if ($navActive !== 'shared') : ?>
-                    <td>
-                        <div class="btn-groups list-group">
-                            <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
-                            <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
-                            <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
-                            <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
-                            <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music Settings</a>
-                            <a href="javascript:;" class="share" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
-                            <a href="javascript:;" class="view-log" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
-                        </div>
-
-                        <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
-                    </td>
-                    <?php else : ?>
-                    <td>
-                        <?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'Can Edit' : 'Can View' ?>
-                    </td>
-                    <td>
-                        <?= $tournament['username'] ?>
-                    </td>
-                    <td>
-                        <?= $tournament['created_at'] ?>
-                    </td>
-                    <?php endif; ?>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <?php echo $table ?>
     </div>
 </div>
 
@@ -364,6 +304,8 @@ var task = new Bloodhound({
 task.initialize();
 
 $(document).ready(function() {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+
     $('#confirmReset').on('click', function() {
         const tournament_id = resetModal.getAttribute('data-id');
         $.ajax({

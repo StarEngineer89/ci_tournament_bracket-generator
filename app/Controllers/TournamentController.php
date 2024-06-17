@@ -16,17 +16,27 @@ class TournamentController extends BaseController
         if ($this->request->getGet('filter') == 'archived') {
             $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_COMPLETED])->findAll();
         }
-        
+
+        $table = view('tournament/list', ['tournaments' => $tournaments]);
+
         if ($this->request->getGet('filter') == 'shared') {
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-            $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
+            // $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
+            $tempRows = $shareSettingsModel->tournamentDetails()->where('user_by', auth()->user()->id)->orLike('users', strval(auth()->user()->id))->findAll();
+            if ($this->request->getGet('type') == 'by') {
+                $tempRows = $shareSettingsModel->tournamentDetails()->where('user_by', auth()->user()->id)->findAll();
+            }
+
+            if ($this->request->getGet('type') == 'wh') {
+                $tempRows = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
+            }
             
             $tournaments = [];
             if ($tempRows) {
                 foreach ($tempRows as $tempRow) {
                     $user_ids = explode(',', $tempRow['users']);
 
-                    if ($tempRow['target'] == SHARE_TO_EVERYONE) {
+                    if ($this->request->getGet('type') == 'by') {
                         $tournaments[$tempRow['tournament_id']] = $tempRow;
                     } else {
                         if (in_array(auth()->user()->id, $user_ids)) {
@@ -35,6 +45,8 @@ class TournamentController extends BaseController
                     }
                 }
             }
+
+            $table = view('tournament/shared-list', ['tournaments' => $tournaments]);
         }
 
         $musicSettingsBlock = view('tournament/music-setting', []);
@@ -44,7 +56,7 @@ class TournamentController extends BaseController
 
         $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';
 
-        return view('tournament/dashboard', ['tournaments' => $tournaments, 'musicSettingsBlock' => $musicSettingsBlock, 'users' => $users, 'navActive' => $navActive]);
+        return view('tournament/dashboard', ['table' => $table, 'musicSettingsBlock' => $musicSettingsBlock, 'users' => $users, 'navActive' => $navActive]);
     }
 
     public function create()

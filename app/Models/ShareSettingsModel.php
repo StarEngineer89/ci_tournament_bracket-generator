@@ -45,9 +45,10 @@ class ShareSettingsModel extends Model
     protected $afterDelete    = [];
     
     public function tournamentDetails() {
-        $this->select('share_settings.*, tournaments.name as name, tournaments.type as type, tournaments.status as status, users.username as username');
+        $this->select('share_settings.*, tournaments.name as name, tournaments.type as type, tournaments.status as status, users.username as username, auth_identities.secret as email');
         $this->join('tournaments', 'share_settings.tournament_id = tournaments.id', 'LEFT');
         $this->join('users', 'share_settings.user_by = users.id', 'LEFT');
+        $this->join('auth_identities', 'share_settings.user_by = auth_identities.user_id', 'LEFT');
 
         return $this;
     }
