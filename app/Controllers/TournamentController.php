@@ -26,7 +26,7 @@ class TournamentController extends BaseController
             if ($this->request->getGet('type') == 'wh') {
                 $tournaments = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
 
-                $table = view('tournament/list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'navActive' => $navActive]);
+                $table = view('tournament/shared-list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type')]);
             } else {
                 $tempRows = $shareSettingsModel->tournamentDetails()->where('share_settings.user_by', auth()->user()->id)->findAll();
 
@@ -41,7 +41,7 @@ class TournamentController extends BaseController
                     }
                 }
 
-                $table = view('tournament/shared-list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type')]);
+                $table = view('tournament/list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'navActive' => $navActive]);
             }
 
             
