@@ -146,7 +146,7 @@ class TournamentController extends BaseController
         $brackets = $bracketModel->where('tournament_id', $settings['tournament_id'])->findAll();
         $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => 0])->findAll();
 
-        $shareAccessModel = model('\App\Models\TournamentShareAccessModel');
+        $shareAccessModel = model('\App\Models\TournamentShareAccessLogModel');
         if (auth()->user()) {
             $shareAccessModel->insert(['share_id' => $settings['id'], 'user_by' => auth()->user()->id]);
         } else {
