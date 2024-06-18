@@ -21,18 +21,24 @@ class TournamentController extends BaseController
 
         if ($this->request->getGet('filter') == 'shared') {
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-            // $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
             
             if ($this->request->getGet('type') == 'wh') {
-                $tempRows = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
-
+                // $tempRows = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
+                $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
+                
                 $tournaments = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
                         $user_ids = explode(',', $tempRow['users']);
 
-                        if (in_array(auth()->user()->id, $user_ids)) {
+                        if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
                             $tournaments[$tempRow['tournament_id']] = $tempRow;
+                        }
+
+                        if ($tempRow['target'] == SHARE_TO_EVERYONE && !isset($tournaments[$tempRow['tournament_id']])) {
+                            if ($tempRow['access_time']) {
+                                $tournaments[$tempRow['tournament_id']] = $tempRow;
+                            }
                         }
                     }
                 }
@@ -121,6 +127,13 @@ class TournamentController extends BaseController
         $musicSettingModel = model('\App\Models\MusicSettingModel');
 
         $settings = $shareSettingModel->where(['token'=> $token])->first();
+        if (!$settings) {
+            $session = \Config\Services::session();
+            $session->setFlashdata(['error' => "This link is incorrect!"]);
+
+            return redirect()->to('/tournaments');
+        }
+
         $tournament = $tournamentModel->find($settings['tournament_id']);
         
         if (!$tournament) {
@@ -132,6 +145,14 @@ class TournamentController extends BaseController
 
         $brackets = $bracketModel->where('tournament_id', $settings['tournament_id'])->findAll();
         $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => 0])->findAll();
+
+        $shareAccessModel = model('\App\Models\TournamentShareAccessModel');
+        if (auth()->user()) {
+            $shareAccessModel->insert(['share_id' => $settings['id'], 'user_by' => auth()->user()->id]);
+        } else {
+            $shareAccessModel->insert(['share_id' => $settings['id'], 'user_by' => 0]);
+        }
+        
 
         if (!$brackets) {
             if (empty(auth()->user()) || $tournament['user_by'] != auth()->user()->id) {

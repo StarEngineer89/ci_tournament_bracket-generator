@@ -228,7 +228,7 @@ class TournamentController extends BaseController
             
             $share['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
         }
-        log_message('debug', json_encode($share));
+        
         return json_encode(['msg' => "Success to save the sharing information.", 'share' => $share]);
     }
 

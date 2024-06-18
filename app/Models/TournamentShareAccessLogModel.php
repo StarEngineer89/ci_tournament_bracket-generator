@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ShareSettingsModel extends Model
+class TournamentShareAccessLogModel extends Model
 {
-    protected $table            = 'share_settings';
+    protected $table            = 'tournament_share_access_logs';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_by', 'tournament_id', 'target', 'permission', 'token', 'users'];
+    protected $allowedFields    = [];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -21,7 +21,7 @@ class ShareSettingsModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -43,14 +43,4 @@ class ShareSettingsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-    
-    public function tournamentDetails() {
-        $this->select('share_settings.*, tournaments.name as name, tournaments.type as type, tournaments.status as status, users.username as username, auth_identities.secret as email, tournament_share_access_logs.created_at as access_time');
-        $this->join('tournaments', 'share_settings.tournament_id = tournaments.id', 'LEFT');
-        $this->join('users', 'share_settings.user_by = users.id', 'LEFT');
-        $this->join('auth_identities', 'share_settings.user_by = auth_identities.user_id', 'LEFT');
-        $this->join('tournament_share_access_logs', 'share_settings.id = tournament_share_access_logs.share_id', 'LEFT');
-
-        return $this;
-    }
 }

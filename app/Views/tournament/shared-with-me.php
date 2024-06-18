@@ -42,7 +42,7 @@ Note that actions are logged for tracking purposes.' : 'You can view the tournam
 
             </td>
             <td>
-                <?= $tournament['created_at'] ?>
+                <?= $tournament['access_time'] ?>
             </td>
         </tr>
         <?php endif ?>
