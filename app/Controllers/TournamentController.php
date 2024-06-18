@@ -24,11 +24,7 @@ class TournamentController extends BaseController
             // $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
             
             if ($this->request->getGet('type') == 'wh') {
-                $tournaments = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
-
-                $table = view('tournament/shared-list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type')]);
-            } else {
-                $tempRows = $shareSettingsModel->tournamentDetails()->where('share_settings.user_by', auth()->user()->id)->findAll();
+                $tempRows = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
 
                 $tournaments = [];
                 if ($tempRows) {
@@ -41,7 +37,11 @@ class TournamentController extends BaseController
                     }
                 }
 
-                $table = view('tournament/list', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'navActive' => $navActive]);
+                $table = view('tournament/shared-with-me', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type')]);
+            } else {
+                $tournaments = $shareSettingsModel->tournamentDetails()->where('share_settings.user_by', auth()->user()->id)->findAll();
+
+                $table = view('tournament/shared-by-me', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'navActive' => $navActive]);
             }
 
             
