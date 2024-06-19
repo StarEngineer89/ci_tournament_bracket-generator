@@ -27,16 +27,28 @@ class TournamentController extends BaseController
                 $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
                 
                 $tournaments = [];
+                $access_tokens = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
                         $user_ids = explode(',', $tempRow['users']);
 
+                        $add_in_list = false;
                         if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
-                            $tournaments[] = $tempRow;
+                            $add_in_list = true;
                         }
 
-                        if ($tempRow['access_time']) {
+                        if (($tempRow['target'] == SHARE_TO_EVERYONE || $tempRow['target'] == SHARE_TO_PUBLIC) && $tempRow['access_time']) {
+                            $add_in_list = true;
+                        }
+
+                        /** Omit the record from Shared with me if the share was created by himself */
+                        if ($tempRow['user_by'] == auth()->user()->id) {
+                            $add_in_list = false;
+                        }
+
+                        if ($add_in_list && !in_array($tempRow['token'], $access_tokens)) {
                             $tournaments[] = $tempRow;
+                            $access_tokens[] = $tempRow['token'];
                         }
                     }
                 }
