@@ -29,7 +29,7 @@
             </td>
             <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
             <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
-            <td><?php log_message('debug', json_encode($tournament)); ?>
+            <td>
                 <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="<?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'You can view and execute actions on the tournament brackets.
 Note that actions are logged for tracking purposes.' : 'You can view the tournament brackets.' ?>">
                     <button class="btn" type="button" disabled><?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'Can Edit' : 'Can View' ?></button>

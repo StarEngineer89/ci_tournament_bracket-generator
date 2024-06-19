@@ -32,13 +32,11 @@ class TournamentController extends BaseController
                         $user_ids = explode(',', $tempRow['users']);
 
                         if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
-                            $tournaments[$tempRow['tournament_id']] = $tempRow;
+                            $tournaments[] = $tempRow;
                         }
 
-                        if (!isset($tournaments[$tempRow['tournament_id']])) {
-                            if ($tempRow['access_time']) {
-                                $tournaments[] = $tempRow;
-                            }
+                        if ($tempRow['access_time']) {
+                            $tournaments[] = $tempRow;
                         }
                     }
                 }
