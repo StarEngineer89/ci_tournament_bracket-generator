@@ -12,7 +12,7 @@
     <?php endif ?>
 </div>
 
-<table class="table align-middle">
+<table class="shared-by-me table align-middle">
     <thead>
         <tr>
             <th scope="col">#</th>

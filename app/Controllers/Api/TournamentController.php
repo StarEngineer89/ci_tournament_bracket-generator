@@ -234,10 +234,12 @@ class TournamentController extends BaseController
 
     public function purgechShareSettings($share_id) {
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+        $share = $shareSettingsModel->find($share_id);
 
         $shareSettingsModel->delete([$share_id]);
+        $shares = $shareSettingsModel->where(['tournament_id'=> $share['tournament_id']])->findAll();
 
-        return json_encode(['status'=> 'success']);
+        return json_encode(['status'=> 'success', 'shares'=> $shares, 'tournament_id' => $share['tournament_id']]);
     }
 
     public function fetchShareSetting($share_id) {

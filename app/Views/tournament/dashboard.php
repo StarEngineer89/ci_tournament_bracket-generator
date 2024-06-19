@@ -683,7 +683,7 @@ $(document).ready(function() {
     });
 
     $('#confirmPurgeShare').on('click', function() {
-        const shareSettingId = $('#purgeShareConfirm').data('id');
+        const shareSettingId = $('#purgeShareConfirm').attr('data-id');
         purgeShare(shareSettingId);
     })
 
@@ -867,9 +867,17 @@ function purgeShare(id) {
         type: "GET",
         url: `${apiURL}/tournaments/purge-share/${id}`,
         success: function(result) {
-            const data = JSON.parse(result).data;
+            result = JSON.parse(result);
 
             $(`tr[data-id="${id}"]`).remove();
+
+            if (!result.shares || result.shares.length < 1) {
+                if ($('table.shared-by-me').length) {
+                    $(`table.shared-by-me tr[data-id="${result.tournament_id}"]`).remove();
+                    $('#shareHistoryModal').modal('hide');
+                }
+            }
+
             $('#purgeShareConfirm').modal('hide');
         },
         error: function(error) {
