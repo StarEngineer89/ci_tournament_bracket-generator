@@ -31,7 +31,7 @@ class TournamentController extends BaseController
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
                         $user_ids = explode(',', $tempRow['users']);
-
+                        
                         $add_in_list = false;
                         if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
                             $add_in_list = true;
@@ -42,7 +42,7 @@ class TournamentController extends BaseController
                         }
 
                         /** Omit the record from Shared with me if the share was created by himself */
-                        if ($tempRow['user_by'] == auth()->user()->id) {
+                        if ($tempRow['user_by'] == auth()->user()->id || $tempRow['deleted_at']) {
                             $add_in_list = false;
                         }
 
