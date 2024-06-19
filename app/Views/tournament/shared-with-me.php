@@ -22,7 +22,7 @@
         <?php $order = 1; ?>
         <?php foreach ($tournaments as $index => $tournament) : ?>
         <?php if (isset($tournament['status'])): ?>
-        <tr data-id="<?= $tournament['id'] ?>">
+        <tr data-id="<?= $tournament['tournament_id'] ?>">
             <th scope="row"><?= $order++ ?></th>
             <td>
                 <a href="<?= base_url('tournaments/shared/' . $tournament['token']) ?>"><?= $tournament['name'] ?></a>
@@ -30,13 +30,13 @@
             <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
             <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
             <td><?php log_message('debug', json_encode($tournament)); ?>
-                <span class="d-inline-block" tabindex="<?= $order++ ?></th>" data-bs-toggle="tooltip" data-bs-title="<?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'You can view and execute actions on the tournament brackets.
+                <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="<?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'You can view and execute actions on the tournament brackets.
 Note that actions are logged for tracking purposes.' : 'You can view the tournament brackets.' ?>">
                     <button class="btn" type="button" disabled><?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'Can Edit' : 'Can View' ?></button>
                 </span>
             </td>
             <td>
-                <span class="d-inline-block" tabindex="<?= $order++ ?></th>" data-bs-toggle="tooltip" data-bs-title="<?= $tournament['email'] ?>">
+                <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="<?= $tournament['email'] ?>">
                     <button class="btn" type="button" disabled><?= $tournament['username'] ?></button>
                 </span>
 

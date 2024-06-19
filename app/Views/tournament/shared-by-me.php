@@ -35,16 +35,16 @@
             <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
             <td>
                 <div class="btn-groups list-group">
-                    <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
-                    <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
-                    <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
-                    <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
-                    <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music Settings</a>
-                    <a href="javascript:;" class="share" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
-                    <a href="javascript:;" class="view-log" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+                    <a href="javascript:;" class="rename" data-id="<?= $tournament['tournament_id'] ?>">Rename</a>
+                    <a href="javascript:;" class="reset" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                    <a href="javascript:;" class="delete" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
+                    <a href="javascript:;" class="change-status" data-id="<?= $tournament['tournament_id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
+                    <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['tournament_id'] ?>">Music Settings</a>
+                    <a href="javascript:;" class="share" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
+                    <a href="javascript:;" class="view-log" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
                 </div>
 
-                <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
+                <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['tournament_id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
             </td>
         </tr>
         <?php endif ?>

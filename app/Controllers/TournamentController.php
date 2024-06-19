@@ -24,7 +24,7 @@ class TournamentController extends BaseController
             
             if ($this->request->getGet('type') == 'wh') {
                 // $tempRows = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
-                $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orLike('users', strval(auth()->user()->id))->findAll();
+                $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
                 
                 $tournaments = [];
                 if ($tempRows) {
@@ -35,9 +35,9 @@ class TournamentController extends BaseController
                             $tournaments[$tempRow['tournament_id']] = $tempRow;
                         }
 
-                        if ($tempRow['target'] == SHARE_TO_EVERYONE && !isset($tournaments[$tempRow['tournament_id']])) {
+                        if (!isset($tournaments[$tempRow['tournament_id']])) {
                             if ($tempRow['access_time']) {
-                                $tournaments[$tempRow['tournament_id']] = $tempRow;
+                                $tournaments[] = $tempRow;
                             }
                         }
                     }
