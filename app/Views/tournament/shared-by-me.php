@@ -26,7 +26,7 @@
         <?php $order = 1; ?>
         <?php foreach ($tournaments as $index => $tournament) : ?>
         <?php if (isset($tournament['status'])): ?>
-        <tr data-id="<?= $tournament['id'] ?>">
+        <tr data-id="<?= $tournament['tournament_id'] ?>">
             <th scope="row"><?= $order++ ?></th>
             <td>
                 <a href="<?= base_url('tournaments/' . $tournament['tournament_id'] . '/view') ?>"><?= $tournament['name'] ?></a>
