@@ -34,7 +34,7 @@
                     <div class="input-group">
                         <div class="input-group-text">Start</div>
                         <input type="text" class="form-control time startAt" value="00:00:00" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
-                        <input type="hidden" class="form-control form-control-sm startAt" name="start[0]">
+                        <input type="hidden" class="form-control form-control-sm startAt" value="0" name="start[0]">
                     </div>
                 </div>
 
@@ -42,11 +42,11 @@
                     <div class="input-group">
                         <div class="input-group-text">Stop</div>
                         <input type="text" class="form-control time stopAt" value="00:00:05" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
-                        <input type="hidden" class="form-control form-control-sm stopAt" name="stop[0]">
+                        <input type="hidden" class="form-control form-control-sm stopAt" value="5" name="stop[0]">
                     </div>
                 </div>
 
-                <input type="hidden" class="duration" name="duration[0]">
+                <input type="hidden" class="duration" name="duration[0]" value="5">
             </div>
         </div>
     </div>
@@ -90,7 +90,7 @@
                     <div class="input-group">
                         <div class="input-group-text">Start</div>
                         <input type="text" class="form-control time startAt" value="00:00:00" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
-                        <input type="hidden" class="form-control form-control-sm startAt" name="start[1]">
+                        <input type="hidden" class="form-control form-control-sm startAt" value="0" name="start[1]">
                     </div>
                 </div>
 
@@ -98,11 +98,11 @@
                     <div class="input-group">
                         <div class="input-group-text">Stop</div>
                         <input type="text" class="form-control time stopAt" value="00:00:05" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
-                        <input type="hidden" class="form-control form-control-sm stopAt" name="stop[1]">
+                        <input type="hidden" class="form-control form-control-sm stopAt" value="5" name="stop[1]">
                     </div>
                 </div>
 
-                <input type="hidden" class="duration" name="duration[1]">
+                <input type="hidden" class="duration" name="duration[1]" value="5">
             </div>
         </div>
     </div>
