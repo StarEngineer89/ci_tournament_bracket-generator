@@ -22,8 +22,7 @@
                 <input class="form-check-input mt-0" type="radio" value="y" aria-label="Radio button for following text input" name="source[0]" onChange="musicSourceChange(this)" data-target="url">
             </div>
             <span class="input-group-text">URL</span>
-            <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[0]" required disabled>
-            <div class="form-text">Example: <a href="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U">https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U</a></div>
+            <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[0]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
         </div>
         <div class="mb-3 preview">
@@ -79,8 +78,7 @@
                 <input class="form-check-input mt-0" type="radio" value="y" aria-label="Radio button for following text input" name="source[1]" onChange="musicSourceChange(this)" data-target="url">
             </div>
             <span class="input-group-text">URL</span>
-            <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[1]" required disabled>
-            <div class="form-text">"Example: <a href="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U">https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U</a>"</div>
+            <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[1]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
         </div>
         <div class="mb-3 preview">
