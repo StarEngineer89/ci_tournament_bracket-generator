@@ -105,7 +105,9 @@ class TournamentController extends BaseController
 
             if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
                 $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
-
+                if ($this->request->getPost('source')[$index] != 'f') {
+                    $this->process($this->request->getPost('url')[$index]);
+                }
                 $setting['path'] = $path;
                 $setting['source'] = $this->request->getPost('source')[$index];
                 $setting['tournament_id'] = $tournament_id;
@@ -124,6 +126,42 @@ class TournamentController extends BaseController
         }
 
         return json_encode(['msg' => "Tournament was updated successfully."]);
+    }
+
+    public function process($youtubeLink)
+    {
+        // $youtubeLink = $this->request->getPost('youtube_link');
+
+        // Example: Validate YouTube link
+        // You can use regex or any library for URL validation
+
+        // Example: Download video using youtube-dl
+        $videoUrl = escapeshellarg($youtubeLink);
+        $cmd = "youtube-dl --extract-audio --audio-format mp3 -o '%(id)s.%(ext)s' $videoUrl";
+        exec($cmd, $output, $returnCode);
+
+        if ($returnCode === 0) {
+            // Video downloaded successfully
+            $mp3FileName = $output[0]; // Assuming output[0] contains the filename
+
+            // Example: Save MP3 file info to database
+            $mp3Data = [
+                'youtube_link' => $youtubeLink,
+                'mp3_file' => $mp3FileName,
+                // Add other fields as needed
+            ];
+
+            // Assuming you have a model named Mp3Model
+            // $mp3Model = new \App\Models\Mp3Model();
+            // $mp3Model->insert($mp3Data);
+                var_dump($mp3Data);
+                exit;
+            // Redirect to a success page or show success message
+            return view('download_result', ['success' => true]);
+        } else {
+            // Error downloading video
+            return view('download_result', ['success' => false, 'error' => 'Failed to download YouTube video.']);
+        }
     }
 
     public function delete($id)
