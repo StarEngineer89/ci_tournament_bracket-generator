@@ -107,7 +107,7 @@ class TournamentController extends BaseController
         }
 
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
-        $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => 0])->findAll();
+        $settings = $musicSettingModel->where(['tournament_id' => $id])->orderBy('type','asc')->findAll();
 
         if (!$brackets) {
             if ($tournament['user_by'] != auth()->user()->id) {

@@ -112,3 +112,6 @@ define('SHARE_TO_EVERYONE', 'a');
 define('SHARE_TO_PUBLIC', 'p');
 define('SHARE_PERMISSION_EDIT', 'e');
 define('SHARE_PERMISSION_VIEW', 'v');
+
+define('MUSIC_TYPE_BRACKET_GENERATION', 0);
+define('MUSIC_TYPE_FINAL_WINNER', 1);
