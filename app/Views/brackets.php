@@ -72,11 +72,11 @@ const hasEditPermission =
 
 <?php if (isset($settings) && $settings && isset($settings[1])) : ?>
 <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[1]['start']) ? $settings[1]['start'] : '' ?>" data-duration="<?= ($settings[1]['duration']) ? $settings[1]['duration'] : '' ?>">
-    <source src="<?= ($settings[1]['source'] == 'f') ? '/uploads/' . $settings[1]['path'] : $settings[1]['path'] ?>" type="audio/mpeg" id="audioSrc">
+    <source src="<?= ($settings[1]['source'] == 'f') ? '/uploads/' . $settings[1]['path'] : '/uploads/' . $settings[1]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 <?php else : ?>
 <audio id="myAudio" preload="auto">
-    <source src="https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l" type="audio/mpeg" id="audioSrc">
+    <source src="<?= base_url('uploads/youtube/fT3fFBreaYw_bh4l.mp3') ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 <?php endif; ?>
 

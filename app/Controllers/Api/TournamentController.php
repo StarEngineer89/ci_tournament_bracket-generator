@@ -5,6 +5,8 @@ namespace App\Controllers\Api;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Files\File;
+use YoutubeDl\YoutubeDl;
+use YoutubeDl\Options;
 
 class TournamentController extends BaseController
 {
@@ -104,10 +106,8 @@ class TournamentController extends BaseController
             }
 
             if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
-                $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
-                if ($this->request->getPost('source')[$index] != 'f') {
-                    $this->process($this->request->getPost('url')[$index]);
-                }
+                $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index]);
+                
                 $setting['path'] = $path;
                 $setting['source'] = $this->request->getPost('source')[$index];
                 $setting['tournament_id'] = $tournament_id;
@@ -116,6 +116,7 @@ class TournamentController extends BaseController
                 $setting['duration'] = $this->request->getPost('duration')[$index];
                 $setting['start'] = $this->request->getPost('start')[$index];
                 $setting['end'] = $this->request->getPost('stop')[$index];
+                $setting['url'] = $path = ($this->request->getPost('source')[$index] == 'f') ? null : $this->request->getPost('url')[$index];
 
                 $musicSettingModel->save($setting);
             } else {
@@ -125,43 +126,44 @@ class TournamentController extends BaseController
             }
         }
 
-        return json_encode(['msg' => "Tournament was updated successfully."]);
+        return json_encode(['msg' => "Tournament Music Setting was updated successfully."]);
     }
 
     public function process($youtubeLink)
     {
-        // $youtubeLink = $this->request->getPost('youtube_link');
-
-        // Example: Validate YouTube link
-        // You can use regex or any library for URL validation
-
-        // Example: Download video using youtube-dl
-        $videoUrl = escapeshellarg($youtubeLink);
-        $cmd = "youtube-dl --extract-audio --audio-format mp3 -o '%(id)s.%(ext)s' $videoUrl";
-        exec($cmd, $output, $returnCode);
-
-        if ($returnCode === 0) {
-            // Video downloaded successfully
-            $mp3FileName = $output[0]; // Assuming output[0] contains the filename
-
-            // Example: Save MP3 file info to database
-            $mp3Data = [
-                'youtube_link' => $youtubeLink,
-                'mp3_file' => $mp3FileName,
-                // Add other fields as needed
-            ];
-
-            // Assuming you have a model named Mp3Model
-            // $mp3Model = new \App\Models\Mp3Model();
-            // $mp3Model->insert($mp3Data);
-                var_dump($mp3Data);
-                exit;
-            // Redirect to a success page or show success message
-            return view('download_result', ['success' => true]);
-        } else {
-            // Error downloading video
-            return view('download_result', ['success' => false, 'error' => 'Failed to download YouTube video.']);
+        parse_str( parse_url( $youtubeLink, PHP_URL_QUERY ), $vars );
+        
+        if (isset($vars['v'])) {
+            $video_id = $vars['v'];
         }
+
+        if (isset($vars['si'])) {
+            $video_id = $vars['si'];
+        }
+
+        if (file_exists(WRITEPATH . 'uploads/youtube/' . $video_id . '.mp3')) {
+            return $video_id . '.mp3';
+        }
+
+        $yt = new YoutubeDl();
+        $yt->setBinPath('C:\ffmpeg\bin\yt-dlp.exe');
+        $collection = $yt->download(
+            Options::create()
+                ->downloadPath(WRITEPATH . 'uploads/youtube')
+                ->extractAudio(true)
+                ->audioFormat('mp3')
+                ->audioQuality('0') // best
+                ->output($video_id)
+                ->url($youtubeLink)
+        );
+
+        foreach ($collection->getVideos() as $video) {
+            if ($video->getError() !== null) {
+                echo "Error downloading video: {$video->getError()}.";
+            }
+        }
+
+        return $video_id . '.mp3';
     }
 
     public function delete($id)

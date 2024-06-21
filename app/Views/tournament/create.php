@@ -7,275 +7,275 @@
 <script src="/js/participants.js"></script>
 <!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
-    let apiURL = "<?= base_url('api') ?>";
-    let eleminationType;
-    let tournament_id;
-    let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
-    let audio = document.getElementById("myAudio");
-    let videoUrl = "https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l";
-    let videoStartTime = 0;
-    let videoDuration = 20;
-    let duplicates = [];
-    let insert_count = 0;
+let apiURL = "<?= base_url('api') ?>";
+let eleminationType;
+let tournament_id;
+let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
+let audio = document.getElementById("myAudio");
+let videoUrl = "https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l";
+let videoStartTime = 0;
+let videoDuration = 20;
+let duplicates = [];
+let insert_count = 0;
 
-    const itemList = document.getElementById('newList');
+const itemList = document.getElementById('newList');
 
-    $(window).on('load', function() {
-        $("#preview").fadeIn();
-    });
-    $(document).ready(function() {
-        loadParticipants();
+$(window).on('load', function() {
+    $("#preview").fadeIn();
+});
+$(document).ready(function() {
+    loadParticipants();
 
-        $('#submit').on('click', function(event) {
-            const form = document.getElementById('tournamentForm');
-            if (!form.checkValidity()) {
-                event.preventDefault()
-                event.stopPropagation()
-                form.classList.add('was-validated');
-                return false;
-            }
+    $('#submit').on('click', function(event) {
+        const form = document.getElementById('tournamentForm');
+        if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            form.classList.add('was-validated');
+            return false;
+        }
 
-            const values = $('#tournamentForm').serializeArray();
-            const data = Object.fromEntries(values.map(({
-                name,
-                value
-            }) => [name, value]));
-            shuffle_duration = parseInt(data['duration[0]']);
+        const values = $('#tournamentForm').serializeArray();
+        const data = Object.fromEntries(values.map(({
+            name,
+            value
+        }) => [name, value]));
+        shuffle_duration = parseInt(data['duration[0]']);
 
-            $.ajax({
-                url: apiURL + '/tournaments/save',
-                type: "POST",
-                data: data,
-                beforeSend: function() {
-                    //$("#preview").fadeOut();
-                    $("#err").fadeOut();
-                },
-                success: function(result) {
-                    var result = JSON.parse(result);
-                    if (result.error) {
-                        // invalid file format.
-                        $("#err").html("Invalid File !").fadeIn();
-                    } else {
-                        $('#tournamentSettings').modal('hide');
-                        tournament_id = result.data.tournament_id;
-                        eleminationType = (result.data.type == 1) ? "Single" : "Double";
-                        if (result.data.music !== undefined && result.data.music.type == 0) {
-                            shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
-                            let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '';
-                            audioSrc += result.data.music[0].path;
-
-                            $('#audioSrc').attr('src', audioSrc);
-                            audio.load();
-                        }
-
-                        callShuffle();
-                    }
-                },
-                error: function(e) {
-                    $("#err").html(e).fadeIn();
-                }
-            });
-        });
-
-        $('#generate').on('click', function() {
-            <?php if (isset($tournament) && count($tournament)) : ?>
-                tournament_id = "<?= $tournament['id'] ?>";
-                eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
-
-                <?php if (isset($settings) && count($settings)) : ?>
-                    audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
-                <?php endif; ?>
-
-                callShuffle();
-            <?php else : ?>
-                $('#tournamentSettings').modal('show');
-            <?php endif; ?>
-        });
-
-        $('#addParticipants').on('click', function() {
-            var opts = $('#participantNames').val();
-
-            if (opts == '') {
-                return false;
-            }
-
-            names = opts.replaceAll(', ', ',').split(',');
-
-            if (names.length) {
-                saveParticipants(names);
-            }
-        });
-
-        $('#confirmSave .include').on('click', () => {
-            if (duplicates.length) {
-                saveDuplicates(duplicates);
-            }
-
-            $('#participantNames').val(null);
-            $('input.csv-import').val(null)
-            $('#confirmSave').modal('hide');
-            $('#collapseAddParticipant').removeClass('show');
-            appendAlert('Records inserted successfully!', 'success');
-        })
-
-        $('#confirmSave .remove').on('click', () => {
-
-            $('#participantNames').val(null);
-            $('input.csv-import').val(null)
-            $('#confirmSave').modal('hide');
-            $('#collapseAddParticipant').removeClass('show');
-            
-            appendAlert('Duplicate records discarded!', 'success');
-        })
-    });
-
-    var saveParticipants = (data) => {
         $.ajax({
+            url: apiURL + '/tournaments/save',
             type: "POST",
-            url: apiURL + '/participants/new',
-            data: {
-                'name': data
-            },
-            success: function(result) {
-                result = JSON.parse(result);
-
-                renderParticipants(result.participants);
-
-                insert_count = result.count;
-                duplicates = result.duplicated;
-
-                if (insert_count) {
-                    appendAlert('Records inserted successfully!', 'success');
-                }
-
-                if (duplicates.length) {
-                    let nameString = '';
-
-                    duplicates.forEach((ele, i) => {
-                        nameString += ele;
-
-                        if (i < (duplicates.length - 1)) {
-                            nameString += ', ';
-                        }
-                    })
-
-                    $('#confirmSave .names').html(nameString);
-                    $('#confirmSave').modal('show');
-
-                    return false;
-                }
-
-                $('#collapseAddParticipant').removeClass('show');
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function() {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-    }
-
-    var saveDuplicates = (data) => {
-        $.ajax({
-            type: "POST",
-            url: apiURL + '/participants/new',
-            data: {
-                'name': data,
-                'duplicateCheck': 0
-            },
-            success: function(result) {
-                result = JSON.parse(result);
-
-                renderParticipants(result.participants);
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function() {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-    }
-
-    var csvUpload = (element) => {
-        var formData = new FormData();
-        formData.append('file', $('.csv-import')[0].files[0]);
-        $.ajax({
-            url: apiURL + '/participants/import',
-            type: "POST",
-            data: formData,
-            contentType: false,
-            cache: false,
-            processData: false,
+            data: data,
             beforeSend: function() {
+                //$("#preview").fadeOut();
                 $("#err").fadeOut();
             },
             success: function(result) {
-                result = JSON.parse(result);
-                duplicates = result.duplicated;
-                insert_count = result.count;
+                var result = JSON.parse(result);
+                if (result.error) {
+                    // invalid file format.
+                    $("#err").html("Invalid File !").fadeIn();
+                } else {
+                    $('#tournamentSettings').modal('hide');
+                    tournament_id = result.data.tournament_id;
+                    eleminationType = (result.data.type == 1) ? "Single" : "Double";
+                    if (result.data.music !== undefined && result.data.music.type == 0) {
+                        shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
+                        let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '';
+                        audioSrc += result.data.music[0].path;
 
-                if (insert_count) {
-                    appendAlert('Records inserted successfully!', 'success');
+                        $('#audioSrc').attr('src', audioSrc);
+                        audio.load();
+                    }
+
+                    callShuffle();
                 }
-
-                if (duplicates.length) {
-                    let nameString = '';
-
-                    duplicates.forEach((ele, i) => {
-                        nameString += ele;
-
-                        if (i < (duplicates.length - 1)) {
-                            nameString += ', ';
-                        }
-                    })
-
-                    $('#confirmSave .names').html(nameString);
-                    $('#confirmSave').modal('show');
-                }
-
-                renderParticipants(result.participants);
             },
             error: function(e) {
                 $("#err").html(e).fadeIn();
             }
         });
-    }
+    });
 
-    const appendAlert = (message, type) => {
-        const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
-        alertPlaceholder.innerHTML = ''
-        const wrapper = document.createElement('div')
+    $('#generate').on('click', function() {
+        <?php if (isset($tournament) && count($tournament)) : ?>
+        tournament_id = "<?= $tournament['id'] ?>";
+        eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
 
-        if (Array.isArray(message)) {
-            wrapper.innerHTML = ''
-            message.forEach((item, i) => {
-                wrapper.innerHTML += [
-                    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                    `   <div>${item}</div>`,
-                    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                    '</div>'
-                ].join('')
-            })
-        } else {
-            wrapper.innerHTML = [
+        <?php if (isset($settings) && count($settings)) : ?>
+        audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
+        <?php endif; ?>
+
+        callShuffle();
+        <?php else : ?>
+        $('#tournamentSettings').modal('show');
+        <?php endif; ?>
+    });
+
+    $('#addParticipants').on('click', function() {
+        var opts = $('#participantNames').val();
+
+        if (opts == '') {
+            return false;
+        }
+
+        names = opts.replaceAll(', ', ',').split(',');
+
+        if (names.length) {
+            saveParticipants(names);
+        }
+    });
+
+    $('#confirmSave .include').on('click', () => {
+        if (duplicates.length) {
+            saveDuplicates(duplicates);
+        }
+
+        $('#participantNames').val(null);
+        $('input.csv-import').val(null)
+        $('#confirmSave').modal('hide');
+        $('#collapseAddParticipant').removeClass('show');
+        appendAlert('Records inserted successfully!', 'success');
+    })
+
+    $('#confirmSave .remove').on('click', () => {
+
+        $('#participantNames').val(null);
+        $('input.csv-import').val(null)
+        $('#confirmSave').modal('hide');
+        $('#collapseAddParticipant').removeClass('show');
+
+        appendAlert('Duplicate records discarded!', 'success');
+    })
+});
+
+var saveParticipants = (data) => {
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/participants/new',
+        data: {
+            'name': data
+        },
+        success: function(result) {
+            result = JSON.parse(result);
+
+            renderParticipants(result.participants);
+
+            insert_count = result.count;
+            duplicates = result.duplicated;
+
+            if (insert_count) {
+                appendAlert('Records inserted successfully!', 'success');
+            }
+
+            if (duplicates.length) {
+                let nameString = '';
+
+                duplicates.forEach((ele, i) => {
+                    nameString += ele;
+
+                    if (i < (duplicates.length - 1)) {
+                        nameString += ', ';
+                    }
+                })
+
+                $('#confirmSave .names').html(nameString);
+                $('#confirmSave').modal('show');
+
+                return false;
+            }
+
+            $('#collapseAddParticipant').removeClass('show');
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+}
+
+var saveDuplicates = (data) => {
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/participants/new',
+        data: {
+            'name': data,
+            'duplicateCheck': 0
+        },
+        success: function(result) {
+            result = JSON.parse(result);
+
+            renderParticipants(result.participants);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+}
+
+var csvUpload = (element) => {
+    var formData = new FormData();
+    formData.append('file', $('.csv-import')[0].files[0]);
+    $.ajax({
+        url: apiURL + '/participants/import',
+        type: "POST",
+        data: formData,
+        contentType: false,
+        cache: false,
+        processData: false,
+        beforeSend: function() {
+            $("#err").fadeOut();
+        },
+        success: function(result) {
+            result = JSON.parse(result);
+            duplicates = result.duplicated;
+            insert_count = result.count;
+
+            if (insert_count) {
+                appendAlert('Records inserted successfully!', 'success');
+            }
+
+            if (duplicates.length) {
+                let nameString = '';
+
+                duplicates.forEach((ele, i) => {
+                    nameString += ele;
+
+                    if (i < (duplicates.length - 1)) {
+                        nameString += ', ';
+                    }
+                })
+
+                $('#confirmSave .names').html(nameString);
+                $('#confirmSave').modal('show');
+            }
+
+            renderParticipants(result.participants);
+        },
+        error: function(e) {
+            $("#err").html(e).fadeIn();
+        }
+    });
+}
+
+const appendAlert = (message, type) => {
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+    alertPlaceholder.innerHTML = ''
+    const wrapper = document.createElement('div')
+
+    if (Array.isArray(message)) {
+        wrapper.innerHTML = ''
+        message.forEach((item, i) => {
+            wrapper.innerHTML += [
                 `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                `   <div>${message}</div>`,
+                `   <div>${item}</div>`,
                 '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
                 '</div>'
             ].join('')
-        }
-        
-
-        alertPlaceholder.append(wrapper)
-
-        $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
-            $("div.alert").slideUp(500);
-        });
+        })
+    } else {
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
     }
+
+
+    alertPlaceholder.append(wrapper)
+
+    $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
+        $("div.alert").slideUp(500);
+    });
+}
 </script>
 
 <?= $this->endSection() ?>
@@ -292,25 +292,26 @@
         </nav>
 
         <?php if (session('error') !== null) : ?>
-            <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
+        <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
         <?php elseif (session('errors') !== null) : ?>
-            <div class="alert alert-danger" role="alert">
-                <?php if (is_array(session('errors'))) : ?>
-                    <?php foreach (session('errors') as $error) : ?>
-                        <?= $error ?>
-                        <br>
-                    <?php endforeach ?>
-                <?php else : ?>
-                    <?= session('errors') ?>
-                <?php endif ?>
-            </div>
+        <div class="alert alert-danger" role="alert">
+            <?php if (is_array(session('errors'))) : ?>
+            <?php foreach (session('errors') as $error) : ?>
+            <?= $error ?>
+            <br>
+            <?php endforeach ?>
+            <?php else : ?>
+            <?= session('errors') ?>
+            <?php endif ?>
+        </div>
         <?php endif ?>
 
         <?php if (session('message') !== null) : ?>
-            <div class="alert alert-success" role="alert"><?= session('message') ?></div>
+        <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
-        <h5 class="card-title d-flex justify-content-center"><? //= lang('Auth.login') 
+        <h5 class="card-title d-flex justify-content-center">
+            <? //= lang('Auth.login') 
                                                                 ?>
             Tournament Participants
         </h5>
@@ -372,13 +373,13 @@
     </div>
 
     <?php if (isset($settings) && $settings) : ?>
-        <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
-            <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
-        </audio>
+    <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
+        <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+    </audio>
     <?php else : ?>
-        <audio id="myAudio" controls style="display:none" data-starttime="0" data-duration="10" preload="auto">
-            <source src="https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l" type="audio/mpeg" id="audioSrc">
-        </audio>
+    <audio id="myAudio" controls style="display:none" data-starttime="0" data-duration="10" preload="auto">
+        <source src="<?= base_url('uploads/youtube/fT3fFBreaYw_bh4l.mp3') ?>" type="audio/mpeg" id="audioSrc">
+    </audio>
     <?php endif; ?>
     <div id="YTplayer"></div>
     <!-- Modal -->

@@ -569,7 +569,8 @@ $(document).ready(function() {
                         if (item.source == 'y') {
                             panel.find('input[data-source="url"]').val(item.path)
                                 .attr('disabled', false);
-                            panel.find('.playerSource').attr('src', item.path);
+                            panel.find('.playerSource').attr('src', '/uploads/' +
+                                item.path);
                         }
 
                         panel.find('.player').load();
