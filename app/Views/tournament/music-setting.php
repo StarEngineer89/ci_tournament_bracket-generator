@@ -23,6 +23,8 @@
             </div>
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[0]" required disabled>
+            <div class="form-text">"Example: <a href="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U">https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U</a>"</div>
+            <div class="invalid-feedback">This field is required.</div>
         </div>
         <div class="mb-3 preview">
             <audio controls class="w-100 player">
@@ -78,6 +80,7 @@
             </div>
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[1]" required disabled>
+            <div class="form-text">"Example: <a href="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U">https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U</a>"</div>
             <div class="invalid-feedback">This field is required.</div>
         </div>
         <div class="mb-3 preview">
