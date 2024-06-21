@@ -90,14 +90,14 @@
                     <div class="input-group">
                         <div class="input-group-text">Start</div>
                         <input type="text" class="form-control time startAt" value="00:00:00" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
-                        <input type="hidden" class="form-control form-control-sm startAt" value="00:00:05" name="start[1]">
+                        <input type="hidden" class="form-control form-control-sm startAt" name="start[1]">
                     </div>
                 </div>
 
                 <div class="col-6">
                     <div class="input-group">
                         <div class="input-group-text">Stop</div>
-                        <input type="text" class="form-control time stopAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
+                        <input type="text" class="form-control time stopAt" value="00:00:05" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
                         <input type="hidden" class="form-control form-control-sm stopAt" name="stop[1]">
                     </div>
                 </div>
