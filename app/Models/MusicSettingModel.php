@@ -12,7 +12,7 @@ class MusicSettingModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['path', 'source', 'tournament_id', 'user_by', 'type', 'duration', 'start', 'end'];
+    protected $allowedFields    = ['path', 'source', 'tournament_id', 'user_by', 'type', 'duration', 'start', 'end', 'url'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
