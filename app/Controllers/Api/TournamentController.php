@@ -116,7 +116,7 @@ class TournamentController extends BaseController
                 $setting['duration'] = $this->request->getPost('duration')[$index];
                 $setting['start'] = $this->request->getPost('start')[$index];
                 $setting['end'] = $this->request->getPost('stop')[$index];
-                $setting['url'] = $path = ($this->request->getPost('source')[$index] == 'f') ? null : $this->request->getPost('url')[$index];
+                $setting['url'] = ($this->request->getPost('source')[$index] == 'f') ? null : $this->request->getPost('url')[$index];
 
                 $musicSettingModel->save($setting);
             } else {
