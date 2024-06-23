@@ -131,6 +131,12 @@ class TournamentController extends BaseController
 
     public function process($youtubeLink)
     {
+        /** Check if the url is duplicated */
+        $urls = explode("https://", $youtubeLink);
+        if (count($urls) > 1) {
+            $youtubeLink = $urls[0];
+        }
+
         parse_str( parse_url( $youtubeLink, PHP_URL_QUERY ), $vars );
         
         if (isset($vars['v'])) {

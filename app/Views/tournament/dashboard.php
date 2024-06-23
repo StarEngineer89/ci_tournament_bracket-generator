@@ -615,6 +615,18 @@ $(document).ready(function() {
             return false;
         }
 
+        if ($('#tournamentForm .music-url-enable:checked').length) {
+            var url = $('#tournamentForm .music-url-enable:checked .music-source').val();
+            var regExp = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+/;
+
+            // Test the URL against the regular expression
+            if (regExp.test(url)) {
+                console.log('success');
+            } else {
+                console.log(url);
+            }
+        }
+
         const values = $('#tournamentForm').serializeArray();
         const data = Object.fromEntries(values.map(({
             name,
