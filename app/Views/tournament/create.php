@@ -59,9 +59,9 @@ $(document).ready(function() {
                     $('#tournamentSettings').modal('hide');
                     tournament_id = result.data.tournament_id;
                     eleminationType = (result.data.type == 1) ? "Single" : "Double";
-                    if (result.data.music !== undefined && result.data.music.type == 0) {
+                    if (result.data.music !== undefined && result.data.music[0] !== undefined) {
                         shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
-                        let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '';
+                        let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
                         audioSrc += result.data.music[0].path;
 
                         $('#audioSrc').attr('src', audioSrc);
