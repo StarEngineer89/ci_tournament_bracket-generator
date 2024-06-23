@@ -376,8 +376,12 @@ const appendAlert = (message, type) => {
     <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
         <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
     </audio>
+    <?php else : ?>
+    <audio id="myAudio" preload="auto">
+        <source src="" type="audio/mpeg" id="audioSrc">
+    </audio>
     <?php endif; ?>
-    <div id="YTplayer"></div>
+
     <!-- Modal -->
     <div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
