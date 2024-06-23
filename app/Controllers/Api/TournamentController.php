@@ -42,7 +42,8 @@ class TournamentController extends BaseController
 
             foreach ($this->request->getPost('audioType') as $index => $value) {
                 if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
-                    $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $this->request->getPost('url')[$index];
+                    $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index]);
+                    $url = ($this->request->getPost('source')[$index] == 'f') ? null : $this->request->getPost('url')[$index];
 
                     $setting = [
                         'path' => $path,
@@ -52,7 +53,8 @@ class TournamentController extends BaseController
                         'type' => $index,
                         'duration' => $this->request->getPost('duration')[$index],
                         'start' => $this->request->getPost('start')[$index],
-                        'end' => $this->request->getPost('stop')[$index]
+                        'end' => $this->request->getPost('stop')[$index],
+                        'url' => $url
                     ];
 
                     $music_setting = $musicSettingsModel->insert($setting);
@@ -131,12 +133,7 @@ class TournamentController extends BaseController
 
     public function process($youtubeLink)
     {
-        /** Check if the url is duplicated */
-        $urls = explode("https://", $youtubeLink);
-        if (count($urls) > 1) {
-            $youtubeLink = $urls[0];
-        }
-
+        
         parse_str( parse_url( $youtubeLink, PHP_URL_QUERY ), $vars );
         
         if (isset($vars['v'])) {
