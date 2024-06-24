@@ -12,9 +12,7 @@ let eleminationType;
 let tournament_id;
 let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
 let audio = document.getElementById("myAudio");
-let videoUrl = "https://youtu.be/Gb1iGDchKYs?si=fT3fFBreaYw_bh4l";
 let videoStartTime = 0;
-let videoDuration = 20;
 let duplicates = [];
 let insert_count = 0;
 
@@ -35,12 +33,17 @@ $(document).ready(function() {
             return false;
         }
 
+        // $.each('.music-setting', (i, settingBox) => {
+        //     // let toggleEnable =settingBox.find
+        // })
+
         const values = $('#tournamentForm').serializeArray();
         const data = Object.fromEntries(values.map(({
             name,
             value
         }) => [name, value]));
         shuffle_duration = parseInt(data['duration[0]']);
+        videoStartTime = parseInt(data['start[0]']);
 
         $.ajax({
             url: apiURL + '/tournaments/save',
@@ -61,11 +64,18 @@ $(document).ready(function() {
                     eleminationType = (result.data.type == 1) ? "Single" : "Double";
                     if (result.data.music !== undefined && result.data.music[0] !== undefined) {
                         shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
+                        videoStartTime = (result.data.music[0].start) ? parseInt(result.data.music[0].start) : 10;
                         let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
                         audioSrc += result.data.music[0].path;
 
                         $('#audioSrc').attr('src', audioSrc);
+
                         audio.load();
+                        audio.addEventListener('loadedmetadata', function() {
+                            audio.currentTime = 15;
+                            console.log(audio.currentTime, videoStartTime);
+                            audio.play();
+                        });
                     }
 
                     callShuffle();
@@ -282,6 +292,16 @@ const appendAlert = (message, type) => {
 
 <?= $this->section('main') ?>
 
+<?php if (isset($settings) && $settings) : ?>
+<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
+    <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+</audio>
+<?php else : ?>
+<audio id="myAudio" preload="auto" controls>
+    <source src="" type="audio/mpeg" id="audioSrc">
+</audio>
+<?php endif; ?>
+
 <div class="card container shadow-sm">
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -371,16 +391,6 @@ const appendAlert = (message, type) => {
             </div>
         </div>
     </div>
-
-    <?php if (isset($settings) && $settings) : ?>
-    <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
-        <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
-    </audio>
-    <?php else : ?>
-    <audio id="myAudio" preload="auto">
-        <source src="" type="audio/mpeg" id="audioSrc">
-    </audio>
-    <?php endif; ?>
 
     <!-- Modal -->
     <div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
