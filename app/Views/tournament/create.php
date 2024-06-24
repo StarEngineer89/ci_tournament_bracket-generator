@@ -97,6 +97,8 @@ $(document).ready(function() {
                                 console.log(audio.currentTime, videoStartTime);
                                 audio.play();
                             });
+
+                            document.getElementById('stopMusicButton').classList.remove('d-none');
                         }
                     }
 
