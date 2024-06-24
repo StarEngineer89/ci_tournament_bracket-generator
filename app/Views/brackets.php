@@ -76,6 +76,6 @@ const hasEditPermission =
 </audio>
 <?php endif; ?>
 
-
+<button id="stopMusicButton">Stop Music</button>
 
 <?= $this->endSection() ?>

@@ -157,6 +157,13 @@ $(document).ready(function() {
 
         appendAlert('Duplicate records discarded!', 'success');
     })
+
+    document.getElementById('stopMusicButton').addEventListener('click', function() {
+        // Your code to stop music goes here
+        const audio = document.getElementById('myAudio');
+        audio.pause();
+        // Replace alert with actual code to stop music playback
+    });
 });
 
 var saveParticipants = (data) => {
@@ -448,5 +455,7 @@ const appendAlert = (message, type) => {
         <source src="" type="audio/mpeg" id="audioSrc">
     </audio>
     <?php endif; ?>
+
+    <button id="stopMusicButton">Stop Music</button>
 
     <?= $this->endSection() ?>

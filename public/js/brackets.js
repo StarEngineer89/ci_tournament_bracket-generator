@@ -385,6 +385,12 @@ $(document).on('ready', function () {
         });
     });
 
+    document.getElementById('stopMusicButton').addEventListener('click', function () {
+        // Your code to stop music goes here
+        const audio = document.getElementById('myAudio');
+        audio.pause();
+        // Replace alert with actual code to stop music playback
+    });
 });
 
 function changeParticipant(ele, bracket_id, index) {
