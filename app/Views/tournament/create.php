@@ -99,6 +99,20 @@ $(document).ready(function() {
                             });
 
                             document.getElementById('stopMusicButton').classList.remove('d-none');
+                            document.getElementById('stopMusicButton').addEventListener('click', function() {
+                                // Your code to stop music goes here
+                                const audio = document.getElementById('myAudio');
+
+                                if (audio.paused) {
+                                    audio.play();
+                                    document.getElementById('stopMusicButton').textContent = "Stop Music"
+                                } else {
+                                    audio.pause();
+                                    document.getElementById('stopMusicButton').textContent = "Resume Music"
+                                }
+
+                                // Replace alert with actual code to stop music playback
+                            });
                         }
                     }
 
