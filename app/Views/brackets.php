@@ -74,8 +74,9 @@ const hasEditPermission =
 <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
     <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
-<?php endif; ?>
 
 <button id="stopMusicButton" class="d-none">Stop Music</button>
+
+<?php endif; ?>
 
 <?= $this->endSection() ?>

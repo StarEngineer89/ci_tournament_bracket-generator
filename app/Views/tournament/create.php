@@ -132,9 +132,6 @@ $(document).ready(function() {
 
         <?php if (isset($settings) && count($settings)) : ?>
         audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
-        <?php endif; ?>
-
-        callShuffle();
 
         document.getElementById('stopMusicButton').classList.remove('d-none');
         document.getElementById('stopMusicButton').addEventListener('click', function() {
@@ -151,6 +148,11 @@ $(document).ready(function() {
 
             // Replace alert with actual code to stop music playback
         });
+        <?php endif; ?>
+
+        callShuffle();
+
+
         <?php else : ?>
         $('#tournamentSettings').modal('show');
         <?php endif; ?>
