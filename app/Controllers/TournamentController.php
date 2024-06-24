@@ -107,8 +107,7 @@ class TournamentController extends BaseController
         }
 
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
-        $settings = $musicSettingModel->where(['tournament_id' => $id])->orderBy('type','asc')->findAll();
-
+        
         if (!$brackets) {
             if ($tournament['user_by'] != auth()->user()->id) {
                 $session = \Config\Services::session();
@@ -122,9 +121,12 @@ class TournamentController extends BaseController
             $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
 
             $musicSettingsBlock = view('tournament/music-setting', []);
+            $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_BRACKET_GENERATION])->orderBy('type','asc')->findAll();
 
             return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings, 'musicSettingsBlock' => $musicSettingsBlock]);
         }
+
+        $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings]);
     }

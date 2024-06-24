@@ -70,9 +70,9 @@ const hasEditPermission =
     </div>
 </div>
 
-<?php if (isset($settings) && $settings && isset($settings[1])) : ?>
-<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[1]['start']) ? $settings[1]['start'] : '' ?>" data-duration="<?= ($settings[1]['duration']) ? $settings[1]['duration'] : '' ?>">
-    <source src="<?= ($settings[1]['source'] == 'f') ? '/uploads/' . $settings[1]['path'] : '/uploads/' . $settings[1]['path'] ?>" type="audio/mpeg" id="audioSrc">
+<?php if (isset($settings) && $settings) : ?>
+<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
+    <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 <?php endif; ?>
 
