@@ -72,7 +72,7 @@ $(document).ready(function() {
 
                         audio.load();
                         audio.addEventListener('loadedmetadata', function() {
-                            audio.currentTime = 15;
+                            audio.currentTime = videoStartTime;
                             console.log(audio.currentTime, videoStartTime);
                             audio.play();
                         });
@@ -292,16 +292,6 @@ const appendAlert = (message, type) => {
 
 <?= $this->section('main') ?>
 
-<?php if (isset($settings) && $settings) : ?>
-<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
-    <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
-</audio>
-<?php else : ?>
-<audio id="myAudio" preload="auto" controls>
-    <source src="" type="audio/mpeg" id="audioSrc">
-</audio>
-<?php endif; ?>
-
 <div class="card container shadow-sm">
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -428,5 +418,15 @@ const appendAlert = (message, type) => {
             </div>
         </div>
     </div>
+
+    <?php if (isset($settings) && $settings) : ?>
+    <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
+        <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+    </audio>
+    <?php else : ?>
+    <audio id="myAudio" preload="auto">
+        <source src="" type="audio/mpeg" id="audioSrc">
+    </audio>
+    <?php endif; ?>
 
     <?= $this->endSection() ?>
