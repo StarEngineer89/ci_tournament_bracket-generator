@@ -571,11 +571,12 @@ $(document).ready(function() {
 
                         panel.find('.preview input').attr('disabled', false);
 
-                        const date = new Date(null);
+                        let date = new Date(null);
                         date.setSeconds(item.start); // specify value for SECONDS here
                         panel.find('input.startAt[type="text"]').val(date.toISOString().slice(11, 19));
                         panel.find('input.startAt[type="hidden"]').val(item.start);
 
+                        date = new Date(null);
                         date.setSeconds(item.end);
                         panel.find('input.stopAt').val(date.toISOString().slice(11, 19));
                         panel.find('input.stopAt[type="hidden"]').val(item.end);
