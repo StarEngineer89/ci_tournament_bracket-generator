@@ -37,6 +37,7 @@
                         <input type="text" class="form-control time startAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
                         <input type="hidden" class="form-control form-control-sm startAt" name="start[0]">
                     </div>
+                    <div class="invalid-feedback d-none" id="start-time-error-0">Start time must be less than stop time.</div>
                 </div>
 
                 <div class="col-6">
@@ -45,6 +46,7 @@
                         <input type="text" class="form-control time stopAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
                         <input type="hidden" class="form-control form-control-sm stopAt" name="stop[0]">
                     </div>
+                    <div class="invalid-feedback d-none" id="stop-time-error-0">Stop time must be greater than start time.</div>
                 </div>
 
                 <input type="hidden" class="duration" name="duration[0]" value="5">
@@ -93,6 +95,7 @@
                         <input type="text" class="form-control time startAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
                         <input type="hidden" class="form-control form-control-sm startAt" name="start[1]">
                     </div>
+                    <div class="invalid-feedback d-none" id="start-time-error-1">Start time must be less than stop time.</div>
                 </div>
 
                 <div class="col-6">
@@ -101,6 +104,7 @@
                         <input type="text" class="form-control time stopAt" onChange="musicDurationChange(this)" placeholder="00:00:00" pattern="^([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])$" required disabled>
                         <input type="hidden" class="form-control form-control-sm stopAt" name="stop[1]">
                     </div>
+                    <div class="invalid-feedback d-none" id="stop-time-error-1">Stop time must be greater than start time.</div>
                 </div>
 
                 <input type="hidden" class="duration" name="duration[1]" value="5">

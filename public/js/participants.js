@@ -320,6 +320,10 @@ function musicDurationChange(element) {
     $(element).parents('.preview').find('.stopAt[type="hidden"]').val(stoptime);
 
     if (starttime >= 0 && stoptime >= 0) {
+        if ((stoptime - starttime) <= 0) {
+
+        }
+
         $(element).parents('.preview').find('.duration').val(stoptime - starttime);
     }
 }

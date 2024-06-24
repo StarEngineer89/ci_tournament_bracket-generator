@@ -33,9 +33,29 @@ $(document).ready(function() {
             return false;
         }
 
-        // $.each('.music-setting', (i, settingBox) => {
-        //     // let toggleEnable =settingBox.find
-        // })
+        let isValid = true;
+
+        $('.music-setting').each((i, settingBox) => {
+            const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
+            const stopTime0 = document.getElementsByName('stop[' + i + ']')[0].value;
+
+            if (parseInt(stopTime0) <= parseInt(startTime0)) {
+                document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('start-time-error-' + i + '').classList.remove('d-none');
+                document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('stop-time-error-' + i + '').classList.remove('d-none');
+                isValid = false;
+            } else {
+                document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
+                document.getElementById('start-time-error-' + i + '').classList.add('d-none');
+                document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
+                document.getElementById('stop-time-error-' + i + '').classList.add('d-none');
+            }
+        })
+
+        if (!isValid) {
+            return false;
+        }
 
         const values = $('#tournamentForm').serializeArray();
         const data = Object.fromEntries(values.map(({

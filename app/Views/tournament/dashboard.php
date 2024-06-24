@@ -552,25 +552,19 @@ $(document).ready(function() {
                             '"]').prop('checked', true);
 
                         if (item.source == 'f') {
-                            panel.find('input[data-source="file"]').attr('disabled',
-                                false);
+                            panel.find('input[data-source="file"]').attr('disabled', false);
 
                             if (item.path != '') {
-                                panel.find('input[data-source="file"]').attr(
-                                    'required', false);
+                                panel.find('input[data-source="file"]').attr('required', false);
                             }
 
-                            panel.find('input[name="file-path[' + item.type + ']"]')
-                                .val(item.path);
-                            panel.find('.playerSource').attr('src', '/uploads/' +
-                                item.path);
+                            panel.find('input[name="file-path[' + item.type + ']"]').val(item.path);
+                            panel.find('.playerSource').attr('src', '/uploads/' + item.path);
 
                         }
                         if (item.source == 'y') {
-                            panel.find('input[data-source="url"]').val(item.url)
-                                .attr('disabled', false);
-                            panel.find('.playerSource').attr('src', '/uploads/' +
-                                item.path);
+                            panel.find('input[data-source="url"]').val(item.url).attr('disabled', false);
+                            panel.find('.playerSource').attr('src', '/uploads/' + item.path);
                         }
 
                         panel.find('.player').load();
@@ -578,19 +572,15 @@ $(document).ready(function() {
                         panel.find('.preview input').attr('disabled', false);
 
                         const date = new Date(null);
-                        date.setSeconds(item
-                            .start); // specify value for SECONDS here
-                        panel.find('input.startAt[type="text"]').val(date
-                            .toISOString().slice(11, 19));
+                        date.setSeconds(item.start); // specify value for SECONDS here
+                        panel.find('input.startAt[type="text"]').val(date.toISOString().slice(11, 19));
                         panel.find('input.startAt[type="hidden"]').val(item.start);
 
                         date.setSeconds(item.end);
-                        panel.find('input.stopAt').val(date.toISOString().slice(11,
-                            19));
+                        panel.find('input.stopAt').val(date.toISOString().slice(11, 19));
                         panel.find('input.stopAt[type="hidden"]').val(item.end);
 
                         panel.find('input.duration').val(item.duration);
-
                     });
                 }
 
@@ -615,16 +605,28 @@ $(document).ready(function() {
             return false;
         }
 
-        if ($('#tournamentForm .music-url-enable:checked').length) {
-            var url = $('#tournamentForm .music-url-enable:checked .music-source').val();
-            var regExp = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+/;
+        let isValid = true;
 
-            // Test the URL against the regular expression
-            if (regExp.test(url)) {
-                console.log('success');
+        $('.music-setting').each((i, settingBox) => {
+            const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
+            const stopTime0 = document.getElementsByName('stop[' + i + ']')[0].value;
+
+            if (parseInt(stopTime0) <= parseInt(startTime0)) {
+                document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('start-time-error-' + i + '').classList.remove('d-none');
+                document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('stop-time-error-' + i + '').classList.remove('d-none');
+                isValid = false;
             } else {
-                console.log(url);
+                document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
+                document.getElementById('start-time-error-' + i + '').classList.add('d-none');
+                document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
+                document.getElementById('stop-time-error-' + i + '').classList.add('d-none');
             }
+        })
+
+        if (!isValid) {
+            return false;
         }
 
         const values = $('#tournamentForm').serializeArray();
