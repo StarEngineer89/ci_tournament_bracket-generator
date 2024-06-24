@@ -83,19 +83,21 @@ $(document).ready(function() {
                     tournament_id = result.data.tournament_id;
                     eleminationType = (result.data.type == 1) ? "Single" : "Double";
                     if (result.data.music !== undefined && result.data.music[0] !== undefined) {
-                        shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
-                        videoStartTime = (result.data.music[0].start) ? parseInt(result.data.music[0].start) : 10;
-                        let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
-                        audioSrc += result.data.music[0].path;
+                        if (result.data.music[0].type == '<?= MUSIC_TYPE_BRACKET_GENERATION ?>') {
+                            shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
+                            videoStartTime = (result.data.music[0].start) ? parseInt(result.data.music[0].start) : 10;
+                            let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
+                            audioSrc += result.data.music[0].path;
 
-                        $('#audioSrc').attr('src', audioSrc);
+                            $('#audioSrc').attr('src', audioSrc);
 
-                        audio.load();
-                        audio.addEventListener('loadedmetadata', function() {
-                            audio.currentTime = videoStartTime;
-                            console.log(audio.currentTime, videoStartTime);
-                            audio.play();
-                        });
+                            audio.load();
+                            audio.addEventListener('loadedmetadata', function() {
+                                audio.currentTime = videoStartTime;
+                                console.log(audio.currentTime, videoStartTime);
+                                audio.play();
+                            });
+                        }
                     }
 
                     callShuffle();
