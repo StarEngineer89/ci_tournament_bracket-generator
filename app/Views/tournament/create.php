@@ -117,6 +117,22 @@ $(document).ready(function() {
         <?php endif; ?>
 
         callShuffle();
+
+        document.getElementById('stopMusicButton').classList.remove('d-none');
+        document.getElementById('stopMusicButton').addEventListener('click', function() {
+            // Your code to stop music goes here
+            const audio = document.getElementById('myAudio');
+
+            if (audio.paused) {
+                audio.play();
+                document.getElementById('stopMusicButton').textContent = "Stop Music"
+            } else {
+                audio.pause();
+                document.getElementById('stopMusicButton').textContent = "Resume Music"
+            }
+
+            // Replace alert with actual code to stop music playback
+        });
         <?php else : ?>
         $('#tournamentSettings').modal('show');
         <?php endif; ?>
@@ -158,20 +174,6 @@ $(document).ready(function() {
         appendAlert('Duplicate records discarded!', 'success');
     })
 
-    document.getElementById('stopMusicButton').addEventListener('click', function() {
-        // Your code to stop music goes here
-        const audio = document.getElementById('myAudio');
-
-        if (audio.paused) {
-            audio.play();
-            document.getElementById('stopMusicButton').textContent = "Stop Music"
-        } else {
-            audio.pause();
-            document.getElementById('stopMusicButton').textContent = "Resume Music"
-        }
-
-        // Replace alert with actual code to stop music playback
-    });
 });
 
 var saveParticipants = (data) => {
@@ -464,6 +466,6 @@ const appendAlert = (message, type) => {
     </audio>
     <?php endif; ?>
 
-    <button id="stopMusicButton">Stop Music</button>
+    <button id="stopMusicButton" class="d-none">Stop Music</button>
 
     <?= $this->endSection() ?>

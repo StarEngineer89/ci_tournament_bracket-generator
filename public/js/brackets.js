@@ -500,6 +500,8 @@ function markWinner(key, opt, e) {
                 player._startTime = player.dataset.starttime;
                 player.currentTime = player.dataset.starttime;
                 player.play();
+
+                document.getElementById('stopMusicButton').classList.remove('d-none');
             }
         },
         error: function (error) {
@@ -526,6 +528,9 @@ function unmarkWinner(key, opt, e) {
         data: JSON.stringify({ winner: '' }),
         success: function (result) {
             document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = '';
+            next_bracketObj.classList.remove('winner');
+
+            document.getElementById('stopMusicButton').classList.add('d-none');
         },
         error: function (error) {
             console.log(error);
