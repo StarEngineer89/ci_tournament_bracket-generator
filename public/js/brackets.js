@@ -502,6 +502,7 @@ function markWinner(key, opt, e) {
                 player.play();
 
                 document.getElementById('stopMusicButton').classList.remove('d-none');
+                document.getElementById('stopMusicButton').textContent = "Stop Music"
             }
         },
         error: function (error) {
@@ -531,6 +532,7 @@ function unmarkWinner(key, opt, e) {
             next_bracketObj.classList.remove('winner');
 
             document.getElementById('stopMusicButton').classList.add('d-none');
+            document.getElementById('stopMusicButton').textContent = "Stop Music"
         },
         error: function (error) {
             console.log(error);
