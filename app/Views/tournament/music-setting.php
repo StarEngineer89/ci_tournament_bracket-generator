@@ -14,8 +14,8 @@
                 <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[0]" onChange="musicSourceChange(this)" data-target="file" checked>
             </div>
             <input type="file" class="form-control music-source" data-source="file" name="file" onChange="musicFileUpload(this)" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi" required disabled>
-            <label class="input-group-text">Upload</label>
             <input type="hidden" class="file-path" id="file-shuffling-music" name="file-path[0]">
+            <div class="fileupload-hint form-text">Select a .mp3 file to upload. After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
         </div>
         <div class="input-group mb-3">
             <div class="input-group-text">
@@ -24,6 +24,7 @@
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[0]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
+            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br/>Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp3 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated.</div>
         </div>
         <div class="mb-3 preview">
             <audio controls class="w-100 player">
@@ -71,9 +72,9 @@
                 <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[1]" onChange="musicSourceChange(this)" data-target="file" checked>
             </div>
             <input type="file" class="form-control music-source" data-source="file" name="file" onChange="musicFileUpload(this)" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi" required disabled>
-            <label class="input-group-text">Upload</label>
             <input type="hidden" class="file-path" id="file-input" name="file-path[1]">
             <div class="invalid-feedback">This field is required.</div>
+            <div class="fileupload-hint form-text">Select a .mp3 file to upload. After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
         </div>
         <div class="input-group mb-3">
             <div class="input-group-text">
@@ -82,6 +83,7 @@
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[1]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
+            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br/>Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp3 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated.</div>
         </div>
         <div class="mb-3 preview">
             <audio controls class="w-100 player">

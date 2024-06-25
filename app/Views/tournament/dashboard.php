@@ -560,11 +560,15 @@ $(document).ready(function() {
 
                             panel.find('input[name="file-path[' + item.type + ']"]').val(item.path);
                             panel.find('.playerSource').attr('src', '/uploads/' + item.path);
+                            panel.find('.fileupload-hint').removeClass('d-none');
+                            panel.find('.urlupload-hint').addClass('d-none');
 
                         }
                         if (item.source == 'y') {
                             panel.find('input[data-source="url"]').val(item.url).attr('disabled', false);
                             panel.find('.playerSource').attr('src', '/uploads/' + item.path);
+                            panel.find('.fileupload-hint').addClass('d-none');
+                            panel.find('.urlupload-hint').removeClass('d-none');
                         }
 
                         panel.find('.player').load();

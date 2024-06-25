@@ -343,6 +343,17 @@ const appendAlert = (message, type) => {
         $("div.alert").slideUp(500);
     });
 }
+
+var changeEliminationType = (element) => {
+    let parent = $(element).parent();
+    parent.find('.form-text').addClass('d-none');
+
+    if ($(element).val() == 1) {
+        parent.find('.single-type-hint').removeClass('d-none');
+    } else {
+        parent.find('.double-type-hint').removeClass('d-none');
+    }
+}
 </script>
 
 <?= $this->endSection() ?>
@@ -457,10 +468,12 @@ const appendAlert = (message, type) => {
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="type">Elimination Type</span>
-                            <select class="form-select" name="type" aria-label="type" required>
+                            <select class="form-select" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
                                 <option value="1" selected>Single</option>
                                 <option value="2">Double</option>
                             </select>
+                            <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
+                            <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
                         </div>
 
                         <div id="music-settings-panel">

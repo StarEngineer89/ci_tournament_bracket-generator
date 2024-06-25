@@ -493,6 +493,7 @@ function markWinner(key, opt, e) {
                 player.addEventListener("timeupdate", function () {
                     if ((player.currentTime - player._startTime) >= player.value) {
                         player.pause();
+                        document.getElementById('stopMusicButton').classList.add('d-none');
                     };
                 });
 

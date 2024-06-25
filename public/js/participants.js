@@ -259,10 +259,14 @@ function musicSourceChange(element) {
 
     if ($(element).data('target') == 'file') {
         panel.children('[data-source="file"]').attr('disabled', false);
+        $(element).parents('.setting').find('.fileupload-hint').removeClass('d-none');
+        $(element).parents('.setting').find('.urlupload-hint').addClass('d-none');
     }
 
     if ($(element).data('target') == 'url') {
         panel.children('[data-source="url"]').attr('disabled', false);
+        $(element).parents('.setting').find('.fileupload-hint').addClass('d-none');
+        $(element).parents('.setting').find('.urlupload-hint').removeClass('d-none');
     }
 
 };
