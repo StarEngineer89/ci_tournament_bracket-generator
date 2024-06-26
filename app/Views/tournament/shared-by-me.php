@@ -19,6 +19,7 @@
             <th scope="col">Tournament Name</th>
             <th scope="col">Type</th>
             <th scope="col">Status</th>
+            <th scope="col">Created Time</th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
@@ -33,6 +34,7 @@
             </td>
             <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
             <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
+            <td><?= $tournament['created_at'] ?></td>
             <td>
                 <div class="btn-groups list-group">
                     <a href="javascript:;" class="rename" data-id="<?= $tournament['tournament_id'] ?>">Rename</a>

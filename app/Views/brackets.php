@@ -19,6 +19,37 @@ const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
 const hasEditPermission =
     '<?= session('share_permission') && session('share_permission') == SHARE_PERMISSION_VIEW ? false : true ?>';
 </script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+    const appendAlert = (message, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="container alert alert-${type} alert-dismissible" id="tournamentInfoAlert" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        alertPlaceholder.append(wrapper)
+    }
+
+    const alertTrigger = document.getElementById('liveAlertBtn')
+    if (alertTrigger) {
+        const msg = $('#liveAlertMsg').html();
+        alertTrigger.addEventListener('click', () => {
+            appendAlert(msg, 'success')
+            alertTrigger.classList.add('d-none')
+
+            const myAlert = document.getElementById('tournamentInfoAlert')
+            myAlert.addEventListener('closed.bs.alert', event => {
+                alertTrigger.classList.remove('d-none')
+            })
+        })
+    }
+})
+</script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
@@ -32,8 +63,7 @@ const hasEditPermission =
             </ol>
         </nav>
         <h5 class="card-title d-flex justify-content-center mb-5">
-            <? //= lang('Auth.login') 
-                                                                    ?><?= $tournament['name'] ?> Brackets
+            <? //= lang('Auth.login') ?><?= $tournament['name'] ?> Brackets
         </h5>
 
         <?php if (session('error') !== null) : ?>
@@ -55,7 +85,15 @@ const hasEditPermission =
         <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
-        <div class="container alert alert-success" role="alert">
+        <div class="">
+            <button type="button" class="btn" id="liveAlertBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
+                </svg>
+            </button>
+        </div>
+        <div id="liveAlertPlaceholder"></div>
+        <div id="liveAlertMsg" class="d-none">
             Note: <br />
             The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket
             advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament
@@ -66,6 +104,7 @@ const hasEditPermission =
             bracket box.
             <?php endif ?>
         </div>
+
         <div id="brackets" class="brackets d-flex justify-content-md-center justify-content-lg-center"></div>
     </div>
 </div>

@@ -510,6 +510,23 @@ $(document).ready(function() {
         })
     }
 
+    const myCollapsible = document.querySelectorAll('.collapse')
+    myCollapsible.forEach((item, i) => {
+        item.addEventListener('hide.bs.collapse', event => {
+            item.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
+        })
+        item.addEventListener('show.bs.collapse', event => {
+            myCollapsible.forEach((e, ii) => {
+                if (ii != i) {
+                    e.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
+                }
+                $(e).collapse('hide')
+            })
+
+            item.previousElementSibling.innerHTML = `<i class="fa-solid fa-minus"></i> Hide Actions`
+        })
+    })
+
     $('#confirmDelete').on('click', function() {
         const tournament_id = deleteModal.getAttribute('data-id');
 
@@ -1098,7 +1115,7 @@ function generateURL() {
 </script>
 <?= $this->endSection() ?>
 
-<?= $this->section('pageScripts') ?>
+<?= $this->section('pageStyles') ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />

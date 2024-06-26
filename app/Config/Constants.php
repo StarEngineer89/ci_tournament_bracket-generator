@@ -99,7 +99,8 @@ define('EVENT_PRIORITY_HIGH', 10);
 define('TOURNAMENT_STATUS_INPROGRESS', 1);
 define('TOURNAMENT_STATUS_COMPLETED', 2);
 define('TOURNAMENT_STATUS_ABANDONED', 3);
-define('TOURNAMENT_STATUS_LABELS', ['', 'In progress', 'Completed', 'Abandoned']);
+define('TOURNAMENT_STATUS_ARCHIVED', 4);
+define('TOURNAMENT_STATUS_LABELS', ['', 'In progress', 'Completed', 'Abandoned', 'Archived']);
 
 define('BRACKET_ACTIONCODE_MARK_WINNER', 'mark');
 define('BRACKET_ACTIONCODE_UNMARK_WINNER', 'unmark');
