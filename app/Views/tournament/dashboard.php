@@ -732,6 +732,74 @@ $(document).ready(function() {
         }
     })
 
+    const archiveModal = document.getElementById('archiveConfirmModal');
+    if (archiveModal) {
+        archiveModal.addEventListener('show.bs.modal', event => {
+            archiveModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
+            const modalTitle = archiveModal.querySelector('.modal-body .tournament-name');
+            modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
+        })
+    }
+
+    $('#archiveConfirmBtn').on('click', function() {
+        const tournament_id = archiveModal.getAttribute('data-id');
+        let data = {
+            'status': <?= TOURNAMENT_STATUS_ARCHIVED ?>
+        }
+
+        $.ajax({
+            type: "post",
+            url: `${apiURL}/tournaments/${tournament_id}/update`,
+            data: data,
+            success: function(result) {
+                const msg = JSON.parse(result).msg;
+                alert(msg);
+                window.location.href = "/tournaments";
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function() {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    });
+
+    const restoreModal = document.getElementById('restoreConfirmModal');
+    if (restoreModal) {
+        restoreModal.addEventListener('show.bs.modal', event => {
+            restoreModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
+            const modalTitle = restoreModal.querySelector('.modal-body .tournament-name');
+            modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
+        })
+    }
+
+    $('#restoreConfirmBtn').on('click', function() {
+        const tournament_id = restoreModal.getAttribute('data-id');
+        let data = {
+            'status': <?= TOURNAMENT_STATUS_INPROGRESS ?>
+        }
+
+        $.ajax({
+            type: "post",
+            url: `${apiURL}/tournaments/${tournament_id}/update`,
+            data: data,
+            success: function(result) {
+                const msg = JSON.parse(result).msg;
+                alert(msg);
+                window.location.href = "/tournaments";
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function() {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    });
+
     var elt = $("#userTagsInput");
     elt.tagsinput({
         itemValue: "id",

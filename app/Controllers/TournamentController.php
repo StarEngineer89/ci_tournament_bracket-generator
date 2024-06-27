@@ -11,10 +11,10 @@ class TournamentController extends BaseController
     {
         $tournamentModel = model('\App\Models\TournamentModel');
 
-        $tournaments = $tournamentModel->where('user_by', auth()->user()->id)->findAll();
+        $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_INPROGRESS])->findAll();
 
         if ($this->request->getGet('filter') == 'archived') {
-            $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_COMPLETED])->findAll();
+            $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_COMPLETED])->orWhere(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_ARCHIVED])->findAll();
         }
 
         $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';

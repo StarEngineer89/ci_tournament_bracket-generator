@@ -44,8 +44,11 @@
                         <div class="card card-body p-3">
                             <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
                             <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
-                            <a href="javascript:;" class="archive" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#archiveConfirm">Archive</a>
-                            <a href="javascript:;" class="restore" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#restoreConfirm">Restore</a>
+                            <?php if ($tournament['status'] == TOURNAMENT_STATUS_INPROGRESS): ?>
+                            <a href="javascript:;" class="archive" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>
+                            <?php else: ?>
+                            <a href="javascript:;" class="restore" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>
+                            <?php endif ?>
                             <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
                             <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
                             <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Music Settings</a>
@@ -61,3 +64,40 @@
         <?php endforeach; ?>
     </tbody>
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="archiveConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="archiveConfirmModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Are you sure you want to archive this tournament "<span class="tournament-name"></span>"?</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="archiveConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="restoreConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="restoreConfirmModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Are you sure you want to restore this tournament "<span class="tournament-name"></span>"?</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="restoreConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
