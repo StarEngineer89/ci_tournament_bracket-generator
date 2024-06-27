@@ -104,13 +104,23 @@ function renderParticipants(participantsArray) {
         item.setAttribute('id', participant.id);
         item.setAttribute('class', "list-group-item");
         item.setAttribute('data-id', participant.id);
-        item.innerHTML = `<span class="col-1">${i + 1}.</span><span class="p-name col-10 text-center">` + participant.name + '</span>';
+        item.innerHTML = `<span class="p-name col-10 text-center">` + participant.name + '</span>';
 
         if (itemList.length > 0)
             itemList.insertBefore(item);
         else
             itemList.appendChild(item);
 
+
+        const indexList = document.getElementById('indexList')
+        var indexItem = document.createElement('div');
+        indexItem.setAttribute('class', "list-group-item border-0 text-end");
+        indexItem.innerHTML = `<span>${i + 1}</span>`;
+
+        if (indexList.length > 0)
+            indexList.insertBefore(indexItem);
+        else
+            indexList.appendChild(indexItem);
     });
 
     $('#newList').contextMenu({

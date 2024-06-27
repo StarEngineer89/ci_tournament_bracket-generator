@@ -54,7 +54,7 @@ $(document).ready(function() {
 
 <?= $this->section('main') ?>
 
-<div class="card col-12 shadow-sm">
+<div class="card col-12 shadow-sm" style="max-height: calc(100vh - 60px); overflow:scroll">
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -105,7 +105,7 @@ $(document).ready(function() {
             <?php endif ?>
         </div>
 
-        <div id="brackets" class="brackets d-flex justify-content-md-center justify-content-lg-center"></div>
+        <div id="brackets" class="brackets d-flex"></div>
     </div>
 </div>
 

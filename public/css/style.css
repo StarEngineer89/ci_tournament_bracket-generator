@@ -6,16 +6,25 @@
   max-width: 500px;
 }
 
+.participant-list {
+  margin: auto;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  padding: 50px;
+  background-color: #496aff;
+}
+
 #newList {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   max-width: 500px;
-  margin: auto;
-  margin-bottom: 10px;
-  margin-top: 20px;
-  padding: 50px;
-  background-color: orange;
+}
+
+#indexList .list-group-item {
+  background: none;
+  color: #fff;
+  font-weight: 600;
 }
 
 .list-group-item {
@@ -28,20 +37,20 @@
   margin: 10px;
 }
 
-.ist-group-item .front {
+.list-group-item .front {
   background-color: blue;
 }
 
-.ist-group-item .back {
+.list-group-item .back {
   background-color: green;
   transform: rotateY(180deg);
 }
 
-.ist-group-item {
+.list-group-item {
   transform-style: preserve-3d;
 }
 
-.ist-group-item.flipped {
+.list-group-item.flipped {
   transition: transform 0.5s;
 }
 
@@ -58,8 +67,9 @@
 
 .brackets {
   max-width: 100%;
-  min-height: 80vh;
   overflow-x: scroll;
+  overflow-y: clip;
+  padding-bottom: 50px;
 }
 
 .brackets>div::after {

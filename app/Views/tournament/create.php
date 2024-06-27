@@ -389,9 +389,7 @@ var changeEliminationType = (element) => {
         <?php endif ?>
 
         <h5 class="card-title d-flex justify-content-center">
-            <? //= lang('Auth.login') 
-                                                                ?>
-            Tournament Participants
+            <? //= lang('Auth.login') ?>Tournament Participants
         </h5>
 
         <div id="liveAlertPlaceholder"></div>
@@ -425,8 +423,10 @@ var changeEliminationType = (element) => {
                 </div>
             </div>
 
-            <div id="newList" class="list-group"></div>
-            </dvi>
+            <div class="d-flex participant-list">
+                <div id="indexList" class="list-group col-auto"></div>
+                <div id="newList" class="list-group col-10"></div>
+            </div>
         </div>
     </div>
 
