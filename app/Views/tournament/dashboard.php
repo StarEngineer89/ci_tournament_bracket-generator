@@ -49,8 +49,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5>Are you sure you want to delete this tournament "<span class="tournament-name"></span>"?</h1>
-                    <h5 class="text-danger">This action cannot be undone!</h5>
+                <h4>Are you sure you want to delete this tournament "<span class="tournament-name"></span>"?</h4>
+                <h5 class="text-danger">This action cannot be undone!</h5>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

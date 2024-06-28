@@ -84,6 +84,13 @@ class ParticipantsController extends BaseController
         return json_encode(array('result' => 'success'));
     }
     
+    public function clearParticipants()
+    {
+        $this->participantsModel->where('user_by', auth()->user()->id)->delete();
+
+        return json_encode(array('result' => 'success'));
+    }
+    
     public function importParticipants()
     {
         $validationRule = [

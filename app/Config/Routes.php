@@ -33,6 +33,7 @@ $routes->group('api', static function ($routes) {
         $routes->delete('delete/(:num)', 'Api\ParticipantsController::deleteParticipant/$1');
         $routes->post('import', 'Api\ParticipantsController::importParticipants');
         $routes->post('removeDuplicates', 'Api\ParticipantsController::removeDuplicates');
+        $routes->get('clear', 'Api\ParticipantsController::clearParticipants');
     });
 
     $routes->group('tournaments', static function ($routes) {

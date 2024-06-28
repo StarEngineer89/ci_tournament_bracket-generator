@@ -99,6 +99,10 @@ function shuffleArray(array) {
  */
 function renderParticipants(participantsArray) {
     itemList.innerHTML = '';
+
+    let indexList = document.getElementById('indexList')
+    indexList.innerHTML = '';
+
     participantsArray.forEach((participant, i) => {
         var item = document.createElement('div');
         item.setAttribute('id', participant.id);
@@ -111,8 +115,6 @@ function renderParticipants(participantsArray) {
         else
             itemList.appendChild(item);
 
-
-        const indexList = document.getElementById('indexList')
         var indexItem = document.createElement('div');
         indexItem.setAttribute('class', "list-group-item border-0 text-end");
         indexItem.innerHTML = `<span>${i + 1}</span>`;

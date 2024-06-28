@@ -194,6 +194,68 @@ $(document).ready(function() {
         appendAlert('Duplicate records discarded!', 'success');
     })
 
+    $('#clearParticipantsConfirmBtn').on('click', () => {
+        let items = $('#newList').children();
+        if (!items.length) {
+            appendAlert('There is no participants to clean.', 'danger');
+            $('#clearParticipantsConfirmModal').modal('hide')
+
+            return false;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: apiURL + '/participants/clear',
+            success: function(result) {
+                result = JSON.parse(result);
+
+                if (result.result == 'success') {
+                    $('#newList').html('')
+                    $('#indexList').html('')
+                    $('#clearParticipantsConfirmModal').modal('hide')
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function() {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
+
+    $('#checkDuplicationBtn').on('click', function() {
+        var items = $('#newList span.p-name')
+        const names = _.map(items, (ele) => {
+            return {
+                'name': ele.textContent
+            }
+        })
+
+        if (!names.length) {
+            return false;
+        }
+
+        let duplications = _.chain(names).groupBy('name').filter(function(v) {
+            return v.length > 1
+        }).flatten().uniq().value()
+
+        if (duplications.length) {
+            duplications = _.map(_.uniq(duplications, function(item) {
+                return item.name;
+            }), function(item) {
+                return item.name
+            })
+
+            const duplicate_names = duplications.join(", ")
+            appendAlert(`The following duplicate participants were found.<br/>${duplicate_names}`, 'danger');
+        } else {
+            appendAlert('No duplicates detected.', 'success');
+        }
+
+    });
+
 });
 
 var saveParticipants = (data) => {
@@ -398,6 +460,8 @@ var changeEliminationType = (element) => {
             <div class="buttons d-flex justify-content-center">
                 <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant">Add Participant</button>
                 <button id="generate" class="btn btn-default">Generate Brackets</button>
+                <button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal">Clear Participant</button>
+                <button id="checkDuplicationBtn" class="btn btn-default">Check Duplication</button>
             </div>
             <div class="collapse" id="collapseAddParticipant">
                 <div class="card card-body">
@@ -484,6 +548,26 @@ var changeEliminationType = (element) => {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="submit">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="clearParticipantsConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="clearParticipantsConfirmModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Are you sure you want to clear the participants list?</h4>
+                    <h5 class="text-danger">This action cannot be undone!</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="clearParticipantsConfirmBtn">Confirm</button>
                 </div>
             </div>
         </div>
