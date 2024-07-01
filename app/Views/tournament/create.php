@@ -131,7 +131,7 @@ $(document).ready(function() {
         eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
 
         <?php if (isset($settings) && count($settings)) : ?>
-        audio.currentTime = parseInt(<?= $settings[0]['start'] ?>);
+        audio.currentTime = parseInt(<?= $settings[0]['start'] ? $settings[0]['start'] : 0 ?>);
 
         document.getElementById('stopMusicButton').classList.remove('d-none');
         document.getElementById('stopMusicButton').addEventListener('click', function() {
