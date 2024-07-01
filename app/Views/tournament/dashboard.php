@@ -361,7 +361,17 @@ $(document).ready(function() {
         "columnDefs": [{
             "orderable": false,
             "targets": [0, 3, 4, 6]
-        }]
+        }],
+        // Add custom initComplete to initialize select all checkbox
+        "initComplete": function(settings, json) {
+            // Add a select all checkbox to the header
+            $('#selectAllCheckbox').on('click', function() {
+                var rows = table.rows({
+                    'search': 'applied'
+                }).nodes();
+                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            });
+        }
     });
 
     $('#typeFilter').on('change', function() {
@@ -374,9 +384,9 @@ $(document).ready(function() {
         table.columns(4).search(selectedStatus).draw();
     });
 
-    $('#selectAllCheckbox').click(function() {
-        $('.item-checkbox').prop('checked', this.checked);
-    });
+    // $('#selectAllCheckbox').click(function() {
+    //     $('.item-checkbox').prop('checked', this.checked);
+    // });
 
     // Individual checkbox functionality
     $('.item-checkbox').change(function() {
@@ -1429,7 +1439,7 @@ function bulkStatusUpdate() {
             result = JSON.parse(result)
             $('.item-checkbox').prop('checked', false);
             appendAlert(result.msg, result.status);
-            bulkActionConfirmModal.modal('hide')
+            location.reload();
         },
         error: function(error) {
             console.log(error);
