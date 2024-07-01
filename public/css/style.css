@@ -310,3 +310,7 @@
   background-color: #0056b3;
   /* Darker shade of blue on hover */
 }
+
+#tournamentTable_filter {
+  display: none;
+}

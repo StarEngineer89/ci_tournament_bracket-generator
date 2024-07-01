@@ -428,8 +428,13 @@ var changeEliminationType = (element) => {
             <div class="buttons d-flex justify-content-center">
                 <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant">Add Participant</button>
                 <button id="generate" class="btn btn-default">Generate Brackets</button>
-                <button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal">Clear Participant</button>
-                <button id="checkDuplicationBtn" class="btn btn-default">Check Duplication</button>
+                <a class="btn btn-default dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Additional Options
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal">Clear Participant(s) List</button></li>
+                    <li><button id="checkDuplicationBtn" class="btn btn-default">Check Duplicates</button></li>
+                </ul>
             </div>
             <div class="collapse" id="collapseAddParticipant">
                 <div class="card card-body">

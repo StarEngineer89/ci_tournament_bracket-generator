@@ -357,7 +357,7 @@ $(document).ready(function() {
             [1, "asc"]
         ], // Initial sorting by the first column ascending
         "paging": true, // Enable pagination
-        "searching": false, // Enable search box
+        "searching": true, // Enable search box
         "columnDefs": [{
             "orderable": false,
             "targets": [0, 3, 4, 6]
@@ -366,12 +366,12 @@ $(document).ready(function() {
 
     $('#typeFilter').on('change', function() {
         var selectedType = $(this).val().toLowerCase();
-        table.columns(2).search(selectedType).draw();
+        table.columns(3).search(selectedType).draw();
     });
 
     $('#stautsFilter').on('change', function() {
         var selectedStatus = $(this).val().toLowerCase();
-        table.columns(3).search(selectedStatus).draw();
+        table.columns(4).search(selectedStatus).draw();
     });
 
     $('#selectAllCheckbox').click(function() {
