@@ -16,9 +16,6 @@
 <table id="tournamentTable" class="table align-middle">
     <thead>
         <tr>
-            <th scope="col" width="20px">
-                <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
-            </th>
             <th scope="col">#</th>
             <th scope="col">Tournament Name</th>
             <th scope="col">
@@ -38,8 +35,20 @@
                     <option value="Abandoned">Abandoned</option>
                 </select>
             </th>
-            <th scope="col">Accessibility</th>
-            <th scope="col">Shared By</th>
+            <th scope="col">
+                <label for="accessibilityFilter">Accessibility:</label>
+                <select id="accessibilityFilter" class="form-select form-select-sm">
+                    <option value="">All Accessibility</option>
+                    <option value="Can Edit">Can Edit</option>
+                    <option value="Can View">Can View</option>
+                </select>
+            </th>
+            <th scope="col">
+                <label for="userByFilter">Shared By:</label>
+                <select id="userByFilter" class="form-select form-select-sm">
+                    <option value="">All Users</option>
+                </select>
+            </th>
             <th scope="col">Shared Time</th>
         </tr>
     </thead>
@@ -48,9 +57,8 @@
         <?php foreach ($tournaments as $index => $tournament) : ?>
         <?php if (isset($tournament['status'])): ?>
         <tr data-id="<?= $tournament['tournament_id'] ?>">
-            <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
             <td scope="row"><?= $order++ ?></td>
-            <td data-label="name">
+            <td>
                 <a href="<?= base_url('tournaments/shared/' . $tournament['token']) ?>"><?= $tournament['name'] ?></a>
             </td>
             <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
@@ -61,7 +69,7 @@ Note that actions are logged for tracking purposes.' : 'You can view the tournam
                     <button class="btn" type="button" disabled><?= ($tournament['permission'] == SHARE_PERMISSION_EDIT) ? 'Can Edit' : 'Can View' ?></button>
                 </span>
             </td>
-            <td>
+            <td data-label="name">
                 <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="<?= $tournament['email'] ?>">
                     <button class="btn" type="button" disabled><?= $tournament['username'] ?></button>
                 </span>

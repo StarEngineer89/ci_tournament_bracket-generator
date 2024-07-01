@@ -355,6 +355,43 @@ $(document).ready(function() {
         });
     });
 
+    <?php if ($navActive == 'shared'): ?>
+    <?php if ($shareType == 'wh'): ?>
+    var orderFalseColumns = [0, 2, 3, 4, 5]
+    <?php else: ?>
+    var orderFalseColumns = [0, 2, 3, 5]
+    <?php endif ?>
+    table = $('#tournamentTable').DataTable({
+        "order": [
+            [1, "asc"]
+        ], // Initial sorting by the first column ascending
+        "paging": true, // Enable pagination
+        "searching": true, // Enable search box
+        "columnDefs": [{
+            "orderable": false,
+            "targets": orderFalseColumns
+        }],
+    });
+
+    $('#typeFilter').on('change', function() {
+        var selectedType = $(this).val().toLowerCase();
+        table.columns(2).search(selectedType).draw();
+    });
+
+    $('#stautsFilter').on('change', function() {
+        var selectedStatus = $(this).val().toLowerCase();
+        table.columns(3).search(selectedStatus).draw();
+    });
+    $('#accessibilityFilter').on('change', function() {
+        var selectedPermission = $(this).val().toLowerCase();
+        table.columns(4).search(selectedPermission).draw();
+    });
+
+    $('#userByFilter').on('change', function() {
+        var selectedUser = $(this).val().toLowerCase().trim();
+        table.columns(5).search(selectedUser).draw();
+    });
+    <?php else: ?>
     table = $('#tournamentTable').DataTable({
         "order": [
             [1, "asc"]
@@ -377,10 +414,6 @@ $(document).ready(function() {
         }
     });
 
-    datatableRows = table.rows({
-        'search': 'applied'
-    }).nodes();
-
     $('#typeFilter').on('change', function() {
         var selectedType = $(this).val().toLowerCase();
         table.columns(3).search(selectedType).draw();
@@ -390,10 +423,19 @@ $(document).ready(function() {
         var selectedStatus = $(this).val().toLowerCase();
         table.columns(4).search(selectedStatus).draw();
     });
+    <?php endif ?>
 
-    // $('#selectAllCheckbox').click(function() {
-    //     $('.item-checkbox').prop('checked', this.checked);
-    // });
+    datatableRows = table.rows({
+        'search': 'applied'
+    }).nodes();
+
+    <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
+    var nameColumns = $('td[data-label="name"] span', datatableRows)
+    nameColumns.each((i, element) => {
+        var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+        $('#userByFilter').append(option)
+    })
+    <?php endif ?>
 
     // Individual checkbox functionality
     $('.item-checkbox').change(function() {

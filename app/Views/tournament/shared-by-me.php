@@ -22,9 +22,6 @@
 <table id="tournamentTable" class="shared-by-me table align-middle">
     <thead>
         <tr>
-            <th scope="col" width="20px">
-                <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
-            </th>
             <th scope="col">#</th>
             <th scope="col">Tournament Name</th>
             <th scope="col">
@@ -53,7 +50,6 @@
         <?php foreach ($tournaments as $index => $tournament) : ?>
         <?php if (isset($tournament['status'])): ?>
         <tr data-id="<?= $tournament['tournament_id'] ?>">
-            <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
             <td scope="row"><?= $order++ ?></td>
             <td data-label="name">
                 <a href="<?= base_url('tournaments/' . $tournament['tournament_id'] . '/view') ?>"><?= $tournament['name'] ?></a>
