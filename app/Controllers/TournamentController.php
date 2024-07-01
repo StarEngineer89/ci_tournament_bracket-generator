@@ -14,9 +14,15 @@ class TournamentController extends BaseController
 
         if ($this->request->getGet('filter') == 'shared') {
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+            $tournaments = $shareSettingsModel->tournamentDetails();
+            
+            if ($this->request->getGet('query')) {
+                $searchString = $this->request->getGet('query');
+                $tournaments->like(['tournaments.searchable' => $searchString]);
+            }
             
             if ($this->request->getGet('type') == 'wh') {
-                $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
+                $tempRows = $tournaments->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
                 
                 $tournaments = [];
                 $access_tokens = [];
@@ -45,9 +51,9 @@ class TournamentController extends BaseController
                     }
                 }
 
-                $table = view('tournament/shared-with-me', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type')]);
+                $table = view('tournament/shared-with-me', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'searchString' => $searchString]);
             } else {
-                $tempRows = $shareSettingsModel->tournamentDetails()->where('share_settings.user_by', auth()->user()->id)->findAll();
+                $tempRows = $tournaments->where('share_settings.user_by', auth()->user()->id)->findAll();
 
                 $tournaments = [];
                 if ($tempRows) {
@@ -56,7 +62,7 @@ class TournamentController extends BaseController
                     }
                 }
 
-                $table = view('tournament/shared-by-me', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'navActive' => $navActive]);
+                $table = view('tournament/shared-by-me', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'navActive' => $navActive, 'searchString' => $searchString]);
             }
 
             

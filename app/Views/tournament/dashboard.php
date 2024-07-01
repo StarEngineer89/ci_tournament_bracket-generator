@@ -1314,6 +1314,13 @@ function generateURL() {
     $('#shareModal #tournamentURL').val("<?= base_url('/tournaments/shared/') ?>" + token);
 }
 
+function handleKeyPress(event) {
+    if (event.keyCode === 13) {
+        event.preventDefault(); // Prevent form submission
+        fetchDataAndUpdateTable();
+    }
+}
+
 function fetchDataAndUpdateTable() {
     let data = {
         query: $('#tournamentSearchInputBox').val()
