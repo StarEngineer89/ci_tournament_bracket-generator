@@ -68,7 +68,7 @@
         <tr data-id="<?= $tournament['id'] ?>">
             <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
             <td scope="row"><?= $order++ ?></td>
-            <td>
+            <td data-label="name">
                 <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
             </td>
             <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
@@ -81,7 +81,7 @@
                     </button>
                     <div class="collapse" id="collapseActions-<?= $index ?>">
                         <div class="card card-body p-3">
-                            <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>">Rename</a>
+                            <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>" onclick="renameTorunament(this)">Rename</a>
                             <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
                             <?php if ($tournament['status'] == TOURNAMENT_STATUS_INPROGRESS): ?>
                             <a href="javascript:;" class="archive" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>
@@ -97,6 +97,7 @@
                     </div>
                 </div>
                 <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
+                <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="cancelRenameTorunament(this)">Cancel</a>
             </td>
         </tr>
         <?php endif ?>

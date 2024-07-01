@@ -402,26 +402,6 @@ $(document).ready(function() {
         })
     }
 
-    const renameBtn = document.querySelectorAll('.rename');
-    if (renameBtn) {
-        renameBtn.forEach((element, i) => {
-            element.addEventListener('click', event => {
-                const nameBox = document.createElement('input');
-                const name = $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find(
-                    'td a').eq(0).html();
-                nameBox.classList.add('name', 'form-control');
-                nameBox.value = name;
-
-                $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('td').eq(0)
-                    .html(nameBox);
-                $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.btn-groups')
-                    .addClass('visually-hidden');
-                $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.save')
-                    .removeClass('visually-hidden');
-            })
-        })
-    }
-
     const statusChange = document.querySelectorAll('.change-status');
     if (statusChange) {
         statusChange.forEach((element, i) => {
@@ -931,6 +911,28 @@ $(document).ready(function() {
     });
 });
 
+const renameTorunament = (element) => {
+    const nameBox = document.createElement('input');
+    const name = $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('td a').eq(0).html();
+    nameBox.classList.add('name', 'form-control');
+    nameBox.value = name;
+
+    $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('td[data-label="name"]').html(nameBox);
+    $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('.btn-groups').addClass('visually-hidden');
+    $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('.save').removeClass('visually-hidden');
+}
+
+const cancelRenameTorunament = (element) => {
+    const tournament_id = event.target.getAttribute('data-id');
+    const name = $(event.target).parents('tr').find('.name').val();
+    const nameElement = document.createElement('a');
+    nameElement.href = '<?= base_url('tournaments') ?>/' + tournament_id + '/view';
+    nameElement.textContent = name
+    $(`tr[data-id="${tournament_id}"]`).find('td[data-label="name"]').html(nameElement);
+    $(`tr[data-id="${tournament_id}"]`).find('.btn-groups').removeClass('visually-hidden');
+    $(`tr[data-id="${tournament_id}"]`).find('.save').addClass('visually-hidden');
+}
+
 function saveChange() {
     let data = {};
     const tournament_id = event.target.getAttribute('data-id');
@@ -950,7 +952,7 @@ function saveChange() {
                 const nameElement = document.createElement('a');
                 nameElement.href = '<?= base_url('tournaments') ?>/' + tournament_id + '/view';
                 nameElement.textContent = data.name
-                $(`tr[data-id="${tournament_id}"]`).find('td').eq(0).html(nameElement);
+                $(`tr[data-id="${tournament_id}"]`).find('td[data-label="name"]').html(nameElement);
             }
 
             if (data.status != undefined && data.status != '') {
