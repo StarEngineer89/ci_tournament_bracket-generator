@@ -293,6 +293,8 @@ let apiURL = "<?= base_url('api') ?>";
 
 var users_json = '<?= json_encode($users) ?>';
 
+var table = null;
+
 //get data pass to json
 var task = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace("username"),
@@ -352,7 +354,7 @@ $(document).ready(function() {
         });
     });
 
-    var table = $('#tournamentTable').DataTable({
+    table = $('#tournamentTable').DataTable({
         "order": [
             [1, "asc"]
         ], // Initial sorting by the first column ascending
@@ -1337,29 +1339,40 @@ function fetchDataAndUpdateTable() {
 function confirmBulkAction() {
     var selectedIds = [];
     var names = '';
-    $('.item-checkbox:checked').each(function(i, item) {
-        selectedIds.push($(this).closest('tr').data('id'));
-        names += $(this).closest('tr').find('td a').eq(0).html();
-
-        if (i < ($('.item-checkbox:checked').length - 1)) {
-            names += ', '
-        }
-    });
-
-    if (selectedIds.length) {
+    if ($('#selectAllCheckbox').is(":checked")) {
         $(bulkActionConfirmModal).modal('show', {
             'actionname': $(event.currentTarget).data('actionname'),
-            'names': names
+            'names': "All Tournaments"
         })
     } else {
-        alert('Please select the tournaments.')
+        $('.item-checkbox:checked').each(function(i, item) {
+            selectedIds.push($(this).closest('tr').data('id'));
+            names += $(this).closest('tr').find('td a').eq(0).html();
+
+            if (i < ($('.item-checkbox:checked').length - 1)) {
+                names += ', '
+            }
+        });
+
+        if (selectedIds.length) {
+            $(bulkActionConfirmModal).modal('show', {
+                'actionname': $(event.currentTarget).data('actionname'),
+                'names': names
+            })
+        } else {
+            alert('Please select the tournaments.')
+        }
     }
+
 }
 
 // handling bulk action (e.g., delete)
 function bulkDelete() {
     var selectedIds = [];
-    $('.item-checkbox:checked').each(function() {
+    var rows = table.rows({
+        'search': 'applied'
+    }).nodes();
+    $('.item-checkbox:checked', rows).each(function() {
         selectedIds.push($(this).closest('tr').data('id'));
     });
 
@@ -1391,7 +1404,10 @@ function bulkDelete() {
 
 function bulkReset() {
     var selectedIds = [];
-    $('.item-checkbox:checked').each(function() {
+    var rows = table.rows({
+        'search': 'applied'
+    }).nodes();
+    $('.item-checkbox:checked', rows).each(function() {
         selectedIds.push($(this).closest('tr').data('id'));
     });
 
@@ -1419,7 +1435,10 @@ function bulkReset() {
 
 function bulkStatusUpdate() {
     var selectedIds = [];
-    $('.item-checkbox:checked').each(function() {
+    var rows = table.rows({
+        'search': 'applied'
+    }).nodes();
+    $('.item-checkbox:checked', rows).each(function() {
         selectedIds.push($(this).closest('tr').data('id'));
     });
 
