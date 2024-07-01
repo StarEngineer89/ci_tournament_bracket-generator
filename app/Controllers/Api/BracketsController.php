@@ -76,6 +76,27 @@ class BracketsController extends BaseController
         $this->bracketsModel->update($id, $insert_data);
 
         /**
+         * Update tournament searchable data
+         */
+        $tournament_model = model('\App\Models\TournamentModel');
+        $tournament = $tournament_model->find($bracket['tournament_id']);
+        $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
+        
+        $participant_names_string = '';
+        if ($brackets) {
+            foreach ($brackets as $bracket) {
+                $teams = json_decode($bracket['teamnames']);
+                foreach ($teams as $team) {
+                    if ($team) {
+                        $participant_names_string .= $team->name .',';
+                    }
+                }
+            }
+        }
+        $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
+        $tournament_model->save($tournament);
+
+        /**
          * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
          */
         if (isset($req->action_code) && $req->action_code) {
@@ -121,7 +142,32 @@ class BracketsController extends BaseController
     public function deleteBracket($id)
     {
         $bracket = $this->bracketsModel->find($id);
-        // $this->bracketsModel->where('id', $id)->delete();
+
+        /** Delete a bracket - Delete the participants in a bracket */
+        $bracket['teamnames'] = json_encode([null, null]);
+        $bracket['deleted_by'] = (auth()->user()) ? auth()->user()->id : 0;
+        $this->bracketsModel->update($id, $bracket);
+
+        /**
+         * Update tournament searchable data
+         */
+        $tournament_model = model('\App\Models\TournamentModel');
+        $tournament = $tournament_model->find($bracket['tournament_id']);
+        $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
+        
+        $participant_names_string = '';
+        if ($brackets) {
+            foreach ($brackets as $bracket) {
+                $teams = json_decode($bracket['teamnames']);
+                foreach ($teams as $team) {
+                    if ($team) {
+                        $participant_names_string .= $team->name .',';
+                    }
+                }
+            }
+        }
+        $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
+        $tournament_model->save($tournament);
 
         /**
          * Prepare the log data
@@ -155,11 +201,6 @@ class BracketsController extends BaseController
         $data['participants'] = $participants_in_bracket;
         $insert_data['params'] = json_encode($data);
 
-        /** Delete a bracket - Delete the participants in a bracket */
-        $bracket['teamnames'] = json_encode([null, null]);
-        $bracket['deleted_by'] = (auth()->user()) ? auth()->user()->id : 0;
-        $this->bracketsModel->update($id, $bracket);
-
         /** Record a delete action log */
         $logActionsModel->insert($insert_data);
 
@@ -169,6 +210,14 @@ class BracketsController extends BaseController
     public function clearBrackets($tournament_id)
     {
         $this->bracketsModel->where(['tournament_id' => $tournament_id, 'user_by' => auth()->user()->id])->delete();
+        
+        /**
+         * Update tournament searchable data
+         */
+        $tournament_model = model('\App\Models\TournamentModel');
+        $tournament = $tournament_model->find($tournament_id);
+        $tournament['searchable'] = $tournament['name'];
+        $tournament_model->save($tournament);
 
         return json_encode(array('result' => 'success'));
     }
