@@ -12,7 +12,7 @@
 </div>
 
 <div class="card col-12 shadow-sm">
-    <div class="card-body">
+    <div class="card-body container">
         <h5 class="card-title d-flex justify-content-center">
             <? //= lang('Auth.login') ?>Tournament Dashboard
         </h5>

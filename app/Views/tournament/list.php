@@ -1,11 +1,7 @@
 <div class="container justify-content-center mb-3">
-    <div class="row">
-        <div class="col-md-6 col-sm-10 offset-md-3">
-            <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>">
-        </div>
-        <div class="col-md-2 col-sm-2">
-            <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()">Search</button>
-        </div>
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>">
+        <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()">Search</button>
     </div>
 </div>
 
