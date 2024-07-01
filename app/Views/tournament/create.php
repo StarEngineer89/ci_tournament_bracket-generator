@@ -429,7 +429,7 @@ var changeEliminationType = (element) => {
                 <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant">Add Participant</button>
                 <button id="generate" class="btn btn-default">Generate Brackets</button>
                 <a class="btn btn-default dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Additional Options
+                    <i class="fa fa-gear"></i> Additional Options
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal">Clear Participant(s) List</button></li>

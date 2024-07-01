@@ -1,7 +1,7 @@
 <div class="container justify-content-center mb-3">
     <div class="input-group mb-3">
-        <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>">
-        <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()">Search</button>
+        <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>" placeholder="Search for a specific tournament name or find out which tournaments a participant is competing in">
+        <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()"><i class="fa fa-search"></i> Search</button>
     </div>
 </div>
 
@@ -21,7 +21,7 @@
 
     <div class="dropdown ms-3">
         <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Bulk Actions
+            <i class="fa fa-list-check"></i> Bulk Actions
         </button>
         <ul class="dropdown-menu">
             <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkDelete">Bulk Delete</a></li>
