@@ -294,6 +294,7 @@ let apiURL = "<?= base_url('api') ?>";
 var users_json = '<?= json_encode($users) ?>';
 
 var table = null;
+var datatableRows;
 
 //get data pass to json
 var task = new Bloodhound({
@@ -375,6 +376,10 @@ $(document).ready(function() {
             });
         }
     });
+
+    datatableRows = table.rows({
+        'search': 'applied'
+    }).nodes();
 
     $('#typeFilter').on('change', function() {
         var selectedType = $(this).val().toLowerCase();
@@ -559,13 +564,13 @@ $(document).ready(function() {
         })
     }
 
-    const myCollapsible = document.querySelectorAll('.collapse')
-    myCollapsible.forEach((item, i) => {
+    const myCollapsible = $('.collapse', datatableRows)
+    myCollapsible.each((i, item) => {
         item.addEventListener('hide.bs.collapse', event => {
             item.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
         })
         item.addEventListener('show.bs.collapse', event => {
-            myCollapsible.forEach((e, ii) => {
+            myCollapsible.each((ii, e) => {
                 if (ii != i) {
                     e.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
                 }

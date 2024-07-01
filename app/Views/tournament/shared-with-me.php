@@ -21,8 +21,23 @@
             </th>
             <th scope="col">#</th>
             <th scope="col">Tournament Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Status</th>
+            <th scope="col">
+                <label for="typeFilter">Type:</label>
+                <select id="typeFilter" class="form-select form-select-sm">
+                    <option value="">All Types</option>
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                </select>
+            </th>
+            <th scope="col">
+                <label for="statusFilter">Status:</label>
+                <select id="stautsFilter" class="form-select form-select-sm">
+                    <option value="">All Status</option>
+                    <option value="In progress">In progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Abandoned">Abandoned</option>
+                </select>
+            </th>
             <th scope="col">Accessibility</th>
             <th scope="col">Shared By</th>
             <th scope="col">Shared Time</th>
