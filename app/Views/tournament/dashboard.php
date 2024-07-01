@@ -36,7 +36,9 @@
         <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
-        <?php echo $table ?>
+        <div class="" id="tournamentsTableWrapper">
+            <?php echo $table ?>
+        </div>
     </div>
 </div>
 
@@ -261,7 +263,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.1/js/bootstrapValidator.min.js"></script>
-
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="/js/participants.js"></script>
 <script type="text/javascript">
 let apiURL = "<?= base_url('api') ?>";
@@ -325,6 +327,28 @@ $(document).ready(function() {
                 $("#overlay").fadeOut(300);
             }, 500);
         });
+    });
+
+    var table = $('#tournamentTable').DataTable({
+        "order": [
+            [0, "asc"]
+        ], // Initial sorting by the first column ascending
+        "paging": true, // Enable pagination
+        "searching": false, // Enable search box
+        "columnDefs": [{
+            "orderable": false,
+            "targets": [2, 3, 5]
+        }]
+    });
+
+    $('#typeFilter').on('change', function() {
+        var selectedType = $(this).val().toLowerCase();
+        table.columns(2).search(selectedType).draw();
+    });
+
+    $('#stautsFilter').on('change', function() {
+        var selectedStatus = $(this).val().toLowerCase();
+        table.columns(3).search(selectedStatus).draw();
     });
 
     const resetModal = document.getElementById('resetConfirm');
@@ -1180,6 +1204,29 @@ function generateURL() {
 
     $('#shareModal #tournamentURL').val("<?= base_url('/tournaments/shared/') ?>" + token);
 }
+
+
+function fetchDataAndUpdateTable() {
+    let data = {
+        query: $('#tournamentSearchInputBox').val()
+    }
+
+    let url = new URL(window.location.href);
+
+    // Get search params from URL
+    let searchParams = new URLSearchParams(url.search);
+
+    // Add new parameter
+    searchParams.set('query', $('#tournamentSearchInputBox').val());
+
+    // Update search property of URL object
+    url.search = searchParams.toString();
+
+    // Replace current history state with new URL
+    history.replaceState(null, '', url.href);
+
+    window.location.href = url.href
+}
 </script>
 <?= $this->endSection() ?>
 
@@ -1187,7 +1234,7 @@ function generateURL() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
-
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <style>
 .resizable {
     position: relative;

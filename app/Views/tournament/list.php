@@ -12,15 +12,41 @@
     <?php endif ?>
 </div>
 
-<table class="table align-middle">
+<div class="container justify-content-center">
+    <div class="row">
+        <div class="col-md-6 col-sm-10 offset-md-3">
+            <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>">
+        </div>
+        <div class="col-md-2 col-sm-2">
+            <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()">Search</button>
+        </div>
+    </div>
+</div>
+
+<table id="tournamentTable" class="table align-middle">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Tournament Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Status</th>
-            <th scope="col">Created Time</th>
-            <th scope="col">Actions</th>
+            <th scope="col">#<br />&nbsp;</th>
+            <th scope="col">Tournament Name<br />&nbsp;</th>
+            <th scope="col">
+                <label for="typeFilter">Type:</label>
+                <select id="typeFilter" class="form-select form-select-sm">
+                    <option value="">All Types</option>
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                </select>
+            </th>
+            <th scope="col">
+                <label for="statusFilter">Status:</label>
+                <select id="stautsFilter" class="form-select form-select-sm">
+                    <option value="">All Status</option>
+                    <option value="In progress">In progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Abandoned">Abandoned</option>
+                </select>
+            </th>
+            <th scope="col">Created Time<br />&nbsp;</th>
+            <th scope="col">Actions<br />&nbsp;</th>
         </tr>
     </thead>
     <tbody>

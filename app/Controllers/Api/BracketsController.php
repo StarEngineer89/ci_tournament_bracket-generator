@@ -177,6 +177,7 @@ class BracketsController extends BaseController
     {
 
         $list = $this->request->getPost('list');
+        $participant_names_string = '';
 
         if (count($list) > 0) {
             foreach ($list as $item) {
@@ -185,6 +186,8 @@ class BracketsController extends BaseController
                 ];
 
                 $this->participantsModel->update($item['id'], $data);
+
+                $participant_names_string .= $item['name'] .',';
             }
         }
 
@@ -197,6 +200,14 @@ class BracketsController extends BaseController
 
         if ($brackets_type == 'Double') {
             $brackets = $this->createBrackets('d');
+        }
+
+        /** Fill the Searchable field into tournament */
+        $tournamentModel = model('\App\Models\TournamentModel');
+        if ($this->request->getPost('tournament_id')) {
+            $tournament = $tournamentModel->find($this->request->getPost('tournament_id'));
+            $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
+            $tournamentModel->save($tournament);
         }
 
         return json_encode(array('result' => 'success', 'brackets' => $brackets, 'request' => $this->request->getPost()));

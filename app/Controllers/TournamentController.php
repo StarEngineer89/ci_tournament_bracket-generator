@@ -9,21 +9,13 @@ class TournamentController extends BaseController
 {
     public function index()
     {
-        $tournamentModel = model('\App\Models\TournamentModel');
-
-        $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_INPROGRESS])->findAll();
-
-        if ($this->request->getGet('filter') == 'archived') {
-            $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_COMPLETED])->orWhere(['user_by' => auth()->user()->id, 'status' => TOURNAMENT_STATUS_ARCHIVED])->findAll();
-        }
-
         $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';
+        $searchString = null;
 
         if ($this->request->getGet('filter') == 'shared') {
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
             
             if ($this->request->getGet('type') == 'wh') {
-                // $tempRows = $shareSettingsModel->tournamentDetails()->Like('users', strval(auth()->user()->id))->findAll();
                 $tempRows = $shareSettingsModel->tournamentDetails()->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
                 
                 $tournaments = [];
@@ -69,7 +61,24 @@ class TournamentController extends BaseController
 
             
         } else {
-            $table = view('tournament/list', ['tournaments' => $tournaments, 'navActive' => $navActive]);
+            $tournamentModel = model('\App\Models\TournamentModel');
+
+            $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id]);
+
+            if ($this->request->getGet('filter') == 'archived') {
+                $tournaments->whereIn('status', [TOURNAMENT_STATUS_COMPLETED, TOURNAMENT_STATUS_ARCHIVED, TOURNAMENT_STATUS_ABANDONED]);
+            } else {
+                $tournaments->where(['status' => TOURNAMENT_STATUS_INPROGRESS]);
+            }
+
+            if ($this->request->getGet('query')) {
+                $searchString = $this->request->getGet('query');
+                $tournaments->like(['searchable' => $searchString]);
+            }
+            // var_dump($tournaments->builder()->getCompiledSelect());
+            $tournaments = $tournaments->findAll();
+            
+            $table = view('tournament/list', ['tournaments' => $tournaments, 'navActive' => $navActive, 'searchString' => $searchString]);
         }
 
         $musicSettingsBlock = view('tournament/music-setting', []);
