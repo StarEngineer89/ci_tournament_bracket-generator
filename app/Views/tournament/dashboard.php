@@ -626,7 +626,6 @@ $(document).ready(function() {
                 <?php elseif ($navActive == 'archived'): ?>
                 selectBox.append('<option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In Progress</option>');
                 <?php endif ?>
-                selectBox.append('<option value="<?= TOURNAMENT_STATUS_ARCHIVED ?>">Archive</option>');
                 selectBox.append('<option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandone</option>');
 
                 var selectBoxWrapper = $('<div class="col-auto"></div>')
@@ -860,7 +859,7 @@ $(document).ready(function() {
     $('#archiveConfirmBtn').on('click', function() {
         const tournament_id = archiveModal.getAttribute('data-id');
         let data = {
-            'status': <?= TOURNAMENT_STATUS_ARCHIVED ?>
+            'archive': 1
         }
 
         $.ajax({

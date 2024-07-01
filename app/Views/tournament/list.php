@@ -83,10 +83,10 @@
                         <div class="card card-body p-3">
                             <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>" onclick="renameTorunament(this)">Rename</a>
                             <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
-                            <?php if ($tournament['status'] == TOURNAMENT_STATUS_INPROGRESS): ?>
-                            <a href="javascript:;" class="archive" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>
-                            <?php else: ?>
+                            <?php if ($tournament['archive'] == 1): ?>
                             <a href="javascript:;" class="restore" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>
+                            <?php else: ?>
+                            <a href="javascript:;" class="archive" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>
                             <?php endif ?>
                             <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
                             <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>

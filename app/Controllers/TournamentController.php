@@ -72,9 +72,9 @@ class TournamentController extends BaseController
             $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id]);
 
             if ($this->request->getGet('filter') == 'archived') {
-                $tournaments->whereIn('status', [TOURNAMENT_STATUS_COMPLETED, TOURNAMENT_STATUS_ARCHIVED, TOURNAMENT_STATUS_ABANDONED]);
+                $tournaments->where(['archive' => 1]);
             } else {
-                $tournaments->where(['status' => TOURNAMENT_STATUS_INPROGRESS]);
+                $tournaments->where('archive', null);
             }
 
             if ($this->request->getGet('query')) {
