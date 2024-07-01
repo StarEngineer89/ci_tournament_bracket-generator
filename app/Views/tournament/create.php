@@ -374,38 +374,6 @@ var csvUpload = (element) => {
     });
 }
 
-const appendAlert = (message, type) => {
-    const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
-    alertPlaceholder.innerHTML = ''
-    const wrapper = document.createElement('div')
-
-    if (Array.isArray(message)) {
-        wrapper.innerHTML = ''
-        message.forEach((item, i) => {
-            wrapper.innerHTML += [
-                `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                `   <div>${item}</div>`,
-                '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                '</div>'
-            ].join('')
-        })
-    } else {
-        wrapper.innerHTML = [
-            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-            `   <div>${message}</div>`,
-            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-            '</div>'
-        ].join('')
-    }
-
-
-    alertPlaceholder.append(wrapper)
-
-    $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
-        $("div.alert").slideUp(500);
-    });
-}
-
 var changeEliminationType = (element) => {
     let parent = $(element).parent();
     parent.find('.form-text').addClass('d-none');

@@ -39,6 +39,42 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script src="http://underscorejs.org/underscore-min.js"></script>
 
+        <script type="text/javascript">
+        const appendAlert = (message, type) => {
+            const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+
+            if (alertPlaceholder) {
+                alertPlaceholder.innerHTML = ''
+                const wrapper = document.createElement('div')
+
+                if (Array.isArray(message)) {
+                    wrapper.innerHTML = ''
+                    message.forEach((item, i) => {
+                        wrapper.innerHTML += [
+                            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                            `   <div>${item}</div>`,
+                            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                            '</div>'
+                        ].join('')
+                    })
+                } else {
+                    wrapper.innerHTML = [
+                        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                        `   <div>${message}</div>`,
+                        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                        '</div>'
+                    ].join('')
+                }
+
+
+                alertPlaceholder.append(wrapper)
+
+                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
+                    $("div.alert").slideUp(500);
+                });
+            }
+        }
+        </script>
         <?= $this->renderSection('pageScripts') ?>
     </body>
 

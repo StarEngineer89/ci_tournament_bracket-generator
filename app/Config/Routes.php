@@ -51,6 +51,9 @@ $routes->group('api', static function ($routes) {
         $routes->get('(:num)/getActionHistory', 'Api\TournamentController::getActionHistory/$1');
         $routes->get('fetchUsersList', 'Api\TournamentController::fetchUsersList');
         $routes->get('fetchShareSetting/(:num)', 'Api\TournamentController::fetchShareSetting/$1');
+        $routes->post('bulkDelete', 'Api\TournamentController::bulkDelete');
+        $routes->post('bulkReset', 'Api\TournamentController::bulkReset');
+        $routes->post('bulkUpdate', 'Api\TournamentController::bulkUpdate');
     });
 });
 

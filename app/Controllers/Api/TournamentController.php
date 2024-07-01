@@ -355,4 +355,69 @@ class TournamentController extends BaseController
 
         return json_encode(['result'=> 'success','users'=> $users, 'query' => $this->request->getPost()]);
     }
+    
+    public function bulkDelete()
+    {
+        $ids = $this->request->getPost('id');
+        $tournamentModel = model('\App\Models\TournamentModel');
+
+        /** Alert Message */
+        $tournaments = $tournamentModel->whereIn('id', $ids)->findAll();
+        $tournament_names = '';
+        foreach ($tournaments as $index => $tournament) {
+            if ($index == (count($tournaments) - 1)) {
+                $tournament_names .= $tournament['name'];
+            } else {
+                $tournament_names .= $tournament['name'] .',';
+            }
+        }
+
+        $tournamentModel->delete($ids);
+
+        return json_encode(['status' => 'success', 'msg' => "The following tournaments was deleted successfully.<br/>" . $tournament_names, 'data' => $ids]);
+    }
+
+    public function bulkReset()
+    {
+        $ids = $this->request->getPost('id');
+        $bracketModel = model('\App\Models\BracketModel');
+
+        $bracketModel->whereIn('tournament_id', $ids)->delete();
+
+        /** Alert Message */
+        $tournamentModel = model('\App\Models\TournamentModel');
+        $tournaments = $tournamentModel->whereIn('id', $ids)->findAll();
+        $tournament_names = '';
+        foreach ($tournaments as $index => $tournament) {
+            if ($index == (count($tournaments) - 1)) {
+                $tournament_names .= $tournament['name'];
+            } else {
+                $tournament_names .= $tournament['name'] .',';
+            }
+        }
+
+        return json_encode(['status' => 'success', 'msg' => "The following tournaments was reseted successfully.<br/>" . $tournament_names, 'data' => $ids]);
+    }
+
+    public function bulkUpdate()
+    {
+        $ids = $this->request->getPost('id');
+        $status = $this->request->getPost('status');
+        $tournamentModel = model('\App\Models\TournamentModel');
+
+        $tournamentModel->whereIn('id', $ids)->set(['status' => $status])->update();;
+
+        /** Alert Message */
+        $tournaments = $tournamentModel->whereIn('id', $ids)->findAll();
+        $tournament_names = '';
+        foreach ($tournaments as $index => $tournament) {
+            if ($index == (count($tournaments) - 1)) {
+                $tournament_names .= $tournament['name'];
+            } else {
+                $tournament_names .= $tournament['name'] .',';
+            }
+        }
+
+        return json_encode(['status' => 'success', 'msg' => "The status of following tournaments was updated successfully.<br/>" . $tournament_names, 'data' => $ids]);
+    }
 }

@@ -36,6 +36,8 @@
         <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
+        <div id="liveAlertPlaceholder"></div>
+
         <div class="" id="tournamentsTableWrapper">
             <?php echo $table ?>
         </div>
@@ -70,8 +72,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5>Are you sure you want to reset this tournament "<span class="tournament-name"></span>"?</h1>
-                    <h5 class="text-danger">This action cannot be undone!</h5>
+                <h5>Are you sure you want to reset this tournament "<span class="tournament-name"></span>"?</h5>
+                <h5 class="text-danger">This action cannot be undone!</h5>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -217,8 +219,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5>Are you sure you want to purge this link?</h1>
-                    <h5 class="text-danger">This action cannot be undone!</h5>
+                <h5>Are you sure you want to purge this link?</h5>
+                <h5 class="text-danger">This action cannot be undone!</h5>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -254,6 +256,27 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="bulkActionConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="bulkActionConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="resetModalLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-msg mb-3 text-center"></div>
+                <div class="input-wrapper mb-3 d-flex justify-content-center"></div>
+                <h5 class="mt-4 text-center">Are you sure you want to proceed? <span class="text-danger">This action cannot be undone!</span></h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+                <button type="button" class="btn btn-danger" id="confirmBulkActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
@@ -331,13 +354,13 @@ $(document).ready(function() {
 
     var table = $('#tournamentTable').DataTable({
         "order": [
-            [0, "asc"]
+            [1, "asc"]
         ], // Initial sorting by the first column ascending
         "paging": true, // Enable pagination
         "searching": false, // Enable search box
         "columnDefs": [{
             "orderable": false,
-            "targets": [2, 3, 5]
+            "targets": [0, 3, 4, 6]
         }]
     });
 
@@ -349,6 +372,16 @@ $(document).ready(function() {
     $('#stautsFilter').on('change', function() {
         var selectedStatus = $(this).val().toLowerCase();
         table.columns(3).search(selectedStatus).draw();
+    });
+
+    $('#selectAllCheckbox').click(function() {
+        $('.item-checkbox').prop('checked', this.checked);
+    });
+
+    // Individual checkbox functionality
+    $('.item-checkbox').change(function() {
+        var checked = $('.item-checkbox:checked').length === $('.item-checkbox').length;
+        $('#selectAllCheckbox').prop('checked', checked);
     });
 
     const resetModal = document.getElementById('resetConfirm');
@@ -550,6 +583,68 @@ $(document).ready(function() {
             item.previousElementSibling.innerHTML = `<i class="fa-solid fa-minus"></i> Hide Actions`
         })
     })
+
+    const bulkActionConfirmModal = document.getElementById('bulkActionConfirmModal');
+    if (bulkActionConfirmModal) {
+        bulkActionConfirmModal.addEventListener('show.bs.modal', event => {
+            var action = event.relatedTarget.actionname; // Action defined in data-action attribute
+            let title = '';
+            let action_text = '';
+            var modal = $(this);
+            modal.find('.modal-body .input-wrapper').empty();
+
+            if (action === 'bulkDelete') {
+                title = "Confirm to delete"
+                action_text = '<h5>You are about to delete the following selected tournament(s):</h5>';
+                action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+            } else if (action === 'bulkReset') {
+                title = "Confirm To reset"
+                action_text = '<h5>You are about to reset the following selected tournament(s):</h5>';
+                action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+            } else if (action === 'bulkStatusUpdate') {
+                title = "Confirm to update the status"
+                action_text = '<h6>You are about to change the status of the following selected tournament(s):</h6>';
+                action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+            }
+
+            modal.find('.modal-title').text(title);
+            modal.find('.modal-body .confirm-msg').html(action_text);
+
+            // Update confirm button action based on action
+            var confirmButton = modal.find('#confirmBulkActionBtn');
+            confirmButton.off('click'); // Remove any existing click handlers
+            if (action === 'bulkDelete') {
+                confirmButton.on('click', bulkDelete)
+            } else if (action === 'bulkReset') {
+                confirmButton.on('click', bulkReset)
+            } else if (action === 'bulkStatusUpdate') {
+                let status = $('.status-to').val()
+
+                // Create label element
+                var label = $('<label class="col-form-label col-auto justify-content-end">Status:</label>');
+                // Create select box element
+                var selectBox = $('<select class="form-control" id="statusUpdateTo">');
+                <?php if ($navActive == 'all'): ?>
+                selectBox.append('<option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Complete</option>');
+                <?php elseif ($navActive == 'archived'): ?>
+                selectBox.append('<option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In Progress</option>');
+                <?php endif ?>
+                selectBox.append('<option value="<?= TOURNAMENT_STATUS_ARCHIVED ?>">Archive</option>');
+                selectBox.append('<option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandone</option>');
+
+                var selectBoxWrapper = $('<div class="col-auto"></div>')
+                selectBoxWrapper.append(selectBox)
+
+                var row = $('<div class="row"></div>')
+                row.append(label).append(selectBoxWrapper)
+
+                // Append select box to modal body
+                modal.find('.modal-body .input-wrapper').append(row);
+                // confirmButton.on('click', bulkStatusUpdate(status));
+                confirmButton.on('click', bulkStatusUpdate)
+            }
+        })
+    }
 
     $('#confirmDelete').on('click', function() {
         const tournament_id = deleteModal.getAttribute('data-id');
@@ -1205,7 +1300,6 @@ function generateURL() {
     $('#shareModal #tournamentURL').val("<?= base_url('/tournaments/shared/') ?>" + token);
 }
 
-
 function fetchDataAndUpdateTable() {
     let data = {
         query: $('#tournamentSearchInputBox').val()
@@ -1227,6 +1321,123 @@ function fetchDataAndUpdateTable() {
 
     window.location.href = url.href
 }
+
+function confirmBulkAction() {
+    var selectedIds = [];
+    var names = '';
+    $('.item-checkbox:checked').each(function(i, item) {
+        selectedIds.push($(this).closest('tr').data('id'));
+        names += $(this).closest('tr').find('td a').eq(0).html();
+
+        if (i < ($('.item-checkbox:checked').length - 1)) {
+            names += ', '
+        }
+    });
+
+    if (selectedIds.length) {
+        $(bulkActionConfirmModal).modal('show', {
+            'actionname': $(event.currentTarget).data('actionname'),
+            'names': names
+        })
+    } else {
+        alert('Please select the tournaments.')
+    }
+}
+
+// handling bulk action (e.g., delete)
+function bulkDelete() {
+    var selectedIds = [];
+    $('.item-checkbox:checked').each(function() {
+        selectedIds.push($(this).closest('tr').data('id'));
+    });
+
+    // Perform your bulk action (e.g., AJAX call to delete items)
+    if (!selectedIds) {
+        return false
+    }
+
+    $.ajax({
+        type: "POST",
+        url: `${apiURL}/tournaments/bulkDelete`,
+        data: {
+            id: selectedIds
+        },
+        success: function(result) {
+            result = JSON.parse(result)
+            console.log(result)
+            location.reload();
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+};
+
+function bulkReset() {
+    var selectedIds = [];
+    $('.item-checkbox:checked').each(function() {
+        selectedIds.push($(this).closest('tr').data('id'));
+    });
+
+    $.ajax({
+        type: "POST",
+        url: `${apiURL}/tournaments/bulkReset`,
+        data: {
+            id: selectedIds
+        },
+        success: function(result) {
+            result = JSON.parse(result)
+            $('.item-checkbox').prop('checked', false);
+            appendAlert(result.msg, result.status);
+            location.reload();
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+};
+
+function bulkStatusUpdate() {
+    var selectedIds = [];
+    $('.item-checkbox:checked').each(function() {
+        selectedIds.push($(this).closest('tr').data('id'));
+    });
+
+    // Perform your bulk action (e.g., AJAX call to delete items)
+    if (!selectedIds) {
+        return false
+    }
+
+    $.ajax({
+        type: "POST",
+        url: `${apiURL}/tournaments/bulkUpdate`,
+        data: {
+            id: selectedIds,
+            status: $('#statusUpdateTo').val()
+        },
+        success: function(result) {
+            result = JSON.parse(result)
+            $('.item-checkbox').prop('checked', false);
+            appendAlert(result.msg, result.status);
+            bulkActionConfirmModal.modal('hide')
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+};
 </script>
 <?= $this->endSection() ?>
 

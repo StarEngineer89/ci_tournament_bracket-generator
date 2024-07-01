@@ -1,18 +1,4 @@
-<div class="buttons d-flex justify-content-end">
-    <?php if ($navActive == 'shared'): ?>
-    <div class="buttons d-flex justify-content-end mb-3">
-        <input type="radio" class="btn-check" name="share-type" id="shared-by" value="by" autocomplete="off" <?= ($shareType != 'wh') ? 'checked' : '' ?>>
-        <label class="btn" for="shared-by">Shared by me</label>
-
-        <input type="radio" class="btn-check" name="share-type" id="shared-with" value="wh" autocomplete="off" <?= ($shareType == 'wh') ? 'checked' : '' ?>>
-        <label class="btn" for="shared-with">Shared with me</label>
-    </div>
-    <?php else: ?>
-    <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
-    <?php endif ?>
-</div>
-
-<div class="container justify-content-center">
+<div class="container justify-content-center mb-3">
     <div class="row">
         <div class="col-md-6 col-sm-10 offset-md-3">
             <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>">
@@ -23,9 +9,39 @@
     </div>
 </div>
 
+<div class="buttons d-flex justify-content-end">
+    <?php if ($navActive == 'shared'): ?>
+    <div class="buttons d-flex justify-content-end mb-3">
+        <input type="radio" class="btn-check" name="share-type" id="shared-by" value="by" autocomplete="off" <?= ($shareType != 'wh') ? 'checked' : '' ?>>
+        <label class="btn" for="shared-by">Shared by me</label>
+
+        <input type="radio" class="btn-check" name="share-type" id="shared-with" value="wh" autocomplete="off" <?= ($shareType == 'wh') ? 'checked' : '' ?>>
+        <label class="btn" for="shared-with">Shared with me</label>
+    </div>
+    <?php else: ?>
+    <?php if ($navActive == 'all') : ?>
+    <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
+    <?php endif; ?>
+
+    <div class="dropdown ms-3">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Bulk Actions
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkDelete">Bulk Delete</a></li>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkReset">Bulk Reset</a></li>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkStatusUpdate">Bulk Status Update</a></li>
+        </ul>
+    </div>
+    <?php endif ?>
+</div>
+
 <table id="tournamentTable" class="table align-middle">
     <thead>
         <tr>
+            <th scope="col" width="20px">
+                <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
+            </th>
             <th scope="col">#<br />&nbsp;</th>
             <th scope="col">Tournament Name<br />&nbsp;</th>
             <th scope="col">
@@ -54,7 +70,8 @@
         <?php foreach ($tournaments as $index => $tournament) : ?>
         <?php if (isset($tournament['status'])): ?>
         <tr data-id="<?= $tournament['id'] ?>">
-            <th scope="row"><?= $order++ ?></th>
+            <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
+            <td scope="row"><?= $order++ ?></td>
             <td>
                 <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
             </td>
