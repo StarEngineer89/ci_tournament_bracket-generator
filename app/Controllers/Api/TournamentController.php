@@ -418,16 +418,19 @@ class TournamentController extends BaseController
         $restore = $this->request->getPost('restore');
         $tournamentModel = model('\App\Models\TournamentModel');
 
+        $msg = "The status of following tournaments was updated successfully.<br/>";
         if ($status) {
             $tournamentModel->whereIn('id', $ids)->set(['status' => $status])->update();
         }
 
         if ($archive) {
             $tournamentModel->whereIn('id', $ids)->set(['archive' => 1])->update();
+            $msg = "The following tournaments was archived successfully.<br/>";
         }
 
         if ($restore) {
             $tournamentModel->whereIn('id', $ids)->set(['archive' => 0])->update();
+            $msg = "The following tournaments was restored successfully.<br/>";
         }
 
         /** Alert Message */
@@ -441,6 +444,6 @@ class TournamentController extends BaseController
             }
         }
 
-        return json_encode(['status' => 'success', 'msg' => "The status of following tournaments was updated successfully.<br/>" . $tournament_names, 'data' => $ids]);
+        return json_encode(['status' => 'success', 'msg' => $msg . $tournament_names, 'data' => $ids]);
     }
 }

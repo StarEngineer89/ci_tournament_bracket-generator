@@ -1,6 +1,6 @@
 <div class="container justify-content-center mb-3">
     <div class="input-group mb-3">
-        <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>" placeholder="Search for a specific tournament name or find out which tournaments a participant is competing in" onkeydown="handleKeyPress(event)">
+        <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>" placeholder="Search for a tournament name or find out which tournaments a participant is competing in" onkeydown="handleKeyPress(event)">
         <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()"><i class="fa fa-search"></i> Search</button>
     </div>
 </div>
