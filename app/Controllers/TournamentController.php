@@ -171,7 +171,6 @@ class TournamentController extends BaseController
         }
 
         $brackets = $bracketModel->where('tournament_id', $settings['tournament_id'])->findAll();
-        $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => 0])->findAll();
 
         $shareAccessModel = model('\App\Models\TournamentShareAccessLogModel');
         if (auth()->user()) {
@@ -193,11 +192,13 @@ class TournamentController extends BaseController
 
             $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
 
+            $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => MUSIC_TYPE_BRACKET_GENERATION])->findAll();
             $musicSettingsBlock = view('tournament/music-setting', []);
 
             return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $musicSettings, 'musicSettingsBlock' => $musicSettingsBlock, 'permission' => $settings['permission']]);
         }
 
+        $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings]);
     }
 }
