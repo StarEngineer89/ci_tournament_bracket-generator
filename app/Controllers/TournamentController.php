@@ -74,7 +74,7 @@ class TournamentController extends BaseController
             if ($this->request->getGet('filter') == 'archived') {
                 $tournaments->where(['archive' => 1]);
             } else {
-                $tournaments->where('archive', null);
+                $tournaments->where('archive', 0);
             }
 
             if ($this->request->getGet('query')) {

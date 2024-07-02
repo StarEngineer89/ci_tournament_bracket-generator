@@ -11,7 +11,8 @@ class AddArchivedColumnToTournamentsTable extends Migration
         $this->forge->addColumn('tournaments', [
             'archive' => [
                 'type' => 'tinyint',
-                'null' => true,
+                'null' => true, 
+                'default' => 0
             ],
         ]);
     }

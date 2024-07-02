@@ -88,10 +88,21 @@ class TournamentController extends BaseController
     public function update($id)
     {
         $tournamentModel = model('\App\Models\TournamentModel');
+        $tournament = $tournamentModel->find($id);
+        $tournamentName = $tournament['name'];
 
         $tournamentModel->update($id, $this->request->getPost());
 
-        return json_encode(['msg' => "Tournament was updated successfully.", 'data' => $this->request->getPost()]);
+        $msg = "Tournament [$tournamentName] was updated successfully.";
+        if (!is_null($this->request->getPost('archive'))) {
+            if ($this->request->getPost('archive')) {
+                $msg = "Tournament [$tournamentName] was archived successfully.";
+            } else {
+                $msg = "Tournament [$tournamentName] was restored successfully.";
+            }
+        }
+
+        return json_encode(['msg' => $msg, 'data' => $this->request->getPost()]);
     }
 
     public function updateMusic($tournament_id)

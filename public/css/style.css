@@ -314,3 +314,7 @@
 #tournamentTable_filter {
   display: none;
 }
+
+#tournamentSearchInputBox::placeholder {
+  font-size: 13px;
+}

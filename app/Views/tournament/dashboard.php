@@ -466,9 +466,9 @@ $(document).ready(function() {
         })
     }
 
-    const statusChange = document.querySelectorAll('.change-status');
+    const statusChange = $('.change-status', datatableRows);
     if (statusChange) {
-        statusChange.forEach((element, i) => {
+        statusChange.each((i, element) => {
             element.addEventListener('click', event => {
                 const statusBox = document.createElement('select');
                 statusBox.classList.add('status', 'form-control');
@@ -495,6 +495,81 @@ $(document).ready(function() {
                     .addClass('visually-hidden');
                 $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.save')
                     .removeClass('visually-hidden');
+            })
+        })
+    }
+
+    const musicSettings = $('.music-setting-link', datatableRows);
+    if (musicSettings) {
+        musicSettings.each((i, element) => {
+            element.addEventListener('click', () => {
+                const tournament_id = event.target.dataset.id
+
+                $.ajax({
+                    type: "GET",
+                    url: apiURL + '/tournaments/' + tournament_id + '/music-settings',
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        $('#music-settings-panel').html(result.html);
+                        $('#tournamentForm').data('id', tournament_id);
+
+                        if (result.data.length > 0) {
+                            result.data.forEach((item, i) => {
+                                let panel = $('.music-setting').eq(item.type);
+                                panel.find("#toggle-music-settings-" + item.type).prop(
+                                    'checked', true);
+                                panel.find('.setting').removeClass('visually-hidden');
+                                panel.find('input[type="radio"][value="' + item.source +
+                                    '"]').prop('checked', true);
+
+                                if (item.source == 'f') {
+                                    panel.find('input[data-source="file"]').attr('disabled', false);
+
+                                    if (item.path != '') {
+                                        panel.find('input[data-source="file"]').attr('required', false);
+                                    }
+
+                                    panel.find('input[name="file-path[' + item.type + ']"]').val(item.path);
+                                    panel.find('.playerSource').attr('src', '/uploads/' + item.path);
+                                    panel.find('.fileupload-hint').removeClass('d-none');
+                                    panel.find('.urlupload-hint').addClass('d-none');
+
+                                }
+                                if (item.source == 'y') {
+                                    panel.find('input[data-source="url"]').val(item.url).attr('disabled', false);
+                                    panel.find('.playerSource').attr('src', '/uploads/' + item.path);
+                                    panel.find('.fileupload-hint').addClass('d-none');
+                                    panel.find('.urlupload-hint').removeClass('d-none');
+                                }
+
+                                panel.find('.player').load();
+
+                                panel.find('.preview input').attr('disabled', false);
+
+                                let date = new Date(null);
+                                date.setSeconds(item.start); // specify value for SECONDS here
+                                panel.find('input.startAt[type="text"]').val(date.toISOString().slice(11, 19));
+                                panel.find('input.startAt[type="hidden"]').val(item.start);
+
+                                date = new Date(null);
+                                date.setSeconds(item.end);
+                                panel.find('input.stopAt').val(date.toISOString().slice(11, 19));
+                                panel.find('input.stopAt[type="hidden"]').val(item.end);
+
+                                panel.find('input.duration').val(item.duration);
+                            });
+                        }
+
+                        $('#tournamentSettings').modal('show');
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                }).done(() => {
+                    setTimeout(function() {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
             })
         })
     }
@@ -710,76 +785,6 @@ $(document).ready(function() {
         });
     });
 
-    $('.music-setting-link').on('click', function() {
-        const tournament_id = $(this).data('id');
-
-        $.ajax({
-            type: "GET",
-            url: apiURL + '/tournaments/' + tournament_id + '/music-settings',
-            success: function(result) {
-                result = JSON.parse(result);
-                $('#music-settings-panel').html(result.html);
-                $('#tournamentForm').data('id', tournament_id);
-
-                if (result.data.length > 0) {
-                    result.data.forEach((item, i) => {
-                        let panel = $('.music-setting').eq(item.type);
-                        panel.find("#toggle-music-settings-" + item.type).prop(
-                            'checked', true);
-                        panel.find('.setting').removeClass('visually-hidden');
-                        panel.find('input[type="radio"][value="' + item.source +
-                            '"]').prop('checked', true);
-
-                        if (item.source == 'f') {
-                            panel.find('input[data-source="file"]').attr('disabled', false);
-
-                            if (item.path != '') {
-                                panel.find('input[data-source="file"]').attr('required', false);
-                            }
-
-                            panel.find('input[name="file-path[' + item.type + ']"]').val(item.path);
-                            panel.find('.playerSource').attr('src', '/uploads/' + item.path);
-                            panel.find('.fileupload-hint').removeClass('d-none');
-                            panel.find('.urlupload-hint').addClass('d-none');
-
-                        }
-                        if (item.source == 'y') {
-                            panel.find('input[data-source="url"]').val(item.url).attr('disabled', false);
-                            panel.find('.playerSource').attr('src', '/uploads/' + item.path);
-                            panel.find('.fileupload-hint').addClass('d-none');
-                            panel.find('.urlupload-hint').removeClass('d-none');
-                        }
-
-                        panel.find('.player').load();
-
-                        panel.find('.preview input').attr('disabled', false);
-
-                        let date = new Date(null);
-                        date.setSeconds(item.start); // specify value for SECONDS here
-                        panel.find('input.startAt[type="text"]').val(date.toISOString().slice(11, 19));
-                        panel.find('input.startAt[type="hidden"]').val(item.start);
-
-                        date = new Date(null);
-                        date.setSeconds(item.end);
-                        panel.find('input.stopAt').val(date.toISOString().slice(11, 19));
-                        panel.find('input.stopAt[type="hidden"]').val(item.end);
-
-                        panel.find('input.duration').val(item.duration);
-                    });
-                }
-
-                $('#tournamentSettings').modal('show');
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function() {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-    });
-
     $('#submit').on('click', function() {
         const form = document.getElementById('tournamentForm');
         if (!form.checkValidity()) {
@@ -940,7 +945,7 @@ $(document).ready(function() {
     $('#restoreConfirmBtn').on('click', function() {
         const tournament_id = restoreModal.getAttribute('data-id');
         let data = {
-            'status': <?= TOURNAMENT_STATUS_INPROGRESS ?>
+            'archive': 0
         }
 
         $.ajax({
