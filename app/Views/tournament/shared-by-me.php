@@ -76,7 +76,7 @@
                 </div>
 
                 <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['tournament_id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
-                <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['tournament_id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="cancelRenameTorunament(this)">Cancel</a>
+                <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['tournament_id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="cancelUpdateTorunament(this)">Cancel</a>
             </td>
         </tr>
         <?php endif ?>

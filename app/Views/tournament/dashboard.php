@@ -357,13 +357,13 @@ $(document).ready(function() {
 
     <?php if ($navActive == 'shared'): ?>
     <?php if ($shareType == 'wh'): ?>
-    var orderFalseColumns = [0, 2, 3, 4, 5]
+    var orderFalseColumns = [2, 3, 4, 5]
     <?php else: ?>
-    var orderFalseColumns = [0, 2, 3, 5]
+    var orderFalseColumns = [2, 3, 5]
     <?php endif ?>
     table = $('#tournamentTable').DataTable({
         "order": [
-            [1, "asc"]
+            [0, "asc"]
         ], // Initial sorting by the first column ascending
         "paging": true, // Enable pagination
         "searching": true, // Enable search box
@@ -473,6 +473,8 @@ $(document).ready(function() {
                 const statusBox = document.createElement('select');
                 statusBox.classList.add('status', 'form-control');
                 const currentStatus = event.target.getAttribute('data-status');
+                const currentStatusLabel = $(event.target).parents('tr').find('td[data-label="status"]').text()
+                statusBox.setAttribute('data-status-label', currentStatusLabel)
 
                 const statusOptions = {
                     '<?= TOURNAMENT_STATUS_INPROGRESS ?>': 'In progress',
@@ -755,12 +757,9 @@ $(document).ready(function() {
                 var label = $('<label class="col-form-label col-auto justify-content-end">Status:</label>');
                 // Create select box element
                 var selectBox = $('<select class="form-control" id="statusUpdateTo">');
-                <?php if ($navActive == 'all'): ?>
-                selectBox.append('<option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Complete</option>');
-                <?php elseif ($navActive == 'archived'): ?>
                 selectBox.append('<option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In Progress</option>');
-                <?php endif ?>
-                selectBox.append('<option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandone</option>');
+                selectBox.append('<option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Completed</option>');
+                selectBox.append('<option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandoned</option>');
 
                 var selectBoxWrapper = $('<div class="col-auto"></div>')
                 selectBoxWrapper.append(selectBox)
@@ -996,19 +995,28 @@ const renameTorunament = (element) => {
     const name = $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('td a').eq(0).html();
     nameBox.classList.add('name', 'form-control');
     nameBox.value = name;
+    nameBox.setAttribute('data-name-label', name)
 
     $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('td[data-label="name"]').html(nameBox);
     $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('.btn-groups').addClass('visually-hidden');
     $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('.save').removeClass('visually-hidden');
 }
 
-const cancelRenameTorunament = (element) => {
+const cancelUpdateTorunament = (element) => {
     const tournament_id = event.target.getAttribute('data-id');
-    const name = $(event.target).parents('tr').find('.name').val();
-    const nameElement = document.createElement('a');
-    nameElement.href = '<?= base_url('tournaments') ?>/' + tournament_id + '/view';
-    nameElement.textContent = name
-    $(`tr[data-id="${tournament_id}"]`).find('td[data-label="name"]').html(nameElement);
+    if ($(event.target).parents('tr').find('.name').length) {
+        const name = $(event.target).parents('tr').find('.name').data('name-label');
+        const nameElement = document.createElement('a');
+        nameElement.href = '<?= base_url('tournaments') ?>/' + tournament_id + '/view';
+        nameElement.textContent = name
+        $(`tr[data-id="${tournament_id}"]`).find('td[data-label="name"]').html(nameElement);
+    }
+
+    if ($(event.target).parents('tr').find('.status').length) {
+        const status = $(event.target).parents('tr').find('.status').data('status-label');
+        $(`tr[data-id="${tournament_id}"]`).find('td[data-label="status"]').html(status);
+    }
+
     $(`tr[data-id="${tournament_id}"]`).find('.btn-groups').removeClass('visually-hidden');
     $(`tr[data-id="${tournament_id}"]`).find('.save').addClass('visually-hidden');
 }
@@ -1464,7 +1472,8 @@ function bulkDelete() {
         },
         success: function(result) {
             result = JSON.parse(result)
-            console.log(result)
+            $('.item-checkbox').prop('checked', false);
+            appendAlert(result.msg, result.status);
             location.reload();
         },
         error: function(error) {
