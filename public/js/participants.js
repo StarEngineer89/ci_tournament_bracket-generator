@@ -166,6 +166,7 @@ function renderParticipants(participantsArray) {
                         url: apiURL + '/participants/delete/' + element_id,
                         success: function (result) {
                             document.getElementById(element_id).remove();
+                            $('#indexList').children().last().remove();
                         },
                         error: function (error) {
                             console.log(error);
