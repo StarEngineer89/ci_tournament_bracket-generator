@@ -431,9 +431,14 @@ $(document).ready(function() {
 
     <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
     var nameColumns = $('td[data-label="name"] span', datatableRows)
+    var names = []
     nameColumns.each((i, element) => {
-        var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
-        $('#userByFilter').append(option)
+        if (!names.includes(element.textContent.trim())) {
+            var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+            $('#userByFilter').append(option)
+
+            names.push(element.textContent.trim())
+        }
     })
     <?php endif ?>
 
