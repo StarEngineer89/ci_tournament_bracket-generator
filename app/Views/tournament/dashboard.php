@@ -724,6 +724,14 @@ $(document).ready(function() {
                 title = "Confirm to update the status"
                 action_text = '<h6>You are about to change the status of the following selected tournament(s):</h6>';
                 action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+            } else if (action === 'bulkArchive') {
+                title = "Confirm to archive"
+                action_text = '<h6>You are about to archive the following selected tournament(s):</h6>';
+                action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+            } else if (action === 'bulkRestore') {
+                title = "Confirm to archive"
+                action_text = '<h6>You are about to restore the following selected tournament(s):</h6>';
+                action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
             }
 
             modal.find('.modal-title').text(title);
@@ -736,6 +744,10 @@ $(document).ready(function() {
                 confirmButton.on('click', bulkDelete)
             } else if (action === 'bulkReset') {
                 confirmButton.on('click', bulkReset)
+            } else if (action === 'bulkArchive') {
+                confirmButton.on('click', bulkArchive)
+            } else if (action === 'bulkRestore') {
+                confirmButton.on('click', bulkRestore)
             } else if (action === 'bulkStatusUpdate') {
                 let status = $('.status-to').val()
 
@@ -1516,6 +1528,70 @@ function bulkStatusUpdate() {
         data: {
             id: selectedIds,
             status: $('#statusUpdateTo').val()
+        },
+        success: function(result) {
+            result = JSON.parse(result)
+            $('.item-checkbox').prop('checked', false);
+            appendAlert(result.msg, result.status);
+            location.reload();
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+};
+
+function bulkArchive() {
+    var selectedIds = [];
+    var rows = table.rows({
+        'search': 'applied'
+    }).nodes();
+    $('.item-checkbox:checked', rows).each(function() {
+        selectedIds.push($(this).closest('tr').data('id'));
+    });
+
+    $.ajax({
+        type: "POST",
+        url: `${apiURL}/tournaments/bulkUpdate`,
+        data: {
+            id: selectedIds,
+            archive: true
+        },
+        success: function(result) {
+            result = JSON.parse(result)
+            $('.item-checkbox').prop('checked', false);
+            appendAlert(result.msg, result.status);
+            location.reload();
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+};
+
+function bulkRestore() {
+    var selectedIds = [];
+    var rows = table.rows({
+        'search': 'applied'
+    }).nodes();
+    $('.item-checkbox:checked', rows).each(function() {
+        selectedIds.push($(this).closest('tr').data('id'));
+    });
+
+    $.ajax({
+        type: "POST",
+        url: `${apiURL}/tournaments/bulkUpdate`,
+        data: {
+            id: selectedIds,
+            restore: true
         },
         success: function(result) {
             result = JSON.parse(result)

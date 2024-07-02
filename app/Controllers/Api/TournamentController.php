@@ -414,9 +414,21 @@ class TournamentController extends BaseController
     {
         $ids = $this->request->getPost('id');
         $status = $this->request->getPost('status');
+        $archive = $this->request->getPost('archive');
+        $restore = $this->request->getPost('restore');
         $tournamentModel = model('\App\Models\TournamentModel');
 
-        $tournamentModel->whereIn('id', $ids)->set(['status' => $status])->update();;
+        if ($status) {
+            $tournamentModel->whereIn('id', $ids)->set(['status' => $status])->update();
+        }
+
+        if ($archive) {
+            $tournamentModel->whereIn('id', $ids)->set(['archive' => 1])->update();
+        }
+
+        if ($restore) {
+            $tournamentModel->whereIn('id', $ids)->set(['archive' => 0])->update();
+        }
 
         /** Alert Message */
         $tournaments = $tournamentModel->whereIn('id', $ids)->findAll();

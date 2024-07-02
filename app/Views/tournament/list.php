@@ -25,6 +25,11 @@
         </button>
         <ul class="dropdown-menu">
             <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkDelete">Bulk Delete</a></li>
+            <?php if ($navActive == 'archived') : ?>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkRestore">Bulk Restore</a></li>
+            <?php else: ?>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkArchive">Bulk Archive</a></li>
+            <?php endif; ?>
             <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkReset">Bulk Reset</a></li>
             <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkStatusUpdate">Bulk Status Update</a></li>
         </ul>
