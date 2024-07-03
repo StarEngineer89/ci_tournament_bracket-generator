@@ -10,6 +10,10 @@ $routes->get('/participants', 'Home::participants');
 $routes->get('/brackets', 'Home::brackets');
 $routes->match(['get', 'post'], '/player/(:any)', 'RenderAudioController::index/$1');
 
+$routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
+$routes->get('auth/google', 'GoogleAuthController::login');
+$routes->get('auth/google/callback', 'GoogleAuthController::callback');
+
 $routes->group('tournaments', static function ($routes) {
     $routes->get('/', 'TournamentController::index');
     $routes->get('create', 'TournamentController::create');

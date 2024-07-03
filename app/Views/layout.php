@@ -27,6 +27,9 @@
                 <a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a>
                 <?php endif; ?>
             </div>
+
+            <div id="notificationAlertPlaceholder" class="position-relative"></div>
+
             <?= $this->renderSection('main') ?>
         </main>
 
@@ -42,7 +45,6 @@
         <script type="text/javascript">
         const appendAlert = (message, type) => {
             const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
-
             if (alertPlaceholder) {
                 alertPlaceholder.innerHTML = ''
                 const wrapper = document.createElement('div')
@@ -66,7 +68,6 @@
                     ].join('')
                 }
 
-
                 alertPlaceholder.append(wrapper)
 
                 $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
@@ -74,6 +75,49 @@
                 });
             }
         }
+
+        const appendNotification = (message, type) => {
+            const notificationPlaceholder = document.getElementById('notificationAlertPlaceholder')
+            if (notificationPlaceholder) {
+                notificationPlaceholder.innerHTML = ''
+                const wrapper = document.createElement('div')
+
+                if (Array.isArray(message)) {
+                    wrapper.innerHTML = ''
+                    message.forEach((item, i) => {
+                        wrapper.innerHTML += [
+                            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                            `   <div>${item}</div>`,
+                            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                            '</div>'
+                        ].join('')
+                    })
+                } else {
+                    wrapper.innerHTML = [
+                        `<div class="alert alert-${type} alert-dismissible position-fixed top-1 end-0 z-3 me-3 mt-1" role="alert">`,
+                        `   <div class="d-flex">${message}</div>`,
+                        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                        '</div>'
+                    ].join('')
+                }
+
+                notificationPlaceholder.append(wrapper)
+
+                $("div.alert").fadeTo(3000, 500).slideUp(500, function() {
+                    $("div.alert").slideUp(500);
+                });
+            }
+
+        }
+        </script>
+
+        <script type="text/javascript">
+        $(document).ready(function() {
+            <?php if (session()->getTempdata('welcome_message')) : ?>
+            appendNotification('<?= session()->getTempdata('welcome_message') ?>', 'success');
+            <?php session()->remove('welcome_message') ?>
+            <?php endif; ?>
+        })
         </script>
         <?= $this->renderSection('pageScripts') ?>
     </body>
