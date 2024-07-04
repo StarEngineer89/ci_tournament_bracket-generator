@@ -110,7 +110,25 @@
   min-height: 40px;
   ;
 }
-
+.brackets div.bracketbox>span.bracketNo {
+  left: 70px !important;
+  top: calc(50% - 15px);
+  border-radius: 100%;
+  border: solid 1px;
+  background: #fff;
+  width: 25px;
+  height: 25px;
+  min-height: auto;
+  text-align: center;
+}
+.brackets .r1 div.bracketbox>span.bracketNo {
+  left: -30px !important;
+  border-radius: 0;
+  top: -20px;
+  padding-top: 38px;
+  padding-bottom: 38px;
+  height: auto;
+}
 .brackets .r1 div.bracketbox>span {
   left: 0;
 }
@@ -139,7 +157,7 @@
   height: 320px;
 }
 
-.brackets>.groups>div {
+.brackets>.groups>div, .brackets .group-names > div {
   width: 180px;
 }
 
@@ -178,6 +196,8 @@
 
 .brackets>div div.final {
   height: 100px;
+  border-bottom: 0;
+  border-right: 0;
 }
 
 .brackets div.final>div.bracketbox {
@@ -208,6 +228,10 @@
   border: 1px solid #000;
   background-color: #fff;
   min-width: 150px;
+}
+
+.brackets>div .final span {
+  margin-left: 20px;
 }
 
 .brackets .bracketbox .winner {

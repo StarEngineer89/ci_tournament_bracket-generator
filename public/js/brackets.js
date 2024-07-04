@@ -75,6 +75,8 @@ $(document).on('ready', function () {
     function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
+        var groupNames = $('<div class="group-names"></div>')
+
         var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 160 * (groupCount + 1) + "px" + '"></div>'),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
 
@@ -82,6 +84,15 @@ $(document).on('ready', function () {
 
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="r' + g + '"></div>');
+            var roundNameBox = $('<div class="r' + g + ' text-center p-2 m-1 border"></div>');
+            if (grouped[g][0].final_match) {
+                roundNameBox.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
+            } else {
+                roundNameBox.html("Round " + grouped[g][0].roundNo) 
+            }
+            
+            groupNames.append(roundNameBox)
+
             _.each(grouped[g], function (gg) {
 
                 // if(gg.bye)
@@ -116,24 +127,25 @@ $(document).on('ready', function () {
                         teamb.classList.add('winner');
                 }
 
-                var container = document.createElement('div');
+                var bracket = document.createElement('div')
 
                 if (gg.final_match) {
-                    container.className = "final";
+                    bracket.className = "bracketbox final";
                     teama.className = (teams[0]) ? "teama winner" : 'teama';
+                } else {
+                    var bracketNo = document.createElement('span')
+                    bracketNo.classList.add('bracketNo')
+                    bracketNo.innerHTML = gg.bracketNo
+                    bracket.append(bracketNo)
+                    bracket.className = "bracketbox";
                 }
-
-                var bracket = document.createElement('div')
-                bracket.className = "bracketbox";
 
                 bracket.append(teama);
 
                 if (!gg.final_match || gg.final_match === undefined)
                     bracket.append(teamb);
 
-                container.append(bracket);
-
-                round.append(container);
+                round.append(bracket);
                 // }
 
             });
@@ -265,6 +277,7 @@ $(document).on('ready', function () {
         }
         // group.append('<div class="r'+(groupCount+1)+'"><div class="final"><div class="bracketbox"><span class="bracket-team teamc">&nbsp;</span></div></div></div>');
 
+        $('#brackets').append(groupNames)
         $('#brackets').append(group);
 
         bracketCount++;

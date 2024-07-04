@@ -107,7 +107,7 @@ $(document).ready(function() {
             <?php endif ?>
         </div>
 
-        <div id="brackets" class="brackets d-flex"></div>
+        <div id="brackets" class="brackets p-5"></div>
     </div>
 </div>
 
