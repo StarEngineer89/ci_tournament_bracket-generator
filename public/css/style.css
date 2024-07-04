@@ -290,10 +290,13 @@
 }
 
 /* Style for the stop music button */
-#stopMusicButton {
+.skipButtons {
   position: fixed;
   bottom: 20px;
   right: 50px;
+}
+/* Hover effect */
+#stopMusicButton, #skipShuffleButton {
   padding: 10px 20px;
   font-size: 16px;
   background-color: #007bff;
@@ -306,7 +309,7 @@
 }
 
 /* Hover effect */
-#stopMusicButton:hover {
+#stopMusicButton:hover, #skipShuffleButton:hover {
   background-color: #0056b3;
   /* Darker shade of blue on hover */
 }

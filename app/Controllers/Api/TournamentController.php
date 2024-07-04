@@ -38,6 +38,7 @@ class TournamentController extends BaseController
             'user_by' => auth()->user()->id,
             'type' => $this->request->getPost('type'),
             'searchable' => $this->request->getPost('title'),
+            'archive' => 0
         ];
 
         $tournament_id = $tournamentModel->insert($data);

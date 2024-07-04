@@ -388,16 +388,7 @@ $(document).on('ready', function () {
     const stopBtn = document.getElementById('stopMusicButton')
     if (stopBtn) {
         stopBtn.addEventListener('click', function () {
-            // Your code to stop music goes here
-            const audio = document.getElementById('myAudio');
-
-            if (audio.paused) {
-                audio.play();
-                document.getElementById('stopMusicButton').textContent = "Stop Music"
-            } else {
-                audio.pause();
-                document.getElementById('stopMusicButton').textContent = "Resume Music"
-            }
+            stopMusicPlaying()
         });
     }
 });

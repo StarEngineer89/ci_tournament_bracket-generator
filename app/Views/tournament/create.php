@@ -4,6 +4,7 @@
 
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/js/functions.js"></script>
 <script src="/js/participants.js"></script>
 <!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
@@ -100,23 +101,22 @@ $(document).ready(function() {
 
                             document.getElementById('stopMusicButton').classList.remove('d-none');
                             document.getElementById('stopMusicButton').addEventListener('click', function() {
-                                // Your code to stop music goes here
-                                const audio = document.getElementById('myAudio');
+                                stopMusicPlaying()
+                            });
 
-                                if (audio.paused) {
-                                    audio.play();
-                                    document.getElementById('stopMusicButton').textContent = "Stop Music"
-                                } else {
-                                    audio.pause();
-                                    document.getElementById('stopMusicButton').textContent = "Resume Music"
-                                }
-
-                                // Replace alert with actual code to stop music playback
+                            document.getElementById('skipShuffleButton').classList.remove('d-none');
+                            document.getElementById('skipShuffleButton').addEventListener('click', function() {
+                                skipShuffling()
                             });
                         }
                     }
 
-                    callShuffle();
+                    let enableShuffling = true
+                    if ($('#enableShuffle')) {
+                        enableShuffling = $('#enableShuffle').prop('checked')
+                    }
+
+                    callShuffle(enableShuffling);
                 }
             },
             error: function(e) {
@@ -135,23 +135,16 @@ $(document).ready(function() {
 
         document.getElementById('stopMusicButton').classList.remove('d-none');
         document.getElementById('stopMusicButton').addEventListener('click', function() {
-            // Your code to stop music goes here
-            const audio = document.getElementById('myAudio');
-
-            if (audio.paused) {
-                audio.play();
-                document.getElementById('stopMusicButton').textContent = "Stop Music"
-            } else {
-                audio.pause();
-                document.getElementById('stopMusicButton').textContent = "Resume Music"
-            }
-
-            // Replace alert with actual code to stop music playback
+            stopMusicPlaying()
         });
         <?php endif; ?>
 
-        callShuffle();
+        document.getElementById('skipShuffleButton').classList.remove('d-none');
+        document.getElementById('skipShuffleButton').addEventListener('click', function() {
+            skipShuffling()
+        });
 
+        callShuffle();
 
         <?php else : ?>
         $('#tournamentSettings').modal('show');
@@ -513,6 +506,15 @@ var changeEliminationType = (element) => {
                             <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
                         </div>
 
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input enable-shuffling" name="enable-shuffle" id="enableShuffle" onChange="toggleShuffleParticipants(this)" checked>
+                            <label class="form-check-label" for="enableShuffle">
+                                <h6>Shuffle Participants</h6>
+                            </label>
+                            <div class="enable-shuffling-hint form-text">If enabled, the contestant brackets will be generated with the participants shuffled.</div>
+                            <div class="disable-shuffling-hint form-text d-none">If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.</div>
+                        </div>
+
                         <div id="music-settings-panel">
                             <?= $musicSettingsBlock ?>
                         </div>
@@ -556,6 +558,9 @@ var changeEliminationType = (element) => {
     </audio>
     <?php endif; ?>
 
-    <button id="stopMusicButton" class="d-none">Stop Music</button>
+    <div class="buttons skipButtons">
+        <button id="skipShuffleButton" class="d-none">Skip</button>
+        <button id="stopMusicButton" class="d-none">Stop Music</button>
+    </div>
 
     <?= $this->endSection() ?>

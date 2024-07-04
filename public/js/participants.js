@@ -1,37 +1,54 @@
-function callShuffle() {
-    const numberOfRuns = 5; // You can adjust this to the desired number of runs
+let shufflingPromise = null;
+
+function callShuffle(enableShuffling = true) {
     const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
-    const startTime = new Date();
 
     exampleTeams = [];
-    // Use a promise to coordinate the shuffling and displaying of the message
-    const shufflingPromise = new Promise(resolve => {
-        function runFlipFuncSequentially(currentTime) {
-            if ((currentTime - startTime) < shuffle_duration * 1000) {
-                setTimeout(function () {
-                    shuffleList(() => {
-                        runFlipFuncSequentially(new Date());
-                    });
-                }, delayBetweenRuns);
-            } else {
-                // Resolve the promise when all shuffling iterations are complete
-                resolve();
+    if (enableShuffling) {
+        // Use a promise to coordinate the shuffling and displaying of the message
+        shufflingPromise = new Promise(resolve => {
+            const startTime = new Date();
+
+            function runFlipFuncSequentially(currentTime) {
+                if ((currentTime - startTime) < shuffle_duration * 1000) {
+                    setTimeout(function () {
+                        shuffleList(() => {
+                            runFlipFuncSequentially(new Date());
+                        });
+                    }, delayBetweenRuns);
+                } else {
+                    // Resolve the promise when all shuffling iterations are complete
+                    resolve();
+                }
             }
-        }
 
-        runFlipFuncSequentially(new Date());
-    });
-
-    shufflingPromise.then(() => {
-
-        Array.from(itemList.children).forEach((item, i) => {
-            exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'order': i });
+            runFlipFuncSequentially(new Date());
         });
 
-        generateBrackets(exampleTeams);
-    },
-        function (error) { myDisplayer(error); }
-    );
+        shufflingPromise.then(() => {
+            Array.from(itemList.children).forEach((item, i) => {
+                exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'order': i });
+            });
+
+            generateBrackets(exampleTeams);
+        },
+            function (error) { myDisplayer(error); }
+        );
+    } else {
+        let children = Array.from(itemList.children);
+        // Shuffle elements
+        children = shuffleArray(Array.from(itemList.children));
+
+        Array.from(children).forEach((item, i) => {
+            exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'order': i });
+        });
+        generateBrackets(exampleTeams)
+    }
+    
+}
+
+function skipShuffling() {
+    shuffle_duration = 0;
 }
 
 function shuffleList(callback) {
