@@ -5,7 +5,7 @@
 <?= $this->section('main') ?>
 
 
-<div class="nav nav-tabs nav-underline" role="tablist">
+<div class="nav nav-tabs nav-underline d-flex flex-nowrap" role="tablist">
     <a class="nav-link <?= ($navActive == 'all') ? 'active' : '' ?>" id="v-pills-home-tab" href="<?= base_url('tournaments')?>">Current Tournaments</a>
     <a class="nav-link <?= ($navActive == 'archived') ? 'active' : '' ?>" id="v-pills-profile-tab" href="<?= base_url('tournaments?filter=archived')?>">Archived Tournaments</a>
     <a class="nav-link <?= ($navActive == 'shared') ? 'active' : '' ?>" id="v-pills-settings-tab" href="<?= base_url('tournaments?filter=shared')?>">Shared Tournaments</a>
@@ -38,7 +38,7 @@
 
         <div id="liveAlertPlaceholder"></div>
 
-        <div class="" id="tournamentsTableWrapper">
+        <div class="table-responsive" id="tournamentsTableWrapper">
             <?php echo $table ?>
         </div>
     </div>

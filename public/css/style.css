@@ -322,3 +322,16 @@
 #notificationAlertPlaceholder .alert {
   z-index: 999;
 }
+
+.notification-box .delete {
+  margin-left: 10px;
+  color: #dc3545;
+}
+
+.notification-box .delete:hover {
+  color: #a71d2a;
+}
+
+.dropdown-item a {
+  text-decoration: none;
+}

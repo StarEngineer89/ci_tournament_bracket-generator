@@ -3,6 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use App\Services\NotificationService;
 
 /**
  * Services Configuration file.
@@ -29,4 +30,9 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+
+     public static function notification(): NotificationService
+     {
+        return new NotificationService();
+     }
 }

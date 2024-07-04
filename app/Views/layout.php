@@ -22,9 +22,34 @@
     <body class="bg-light">
 
         <main role="main" class="container-fluid">
-            <div class="header d-grid gap-2 d-md-flex justify-content-md-end p-2">
+            <div class="header d-grid gap-2 d-flex flex-wrap justify-content-end p-2">
+                <div class="notification-box me-3">
+                    <?php $notificationService = service('notification'); ?>
+                    <?php $notifications = $notificationService->getNotifications(auth()->user()->id) ?>
+                    <button class="btn btn-secondary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell"></i>
+                        <?php if (count($notifications)): ?>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <?= count($notifications) ?>
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                        <?php endif ?>
+                    </button>
+                    <?php if (count($notifications)): ?>
+                    <ul class="dropdown-menu  dropdown-menu-end">
+                        <?php foreach ($notifications as $notification): ?>
+                        <li>
+                            <p class="dropdown-item p-2">
+                                <a class="" href="#" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><?= $notification['message'] ?></a>
+                                <a class="delete" onclick="deleteNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><i class="fa fa-remove"></i></a>
+                            </p>
+                        </li>
+                        <?php endforeach ?>
+                    </ul>
+                    <?php endif ?>
+                </div>
                 <?php if (auth()->user() && auth()->user()->id) : ?>
-                <a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a>
+                <div class="d-flex"><a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a></div>
                 <?php endif; ?>
             </div>
 
@@ -108,6 +133,47 @@
                 });
             }
 
+        }
+
+        const readNotification = (notificationElement) => {
+            const link = $(notificationElement).data('link')
+            const notificationId = $(notificationElement).data('id')
+
+            $.ajax({
+                type: "put",
+                url: `${apiURL}/notifications/mark-as-read/${notificationId}`,
+                success: function(result) {
+                    $(notificationElement).remove()
+                    window.location.href = link
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            }).done(() => {
+                setTimeout(function() {
+                    $("#overlay").fadeOut(300);
+                }, 500);
+            });
+        }
+
+        const deleteNotification = (notificationElement) => {
+            const link = $(notificationElement).data('link')
+            const notificationId = $(notificationElement).data('id')
+
+            $.ajax({
+                type: "delete",
+                url: `${apiURL}/notifications/delete/${notificationId}`,
+                success: function(result) {
+                    $(notificationElement).remove()
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            }).done(() => {
+                setTimeout(function() {
+                    $("#overlay").fadeOut(300);
+                }, 500);
+            });
         }
         </script>
 

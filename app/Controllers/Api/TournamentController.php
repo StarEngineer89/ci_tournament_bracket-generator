@@ -7,9 +7,17 @@ use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Files\File;
 use YoutubeDl\YoutubeDl;
 use YoutubeDl\Options;
+use App\Services\NotificationService;
 
 class TournamentController extends BaseController
 {
+    protected $notificationService;
+
+    public function __construct()
+    {
+        $this->notificationService = new NotificationService();
+    }
+    
     public function index()
     {
         //
@@ -283,7 +291,18 @@ class TournamentController extends BaseController
             
             $share['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
         }
-        
+
+        /** Notifiy to the users */
+        if (count($users)) {
+            foreach ($users as $user) {
+                $msg = 'Tournament was shared to you.';
+                $shared_by = (auth()->user()) ? auth()->user()->id : 0;
+
+                $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE, 'user_by' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
+                $this->notificationService->addNotification($notification);
+            }
+        }
+
         return json_encode(['msg' => "Success to save the sharing information.", 'share' => $share]);
     }
 

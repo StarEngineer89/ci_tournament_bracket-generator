@@ -59,6 +59,11 @@ $routes->group('api', static function ($routes) {
         $routes->post('bulkReset', 'Api\TournamentController::bulkReset');
         $routes->post('bulkUpdate', 'Api\TournamentController::bulkUpdate');
     });
+
+    $routes->group('notifications', static function ($routes) {
+        $routes->put('mark-as-read/(:num)', 'Api\NotificationsController::markAsRead/$1');
+        $routes->delete('delete/(:num)', 'Api\NotificationsController::delete/$1');
+    });
 });
 
 /** API to fetch the data of shared tournaments */
