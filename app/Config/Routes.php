@@ -64,6 +64,11 @@ $routes->group('api', static function ($routes) {
         $routes->put('mark-as-read/(:num)', 'Api\NotificationsController::markAsRead/$1');
         $routes->delete('delete/(:num)', 'Api\NotificationsController::delete/$1');
     });
+
+    $routes->group('usersettings', static function ($routes) {
+        $routes->post('find/(:num)', 'Api\UserSettingsController::find/$1');
+        $routes->post('update', 'Api\UserSettingsController::update');
+    });
 });
 
 /** API to fetch the data of shared tournaments */

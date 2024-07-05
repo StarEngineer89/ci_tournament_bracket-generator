@@ -294,7 +294,7 @@ class TournamentController extends BaseController
         }
 
         /** Notifiy to the users */
-        if (count($users)) {
+        if (isset($users) && count($users)) {
             foreach ($users as $user) {
                 $msg = 'Tournament was shared to you.';
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;

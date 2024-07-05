@@ -23,7 +23,9 @@
 
 #indexList .list-group-item {
   background: none;
-  color: #fff;
+}
+#indexList .list-group-item span {
+  color: #000;
   font-weight: 600;
 }
 

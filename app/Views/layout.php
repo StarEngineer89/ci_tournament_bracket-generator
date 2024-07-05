@@ -23,6 +23,7 @@
 
         <main role="main" class="container-fluid">
             <div class="header d-grid gap-2 d-flex flex-wrap justify-content-end p-2">
+                <?php if (auth()->user() && auth()->user()->id) : ?>
                 <div class="notification-box me-3">
                     <?php $notificationService = service('notification'); ?>
                     <?php $notifications = $notificationService->getNotifications(auth()->user()->id) ?>
@@ -48,6 +49,7 @@
                     </ul>
                     <?php endif ?>
                 </div>
+                <?php endif ?>
                 <?php if (auth()->user() && auth()->user()->id) : ?>
                 <div class="d-flex"><a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a></div>
                 <?php endif; ?>

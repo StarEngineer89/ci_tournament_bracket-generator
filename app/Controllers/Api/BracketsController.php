@@ -49,11 +49,12 @@ class BracketsController extends BaseController
             $teamnames = json_decode($bracket['teamnames']);
 
             if (!isset($req->participant)) {
-                $participant = $this->participantsModel->where(array('name' => $req->name, 'user_by' => auth()->user()->id))->first();
+                $participant = (auth()->user()) ? $this->participantsModel->where(array('name' => $req->name, 'user_by' => auth()->user()->id))->first() : null;
 
                 if (!$participant) {
+                    $userId = (auth()->user()) ? auth()->user()->id : 0;
                     $participant_id = $this->participantsModel->insert(
-                        array('name' => $req->name, 'user_by' => auth()->user()->id,)
+                        array('name' => $req->name, 'user_by' => $userId,)
                     );
                 } else {
                     $participant_id = $participant['id'];
@@ -84,8 +85,8 @@ class BracketsController extends BaseController
         
         $participant_names_string = '';
         if ($brackets) {
-            foreach ($brackets as $bracket) {
-                $teams = json_decode($bracket['teamnames']);
+            foreach ($brackets as $brck) {
+                $teams = json_decode($brck['teamnames']);
                 foreach ($teams as $team) {
                     if ($team) {
                         $participant_names_string .= $team->name .',';

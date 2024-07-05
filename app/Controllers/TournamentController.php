@@ -98,12 +98,22 @@ class TournamentController extends BaseController
     public function create()
     {
         $participantModel = model('\App\Models\ParticipantModel');
+        $userSettingModel = model('\App\Models\UserSettingModel');
 
         $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
+        $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
+
+        // Convert settings to key-value array
+        $settingsArray = [];
+        if (count($userSettings)) {
+            foreach ($userSettings as $setting) {
+                $settingsArray[$setting['setting_name']] = $setting['setting_value'];
+            }
+        }
 
         $musicSettingsBlock = view('tournament/music-setting', []);
 
-        return view('tournament/create', ['participants' => $participants, 'musicSettingsBlock' => $musicSettingsBlock]);
+        return view('tournament/create', ['participants' => $participants, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
     }
 
     public function view($id)
@@ -111,6 +121,7 @@ class TournamentController extends BaseController
         $tournamentModel = model('\App\Models\TournamentModel');
         $bracketModel = model('\App\Models\BracketModel');
         $musicSettingModel = model('\App\Models\MusicSettingModel');
+        $userSettingModel = model('\App\Models\UserSettingModel');
 
         $tournament = $tournamentModel->find($id);
 
@@ -120,7 +131,7 @@ class TournamentController extends BaseController
 
             return redirect()->to('/tournaments');
         }
-
+        
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
         
         if (!$brackets) {
@@ -137,8 +148,18 @@ class TournamentController extends BaseController
 
             $musicSettingsBlock = view('tournament/music-setting', []);
             $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_BRACKET_GENERATION])->orderBy('type','asc')->findAll();
+            
+            $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
 
-            return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings, 'musicSettingsBlock' => $musicSettingsBlock]);
+            // Convert settings to key-value array
+            $settingsArray = [];
+            if (count($userSettings)) {
+                foreach ($userSettings as $setting) {
+                    $settingsArray[$setting['setting_name']] = $setting['setting_value'];
+                }
+            }
+
+            return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();

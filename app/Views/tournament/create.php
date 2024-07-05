@@ -249,6 +249,39 @@ $(document).ready(function() {
 
     });
 
+    const selectBackgroundColorModal = document.getElementById('selectBackgroundColorModal');
+    if (selectBackgroundColorModal) {
+        selectBackgroundColorModal.addEventListener('show.bs.modal', event => {
+            selectBackgroundColorModal.setAttribute('data-setting-id', event.relatedTarget.getAttribute('data-setting-id'));
+        })
+    }
+
+    $('#selectBackgroundColorConfirmBtn').on('click', function() {
+        const color = $('#bgColorInput').val()
+        const settingId = $(selectBackgroundColorModal).data('setting-id')
+
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/usersettings/update',
+            data: {
+                id: settingId,
+                user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
+                setting_name: '<?= USERSETTING_PARTICIPANTSLIST_BG_COLOR ?>',
+                setting_value: color
+            },
+            success: function(result) {
+                $('.participant-list').css('background-color', color)
+                $(selectBackgroundColorModal).modal('hide')
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function() {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
 });
 
 var saveParticipants = (data) => {
@@ -427,6 +460,7 @@ var changeEliminationType = (element) => {
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal">Clear Participant(s) List</button></li>
                     <li><button id="checkDuplicationBtn" class="btn btn-default">Check Duplicates</button></li>
+                    <li><button id="changeBackgroundColor" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectBackgroundColorModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>">Change Background</button></li>
                 </ul>
             </div>
             <div class="collapse" id="collapseAddParticipant">
@@ -453,7 +487,7 @@ var changeEliminationType = (element) => {
                 </div>
             </div>
 
-            <div class="d-flex participant-list">
+            <div class="d-flex participant-list" <?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? 'style="background-color: ' . $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] . '"' : '' ?>>
                 <div id="indexList" class="list-group col-auto"></div>
                 <div id="newList" class="list-group col-10"></div>
             </div>
@@ -547,6 +581,29 @@ var changeEliminationType = (element) => {
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="selectBackgroundColorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectBackgroundColorModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="selectBackgroundColorModalLabel">Choose the background color in participants list</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <label for="bgColorInput" class="form-label me-2">Choose a Background Color:</label>
+                        <input type="color" class="form-control form-control-color" id="bgColorInput" value="<?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] : '' ?>" title="Choose your color">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="selectBackgroundColorConfirmBtn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <?php if (isset($settings) && $settings) : ?>
     <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
