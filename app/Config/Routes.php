@@ -21,6 +21,8 @@ $routes->group('tournaments', static function ($routes) {
     $routes->get('shared/(:segment)', 'TournamentController::viewShared/$1');
 });
 
+$routes->post('consent', 'CookieConsent::consent');
+
 $routes->group('api', static function ($routes) {
     $routes->group('brackets', static function ($routes) {
         $routes->post('save-list', 'Api\BracketsController::createBrackets');

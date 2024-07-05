@@ -35,6 +35,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'tournamentAccessPermission' => \App\Filters\TournamentAccessPermissionFilter::class,
+        'cookieconsent' => \App\Filters\CookieConsentFilter::class,
     ];
 
     /**
@@ -74,6 +75,7 @@ class Filters extends BaseFilters
             // 'csrf',
             // 'invalidchars',
             'session' => ['except' => ['login*', 'register', 'auth/a/*', 'auth/google', 'auth/google/*', 'logout', 'tournaments/shared/*',  'api/shared/*']],
+            'cookieconsent' => ['except' => ['consent']],
         ],
         'after' => [
             // 'honeypot',

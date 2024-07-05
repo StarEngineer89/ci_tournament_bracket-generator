@@ -60,6 +60,13 @@
             <?= $this->renderSection('main') ?>
         </main>
 
+        <!-- Cookie Consent Modal -->
+        <div id="cookieConsentModal" style="display:none; position:fixed; bottom:0; width:100%; background-color:#f1f1f1; padding:10px; text-align:center;">
+            <p>This site uses cookies 🍪 to store information for the purpose of enhancing user experience. <br> If you reject cookies, you may experience limitations with functionality.</p>
+            <button onclick="acceptCookies()">Accept</button>
+            <button onclick="rejectCookies()">Reject</button>
+        </div>
+
         <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
         <script src="/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -186,6 +193,31 @@
             <?php session()->remove('welcome_message') ?>
             <?php endif; ?>
         })
+        </script>
+
+        <script>
+        // Show the modal if cookie consent is not given
+        if (!document.cookie.includes('cookie_consent')) {
+            document.getElementById('cookieConsentModal').style.display = 'block';
+        }
+
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function acceptCookies() {
+            setCookie('cookie_consent', 'accepted', 365);
+            document.getElementById('cookieConsentModal').style.display = 'none';
+        }
+
+        function rejectCookies() {
+            setCookie('cookie_consent', 'rejected', 365);
+            document.getElementById('cookieConsentModal').style.display = 'none';
+            alert('Cookies rejected. To reactivate, clear your browser history and visit the site again.');
+        }
         </script>
         <?= $this->renderSection('pageScripts') ?>
     </body>
