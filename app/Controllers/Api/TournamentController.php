@@ -44,8 +44,18 @@ class TournamentController extends BaseController
         // Fetch the tournaments
         $tournaments = $model->findAll();
 
+        // Fetch participants for each tournament
+        $result_tournaments = [];
+        $tournamentParticipantsModel = model('\App\Models\TournamentParticipantsModel');
+        foreach ($tournaments as &$tournament) {
+            $participants = $tournamentParticipantsModel->where('tournament_id', $tournament['id'])->findAll();
+            if ($participants) {
+                $result_tournaments[] = $tournament;
+            }
+        }
+
         // Return the tournaments as a JSON response
-        return $this->response->setJSON($tournaments);
+        return $this->response->setJSON($result_tournaments);
     }
 
     public function save()
