@@ -23,6 +23,31 @@ class TournamentController extends BaseController
         //
     }
 
+    public function fetch()
+    {
+        $model = model('\App\Models\TournamentModel');
+
+        // Get the user_by parameter from the request
+        $userBy = $this->request->getPost('user_by');
+
+        // Apply the filter if the user_by parameter is provided
+        if ($userBy) {
+            $model->where('user_by', $userBy);
+        }
+
+        $searchable = $this->request->getPost('search_tournament');
+        // Apply the filter if the searchable parameter is provided
+        if ($searchable) {
+            $model->like('searchable', $searchable);
+        }
+
+        // Fetch the tournaments
+        $tournaments = $model->findAll();
+
+        // Return the tournaments as a JSON response
+        return $this->response->setJSON($tournaments);
+    }
+
     public function save()
     {
         $tournamentModel = model('\App\Models\TournamentModel');
@@ -465,5 +490,39 @@ class TournamentController extends BaseController
         }
 
         return json_encode(['status' => 'success', 'msg' => $msg . $tournament_names, 'data' => $ids]);
+    }
+
+    public function reuseParticipants() {
+        $tournamentParticipantsModel = model('\App\Models\TournamentParticipantsModel');
+
+        // Get the user_by parameter from the request
+        $tournamentId = $this->request->getPost('id');
+
+        // Apply the filter if the user_by parameter is provided
+        if (!$tournamentId) {
+            return $this->response->setJSON(['status' => 'error', 'msg' => "Tournament was not selected."]);
+        }
+
+        $tournamentParticipantsModel->where('tournament_id', $tournamentId);
+
+        // Fetch the participants
+        $participants = $tournamentParticipantsModel->join('participants', 'participant_id = participants.id', 'LEFT')->findAll();
+
+        /** Create new participants list from previous tournaments */
+        $participantsModel = model('\App\Models\ParticipantModel');
+        foreach ($participants as $participant) {
+            if ($participant['name']) {
+                $newParticipant = new \App\Entities\Participant([
+                    'name' => $participant['name'],
+                    'user_by' => auth()->user()->id,
+                    'active' => 1
+                ]);
+
+                $participantsModel->insert($newParticipant);
+            }
+        }
+
+        // Return the tournaments as a JSON response
+        return $this->response->setJSON($participants);
     }
 }

@@ -101,6 +101,9 @@ define('TOURNAMENT_STATUS_COMPLETED', 2);
 define('TOURNAMENT_STATUS_ABANDONED', 3);
 define('TOURNAMENT_STATUS_LABELS', ['', 'In progress', 'Completed', 'Abandoned']);
 
+define('TOURNAMENT_TYPE_SINGLE', 1);
+define('TOURNAMENT_TYPE_DOUBLE', 2);
+
 define('BRACKET_ACTIONCODE_MARK_WINNER', 'mark');
 define('BRACKET_ACTIONCODE_UNMARK_WINNER', 'unmark');
 define('BRACKET_ACTIONCODE_CHANGE_PARTICIPANT', 'change');

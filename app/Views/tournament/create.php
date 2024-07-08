@@ -2,8 +2,13 @@
 
 <?= $this->section('title') ?>Tournament Participants<?= $this->endSection() ?>
 
+<?= $this->section('pageStyles') ?>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<?= $this->endSection() ?>
+
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="/js/functions.js"></script>
 <script src="/js/participants.js"></script>
 <!-- <script src="/js/player.js"></script> -->
@@ -282,6 +287,49 @@ $(document).ready(function() {
             }, 500);
         });
     })
+
+    const selectTournamentModal = document.getElementById('selectTournamentModal');
+    if (selectTournamentModal) {
+        selectTournamentModal.addEventListener('show.bs.modal', event => {
+            selectTournamentModal.setAttribute('data-setting-id', event.relatedTarget.getAttribute('data-id'));
+
+            drawTournamentsTable()
+        })
+    }
+
+    const selectTournamentConfirmModal = document.getElementById('selectTournamentConfirmModal');
+    if (selectTournamentConfirmModal) {
+        selectTournamentConfirmModal.addEventListener('show.bs.modal', event => {
+            selectTournamentConfirmModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-tournament-id'));
+
+            var tournamentNameElement = selectTournamentConfirmModal.querySelector('.tournament-name')
+            tournamentNameElement.textContent = event.relatedTarget.getAttribute('data-name')
+        })
+    }
+
+    $('#selectTournamentConfirmBtn').on('click', function() {
+        const tournament_id = selectTournamentConfirmModal.dataset.id
+
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/tournaments/reuse-participants',
+            data: {
+                id: tournament_id
+            },
+            success: function(result) {
+                renderParticipants(result)
+                $(selectTournamentConfirmModal).modal('hide')
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function() {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
+
 });
 
 var saveParticipants = (data) => {
@@ -410,6 +458,72 @@ var changeEliminationType = (element) => {
         parent.find('.double-type-hint').removeClass('d-none');
     }
 }
+
+var tournamentsTable = $('#tournamentsTable')
+var drawTournamentsTable = () => {
+    tournamentsTable = $('#tournamentsTable').DataTable({
+        "searching": false,
+        "processing": true,
+        "ajax": {
+            "url": apiURL + '/tournaments/get-list',
+            "type": "POST",
+            "dataSrc": "",
+            "data": function(d) {
+                // d.user_by = <?= auth()->user()->id ?>; // Include the user_by parameter
+                d.search_tournament = $('#searchTournament').val();
+            }
+        },
+        "columns": [{
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    return meta.row + 1; // Display index number
+                }
+            },
+            {
+                "data": "name"
+            },
+            {
+                "data": "type",
+                "render": function(data, type, row, meta) {
+                    var type = 'Single'
+                    if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
+                        type = "Double"
+                    }
+
+                    return type;
+                }
+            },
+            {
+                "data": "status",
+                "render": function(data, type, row, meta) {
+                    var status = 'In progress'
+                    if (row.status == <?= TOURNAMENT_STATUS_COMPLETED ?>) {
+                        status = 'Completed'
+                    }
+
+                    if (row.status == <?= TOURNAMENT_STATUS_ABANDONED ?>) {
+                        status = 'Abandoned'
+                    }
+
+                    return status;
+                }
+            },
+            {
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    return `
+                        <a class="edit-btn" data-tournament-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#selectTournamentConfirmModal">Reuse</a>
+                    `;
+                }
+            }
+        ]
+    });
+
+    $('#searchTournamentBtn').on('click', function() {
+        tournamentsTable.ajax.reload();
+    });
+
+}
 </script>
 
 <?= $this->endSection() ?>
@@ -460,6 +574,7 @@ var changeEliminationType = (element) => {
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal">Clear Participant(s) List</button></li>
                     <li><button id="checkDuplicationBtn" class="btn btn-default">Check Duplicates</button></li>
+                    <li><button id="checkDuplicationBtn" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectTournamentModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>">Reuse Participants</button></li>
                     <li><button id="changeBackgroundColor" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectBackgroundColorModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>">Change Background</button></li>
                 </ul>
             </div>
@@ -487,9 +602,13 @@ var changeEliminationType = (element) => {
                 </div>
             </div>
 
-            <div class="d-flex participant-list" <?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? 'style="background-color: ' . $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] . '"' : '' ?>>
-                <div id="indexList" class="list-group col-auto"></div>
-                <div id="newList" class="list-group col-10"></div>
+            <div class="participant-list d-flex flex-wrap" <?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? 'style="background-color: ' . $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] . '"' : '' ?>>
+                <div class="empty-message-wrapper col-12 d-flex p-2 text-bg-info rounded d-none"></div>
+                <div class="col-12 d-flex">
+                    <div id="indexList" class="list-group col-auto"></div>
+                    <div id="newList" class="list-group col-10"></div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -604,6 +723,65 @@ var changeEliminationType = (element) => {
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="selectTournamentModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectTournamentModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="selectTournamentModalLabel">Select the tournament to reuse.</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="searchTournament">
+                            <button id="searchTournamentBtn" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <div class="tournaments-table d-flex justify-content-center align-items-center">
+                        <table id="tournamentsTable" class="display col-12" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="selectTournamentConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectTournamentConfirmModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Are you confirm to do?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    <h6>Upon confirmation, the participants list will be overwritten with tournament "<span class="tournament-name"></span>]"'s participants list.</h6>
+                    </p>
+                    <p class="mt-3">Are you sure you want to proceed?
+                    <h6 class="text-danger">This action cannot be undone!</h6>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard</button>
+                    <button type="button" class="btn btn-danger" id="selectTournamentConfirmBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?php if (isset($settings) && $settings) : ?>
     <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">

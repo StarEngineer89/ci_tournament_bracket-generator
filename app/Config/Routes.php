@@ -60,6 +60,8 @@ $routes->group('api', static function ($routes) {
         $routes->post('bulkDelete', 'Api\TournamentController::bulkDelete');
         $routes->post('bulkReset', 'Api\TournamentController::bulkReset');
         $routes->post('bulkUpdate', 'Api\TournamentController::bulkUpdate');
+        $routes->post('get-list', 'Api\TournamentController::fetch');
+        $routes->post('reuse-participants', 'Api\TournamentController::reuseParticipants');
     });
 
     $routes->group('notifications', static function ($routes) {

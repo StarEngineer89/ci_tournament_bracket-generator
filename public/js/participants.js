@@ -120,6 +120,13 @@ function renderParticipants(participantsArray) {
     let indexList = document.getElementById('indexList')
     indexList.innerHTML = '';
 
+    if (!participantsArray.length) {
+        $('.empty-message-wrapper').html("Wow, such empty!<br/>To get started, Add participants or from additional options, Reuse participants from a previous tournament.")
+        $('.empty-message-wrapper').removeClass('d-none')
+        return false
+    }
+
+    $('.empty-message-wrapper').html('').addClass('d-none')
     participantsArray.forEach((participant, i) => {
         var item = document.createElement('div');
         item.setAttribute('id', participant.id);

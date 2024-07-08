@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ParticipantModel extends Model
+class TournamentParticipantsModel extends Model
 {
-    protected $table            = 'participants';
+    protected $table            = 'tournament_participants';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'user_by', 'active'];
+    protected $allowedFields    = ['tournament_id', 'participant_id', 'order'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
