@@ -131,6 +131,11 @@ $(document).ready(function() {
     });
 
     $('#generate').on('click', function() {
+        if (!itemList.children.length) {
+            $('#generateErrorModal').modal('show')
+            return false;
+        }
+
         <?php if (isset($tournament) && count($tournament)) : ?>
         tournament_id = "<?= $tournament['id'] ?>";
         eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
@@ -610,11 +615,11 @@ var drawTournamentsTable = () => {
             </div>
 
             <div class="participant-list d-flex flex-wrap" <?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? 'style="background-color: ' . $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] . '"' : '' ?>>
-                <div class="empty-message-wrapper col-12 d-flex p-2 text-bg-info rounded d-none">
-                    Wow, such empty!<br />
-                    To get started, Add participants or from additional options, Reuse participants from a previous tournament.<br />
-                    Once you've populated the participants list, proceed with the "Generate Brackets" option to gegerate the tournament!<br /><br />
-                    FYI, you may right click (or hold on mobile) to edit/delete individual participants here.
+                <div class="empty-message-wrapper col-12 p-2 text-bg-info rounded d-none">
+                    <p class="text-center">Wow, such empty!</p>
+                    <p> To get started, "Add Participants" or from Additional Options, "Reuse Participants" from a previous tournament.</p>
+                    <p> Once you've populated the participants list, proceed with the "Generate Brackets" option to generate the tournament!</p>
+                    <p> FYI, you may right click (or hold on mobile) to edit/delete individual participants here.</p>
                 </div>
                 <div class="col-12 d-flex">
                     <div id="indexList" class="list-group col-auto"></div>
@@ -790,6 +795,24 @@ var drawTournamentsTable = () => {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard</button>
                     <button type="button" class="btn btn-danger" id="selectTournamentConfirmBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="generateErrorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="generateErrorModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Alert</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Please populate the participant list first before generating the brackets</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Confirm</button>
                 </div>
             </div>
         </div>

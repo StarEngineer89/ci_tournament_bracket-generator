@@ -364,3 +364,7 @@
 .dropdown-item a {
   text-decoration: none;
 }
+
+.empty-message-wrapper p {
+  text-indent: 6px;
+}

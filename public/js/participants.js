@@ -37,7 +37,7 @@ function callShuffle(enableShuffling = true) {
     } else {
         let children = Array.from(itemList.children);
         // Shuffle elements
-        children = shuffleArray(Array.from(itemList.children));
+        // children = shuffleArray(Array.from(itemList.children));
 
         Array.from(children).forEach((item, i) => {
             exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'order': i });
