@@ -75,7 +75,7 @@ $(document).on('ready', function () {
     function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
-        var groupNames = $('<div class="group-names"></div>')
+        var groupNames = $('<div class="group-names" style="min-width:' + 160 * (groupCount + 1) + "px" + '"></div>')
 
         var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 160 * (groupCount + 1) + "px" + '"></div>'),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
