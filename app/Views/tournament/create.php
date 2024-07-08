@@ -461,6 +461,13 @@ var changeEliminationType = (element) => {
 
 var tournamentsTable = $('#tournamentsTable')
 var drawTournamentsTable = () => {
+    // Check if the DataTable is already initialized
+    if ($.fn.DataTable.isDataTable('#tournamentsTable')) {
+        // Destroy the existing DataTable before reinitializing it
+        tournamentsTable.destroy();
+        $('#tournamentsTable').empty(); // Clear the table
+    }
+
     tournamentsTable = $('#tournamentsTable').DataTable({
         "searching": false,
         "processing": true,
@@ -603,7 +610,12 @@ var drawTournamentsTable = () => {
             </div>
 
             <div class="participant-list d-flex flex-wrap" <?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? 'style="background-color: ' . $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] . '"' : '' ?>>
-                <div class="empty-message-wrapper col-12 d-flex p-2 text-bg-info rounded d-none"></div>
+                <div class="empty-message-wrapper col-12 d-flex p-2 text-bg-info rounded d-none">
+                    Wow, such empty!<br />
+                    To get started, Add participants or from additional options, Reuse participants from a previous tournament.<br />
+                    Once you've populated the participants list, proceed with the "Generate Brackets" option to gegerate the tournament!<br /><br />
+                    FYI, you may right click (or hold on mobile) to edit/delete individual participants here.
+                </div>
                 <div class="col-12 d-flex">
                     <div id="indexList" class="list-group col-auto"></div>
                     <div id="newList" class="list-group col-10"></div>
@@ -738,7 +750,7 @@ var drawTournamentsTable = () => {
                             <button id="searchTournamentBtn" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
                         </div>
                     </div>
-                    <div class="tournaments-table d-flex justify-content-center align-items-center">
+                    <div class="tournaments-table">
                         <table id="tournamentsTable" class="display col-12" style="width: 100%">
                             <thead>
                                 <tr>
@@ -764,12 +776,12 @@ var drawTournamentsTable = () => {
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Are you confirm to do?</h1>
+                    <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Confirmation Message</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>
-                    <h6>Upon confirmation, the participants list will be overwritten with tournament "<span class="tournament-name"></span>]"'s participants list.</h6>
+                    <h6>Upon confirmation, the participants list will be overwritten with tournament "<span class="tournament-name"></span>"'s participants list.</h6>
                     </p>
                     <p class="mt-3">Are you sure you want to proceed?
                     <h6 class="text-danger">This action cannot be undone!</h6>
