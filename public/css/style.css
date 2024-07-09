@@ -368,3 +368,20 @@
 .empty-message-wrapper p {
   text-indent: 6px;
 }
+
+.pcr-button {
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.pcr-app {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.pcr-app .pcr-interaction .pcr-result {
+  min-width: 10em;
+}
