@@ -677,12 +677,14 @@ var drawTournamentsTable = () => {
                         </div>
 
                         <div class="form-check mb-3">
-                            <input type="checkbox" class="form-check-input enable-shuffling" name="enable-shuffle" id="enableShuffle" onChange="toggleShuffleParticipants(this)" checked>
-                            <label class="form-check-label" for="enableShuffle">
-                                <h6>Shuffle Participants</h6>
-                            </label>
-                            <div class="enable-shuffling-hint form-text">If enabled, the contestant brackets will be generated with the participants shuffled.</div>
-                            <div class="disable-shuffling-hint form-text d-none">If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.</div>
+                            <div class="ps-2">
+                                <input type="checkbox" class="form-check-input enable-shuffling" name="enable-shuffle" id="enableShuffle" onChange="toggleShuffleParticipants(this)" checked>
+                                <label class="form-check-label" for="enableShuffle">
+                                    <h6>Shuffle Participants</h6>
+                                </label>
+                                <div class="enable-shuffling-hint form-text">If enabled, the contestant brackets will be generated with the participants shuffled.</div>
+                                <div class="disable-shuffling-hint form-text d-none">If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.</div>
+                            </div>
                         </div>
 
                         <div id="music-settings-panel">

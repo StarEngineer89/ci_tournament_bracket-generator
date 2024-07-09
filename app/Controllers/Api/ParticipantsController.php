@@ -32,7 +32,7 @@ class ParticipantsController extends BaseController
             $duplicateCheck = $this->request->getPost('duplicateCheck');
         }
 
-        $duplicated = []; $inserted_count = 0;$test = 0;
+        $participants = []; $duplicated = []; $inserted_count = 0; $test = 0;
         if ($names) {
             foreach ($names as $name) {
                 $participant = new \App\Entities\Participant([
@@ -49,16 +49,18 @@ class ParticipantsController extends BaseController
                         $duplicated[] = $name;
                     } else {
                         $this->participantsModel->insert($participant);
+                        $participants[] = $participant;
                         $inserted_count++;
                     }
                 } else {$test = 2;
                     $this->participantsModel->insert($participant);
+                    $participants[] = $participant;
                     $inserted_count++;
                 }
             }
         }
 
-        $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
+        // $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
 
         return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated, 'count' => $inserted_count, 'test' => $test));
     }
