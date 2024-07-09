@@ -22,17 +22,13 @@ class ParticipantsController extends BaseController
         $this->participantsModel = model('\App\Models\ParticipantModel');
     }
 
-    public function addParticipant($names = null, $duplicateCheck = true)
+    public function addParticipant($names = null)
     {
         if (!$names) {
             $names = $this->request->getPost('name');
         }
-
-        if ($this->request->getPost('duplicateCheck') !== null) {
-            $duplicateCheck = $this->request->getPost('duplicateCheck');
-        }
-
-        $participants = []; $duplicated = []; $inserted_count = 0; $test = 0;
+        
+        $participants = []; $inserted_count = 0;
         if ($names) {
             foreach ($names as $name) {
                 $participant = new \App\Entities\Participant([
@@ -40,28 +36,17 @@ class ParticipantsController extends BaseController
                     'user_by' => auth()->user()->id,
                     'active' => 1
                 ]);
-                log_message('debug', json_encode($participant));
-                if ($duplicateCheck) {
-                    $record = $this->participantsModel->where(['name' => $name, 'user_by' => auth()->user()->id, 'active' => 1])->findAll();
 
-                    if (count($record)) {
-                        $duplicated[] = $name;
-                    } else {
-                        $this->participantsModel->save($participant);
-                        $participants[] = $participant;
-                        $inserted_count++;
-                    }
-                } else {
-                    $this->participantsModel->save($participant);
-                    $participants[] = $participant;
-                    $inserted_count++;
-                }
+                $this->participantsModel->insert($participant);
+                $participant->id = $this->participantsModel->getInsertID();
+                $participants[] = $participant;
+                $inserted_count++;
             }
         }
 
         // $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
 
-        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated, 'count' => $inserted_count));
+        return json_encode(array('result' => 'success', 'participants' => $participants, 'count' => $inserted_count));
     }
 
     public function updateParticipant($id)
@@ -131,8 +116,8 @@ class ParticipantsController extends BaseController
 		}
         
         if (count($data)) {
-            $result = $this->addParticipant($data, true);
-
+            $result = $this->addParticipant($data);
+            log_message('debug', $result);
             return $result;
         }
 

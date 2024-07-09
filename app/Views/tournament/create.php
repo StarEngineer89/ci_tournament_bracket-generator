@@ -172,31 +172,63 @@ $(document).ready(function() {
 
         names = opts.replaceAll(', ', ',').split(',');
 
+        let duplicatedNames = []
+        itemList.querySelectorAll('#newList .p-name').forEach((item, i) => {
+            if (names.includes(item.textContent)) {
+                duplicatedNames.push(item.textContent)
+            }
+        })
+
+        if (duplicatedNames.length) {
+            $('#confirmSave .names').html(duplicatedNames.join(', '));
+            $('#confirmSave').modal('show');
+
+            return false;
+        }
+
         if (names.length) {
             saveParticipants(names);
         }
     });
 
     $('#confirmSave .include').on('click', () => {
-        if (duplicates.length) {
-            saveDuplicates(duplicates);
+        var opts = $('#participantNames').val();
+
+        if (opts == '') {
+            return false;
         }
 
-        $('#participantNames').val(null);
-        $('input.csv-import').val(null)
-        $('#confirmSave').modal('hide');
-        $('#collapseAddParticipant').removeClass('show');
-        appendAlert('Records inserted successfully!', 'success');
+        names = opts.replaceAll(', ', ',').split(',');
+        saveParticipants(names);
     })
 
     $('#confirmSave .remove').on('click', () => {
+        var opts = $('#participantNames').val();
 
-        $('#participantNames').val(null);
-        $('input.csv-import').val(null)
-        $('#confirmSave').modal('hide');
-        $('#collapseAddParticipant').removeClass('show');
+        if (opts == '') {
+            return false;
+        }
 
-        appendAlert('Duplicate records discarded!', 'success');
+        names = opts.replaceAll(', ', ',').split(',');
+
+        let validNames = []
+        let exisingNames = []
+        itemList.querySelectorAll('#newList .p-name').forEach((item, i) => {
+            exisingNames.push(item.textContent.trim())
+        })
+
+        names.forEach(name => {
+            if (!exisingNames.includes(name)) {
+                validNames.push(name)
+            }
+        })
+
+        if (validNames.length) {
+            saveParticipants(validNames);
+            appendAlert('Duplicate records discarded!', 'success');
+        } else {
+            appendAlert('There is not records to be saved', 'error');
+        }
     })
 
     $('#clearParticipantsConfirmBtn').on('click', () => {
@@ -396,61 +428,23 @@ var saveParticipants = (data) => {
         type: "POST",
         url: apiURL + '/participants/new',
         data: {
-            'name': data
+            'name': data,
         },
         success: function(result) {
             result = JSON.parse(result);
 
-            renderParticipants(result.participants);
+            if (result.count) {
+                renderParticipants(result.participants);
 
-            insert_count = result.count;
-            duplicates = result.duplicated;
+                $('#participantNames').val(null);
+                $('input.csv-import').val(null)
+                $('#confirmSave').modal('hide');
+                $('#collapseAddParticipant').removeClass('show');
 
-            if (insert_count) {
                 appendAlert('Records inserted successfully!', 'success');
             }
 
-            if (duplicates.length) {
-                let nameString = '';
-
-                duplicates.forEach((ele, i) => {
-                    nameString += ele;
-
-                    if (i < (duplicates.length - 1)) {
-                        nameString += ', ';
-                    }
-                })
-
-                $('#confirmSave .names').html(nameString);
-                $('#confirmSave').modal('show');
-
-                return false;
-            }
-
             $('#collapseAddParticipant').removeClass('show');
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function() {
-            $("#overlay").fadeOut(300);
-        }, 500);
-    });
-}
-
-var saveDuplicates = (data) => {
-    $.ajax({
-        type: "POST",
-        url: apiURL + '/participants/new',
-        data: {
-            'name': data,
-            'duplicateCheck': 0
-        },
-        success: function(result) {
-            result = JSON.parse(result);
-
-            renderParticipants(result.participants);
         },
         error: function(error) {
             console.log(error);
@@ -477,26 +471,10 @@ var csvUpload = (element) => {
         },
         success: function(result) {
             result = JSON.parse(result);
-            duplicates = result.duplicated;
             insert_count = result.count;
 
             if (insert_count) {
                 appendAlert('Records inserted successfully!', 'success');
-            }
-
-            if (duplicates.length) {
-                let nameString = '';
-
-                duplicates.forEach((ele, i) => {
-                    nameString += ele;
-
-                    if (i < (duplicates.length - 1)) {
-                        nameString += ', ';
-                    }
-                })
-
-                $('#confirmSave .names').html(nameString);
-                $('#confirmSave').modal('show');
             }
 
             renderParticipants(result.participants);

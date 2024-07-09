@@ -115,10 +115,9 @@ function shuffleArray(array) {
  * Render the list of Participants
  */
 function renderParticipants(participantsArray) {
-    itemList.innerHTML = '';
 
     let indexList = document.getElementById('indexList')
-    indexList.innerHTML = '';
+    const indexFrom = indexList.children.length
 
     if (!participantsArray.length) {
         $('.empty-message-wrapper').removeClass('d-none')
@@ -140,7 +139,7 @@ function renderParticipants(participantsArray) {
 
         var indexItem = document.createElement('div');
         indexItem.setAttribute('class', "list-group-item border-0 text-end");
-        indexItem.innerHTML = `<span>${i + 1}</span>`;
+        indexItem.innerHTML = `<span>${i + indexFrom + 1}</span>`;
 
         if (indexList.length > 0)
             indexList.insertBefore(indexItem);
