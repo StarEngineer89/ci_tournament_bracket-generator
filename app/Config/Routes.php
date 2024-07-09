@@ -62,6 +62,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('bulkUpdate', 'Api\TournamentController::bulkUpdate');
         $routes->post('get-list', 'Api\TournamentController::fetch');
         $routes->post('reuse-participants', 'Api\TournamentController::reuseParticipants');
+        $routes->get('(:num)/get-participants', 'Api\TournamentController::getParticipants/$1');
     });
 
     $routes->group('notifications', static function ($routes) {

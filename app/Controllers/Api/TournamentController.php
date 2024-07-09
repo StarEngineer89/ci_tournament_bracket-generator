@@ -528,11 +528,28 @@ class TournamentController extends BaseController
                     'active' => 1
                 ]);
 
-                $participantsModel->insert($newParticipant);
+                if ($participant['user_by'] == auth()->user()->id) {
+                    $newParticipant->id = $participant['id'];
+                }
+
+                $participantsModel->save($newParticipant);
             }
         }
 
         // Return the tournaments as a JSON response
         return $this->response->setJSON($participants);
+    }
+
+    public function getParticipants($tournament_id)
+    {
+        $tournamentParticipantsModel = model('\App\Models\TournamentParticipantsModel');
+        $participants = [];
+
+        if ($tournament_id) {
+            $tournamentParticipantsModel->where('tournament_id', $tournament_id);
+            $participants = $tournamentParticipantsModel->join('participants', 'participant_id = participants.id', 'LEFT')->findAll();
+        }
+
+        return json_encode($participants);
     }
 }

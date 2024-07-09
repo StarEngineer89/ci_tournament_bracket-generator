@@ -15,7 +15,7 @@
 <script type="text/javascript">
 let apiURL = "<?= base_url('api') ?>";
 let eleminationType;
-let tournament_id;
+let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
 let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
 let audio = document.getElementById("myAudio");
 let videoStartTime = 0;

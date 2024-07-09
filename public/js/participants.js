@@ -210,10 +210,15 @@ function renderParticipants(participantsArray) {
  */
 function loadParticipants() {
     $("#overlay").fadeIn(300);
+    
+    if (!tournament_id) {
+        renderParticipants([]);
+        return false;
+    }
 
     $.ajax({
         type: "GET",
-        url: apiURL + '/participants',
+        url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
         dataType: "JSON",
         success: function (result) {
             renderParticipants(result);

@@ -22,13 +22,6 @@ class ParticipantsController extends BaseController
         $this->participantsModel = model('\App\Models\ParticipantModel');
     }
 
-    public function getParticipants()
-    {
-        $participants = $this->participantsModel->where('user_by', auth()->user()->id)->findAll();
-
-        return json_encode($participants);
-    }
-
     public function addParticipant($names = null, $duplicateCheck = true)
     {
         if (!$names) {
@@ -42,24 +35,24 @@ class ParticipantsController extends BaseController
         $duplicated = []; $inserted_count = 0;$test = 0;
         if ($names) {
             foreach ($names as $name) {
-                $data = [
+                $participant = new \App\Entities\Participant([
                     'name' => $name,
                     'user_by' => auth()->user()->id,
                     'active' => 1
-                ];
+                ]);
 
                 if ($duplicateCheck) {
                     $test = 1;
-                    $record = $this->participantsModel->where($data)->findAll();
+                    $record = $this->participantsModel->where($participant)->findAll();
 
                     if (count($record)) {
                         $duplicated[] = $name;
                     } else {
-                        $this->participantsModel->insert($data);
+                        $this->participantsModel->insert($participant);
                         $inserted_count++;
                     }
                 } else {$test = 2;
-                    $this->participantsModel->insert($data);
+                    $this->participantsModel->insert($participant);
                     $inserted_count++;
                 }
             }
