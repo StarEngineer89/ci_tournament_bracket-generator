@@ -234,7 +234,7 @@ $(document).ready(function() {
     $('#clearParticipantsConfirmBtn').on('click', () => {
         let items = $('#newList').children();
         if (!items.length) {
-            appendAlert('There is no participants to clean.', 'danger');
+            appendAlert('There is no participants to clear.', 'danger');
             $('#clearParticipantsConfirmModal').modal('hide')
 
             return false;
