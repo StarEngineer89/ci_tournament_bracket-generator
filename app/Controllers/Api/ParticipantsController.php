@@ -40,20 +40,19 @@ class ParticipantsController extends BaseController
                     'user_by' => auth()->user()->id,
                     'active' => 1
                 ]);
-
+                log_message('debug', json_encode($participant));
                 if ($duplicateCheck) {
-                    $test = 1;
-                    $record = $this->participantsModel->where($participant)->findAll();
+                    $record = $this->participantsModel->where(['name' => $name, 'user_by' => auth()->user()->id, 'active' => 1])->findAll();
 
                     if (count($record)) {
                         $duplicated[] = $name;
                     } else {
-                        $this->participantsModel->insert($participant);
+                        $this->participantsModel->save($participant);
                         $participants[] = $participant;
                         $inserted_count++;
                     }
-                } else {$test = 2;
-                    $this->participantsModel->insert($participant);
+                } else {
+                    $this->participantsModel->save($participant);
                     $participants[] = $participant;
                     $inserted_count++;
                 }
@@ -62,7 +61,7 @@ class ParticipantsController extends BaseController
 
         // $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
 
-        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated, 'count' => $inserted_count, 'test' => $test));
+        return json_encode(array('result' => 'success', 'participants' => $participants, 'duplicated' => $duplicated, 'count' => $inserted_count));
     }
 
     public function updateParticipant($id)
