@@ -5,6 +5,7 @@
 <?= $this->section('pageStyles') ?>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/nano.min.css">
+
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
@@ -408,6 +409,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     $('.pcr-interaction .pcr-save').on('click', function() {
         $('#bgColorInput').val(pickr.getColor().toRGBA().toString())
+        $('.pcr-app').removeClass('visible')
     })
 });
 
@@ -422,17 +424,17 @@ var changeEliminationType = (element) => {
     }
 }
 
-var tournamentsTable = $('#tournamentsTable')
+var tournamentsTable = $('#tournamentTable')
 var drawTournamentsTable = () => {
     // Check if the DataTable is already initialized
-    if ($.fn.DataTable.isDataTable('#tournamentsTable')) {
+    if ($.fn.DataTable.isDataTable('#tournamentTable')) {
         // Destroy the existing DataTable before reinitializing it
         tournamentsTable.destroy();
-        $('#tournamentsTable').empty(); // Clear the table
+        $('#tournamentTable').empty(); // Clear the table
     }
 
-    tournamentsTable = $('#tournamentsTable').DataTable({
-        "searching": false,
+    tournamentsTable = $('#tournamentTable').DataTable({
+        "searching": true,
         "processing": true,
         "ajax": {
             "url": apiURL + '/tournaments/get-list',
@@ -486,11 +488,25 @@ var drawTournamentsTable = () => {
                     `;
                 }
             }
-        ]
+        ],
+        "columnDefs": [{
+            "orderable": false,
+            "targets": [2, 3, 4]
+        }],
     });
 
     $('#searchTournamentBtn').on('click', function() {
         tournamentsTable.ajax.reload();
+    });
+
+    $('#typeFilter').on('change', function() {
+        var selectedType = $(this).val().toLowerCase();
+        tournamentsTable.columns(2).search(selectedType).draw();
+    });
+
+    $('#stautsFilter').on('change', function() {
+        var selectedStatus = $(this).val().toLowerCase();
+        tournamentsTable.columns(3).search(selectedStatus).draw();
     });
 
 }
@@ -718,13 +734,28 @@ var drawTournamentsTable = () => {
                     </div>
                 </div>
                 <div class="tournaments-table">
-                    <table id="tournamentsTable" class="display col-12" style="width: 100%">
+                    <table id="tournamentTable" class="display col-12" style="width: 100%">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Type</th>
-                                <th>Status</th>
+                                <th>
+                                    <label for="typeFilter">Type:</label>
+                                    <select id="typeFilter" class="form-select form-select-sm">
+                                        <option value="">All Types</option>
+                                        <option value="Single">Single</option>
+                                        <option value="Double">Double</option>
+                                    </select>
+                                </th>
+                                <th>
+                                    <label for="statusFilter">Status:</label>
+                                    <select id="stautsFilter" class="form-select form-select-sm">
+                                        <option value="">All Status</option>
+                                        <option value="In progress">In progress</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Abandoned">Abandoned</option>
+                                    </select>
+                                </th>
                                 <th>Action</th>
                             </tr>
                         </thead>
