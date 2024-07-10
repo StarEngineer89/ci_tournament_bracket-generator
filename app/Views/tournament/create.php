@@ -402,12 +402,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 
-    pickr.on('change', (color, instance) => {
-        const rgbaColor = color.toRGBA().toString();
-        $('.participant-list').css('background-color', rgbaColor)
-    });
-
     $('.pcr-interaction .pcr-save').on('click', function() {
+        const rgbaColor = pickr.getColor().toRGBA().toString();
+        $('.participant-list').css('background-color', rgbaColor)
         $('#bgColorInput').val(pickr.getColor().toRGBA().toString())
         $('.pcr-app').removeClass('visible')
     })
