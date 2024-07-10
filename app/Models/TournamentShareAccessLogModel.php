@@ -12,7 +12,7 @@ class TournamentShareAccessLogModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_by', 'share_id'];
+    protected $allowedFields    = ['user_id', 'share_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

@@ -40,7 +40,7 @@ class TournamentController extends BaseController
                         }
 
                         /** Omit the record from Shared with me if the share was created by himself */
-                        if ($tempRow['user_by'] == auth()->user()->id || $tempRow['deleted_at']) {
+                        if ($tempRow['user_id'] == auth()->user()->id || $tempRow['deleted_at']) {
                             $add_in_list = false;
                         }
 
@@ -53,7 +53,7 @@ class TournamentController extends BaseController
 
                 $table = view('tournament/shared-with-me', ['tournaments' => $tournaments, 'shareType' => $this->request->getGet('type'), 'searchString' => $searchString]);
             } else {
-                $tempRows = $tournaments->where('share_settings.user_by', auth()->user()->id)->findAll();
+                $tempRows = $tournaments->where('share_settings.user_id', auth()->user()->id)->findAll();
 
                 $tournaments = [];
                 if ($tempRows) {
@@ -69,7 +69,7 @@ class TournamentController extends BaseController
         } else {
             $tournamentModel = model('\App\Models\TournamentModel');
 
-            $tournaments = $tournamentModel->where(['user_by' => auth()->user()->id]);
+            $tournaments = $tournamentModel->where(['user_id' => auth()->user()->id]);
 
             if ($this->request->getGet('filter') == 'archived') {
                 $tournaments->where(['archive' => 1]);
@@ -97,10 +97,11 @@ class TournamentController extends BaseController
 
     public function create()
     {
-        $participantModel = model('\App\Models\ParticipantModel');
         $userSettingModel = model('\App\Models\UserSettingModel');
+        $participantModel = model('\App\Models\ParticipantModel');
 
-        $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
+        $participants = $participantModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->delete();
+
         $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
 
         // Convert settings to key-value array
@@ -113,7 +114,7 @@ class TournamentController extends BaseController
 
         $musicSettingsBlock = view('tournament/music-setting', []);
 
-        return view('tournament/create', ['participants' => $participants, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
+        return view('tournament/create', ['musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
     }
 
     public function view($id)
@@ -135,7 +136,7 @@ class TournamentController extends BaseController
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
         
         if (!$brackets) {
-            if ($tournament['user_by'] != auth()->user()->id) {
+            if ($tournament['user_id'] != auth()->user()->id) {
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "The brackets was not generated yet."]);
 
@@ -144,7 +145,7 @@ class TournamentController extends BaseController
 
             $participantModel = model('\App\Models\ParticipantModel');
 
-            $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
+            $participants = $participantModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $id])->findAll();
 
             $musicSettingsBlock = view('tournament/music-setting', []);
             $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_BRACKET_GENERATION])->orderBy('type','asc')->findAll();
@@ -159,7 +160,7 @@ class TournamentController extends BaseController
                 }
             }
 
-            return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
+            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $settings, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
@@ -195,14 +196,14 @@ class TournamentController extends BaseController
 
         $shareAccessModel = model('\App\Models\TournamentShareAccessLogModel');
         if (auth()->user()) {
-            $shareAccessModel->insert(['share_id' => $settings['id'], 'user_by' => auth()->user()->id]);
+            $shareAccessModel->insert(['share_id' => $settings['id'], 'user_id' => auth()->user()->id]);
         } else {
-            $shareAccessModel->insert(['share_id' => $settings['id'], 'user_by' => 0]);
+            $shareAccessModel->insert(['share_id' => $settings['id'], 'user_id' => 0]);
         }
         
 
         if (!$brackets) {
-            if (empty(auth()->user()) || $tournament['user_by'] != auth()->user()->id) {
+            if (empty(auth()->user()) || $tournament['user_id'] != auth()->user()->id) {
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "The brackets was not generated yet."]);
 
@@ -211,7 +212,7 @@ class TournamentController extends BaseController
 
             $participantModel = model('\App\Models\ParticipantModel');
 
-            $participants = $participantModel->where('user_by', auth()->user()->id)->findAll();
+            $participants = $participantModel->where('user_id', auth()->user()->id)->findAll();
 
             $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => MUSIC_TYPE_BRACKET_GENERATION])->findAll();
             $musicSettingsBlock = view('tournament/music-setting', []);

@@ -33,7 +33,8 @@ class ParticipantsController extends BaseController
             foreach ($names as $name) {
                 $participant = new \App\Entities\Participant([
                     'name' => $name,
-                    'user_by' => auth()->user()->id,
+                    'user_id' => auth()->user()->id,
+                    'tournament_id' => 0,
                     'active' => 1
                 ]);
 
@@ -44,7 +45,7 @@ class ParticipantsController extends BaseController
             }
         }
 
-        // $participants = $this->participantsModel->where(['user_by' => auth()->user()->id])->findAll();
+        $participants = $this->participantsModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->findAll();
 
         return json_encode(array('result' => 'success', 'participants' => $participants, 'count' => $inserted_count));
     }
@@ -65,7 +66,12 @@ class ParticipantsController extends BaseController
     
     public function clearParticipants()
     {
-        $this->participantsModel->where('user_by', auth()->user()->id)->delete();
+        if ($tournament_id = $this->request->getGet('t_id')) {
+            $this->participantsModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $tournament_id])->delete();
+        } else {
+            $this->participantsModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->delete();
+        }
+        
 
         return json_encode(array('result' => 'success'));
     }
@@ -115,12 +121,6 @@ class ParticipantsController extends BaseController
 			}
 		}
         
-        if (count($data)) {
-            $result = $this->addParticipant($data);
-            log_message('debug', $result);
-            return $result;
-        }
-
-        return json_encode(['result' => 'success']);
+        return $this->response->setJSON(['result' => 'success', 'names' => $data]);
     }
 }

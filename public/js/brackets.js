@@ -175,7 +175,7 @@ $(document).on('ready', function () {
                                     const element = opt.$trigger;
                                     $.ajax({
                                         type: "GET",
-                                        url: apiURL + '/participants/',
+                                        url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
                                         success: function (result) {
                                             var select = document.createElement('select');
                                             select.setAttribute('class', "form-select");

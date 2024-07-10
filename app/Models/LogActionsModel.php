@@ -12,7 +12,7 @@ class LogActionsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_by', 'tournament_id', 'action', 'params'];
+    protected $allowedFields    = ['user_id', 'tournament_id', 'action', 'params'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -46,7 +46,7 @@ class LogActionsModel extends Model
 
     public function getLogs() {
         $this->select('log_actions.*, users.username as username, tournaments.name as tournamentname');
-        $this->join('users', 'log_actions.user_by = users.id', 'LEFT');
+        $this->join('users', 'log_actions.user_id = users.id', 'LEFT');
         $this->join('tournaments', 'log_actions.tournament_id = tournaments.id', 'LEFT');
 
         return $this;

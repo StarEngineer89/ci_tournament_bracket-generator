@@ -27,12 +27,12 @@ class TournamentController extends BaseController
     {
         $model = model('\App\Models\TournamentModel');
 
-        // Get the user_by parameter from the request
-        $userBy = $this->request->getPost('user_by');
+        // Get the user_id parameter from the request
+        $userBy = $this->request->getPost('user_id');
 
-        // Apply the filter if the user_by parameter is provided
+        // Apply the filter if the user_id parameter is provided
         if ($userBy) {
-            $model->where('user_by', $userBy);
+            $model->where('user_id', $userBy);
         }
 
         $searchable = $this->request->getPost('search_tournament');
@@ -46,9 +46,9 @@ class TournamentController extends BaseController
 
         // Fetch participants for each tournament
         $result_tournaments = [];
-        $tournamentParticipantsModel = model('\App\Models\TournamentParticipantsModel');
+        $participantsModel = model('\App\Models\ParticipantModel');
         foreach ($tournaments as &$tournament) {
-            $participants = $tournamentParticipantsModel->where('tournament_id', $tournament['id'])->findAll();
+            $participants = $participantsModel->where('tournament_id', $tournament['id'])->findAll();
             if ($participants) {
                 $result_tournaments[] = $tournament;
             }
@@ -62,7 +62,7 @@ class TournamentController extends BaseController
     {
         $tournamentModel = model('\App\Models\TournamentModel');
 
-        $existing = $tournamentModel->where(['name' => $this->request->getPost('name'), 'user_by' => auth()->user()->id])->findAll();
+        $existing = $tournamentModel->where(['name' => $this->request->getPost('name'), 'user_id' => auth()->user()->id])->findAll();
 
         if ($existing) {
             return json_encode(['error' => "The same tournament name is existing. Please use another name."]);
@@ -70,7 +70,7 @@ class TournamentController extends BaseController
 
         $data = [
             'name' => $this->request->getPost('title'),
-            'user_by' => auth()->user()->id,
+            'user_id' => auth()->user()->id,
             'type' => $this->request->getPost('type'),
             'searchable' => $this->request->getPost('title'),
             'archive' => 0
@@ -94,7 +94,7 @@ class TournamentController extends BaseController
                         'path' => $path,
                         'source' => $this->request->getPost('source')[$index],
                         'tournament_id' => $tournament_id,
-                        'user_by' => auth()->user()->id,
+                        'user_id' => auth()->user()->id,
                         'type' => $index,
                         'duration' => $this->request->getPost('duration')[$index],
                         'start' => $this->request->getPost('start')[$index],
@@ -169,7 +169,7 @@ class TournamentController extends BaseController
                 $setting['path'] = $path;
                 $setting['source'] = $this->request->getPost('source')[$index];
                 $setting['tournament_id'] = $tournament_id;
-                $setting['user_by'] = auth()->user()->id;
+                $setting['user_id'] = auth()->user()->id;
                 $setting['type'] = $index;
                 $setting['duration'] = $this->request->getPost('duration')[$index];
                 $setting['start'] = $this->request->getPost('start')[$index];
@@ -309,7 +309,7 @@ class TournamentController extends BaseController
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
 
         $data = $this->request->getPost();
-        $data['user_by'] = auth()->user()->id;
+        $data['user_id'] = auth()->user()->id;
 
         $setting = $shareSettingsModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
         if ($setting) {
@@ -334,7 +334,7 @@ class TournamentController extends BaseController
                 $msg = 'Tournament was shared to you.';
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;
 
-                $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE, 'user_by' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
+                $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
                 $this->notificationService->addNotification($notification);
             }
         }
@@ -503,51 +503,46 @@ class TournamentController extends BaseController
     }
 
     public function reuseParticipants() {
-        $tournamentParticipantsModel = model('\App\Models\TournamentParticipantsModel');
+        $participantsModel = model('\App\Models\ParticipantModel');
 
-        // Get the user_by parameter from the request
+        // Get the user_id parameter from the request
         $tournamentId = $this->request->getPost('id');
 
-        // Apply the filter if the user_by parameter is provided
+        // Apply the filter if the user_id parameter is provided
         if (!$tournamentId) {
             return $this->response->setJSON(['status' => 'error', 'msg' => "Tournament was not selected."]);
         }
 
-        $tournamentParticipantsModel->where('tournament_id', $tournamentId);
 
         // Fetch the participants
-        $participants = $tournamentParticipantsModel->join('participants', 'participant_id = participants.id', 'LEFT')->findAll();
+        $participants = $participantsModel->where('tournament_id', $tournamentId)->findAll();
 
         /** Create new participants list from previous tournaments */
-        $participantsModel = model('\App\Models\ParticipantModel');
         foreach ($participants as $participant) {
             if ($participant['name']) {
                 $newParticipant = new \App\Entities\Participant([
                     'name' => $participant['name'],
-                    'user_by' => auth()->user()->id,
+                    'user_id' => auth()->user()->id,
+                    'tournament_id' => 0,
+                    'order' => $participant['order'],
                     'active' => 1
                 ]);
-
-                if ($participant['user_by'] == auth()->user()->id) {
-                    $newParticipant->id = $participant['id'];
-                }
 
                 $participantsModel->save($newParticipant);
             }
         }
 
         // Return the tournaments as a JSON response
-        return $this->response->setJSON($participants);
+        return $this->response->setJSON($participantsModel->where('tournament_id', 0)->findAll());
     }
 
     public function getParticipants($tournament_id)
     {
-        $tournamentParticipantsModel = model('\App\Models\TournamentParticipantsModel');
+        $participantsModel = model('\App\Models\ParticipantModel');
         $participants = [];
 
         if ($tournament_id) {
-            $tournamentParticipantsModel->where('tournament_id', $tournament_id);
-            $participants = $tournamentParticipantsModel->join('participants', 'participant_id = participants.id', 'LEFT')->findAll();
+            $participants = $participantsModel->where('tournament_id', $tournament_id)->findAll();
         }
 
         return json_encode($participants);

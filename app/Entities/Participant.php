@@ -13,7 +13,9 @@ class Participant extends Entity
     protected $attributes = [
         'id'            => null,
         'name'       => null,
-        'user_by'  => null,
+        'user_id'  => null,
+        'tournament_id' => null,
+        'order' => null,
         'active' => null,
     ];
 }

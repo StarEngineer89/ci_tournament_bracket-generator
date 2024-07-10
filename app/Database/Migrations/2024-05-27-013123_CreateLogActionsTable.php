@@ -12,7 +12,7 @@ class CreateLogActionsTable extends Migration
 
         $this->forge->addField([
             'id'             => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'user_by'        => ['type' => 'int', 'constraint' => 11, 'null' => 0],
+            'user_id'        => ['type' => 'int', 'constraint' => 11, 'null' => 0],
             'tournament_id'  => ['type' => 'int', 'constraint' => 11, 'null' => 0, 'default' => 0],
             'action'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => 0],
             'params'         => ['type' => 'varchar', 'constraint' => 128, 'null' => 0],

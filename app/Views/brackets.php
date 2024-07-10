@@ -100,7 +100,7 @@ $(document).ready(function() {
             The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket
             advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament
             structure.
-            <?php if ((auth()->user() && auth()->user()->id == $tournament['user_by']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
+            <?php if ((auth()->user() && auth()->user()->id == $tournament['user_id']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
             <br />
             You also have actions available to you by right clicking (or holding on mobile devices) the individual
             bracket box.

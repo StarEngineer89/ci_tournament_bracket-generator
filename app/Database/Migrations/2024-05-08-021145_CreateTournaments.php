@@ -13,7 +13,7 @@ class CreateTournaments extends Migration
         $this->forge->addField([
             'id'             => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'name'       => ['type' => 'varchar', 'constraint' => 30, 'null' => 0],
-            'user_by'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
+            'user_id'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
             'type'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => 0, 'default' => 1],
             'status'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => 0, 'default' => 1],
             'created_at'     => ['type' => 'datetime', 'null' => false],
@@ -28,7 +28,7 @@ class CreateTournaments extends Migration
             'path'       => ['type' => 'varchar', 'constraint' => 128, 'null' => 0],
             'source'   => ['type' => 'varchar', 'constraint' => 1, 'null' => 0, 'default' => 'f'],
             'tournament_id'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
-            'user_by'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
+            'user_id'         => ['type' => 'int', 'constraint' => 11, 'null' => 0],
             'type'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => 0, 'default' => 1],
             'duration'         => ['type' => 'varchar', 'constraint' => 8, 'null' => 0, 'default' => 1],
             'start'         => ['type' => 'varchar', 'constraint' => 8, 'null' => 0, 'default' => 1],

@@ -12,7 +12,7 @@ class CreateNotificationsTable extends Migration
 
         $this->forge->addField([
             'id'            => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'user_by'       => ['type' => 'int', 'constraint' => 11],
+            'user_id'       => ['type' => 'int', 'constraint' => 11],
             'user_to'       => ['type' => 'int', 'constraint' => 11],
             'message'       => ['type' => 'varchar', 'constraint' => 128],
             'type'          => ['type' => 'varchar', 'constraint' => 3],

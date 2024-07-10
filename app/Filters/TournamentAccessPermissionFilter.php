@@ -44,7 +44,7 @@ class TournamentAccessPermissionFilter implements FilterInterface
         $tournament = $tournamentModel->find($shareSetting['tournament_id']);
         
         /** Check if the tournament was created by authorized user */
-        if (auth()->user() && $tournament && $tournament['user_by'] == auth()->user()->id) {
+        if (auth()->user() && $tournament && $tournament['user_id'] == auth()->user()->id) {
             $session->set(['share_permission' => $shareSetting['permission']]);
             return;
         }

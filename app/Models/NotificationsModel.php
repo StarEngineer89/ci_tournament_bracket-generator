@@ -12,7 +12,7 @@ class NotificationsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_by', 'user_to', 'message', 'type', 'mark_as_read', 'link'];
+    protected $allowedFields    = ['user_id', 'user_to', 'message', 'type', 'mark_as_read', 'link'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

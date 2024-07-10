@@ -117,9 +117,13 @@ function shuffleArray(array) {
 function renderParticipants(participantsArray) {
 
     let indexList = document.getElementById('indexList')
-    const indexFrom = indexList.children.length
 
-    if (!participantsArray.length) {
+    itemList.innerHTML = ''
+    indexList.innerHTML = ''
+
+    if (participantsArray.length) {
+        $('.empty-message-wrapper').addClass('d-none')
+    } else {
         $('.empty-message-wrapper').removeClass('d-none')
         return false
     }
@@ -139,7 +143,7 @@ function renderParticipants(participantsArray) {
 
         var indexItem = document.createElement('div');
         indexItem.setAttribute('class', "list-group-item border-0 text-end");
-        indexItem.innerHTML = `<span>${i + indexFrom + 1}</span>`;
+        indexItem.innerHTML = `<span>${i + 1}</span>`;
 
         if (indexList.length > 0)
             indexList.insertBefore(indexItem);
@@ -272,116 +276,122 @@ function generateBrackets(list) {
     });
 }
 
-function getSeconds(time) {
-    const timeArray = time.split(":");
+var addParticipants = (data) => {
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/participants/new',
+        data: {
+            'name': data,
+        },
+        success: function(result) {
+            result = JSON.parse(result);
 
-    return parseInt(timeArray[0] * 3600) + parseInt(timeArray[1] * 60) + parseInt(timeArray[2]);
+            if (result.count) {
+                renderParticipants(result.participants);
+
+                $('#participantNames').val(null);
+                $('input.csv-import').val(null)
+                $('#confirmSave').modal('hide');
+                $('#collapseAddParticipant').removeClass('show');
+
+                appendAlert('Records inserted successfully!', 'success');
+            }
+
+            $('#collapseAddParticipant').removeClass('show');
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
 }
 
-function musicSettingToggleChange(element) {
-    const settingPanel = $(element).parents('.music-setting').find('.setting');
-    if ($(element).prop("checked") == true) {
-        settingPanel.find('input[type="radio"], .preview input').attr('disabled', false);
-        const radioElement = $(element).parent().parent().find('input[type="radio"]:checked');
-        radioElement.parent().parent().children('.music-source').attr('disabled', false);
-        settingPanel.removeClass('visually-hidden');
-    } else {
-        settingPanel.find('input[type!="hidden"]').attr('disabled', true);
-        settingPanel.addClass('visually-hidden');
-    }
-
-    settingPanel.find('.duration[type="text"]').attr('disabled', true);
-};
-
-function musicSourceChange(element) {
-    $(element).parents('.setting').find('.music-source').attr('disabled', true);
-    const panel = $(element).parent().parent();
-
-    if ($(element).data('target') == 'file') {
-        panel.children('[data-source="file"]').attr('disabled', false);
-        $(element).parents('.setting').find('.fileupload-hint').removeClass('d-none');
-        $(element).parents('.setting').find('.urlupload-hint').addClass('d-none');
-    }
-
-    if ($(element).data('target') == 'url') {
-        panel.children('[data-source="url"]').attr('disabled', false);
-        $(element).parents('.setting').find('.fileupload-hint').addClass('d-none');
-        $(element).parents('.setting').find('.urlupload-hint').removeClass('d-none');
-    }
-
-};
-
-function musicFileUpload(element) {
-    let panel = $(element).parent();
-    let index = $('.music-source[data-source="file"]').index($(element));
-    $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
-
+var csvUpload = (element) => {
     var formData = new FormData();
-    formData.append('audio', $(element)[0].files[0]);
+    formData.append('file', $('.csv-import')[0].files[0]);
     $.ajax({
-        url: apiURL + '/tournaments/upload',
+        url: apiURL + '/participants/import',
         type: "POST",
         data: formData,
         contentType: false,
         cache: false,
         processData: false,
-        beforeSend: function () {
+        beforeSend: function() {
             $("#err").fadeOut();
         },
-        success: function (data) {
-            var data = JSON.parse(data);
-            if (data.error) {
-                // invalid file format.
-                $("#err").html("Invalid File !").fadeIn();
+        success: function (result) {
+            ptNames = result.names
+            let validatedParticipantNames = validateParticipantNames(ptNames)
+            let duplicatedNames = validatedParticipantNames.duplicates
+            filteredNames = validatedParticipantNames.validNames
+
+            if (duplicatedNames.length) {
+                $('#confirmSave .names').html(duplicatedNames.join(', '));
+                $('#confirmSave').modal('show');
+
+                return false;
             }
-            else {
-                panel.find('input[type="hidden"]').val(data.path);
 
-                let audioElement = panel.parents('.music-setting').find('.player');
-                panel.parents('.music-setting').find('.playerSource').attr('src', '/uploads/' + data.path);
-                applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
-                audioElement[0].load();
-
-                if (index == 0 && document.getElementById('myAudio')) {
-                    document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
-                    document.getElementById('myAudio').load();
-                }
-
-                panel.parents('.music-setting').find('.startAt[type="hidden"]').val(0);
-                panel.parents('.music-setting').find('.startAt[type="text"]').val("00:00:00");
+            if (result.names.length) {
+                addParticipants(ptNames);
             }
         },
-        error: function (e) {
+        error: function(e) {
             $("#err").html(e).fadeIn();
         }
     });
 }
 
-function musicDurationChange(element) {
-    const starttime = getSeconds($(element).parents('.preview').find('.startAt').val());
-    $(element).parents('.preview').find('.startAt[type="hidden"]').val(starttime);
-    const stoptime = getSeconds($(element).parents('.preview').find('.stopAt').val());
-    $(element).parents('.preview').find('.stopAt[type="hidden"]').val(stoptime);
+var validateParticipantNames = (names) => {
+    let exisingNames = []
+    itemList.querySelectorAll('#newList .p-name').forEach((item, i) => {
+        exisingNames.push(item.textContent.trim())
+    })
 
-    if (starttime >= 0 && stoptime >= 0) {
-        if ((stoptime - starttime) <= 0) {
-
+    let validNames = []
+    let duplicates = []
+    names.forEach(name => {
+        if (exisingNames.includes(name)) {
+            duplicates.push(name)
+        } else {
+            validNames.push(name)
         }
+    })
 
-        $(element).parents('.preview').find('.duration').val(stoptime - starttime);
-    }
+    return {'duplicates': duplicates, 'validNames': validNames}
 }
 
-function applyDuration(src, obj) {
-    var audio = new Audio();
-    $(audio).on("loadedmetadata", function () {
-        const date = new Date(null);
-        date.setSeconds(audio.duration);
-        obj.find('.stopAt[type="hidden"]').val(audio.duration);
-        obj.find('.stopAt[type="text"]').val(date.toISOString().slice(11, 19));
-        obj.find('.duration').val(audio.duration);
-    });
-    audio.src = src;
+var checkDuplicatedParticipants = () => {
+    var items = $('#newList span.p-name')
+    const names = _.map(items, (ele) => {
+        return {
+            'id': ele.parent.dataset.id,
+            'name': ele.textContent
+        }
+    })
+
+    if (!names.length) {
+        return false;
+    }
+
+    let duplications = _.chain(names).groupBy('name').filter(function(v) {
+        return v.length > 1
+    }).flatten().uniq().value()
+
+    if (duplications.length) {
+        duplications = _.map(_.uniq(duplications, function(item) {
+            return item.name;
+        }), function(item) {
+            return item.name
+        })
+
+        return duplications
+    } else {
+        return false
+    }
 }
 
 $(document).ready(function () {

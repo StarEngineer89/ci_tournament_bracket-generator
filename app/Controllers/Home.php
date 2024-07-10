@@ -18,7 +18,7 @@ class Home extends BaseController
     {
         $BracketModel = model('\App\Models\BracketModel');
 
-        $brackets = $BracketModel->where('user_by', auth()->user()->id)->findAll();
+        $brackets = $BracketModel->where('user_id', auth()->user()->id)->findAll();
 
         return view('brackets', ['brackets' => $brackets]);
     }

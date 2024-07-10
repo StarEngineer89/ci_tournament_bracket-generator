@@ -13,6 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js"></script>
 <script src="/js/functions.js"></script>
 <script src="/js/participants.js"></script>
+<script src="/js/tournament.js"></script>
 <!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
 let apiURL = "<?= base_url('api') ?>";
@@ -23,6 +24,8 @@ let audio = document.getElementById("myAudio");
 let videoStartTime = 0;
 let duplicates = [];
 let insert_count = 0;
+let ptNames
+let filteredNames
 
 const itemList = document.getElementById('newList');
 
@@ -30,7 +33,10 @@ $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
-    loadParticipants();
+    <?php if (isset($participants)): ?>
+    var participants = JSON.parse('<?= $participants ?>')
+    renderParticipants(participants)
+    <?php endif ?>
 
     $('#submit').on('click', function(event) {
         const form = document.getElementById('tournamentForm');
@@ -170,14 +176,11 @@ $(document).ready(function() {
             return false;
         }
 
-        names = opts.replaceAll(', ', ',').split(',');
+        ptNames = opts.replaceAll(', ', ',').split(',');
 
-        let duplicatedNames = []
-        itemList.querySelectorAll('#newList .p-name').forEach((item, i) => {
-            if (names.includes(item.textContent)) {
-                duplicatedNames.push(item.textContent)
-            }
-        })
+        let validatedParticipantNames = validateParticipantNames(ptNames)
+        let duplicatedNames = validatedParticipantNames.duplicates
+        filteredNames = validatedParticipantNames.validNames
 
         if (duplicatedNames.length) {
             $('#confirmSave .names').html(duplicatedNames.join(', '));
@@ -186,49 +189,27 @@ $(document).ready(function() {
             return false;
         }
 
-        if (names.length) {
-            saveParticipants(names);
+        if (ptNames.length) {
+            addParticipants(ptNames);
         }
     });
 
     $('#confirmSave .include').on('click', () => {
-        var opts = $('#participantNames').val();
-
-        if (opts == '') {
-            return false;
+        if (ptNames.length) {
+            addParticipants(ptNames);
+        } else {
+            $('#confirmSave').modal('hide')
         }
-
-        names = opts.replaceAll(', ', ',').split(',');
-        saveParticipants(names);
     })
 
     $('#confirmSave .remove').on('click', () => {
-        var opts = $('#participantNames').val();
-
-        if (opts == '') {
-            return false;
-        }
-
-        names = opts.replaceAll(', ', ',').split(',');
-
-        let validNames = []
-        let exisingNames = []
-        itemList.querySelectorAll('#newList .p-name').forEach((item, i) => {
-            exisingNames.push(item.textContent.trim())
-        })
-
-        names.forEach(name => {
-            if (!exisingNames.includes(name)) {
-                validNames.push(name)
-            }
-        })
-
-        if (validNames.length) {
-            saveParticipants(validNames);
-            appendAlert('Duplicate records discarded!', 'success');
+        if (filteredNames.length) {
+            addParticipants(filteredNames);
         } else {
-            appendAlert('There is not records to be saved', 'error');
+            $('#confirmSave').modal('hide')
         }
+
+        appendAlert('Duplicate records discarded!', 'success');
     })
 
     $('#clearParticipantsConfirmBtn').on('click', () => {
@@ -240,15 +221,21 @@ $(document).ready(function() {
             return false;
         }
 
+        let ajax_url = apiURL + '/participants/clear'
+        <?php if (isset($tournament)): ?>
+        ajax_url = apiURL + '/participants/clear?t_id=' + '<?= $tournament['id'] ?>'
+        <?php endif ?>
+
         $.ajax({
             type: "GET",
-            url: apiURL + '/participants/clear',
+            url: ajax_url,
             success: function(result) {
                 result = JSON.parse(result);
 
                 if (result.result == 'success') {
                     $('#newList').html('')
                     $('#indexList').html('')
+                    $('.empty-message-wrapper').removeClass('d-none')
                     $('#clearParticipantsConfirmModal').modal('hide')
                 }
             },
@@ -423,67 +410,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         $('#bgColorInput').val(pickr.getColor().toRGBA().toString())
     })
 });
-var saveParticipants = (data) => {
-    $.ajax({
-        type: "POST",
-        url: apiURL + '/participants/new',
-        data: {
-            'name': data,
-        },
-        success: function(result) {
-            result = JSON.parse(result);
-
-            if (result.count) {
-                renderParticipants(result.participants);
-
-                $('#participantNames').val(null);
-                $('input.csv-import').val(null)
-                $('#confirmSave').modal('hide');
-                $('#collapseAddParticipant').removeClass('show');
-
-                appendAlert('Records inserted successfully!', 'success');
-            }
-
-            $('#collapseAddParticipant').removeClass('show');
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function() {
-            $("#overlay").fadeOut(300);
-        }, 500);
-    });
-}
-
-var csvUpload = (element) => {
-    var formData = new FormData();
-    formData.append('file', $('.csv-import')[0].files[0]);
-    $.ajax({
-        url: apiURL + '/participants/import',
-        type: "POST",
-        data: formData,
-        contentType: false,
-        cache: false,
-        processData: false,
-        beforeSend: function() {
-            $("#err").fadeOut();
-        },
-        success: function(result) {
-            result = JSON.parse(result);
-            insert_count = result.count;
-
-            if (insert_count) {
-                appendAlert('Records inserted successfully!', 'success');
-            }
-
-            renderParticipants(result.participants);
-        },
-        error: function(e) {
-            $("#err").html(e).fadeIn();
-        }
-    });
-}
 
 var changeEliminationType = (element) => {
     let parent = $(element).parent();
@@ -513,7 +439,7 @@ var drawTournamentsTable = () => {
             "type": "POST",
             "dataSrc": "",
             "data": function(d) {
-                // d.user_by = <?= auth()->user()->id ?>; // Include the user_by parameter
+                // d.user_id = <?= auth()->user()->id ?>; // Include the user_id parameter
                 d.search_tournament = $('#searchTournament').val();
             }
         },
@@ -647,7 +573,7 @@ var drawTournamentsTable = () => {
             </div>
 
             <div class="participant-list d-flex flex-wrap" <?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? 'style="background-color: ' . $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] . '"' : '' ?>>
-                <div class="empty-message-wrapper col-12 p-2 text-bg-info rounded d-none">
+                <div class="empty-message-wrapper col-12 p-2 text-bg-info rounded">
                     <p class="text-center">Wow, such empty!</p>
                     <p> To get started, "Add Participants" or from Additional Options, "Reuse Participants" from a previous tournament.</p>
                     <p> Once you've populated the participants list, proceed with the "Generate Brackets" option to generate the tournament!</p>
@@ -661,211 +587,212 @@ var drawTournamentsTable = () => {
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="confirmSave" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="deleteModalLabel">Duplicate record(s) detected!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h5>The following name(s) already exists.</h1>
-                        <h6 class="text-danger"><span class="names"></span></h6>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary include">Include duplicate record(s)</button>
-                    <button type="button" class="btn btn-danger remove">Discard duplicate record(s)</button>
-                </div>
+<!-- Modal -->
+<div class="modal fade" id="confirmSave" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Duplicate record(s) detected!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>The following name(s) already exists.</h1>
+                    <h6 class="text-danger"><span class="names"></span></h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary include">Include duplicate record(s)</button>
+                <button type="button" class="btn btn-danger remove">Discard duplicate record(s)</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Tournament Properties</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <form id="tournamentForm" class="needs-validation" method="POST" endtype="multipart/form-data">
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="title">Title</span>
-                            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title" name="title" required>
-                            <div class="invalid-feedback">This field is required.</div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="type">Elimination Type</span>
-                            <select class="form-select" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
-                                <option value="1" selected>Single</option>
-                                <option value="2">Double</option>
-                            </select>
-                            <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
-                            <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <div class="ps-2">
-                                <input type="checkbox" class="form-check-input enable-shuffling" name="enable-shuffle" id="enableShuffle" onChange="toggleShuffleParticipants(this)" checked>
-                                <label class="form-check-label" for="enableShuffle">
-                                    <h6>Shuffle Participants</h6>
-                                </label>
-                                <div class="enable-shuffling-hint form-text">If enabled, the contestant brackets will be generated with the participants shuffled.</div>
-                                <div class="disable-shuffling-hint form-text d-none">If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.</div>
-                            </div>
-                        </div>
-
-                        <div id="music-settings-panel">
-                            <?= $musicSettingsBlock ?>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="submit">Save</button>
-                </div>
+<!-- Modal -->
+<div class="modal fade" id="tournamentSettings" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Tournament Properties</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
+            <div class="modal-body">
 
-    <!-- Modal -->
-    <div class="modal fade" id="clearParticipantsConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="clearParticipantsConfirmModal" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h4>Are you sure you want to clear the participants list?</h4>
-                    <h5 class="text-danger">This action cannot be undone!</h5>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger" id="clearParticipantsConfirmBtn">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="selectBackgroundColorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectBackgroundColorModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="selectBackgroundColorModalLabel">Choose the background color in participants list</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex justify-content-center align-items-center">
-                        <label for="bgColorInput" class="form-label me-2">Choose a Background Color:</label>
-                        <input type="hidden" class="form-control form-control-color" id="bgColorInput" value="<?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] : '' ?>" title="Choose your color">
-                        <button id="color-picker-button"></button>
+                <form id="tournamentForm" class="needs-validation" method="POST" endtype="multipart/form-data">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="title">Title</span>
+                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title" name="title" required>
+                        <div class="invalid-feedback">This field is required.</div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger" id="selectBackgroundColorConfirmBtn">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="type">Elimination Type</span>
+                        <select class="form-select" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
+                            <option value="1" selected>Single</option>
+                            <option value="2">Double</option>
+                        </select>
+                        <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
+                        <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
+                    </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="selectTournamentModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectTournamentModal" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="selectTournamentModalLabel">Select the tournament to reuse.</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="searchTournament">
-                            <button id="searchTournamentBtn" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+                    <div class="form-check mb-3">
+                        <div class="ps-2">
+                            <input type="checkbox" class="form-check-input enable-shuffling" name="enable-shuffle" id="enableShuffle" onChange="toggleShuffleParticipants(this)" checked>
+                            <label class="form-check-label" for="enableShuffle">
+                                <h6>Shuffle Participants</h6>
+                            </label>
+                            <div class="enable-shuffling-hint form-text">If enabled, the contestant brackets will be generated with the participants shuffled.</div>
+                            <div class="disable-shuffling-hint form-text d-none">If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.</div>
                         </div>
                     </div>
-                    <div class="tournaments-table">
-                        <table id="tournamentsTable" class="display col-12" style="width: 100%">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                        </table>
+
+                    <div id="music-settings-panel">
+                        <?= $musicSettingsBlock ?>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submit">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="clearParticipantsConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="clearParticipantsConfirmModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4>Are you sure you want to clear the participants list?</h4>
+                <h5 class="text-danger">This action cannot be undone!</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="clearParticipantsConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="selectBackgroundColorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectBackgroundColorModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="selectBackgroundColorModalLabel">Choose the background color in participants list</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center align-items-center">
+                    <label for="bgColorInput" class="form-label me-2">Choose a Background Color:</label>
+                    <input type="hidden" class="form-control form-control-color" id="bgColorInput" value="<?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] : '' ?>" title="Choose your color">
+                    <button id="color-picker-button"></button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="selectBackgroundColorConfirmBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="selectTournamentModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectTournamentModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="selectTournamentModalLabel">Select the tournament to reuse.</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="searchTournament">
+                        <button id="searchTournamentBtn" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="tournaments-table">
+                    <table id="tournamentsTable" class="display col-12" style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="selectTournamentConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectTournamentConfirmModal" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Confirmation Message</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                    <h6>Upon confirmation, the participants list will be overwritten with tournament "<span class="tournament-name"></span>"'s participants list.</h6>
-                    </p>
-                    <p class="mt-3">Are you sure you want to proceed?
-                    <h6 class="text-danger">This action cannot be undone!</h6>
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard</button>
-                    <button type="button" class="btn btn-danger" id="selectTournamentConfirmBtn">Confirm</button>
-                </div>
+<!-- Modal -->
+<div class="modal fade" id="selectTournamentConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectTournamentConfirmModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Confirmation Message</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                <h6>Upon confirmation, the participants list will be overwritten with tournament "<span class="tournament-name"></span>"'s participants list.</h6>
+                </p>
+                <p class="mt-3">Are you sure you want to proceed?
+                <h6 class="text-danger">This action cannot be undone!</h6>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard</button>
+                <button type="button" class="btn btn-danger" id="selectTournamentConfirmBtn">Confirm</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="generateErrorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="generateErrorModal" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Alert</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h6>Please populate the participant list first before generating the brackets</h6>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Confirm</button>
-                </div>
+<!-- Modal -->
+<div class="modal fade" id="generateErrorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="generateErrorModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="selectTournamentConfirmModalLabel">Alert</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Please populate the participant list first before generating the brackets</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Confirm</button>
             </div>
         </div>
     </div>
+</div>
 
-    <?php if (isset($settings) && $settings) : ?>
-    <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
-        <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
-    </audio>
-    <?php else : ?>
-    <audio id="myAudio" preload="auto">
-        <source src="" type="audio/mpeg" id="audioSrc">
-    </audio>
-    <?php endif; ?>
+<?php if (isset($settings) && $settings) : ?>
+<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
+    <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+</audio>
+<?php else : ?>
+<audio id="myAudio" preload="auto">
+    <source src="" type="audio/mpeg" id="audioSrc">
+</audio>
+<?php endif; ?>
 
-    <div class="buttons skipButtons">
-        <button id="skipShuffleButton" class="d-none">Skip</button>
-        <button id="stopMusicButton" class="d-none">Stop Music</button>
-    </div>
+<div class="buttons skipButtons">
+    <button id="skipShuffleButton" class="d-none">Skip</button>
+    <button id="stopMusicButton" class="d-none">Stop Music</button>
+</div>
 
-    <?= $this->endSection() ?>
+<?= $this->endSection() ?>
