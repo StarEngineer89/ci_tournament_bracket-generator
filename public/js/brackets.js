@@ -84,12 +84,14 @@ $(document).on('ready', function () {
 
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="r' + g + '"></div>');
-            var roundNameBox = $('<div class="r' + g + ' text-center p-2 me-1 border"></div>');
+            var roundNameBox = $('<div class="r' + g + '"></div>');
+            var roundName = $('<div class="text-center p-2 m-1 border" style="height: auto"></div>')
             if (grouped[g][0].final_match) {
-                roundNameBox.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
+                roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
             } else {
-                roundNameBox.html("Round " + grouped[g][0].roundNo) 
+                roundName.html("Round " + grouped[g][0].roundNo) 
             }
+            roundNameBox.append(roundName)
             
             groupNames.append(roundNameBox)
 
@@ -493,7 +495,7 @@ function markWinner(key, opt, e) {
             next_bracketObj.dataset.id = ele.data('id');
             next_bracketObj.innerHTML = ele.text();
 
-            if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
+            if (next_bracketObj.parentElement.classList.contains('final')) {
                 next_bracketObj.classList.add('winner');
 
                 var player = document.getElementById('myAudio');

@@ -120,10 +120,12 @@ $(document).ready(function() {
                         }
                     }
 
-                    document.getElementById('skipShuffleButton').classList.remove('d-none');
-                    document.getElementById('skipShuffleButton').addEventListener('click', function() {
-                        skipShuffling()
-                    });
+                    if ($('#enableShuffle').prop('checked') || (result.data.music !== undefined && result.data.music[0] !== undefined)) {
+                        document.getElementById('skipShuffleButton').classList.remove('d-none');
+                        document.getElementById('skipShuffleButton').addEventListener('click', function() {
+                            skipShuffling()
+                        });
+                    }
 
                     let enableShuffling = true
                     if ($('#enableShuffle')) {
