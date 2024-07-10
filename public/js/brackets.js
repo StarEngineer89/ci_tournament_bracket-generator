@@ -84,7 +84,7 @@ $(document).on('ready', function () {
 
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="r' + g + '"></div>');
-            var roundNameBox = $('<div class="r' + g + ' text-center p-2 m-1 border"></div>');
+            var roundNameBox = $('<div class="r' + g + ' text-center p-2 me-1 border"></div>');
             if (grouped[g][0].final_match) {
                 roundNameBox.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
             } else {

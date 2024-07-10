@@ -117,13 +117,13 @@ $(document).ready(function() {
                             document.getElementById('stopMusicButton').addEventListener('click', function() {
                                 stopMusicPlaying()
                             });
-
-                            document.getElementById('skipShuffleButton').classList.remove('d-none');
-                            document.getElementById('skipShuffleButton').addEventListener('click', function() {
-                                skipShuffling()
-                            });
                         }
                     }
+
+                    document.getElementById('skipShuffleButton').classList.remove('d-none');
+                    document.getElementById('skipShuffleButton').addEventListener('click', function() {
+                        skipShuffling()
+                    });
 
                     let enableShuffling = true
                     if ($('#enableShuffle')) {
