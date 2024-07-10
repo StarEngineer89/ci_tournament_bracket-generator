@@ -399,6 +399,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 clear: true,
                 save: true
             }
+        },
+        i18n: {
+            'btn:save': 'Apply',
         }
     });
 
