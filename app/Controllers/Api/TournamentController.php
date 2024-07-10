@@ -319,7 +319,7 @@ class TournamentController extends BaseController
         $shareSettingsModel->save($data);
 
         $share = $shareSettingsModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
-        
+
         $share['private_users'] = null;
         if ($share['target'] == SHARE_TO_USERS) {
             $userModel = model('CodeIgniter\Shield\Models\UserModel');
@@ -330,8 +330,13 @@ class TournamentController extends BaseController
 
         /** Notifiy to the users */
         if (isset($users) && count($users)) {
+            
+            $tournamentModel = model('\App\Models\TournamentModel');
+            $tournament = $tournamentModel->find($data['tournament_id']);
+            $tournamentName = $tournament['name'];
+        
             foreach ($users as $user) {
-                $msg = 'Tournament was shared to you.';
+                $msg = "Tournament \"$tournamentName\" was privately shared with you.";
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;
 
                 $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
