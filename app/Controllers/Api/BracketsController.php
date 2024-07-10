@@ -145,6 +145,7 @@ class BracketsController extends BaseController
     public function deleteBracket($id)
     {
         $bracket = $this->bracketsModel->find($id);
+        $teamnames = $bracket['teamnames'];
 
         /** Delete a bracket - Delete the participants in a bracket */
         $bracket['teamnames'] = json_encode([null, null]);
@@ -187,7 +188,7 @@ class BracketsController extends BaseController
         $data['bracket_no'] = $bracket['bracketNo'];
         $data['round_no'] = $bracket['roundNo'];
 
-        $original = json_decode($bracket['teamnames']);
+        $original = json_decode($teamnames);
 
         $participants_in_bracket = [];
         if ($original[0]) {
