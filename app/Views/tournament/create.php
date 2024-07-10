@@ -581,7 +581,7 @@ var drawTournamentsTable = () => {
 
                     <form class="row row-cols-lg-auto g-3 align-items-center mt-1" enctype="multipart/form-data" method="post">
                         <div class="input-group mb-3">
-                            <input type="file" class="form-control csv-import" data-source="file" onChange="csvUpload(this)" name="file" accept=".csv" required>
+                            <input type="file" class="form-control csv-import" data-source="file" name="file" accept=".csv" required>
                             <button type="button" class="input-group-text btn btn-primary" for="file-input" onClick="csvUpload(this)">Upload</button>
                         </div>
                     </form>
