@@ -441,7 +441,7 @@ var drawTournamentsTable = () => {
             "type": "POST",
             "dataSrc": "",
             "data": function(d) {
-                // d.user_id = <?= auth()->user()->id ?>; // Include the user_id parameter
+                d.user_id = <?= auth()->user()->id ?>; // Include the user_id parameter
                 d.search_tournament = $('#searchTournament').val();
             }
         },
