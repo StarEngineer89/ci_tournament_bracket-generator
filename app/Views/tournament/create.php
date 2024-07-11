@@ -433,6 +433,48 @@ document.addEventListener('DOMContentLoaded', (event) => {
     })
 });
 
+var csvUpload = (element) => {
+    var formData = new FormData();
+    formData.append('file', $('.csv-import')[0].files[0]);
+    $.ajax({
+        url: apiURL + '/participants/import',
+        type: "POST",
+        data: formData,
+        contentType: false,
+        cache: false,
+        processData: false,
+        beforeSend: function() {
+            $("#err").fadeOut();
+        },
+        success: function(result) {
+            ptNames = result.names
+            let validatedParticipantNames = validateParticipantNames(ptNames)
+            let duplicatedNames = validatedParticipantNames.duplicates
+            filteredNames = validatedParticipantNames.validNames
+
+            if (duplicatedNames.length) {
+                $('#confirmSave .names').html(duplicatedNames.join(', '));
+                $('#confirmSave').modal('show');
+
+                return false;
+            }
+
+            if (result.names.length) {
+                <?php if (isset($tournament)): ?>
+                const tournament_id = <?= $tournament['id'] ?>;
+                <?php endif ?>
+                addParticipants({
+                    names: ptNames,
+                    tournament_id: tournament_id
+                });
+            }
+        },
+        error: function(e) {
+            $("#err").html(e).fadeIn();
+        }
+    });
+}
+
 var changeEliminationType = (element) => {
     let parent = $(element).parent();
     parent.find('.form-text').addClass('d-none');
