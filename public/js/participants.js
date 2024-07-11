@@ -281,10 +281,11 @@ var addParticipants = (data) => {
         type: "POST",
         url: apiURL + '/participants/new',
         data: {
-            'name': data,
+            'name': data.names,
+            'tournament_id': data.tournament_id
         },
+        dataType: "JSON",
         success: function(result) {
-            result = JSON.parse(result);
 
             if (result.count) {
                 renderParticipants(result.participants);
@@ -354,7 +355,7 @@ var validateParticipantNames = (names) => {
     let validNames = []
     let duplicates = []
     names.forEach(name => {
-        if (exisingNames.includes(name)) {
+        if (exisingNames.includes(name) || validNames.includes(name)) {
             duplicates.push(name)
         } else {
             validNames.push(name)

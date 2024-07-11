@@ -301,9 +301,12 @@ class BracketsController extends BaseController
 
         $this->_base = count($participants);
 
-        $closest = current(array_filter($knownBrackets, function ($e) {
-            return $e >= $this->_base;
-        }));
+        // $closest = current(array_filter($knownBrackets, function ($e) {
+        //     return $e >= $this->_base;
+        // }));
+
+        $closest = pow(2, ceil(log($this->_base, 2)));
+        
         $byes = $closest - $this->_base;
 
         if ($byes > 0)    $this->_base = $closest;

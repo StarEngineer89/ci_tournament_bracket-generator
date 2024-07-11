@@ -192,22 +192,40 @@ $(document).ready(function() {
             return false;
         }
 
+        <?php if (isset($tournament)): ?>
+        const tournament_id = <?= $tournament['id'] ?>;
+        <?php endif ?>
         if (ptNames.length) {
-            addParticipants(ptNames);
+            addParticipants({
+                names: ptNames,
+                tournament_id: tournament_id
+            });
         }
     });
 
     $('#confirmSave .include').on('click', () => {
+        <?php if (isset($tournament)): ?>
+        const tournament_id = <?= $tournament['id'] ?>;
+        <?php endif ?>
         if (ptNames.length) {
-            addParticipants(ptNames);
+            addParticipants({
+                names: ptNames,
+                tournament_id: tournament_id
+            });
         } else {
             $('#confirmSave').modal('hide')
         }
     })
 
     $('#confirmSave .remove').on('click', () => {
+        <?php if (isset($tournament)): ?>
+        const tournament_id = <?= $tournament['id'] ?>;
+        <?php endif ?>
         if (filteredNames.length) {
-            addParticipants(filteredNames);
+            addParticipants({
+                names: filteredNames,
+                tournament_id: tournament_id
+            });
         } else {
             $('#confirmSave').modal('hide')
         }

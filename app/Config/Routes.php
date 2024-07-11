@@ -82,6 +82,7 @@ $routes->group('api/shared', static function ($routes) {
         $routes->get('(:num)/brackets', 'Api\BracketsController::getBrackets/$1');
         $routes->post('(:num)/update', 'Api\TournamentController::update/$1');
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
+        $routes->get('(:num)/get-participants', 'Api\TournamentController::getParticipants/$1');
     });
 
     $routes->group('brackets', static function ($routes) {
@@ -91,7 +92,6 @@ $routes->group('api/shared', static function ($routes) {
     });
     
     $routes->group('participants', static function ($routes) {
-        $routes->get('/', 'Api\ParticipantsController::getParticipants');
         $routes->post('new', 'Api\ParticipantsController::addParticipant');
         $routes->post('update/(:num)', 'Api\ParticipantsController::updateParticipant/$1');
     });
