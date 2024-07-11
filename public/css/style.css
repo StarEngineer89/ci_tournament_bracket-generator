@@ -85,7 +85,7 @@
 }
 
 .brackets>div>div>div {
-  margin: 50px 0;
+  margin: 40px 0;
 }
 
 .brackets div.bracketbox {
@@ -159,57 +159,8 @@
   height: 320px;
 }
 
-.brackets>.groups>div, .brackets .group-names > div {
+.brackets>.groups>div {
   width: 180px;
-}
-
-.brackets>div>.r1>div {
-  height: 60px;
-}
-
-.brackets>div>.r2>div {
-  margin: 80px 0 110px 0;
-  height: 110px;
-}
-
-.brackets>div>.r3>div {
-  margin: 135px 0 220px 0;
-  height: 220px;
-}
-
-.brackets>div>.r4>div {
-  margin: 250px 0 440px;
-  height: 445px;
-}
-
-.brackets>div>.r5>div {
-  margin: 465px 0 880px;
-  height: 880px;
-}
-
-.brackets>div>.r6>div {
-  margin: 900px 0 1750px;
-  height: 1750px;
-}
-
-.brackets>div>.r7>div {
-  margin: 1750px 0 3500px;
-  height: 3500px;
-}
-
-.brackets>div>.r8>div {
-  margin: 3500px 0 7000px;
-  height: 7000px;
-}
-
-.brackets>div>.r9>div {
-  margin: 7000px 0 14000px;
-  height: 14000px;
-}
-
-.brackets>div>.r10>div {
-  margin: 14000px 0 28000px;
-  height: 28000px;
 }
 
 .brackets>div div.final {

@@ -43,6 +43,8 @@ function callShuffle(enableShuffling = true) {
 }
 
 function skipShuffling() {
+    audio.pause();
+    document.getElementById('stopMusicButton').textContent = "Resume Music"
     shuffle_duration = 0;
 }
 

@@ -17,7 +17,7 @@ let stopMusicPlaying = () => {
 
     if (audio.paused) {
         audio.play();
-        document.getElementById('stopMusicButton').textContent = "Stop Music"
+        document.getElementById('stopMusicButton').textContent = "Pause Music"
     } else {
         audio.pause();
         document.getElementById('stopMusicButton').textContent = "Resume Music"

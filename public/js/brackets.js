@@ -75,8 +75,6 @@ $(document).on('ready', function () {
     function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
-        var groupNames = $('<div class="group-names" style="min-width:' + 160 * (groupCount + 1) + "px" + '"></div>')
-
         var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 160 * (groupCount + 1) + "px" + '"></div>'),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
 
@@ -84,16 +82,16 @@ $(document).on('ready', function () {
 
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="r' + g + '"></div>');
-            var roundNameBox = $('<div class="r' + g + '"></div>');
+            
             var roundName = $('<div class="text-center p-2 m-1 border" style="height: auto"></div>')
             if (grouped[g][0].final_match) {
                 roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
             } else {
                 roundName.html("Round " + grouped[g][0].roundNo) 
             }
-            roundNameBox.append(roundName)
-            
-            groupNames.append(roundNameBox)
+            round.append(roundName)
+
+            var bracketBoxList = $('<div class="bracketbox-list"></div>')
 
             _.each(grouped[g], function (gg) {
 
@@ -147,10 +145,12 @@ $(document).on('ready', function () {
                 if (!gg.final_match || gg.final_match === undefined)
                     bracket.append(teamb);
 
-                round.append(bracket);
+                bracketBoxList.append(bracket);
                 // }
 
             });
+
+            round.append(bracketBoxList)
 
             group.append(round);
         }
@@ -279,13 +279,16 @@ $(document).on('ready', function () {
         }
         // group.append('<div class="r'+(groupCount+1)+'"><div class="final"><div class="bracketbox"><span class="bracket-team teamc">&nbsp;</span></div></div></div>');
 
-        $('#brackets').append(groupNames)
         $('#brackets').append(group);
+
+        adjustBracketsStyles()
 
         bracketCount++;
         $('html,body').animate({
             scrollTop: $("#b" + (bracketCount - 1)).offset().top
         });
+
+        
     }
 
     function saveBrackets(brackets) {
@@ -512,7 +515,7 @@ function markWinner(key, opt, e) {
                 player.play();
 
                 document.getElementById('stopMusicButton').classList.remove('d-none');
-                document.getElementById('stopMusicButton').textContent = "Stop Music"
+                document.getElementById('stopMusicButton').textContent = "Pause Music"
             }
         },
         error: function (error) {
@@ -542,7 +545,7 @@ function unmarkWinner(key, opt, e) {
             next_bracketObj.classList.remove('winner');
 
             document.getElementById('stopMusicButton').classList.add('d-none');
-            document.getElementById('stopMusicButton').textContent = "Stop Music"
+            document.getElementById('stopMusicButton').textContent = "Pause Music"
         },
         error: function (error) {
             console.log(error);
@@ -572,4 +575,32 @@ function unmarkWinner(key, opt, e) {
             $("#overlay").fadeOut(300);
         }, 500);
     });
+}
+
+function adjustBracketsStyles() {
+  const rows = document.querySelectorAll(".brackets div.groups div.bracketbox-list");
+  const baseHeight = 30;
+  const baseMargin = 40;
+  
+  rows.forEach((row, index) => {
+    const multiplier = Math.pow(2, index + 1);
+    const height = baseHeight * multiplier;
+    const margin = baseHeight * Math.pow(2, index) + baseMargin / 2;
+      
+    row.querySelectorAll('.bracketbox').forEach((bracket, index) => {
+        
+        if (bracket.classList.contains('final')) {
+            bracket.style.height = `0`;
+            bracket.style.margin = `${margin}px 0 0`;    
+        } else {
+            bracket.style.height = `${height}px`;
+            if (row.querySelectorAll('.bracketbox').length > index + 1) {
+                bracket.style.margin = `${margin}px 0 ${height}px`;
+            } else {
+                bracket.style.margin = `${margin}px 0`;
+            }
+            
+        }
+    })
+  });
 }
