@@ -146,7 +146,8 @@ $(document).ready(function() {
             $('#generateErrorModal').modal('show')
             return false;
         }
-
+        audio.load();
+        audio.play()
         <?php if (isset($tournament) && count($tournament)) : ?>
         tournament_id = "<?= $tournament['id'] ?>";
         eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
@@ -165,7 +166,11 @@ $(document).ready(function() {
             skipShuffling()
         });
 
-        callShuffle();
+        let shuffle_enable = 0
+        <?php if ($tournament['shuffle_enable']): ?>
+        shuffle_enable = 1
+        <?php endif ?>
+        callShuffle(shuffle_enable);
 
         <?php else : ?>
         $('#tournamentSettings').modal('show');
@@ -885,7 +890,7 @@ var drawTournamentsTable = () => {
 
 <div class="buttons skipButtons">
     <button id="skipShuffleButton" class="d-none">Skip</button>
-    <button id="stopMusicButton" class="d-none">Stop Music</button>
+    <button id="stopMusicButton" class="d-none">Pause Music</button>
 </div>
 
 <?= $this->endSection() ?>

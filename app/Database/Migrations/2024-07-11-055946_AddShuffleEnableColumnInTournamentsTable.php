@@ -4,12 +4,12 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddArchivedColumnToTournamentsTable extends Migration
+class AddShuffleEnableColumnInTournamentsTable extends Migration
 {
     public function up()
     {
         $this->forge->addColumn('tournaments', [
-            'archive' => [
+            'shuffle_enable' => [
                 'type' => 'tinyint',
                 'null' => true, 
                 'default' => 0
@@ -19,6 +19,6 @@ class AddArchivedColumnToTournamentsTable extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('tournaments', 'archive');
+        $this->forge->dropColumn('tournaments', 'shuffle_enable');
     }
 }

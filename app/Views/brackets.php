@@ -118,7 +118,7 @@ $(document).ready(function() {
 </audio>
 
 <div class="buttons skipButtons">
-    <button id="stopMusicButton" class="d-none">Stop Music</button>
+    <button id="stopMusicButton" class="d-none">Pause Music</button>
 </div>
 <?php endif; ?>
 

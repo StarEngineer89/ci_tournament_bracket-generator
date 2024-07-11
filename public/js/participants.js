@@ -4,47 +4,42 @@ function callShuffle(enableShuffling = true) {
     const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
 
     exampleTeams = [];
-    if (enableShuffling) {
-        // Use a promise to coordinate the shuffling and displaying of the message
-        shufflingPromise = new Promise(resolve => {
-            const startTime = new Date();
+    
+    // Use a promise to coordinate the shuffling and displaying of the message
+    shufflingPromise = new Promise(resolve => {
+        const startTime = new Date();
 
-            function runFlipFuncSequentially(currentTime) {
-                if ((currentTime - startTime) < shuffle_duration * 1000) {
+        function runFlipFuncSequentially(currentTime) {
+            if ((currentTime - startTime) < shuffle_duration * 1000) {
+                if (enableShuffling) {
                     setTimeout(function () {
                         shuffleList(() => {
                             runFlipFuncSequentially(new Date());
                         });
                     }, delayBetweenRuns);
                 } else {
-                    // Resolve the promise when all shuffling iterations are complete
-                    resolve();
+                    setTimeout(function () {
+                        runFlipFuncSequentially(new Date());
+                    }, delayBetweenRuns)
                 }
+            } else {
+                // Resolve the promise when all shuffling iterations are complete
+                resolve();
             }
+        }
 
-            runFlipFuncSequentially(new Date());
-        });
+        runFlipFuncSequentially(new Date());
+    });
 
-        shufflingPromise.then(() => {
-            Array.from(itemList.children).forEach((item, i) => {
-                exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'order': i });
-            });
-
-            generateBrackets(exampleTeams);
-        },
-            function (error) { myDisplayer(error); }
-        );
-    } else {
-        let children = Array.from(itemList.children);
-        // Shuffle elements
-        // children = shuffleArray(Array.from(itemList.children));
-
-        Array.from(children).forEach((item, i) => {
+    shufflingPromise.then(() => {
+        Array.from(itemList.children).forEach((item, i) => {
             exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'order': i });
         });
-        generateBrackets(exampleTeams)
-    }
-    
+
+        generateBrackets(exampleTeams);
+    },
+        function (error) { myDisplayer(error); }
+    );
 }
 
 function skipShuffling() {
