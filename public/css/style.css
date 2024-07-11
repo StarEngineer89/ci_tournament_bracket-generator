@@ -160,7 +160,7 @@
 }
 
 .brackets>.groups>div {
-  width: 180px;
+  width: 190px;
 }
 
 .brackets>div div.final {
@@ -351,4 +351,8 @@
 
 .pcr-app .pcr-interaction .pcr-result {
   min-width: 10em;
+}
+
+#selectTournamentModal .tournaments-table {
+  overflow: scroll;
 }

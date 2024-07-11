@@ -801,7 +801,7 @@ var drawTournamentsTable = () => {
                     </div>
                 </div>
                 <div class="tournaments-table">
-                    <table id="tournamentTable" class="display col-12" style="width: 100%">
+                    <table id="tournamentTable" class="table-responsive display col-12" style="width: 100%">
                         <thead>
                             <tr>
                                 <th>#</th>

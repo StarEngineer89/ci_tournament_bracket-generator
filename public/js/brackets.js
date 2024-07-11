@@ -75,7 +75,7 @@ $(document).on('ready', function () {
     function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
-        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 160 * (groupCount + 1) + "px" + '"></div>'),
+        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 190 * groupCount + "px" + '"></div>'),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
 
         // document.getElementById('brackets').style.width = 170 * (groupCount + 1) + 'px';
