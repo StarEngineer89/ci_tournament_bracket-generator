@@ -3,6 +3,7 @@
 <?= $this->section('title') ?>Tournament Brackets<?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
+<script src="/js/functions.js"></script>
 <script src="/js/brackets.js"></script>
 <script type="text/javascript">
 <?php if (url_is('/tournaments/shared/*')) : ?>
@@ -116,8 +117,9 @@ $(document).ready(function() {
     <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 
-<button id="stopMusicButton" class="d-none">Stop Music</button>
-
+<div class="buttons skipButtons">
+    <button id="stopMusicButton" class="d-none">Stop Music</button>
+</div>
 <?php endif; ?>
 
 <?= $this->endSection() ?>

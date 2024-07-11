@@ -194,6 +194,22 @@
 
 .brackets>div>.r7>div {
   margin: 1750px 0 3500px;
+  height: 3500px;
+}
+
+.brackets>div>.r8>div {
+  margin: 3500px 0 7000px;
+  height: 7000px;
+}
+
+.brackets>div>.r9>div {
+  margin: 7000px 0 14000px;
+  height: 14000px;
+}
+
+.brackets>div>.r10>div {
+  margin: 14000px 0 28000px;
+  height: 28000px;
 }
 
 .brackets>div div.final {
