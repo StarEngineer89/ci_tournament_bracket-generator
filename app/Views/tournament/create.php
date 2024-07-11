@@ -123,6 +123,7 @@ $(document).ready(function() {
                     if ($('#enableShuffle').prop('checked') || (result.data.music !== undefined && result.data.music[0] !== undefined)) {
                         document.getElementById('skipShuffleButton').classList.remove('d-none');
                         document.getElementById('skipShuffleButton').addEventListener('click', function() {
+                            stopMusicPlaying()
                             skipShuffling()
                         });
                     }
@@ -163,6 +164,7 @@ $(document).ready(function() {
 
         document.getElementById('skipShuffleButton').classList.remove('d-none');
         document.getElementById('skipShuffleButton').addEventListener('click', function() {
+            stopMusicPlaying()
             skipShuffling()
         });
 
