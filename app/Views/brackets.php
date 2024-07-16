@@ -3,13 +3,12 @@
 <?= $this->section('title') ?>Tournament Brackets<?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
-<script src="/js/functions.js"></script>
 <script src="/js/brackets.js"></script>
 <script type="text/javascript">
 <?php if (url_is('/tournaments/shared/*')) : ?>
-const apiURL = "<?= base_url('api/shared') ?>";
+apiURL = "<?= base_url('api/shared') ?>";
 <?php else : ?>
-const apiURL = "<?= base_url('api') ?>";
+apiURL = "<?= base_url('api') ?>";
 <?php endif; ?>
 const tournament_id = <?= $tournament['id'] ?>;
 const markWinnerActionCode = '<?= BRACKET_ACTIONCODE_MARK_WINNER ?>';

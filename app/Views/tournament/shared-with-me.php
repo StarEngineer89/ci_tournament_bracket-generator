@@ -76,7 +76,7 @@ Note that actions are logged for tracking purposes.' : 'You can view the tournam
 
             </td>
             <td>
-                <?= $tournament['access_time'] ?>
+                <?= convert_to_user_timezone($tournament['access_time'], user_timezone(auth()->user()->id)) ?>
             </td>
         </tr>
         <?php endif ?>

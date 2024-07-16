@@ -289,11 +289,9 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="/js/tournament.js"></script>
 <script src="/js/participants.js"></script>
+
 <script type="text/javascript">
-let apiURL = "<?= base_url('api') ?>";
-
 var users_json = '<?= json_encode($users) ?>';
-
 var table = null;
 var datatableRows;
 

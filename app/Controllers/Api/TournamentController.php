@@ -295,6 +295,9 @@ class TournamentController extends BaseController
                     $setting['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
                 }
 
+                $setting['created_at'] = convert_to_user_timezone($setting['created_at'], user_timezone(auth()->user()->id));
+                $setting['updated_at'] = convert_to_user_timezone($setting['updated_at'], user_timezone(auth()->user()->id));
+
                 $settings_with_users[] = $setting;
             }
         }
@@ -407,7 +410,7 @@ class TournamentController extends BaseController
                 $data[] = [
                     'name' => $row['username'],
                     'action' => $action,
-                    'time' => $row['updated_at']
+                    'time' => convert_to_user_timezone($row['updated_at'], user_timezone(auth()->user()->id))
                 ];
             }
         }

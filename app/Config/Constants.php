@@ -122,3 +122,4 @@ define('MUSIC_TYPE_FINAL_WINNER', 1);
 define('NOTIFICATION_TYPE_FOR_SHARE', 'SHR');
 
 define('USERSETTING_PARTICIPANTSLIST_BG_COLOR', 'participants_bg_color');
+define('USERSETTING_TIMEZONE', 'timezone');

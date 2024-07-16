@@ -71,8 +71,8 @@ $routes->group('api', static function ($routes) {
     });
 
     $routes->group('usersettings', static function ($routes) {
-        $routes->post('find/(:num)', 'Api\UserSettingsController::find/$1');
-        $routes->post('update', 'Api\UserSettingsController::update');
+        $routes->post('list', 'Api\UserSettingsController::index');
+        $routes->post('save', 'Api\UserSettingsController::save');
     });
 });
 

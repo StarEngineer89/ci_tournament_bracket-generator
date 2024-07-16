@@ -27,25 +27,27 @@ class UserSettingsController extends BaseController
         return $this->response->setJson($setting);
     }
 
-    public function create()
-    {
-        $data = $this->request->getPost();
-        $setting = new \App\Entities\UserSetting($data);
-
-        if ($this->userSettingsModel->insert($setting)) {
-            return $this->response->setJson(['status' => 'success', 'setting' => $setting]);
-        }
-        return $this->response->setJson(['status' => 'error', 'msg' => 'Failed to save the setting']);
-    }
-
-    public function update($id = null)
+    public function save($id = null)
     {
         $data = $this->request->getRawInput();
-        $setting = new \App\Entities\UserSetting($data);
-        if ($this->userSettingsModel->save($setting)) {
-            return $this->response->setJson(['status' => 'success', 'setting' => $setting]);
+        
+        foreach ($data as $key => $value) {
+            if ($setting = $this->userSettingsModel->where(['user_id' => auth()->user()->id, 'setting_name' => $key])->first()) {
+                $setting['setting_value'] = $value;
+            } else {
+                $setting = new \App\Entities\UserSetting($data);
+                $setting->user_id = auth()->user()->id;
+                $setting->setting_name = $key;
+                $setting->setting_value = $value;
+            }
+            
+            if (!$this->userSettingsModel->save($setting)) {
+                return $this->response->setJson(['status' => 'error', 'msg' => 'Failed to save the setting']);
+                
+            }
         }
-        return $this->response->setJson(['status' => 'error', 'msg' => 'Failed to update the setting']);
+        
+        return $this->response->setJson(['status' => 'success', 'setting' => $setting]);
     }
 
     public function delete($id = null)

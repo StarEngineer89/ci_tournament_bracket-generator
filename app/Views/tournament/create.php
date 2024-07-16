@@ -12,12 +12,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js"></script>
-<script src="/js/functions.js"></script>
 <script src="/js/participants.js"></script>
 <script src="/js/tournament.js"></script>
 <!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
-let apiURL = "<?= base_url('api') ?>";
 let eleminationType;
 let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
 let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
@@ -319,7 +317,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: "POST",
-            url: apiURL + '/usersettings/update',
+            url: apiURL + '/usersettings/save',
             data: {
                 id: settingId,
                 user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,

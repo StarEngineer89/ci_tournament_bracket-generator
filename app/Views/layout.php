@@ -51,7 +51,18 @@
                 </div>
                 <?php endif ?>
                 <?php if (auth()->user() && auth()->user()->id) : ?>
-                <div class="d-flex"><a class="btn btn-primary" href="<?php echo base_url('logout') ?>">Log out</a></div>
+                <div class="d-flex">
+                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        User Setting
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">General Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="<?php echo base_url('logout') ?>">Log out</a></li>
+                    </ul>
+                </div>
                 <?php endif; ?>
             </div>
 
@@ -59,6 +70,52 @@
 
             <?= $this->renderSection('main') ?>
         </main>
+
+        <!-- Modal -->
+        <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="settingsModalLabel">General Settings</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="settingsForm">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <p class="mb-0">All timestamps will be based on the following Timezone setting.</p>
+                                    <p class="mb-0">Default is EST (time offset is −5 hours (UTC/GMT -5) during standard time and −4 hours (UTC/GMT -4) during daylight saving time)</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label for="timezone" class="form-label col-sm-3 col-form-label">Timezone</label>
+                                <div class="col-sm-9">
+                                    <select class="form-select" id="timezone" name="<?= USERSETTING_TIMEZONE ?>">
+                                        <!-- Timezone options will be populated here -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="timezoneInfo" class="col-md-9 offset-md-3">
+                                    <div class="row">
+                                        <p class="col-6 mb-0"><em>UTC time is: <span id="utcTime"></span></em></p>
+                                        <p class="col-6 mb-0"><em>Local time is: <span id="localTime"></span></em></p>
+                                        <p><em>Choose a city in the same timezone as you.</em></p>
+                                        <p id="timezoneStatus" class="col-12 mb-0">This timezone is currently in <span id="currentTimeZoneLabel">standard time</span>.</p>
+                                        <p id="daylightSaving" class="col-12">Daylight saving time begins on: <span id=""></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveGeneralSettings" onclick="saveGeneralSettings(this)">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Cookie Consent Modal -->
         <div id="cookieConsentModal" style="display:none; position:fixed; bottom:0; width:100%; background-color:#f1f1f1; padding:10px; text-align:center;">
@@ -75,148 +132,32 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script src="http://underscorejs.org/underscore-min.js"></script>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+        <script src="/js/functions.js"></script>
         <script type="text/javascript">
-        const appendAlert = (message, type) => {
-            const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
-            if (alertPlaceholder) {
-                alertPlaceholder.innerHTML = ''
-                const wrapper = document.createElement('div')
+        let apiURL = "<?= base_url('api') ?>";
 
-                if (Array.isArray(message)) {
-                    wrapper.innerHTML = ''
-                    message.forEach((item, i) => {
-                        wrapper.innerHTML += [
-                            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                            `   <div>${item}</div>`,
-                            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                            '</div>'
-                        ].join('')
-                    })
-                } else {
-                    wrapper.innerHTML = [
-                        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                        `   <div>${message}</div>`,
-                        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                        '</div>'
-                    ].join('')
-                }
-
-                alertPlaceholder.append(wrapper)
-
-                $("div.alert").fadeTo(5000, 500).slideUp(500, function() {
-                    $("div.alert").slideUp(500);
-                });
-            }
-        }
-
-        const appendNotification = (message, type) => {
-            const notificationPlaceholder = document.getElementById('notificationAlertPlaceholder')
-            if (notificationPlaceholder) {
-                notificationPlaceholder.innerHTML = ''
-                const wrapper = document.createElement('div')
-
-                if (Array.isArray(message)) {
-                    wrapper.innerHTML = ''
-                    message.forEach((item, i) => {
-                        wrapper.innerHTML += [
-                            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                            `   <div>${item}</div>`,
-                            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                            '</div>'
-                        ].join('')
-                    })
-                } else {
-                    wrapper.innerHTML = [
-                        `<div class="alert alert-${type} alert-dismissible position-fixed top-1 end-0 z-3 me-3 mt-1" role="alert">`,
-                        `   <div class="d-flex">${message}</div>`,
-                        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                        '</div>'
-                    ].join('')
-                }
-
-                notificationPlaceholder.append(wrapper)
-
-                $("div.alert").fadeTo(3000, 500).slideUp(500, function() {
-                    $("div.alert").slideUp(500);
-                });
-            }
-
-        }
-
-        const readNotification = (notificationElement) => {
-            const link = $(notificationElement).data('link')
-            const notificationId = $(notificationElement).data('id')
-
-            $.ajax({
-                type: "put",
-                url: `${apiURL}/notifications/mark-as-read/${notificationId}`,
-                success: function(result) {
-                    $(notificationElement).remove()
-                    window.location.href = link
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            }).done(() => {
-                setTimeout(function() {
-                    $("#overlay").fadeOut(300);
-                }, 500);
-            });
-        }
-
-        const deleteNotification = (notificationElement) => {
-            const link = $(notificationElement).data('link')
-            const notificationId = $(notificationElement).data('id')
-
-            $.ajax({
-                type: "delete",
-                url: `${apiURL}/notifications/delete/${notificationId}`,
-                success: function(result) {
-                    $(notificationElement).remove()
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            }).done(() => {
-                setTimeout(function() {
-                    $("#overlay").fadeOut(300);
-                }, 500);
-            });
-        }
-        </script>
-
-        <script type="text/javascript">
         $(document).ready(function() {
+            var defaultTimezone = '<?= user_timezone(auth()->user()->id) ?>';
+            const timezoneSelect = $('#timezone');
+            timezoneSelect.val(defaultTimezone);
+            updateTime(defaultTimezone);
+
+            let currentYear = new Date().getFullYear();
+            let dstStart = getSecondSundayOfMarch(currentYear, defaultTimezone);
+            const formattedDate = formatDateToTimeZone(dstStart, defaultTimezone);
+            $('#daylightSaving').text(`Daylight saving time begins on: ${formattedDate}.`);
+
             <?php if (session()->getTempdata('welcome_message')) : ?>
             appendNotification('<?= session()->getTempdata('welcome_message') ?>', 'success');
             <?php session()->remove('welcome_message') ?>
             <?php endif; ?>
         })
-        </script>
 
-        <script>
         // Show the modal if cookie consent is not given
         if (!document.cookie.includes('cookie_consent')) {
             document.getElementById('cookieConsentModal').style.display = 'block';
-        }
-
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + d.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
-        }
-
-        function acceptCookies() {
-            setCookie('cookie_consent', 'accepted', 365);
-            document.getElementById('cookieConsentModal').style.display = 'none';
-        }
-
-        function rejectCookies() {
-            setCookie('cookie_consent', 'rejected', 365);
-            document.getElementById('cookieConsentModal').style.display = 'none';
-            alert('Cookies rejected. To reactivate, clear your browser history and visit the site again.');
         }
         </script>
         <?= $this->renderSection('pageScripts') ?>
