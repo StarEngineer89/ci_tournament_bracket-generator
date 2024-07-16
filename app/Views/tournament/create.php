@@ -5,13 +5,14 @@
 <?= $this->section('pageStyles') ?>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/nano.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-te/1.4.0/jquery-te.css" />
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-te/1.4.0/jquery-te.min.js"></script>
 <script src="/js/participants.js"></script>
 <script src="/js/tournament.js"></script>
 <!-- <script src="/js/player.js"></script> -->
@@ -32,6 +33,8 @@ $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
+    $("textarea#description").jqte();
+
     <?php if (isset($participants)): ?>
     var participants = JSON.parse('<?= $participants ?>')
     renderParticipants(participants)
@@ -714,6 +717,10 @@ var drawTournamentsTable = () => {
                         </select>
                         <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
                         <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <textarea id="description" name="description"></textarea>
                     </div>
 
                     <div class="form-check mb-3">

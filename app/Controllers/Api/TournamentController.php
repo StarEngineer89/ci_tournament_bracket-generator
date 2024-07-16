@@ -74,7 +74,8 @@ class TournamentController extends BaseController
             'type' => $this->request->getPost('type'),
             'searchable' => $this->request->getPost('title'),
             'archive' => 0,
-            'shuffle_enable' => $this->request->getPost('enable-shuffle')
+            'shuffle_enable' => $this->request->getPost('enable-shuffle'),
+            'description' => $this->request->getPost('description')
         ];
 
         $tournament_id = $tournamentModel->insert($data);

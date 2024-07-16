@@ -50,6 +50,35 @@ $(document).ready(function() {
     }
 
     $('#liveAlertBtn').click();
+
+    const descriptionPlaceholder = document.getElementById('descriptionPlaceholder')
+    const appendDescription = (description, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="container alert alert-${type} alert-dismissible" id="descriptionAlert" role="alert">`,
+            `   <div>${description}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        descriptionPlaceholder.append(wrapper)
+    }
+
+    const descriptionTrigger = document.getElementById('toggleDescriptionBtn')
+    if (descriptionTrigger) {
+        const description = $('#description').html();
+        descriptionTrigger.addEventListener('click', () => {
+            appendDescription(description, 'success')
+            descriptionTrigger.classList.add('d-none')
+
+            const myAlert = document.getElementById('descriptionAlert')
+            myAlert.addEventListener('closed.bs.alert', event => {
+                descriptionTrigger.classList.remove('d-none')
+            })
+        })
+    }
+
+    $('#toggleDescriptionBtn').click();
 })
 </script>
 <?= $this->endSection() ?>
@@ -93,6 +122,9 @@ $(document).ready(function() {
                     <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
                 </svg>
             </button>
+            <button type="button" class="btn" id="toggleDescriptionBtn">
+                <i class="fa-solid fa-book"></i>
+            </button>
         </div>
         <div id="liveAlertPlaceholder"></div>
         <div id="liveAlertMsg" class="d-none">
@@ -105,6 +137,11 @@ $(document).ready(function() {
             You also have actions available to you by right clicking (or holding on mobile devices) the individual
             bracket box.
             <?php endif ?>
+        </div>
+
+        <div id="descriptionPlaceholder"></div>
+        <div id="description" class="d-none">
+            <?= $tournament['description'] ?>
         </div>
 
         <div id="brackets" class="brackets p-5"></div>
