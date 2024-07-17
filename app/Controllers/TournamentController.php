@@ -324,4 +324,29 @@ class TournamentController extends BaseController
         fclose($output);
         exit;
     }
+
+    public function apply()
+    {
+        return view('tournament/apply');
+    }
+
+    public function saveApply()
+    {
+        // Validate the input
+        $validation = \Config\Services::validation();
+        
+        $validation->setRules([
+            'name' => 'required',
+            'participation_mode' => 'required',
+            'agree' => 'required'
+        ]);
+
+        if (!$this->validate($validation->getRules())) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // Process the registration (e.g., save to database)
+
+        return redirect()->to('/tournaments/apply')->with('message', 'Registration successful');
+    }
 }
