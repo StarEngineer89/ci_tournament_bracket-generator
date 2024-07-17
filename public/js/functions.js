@@ -251,3 +251,20 @@ function updateTime(selectedTimezone) {
     $('#localTime').text(formattedLocalTime);
 }
 
+let toggleScoreOption = (checkbox) => {
+    if ($(checkbox).is(':checked')) {
+        $('#scorePerBracket').prop('disabled', false)
+        $('#scoreOptions').removeClass('d-none')
+    } else {
+        $('#scorePerBracket').prop('disabled', true)
+        $('#scoreOptions').addClass('d-none')
+    }
+}
+
+let toggleIncreamentScore = (checkbox) => {
+    if ($(checkbox).is(':checked')) {
+        $('#incrementScore').prop('disabled', false)
+    } else {
+        $('#incrementScore').prop('disabled', true)
+    }
+}

@@ -725,6 +725,40 @@ var drawTournamentsTable = () => {
 
                     <div class="form-check mb-3">
                         <div class="ps-2">
+                            <input type="checkbox" class="form-check-input" name="score_option" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
+                            <label class="form-check-label" for="enableScoreOption">
+                                <h6>Enable Score Option</h6>
+                            </label>
+                            <div class="enable-scoreoption-hint form-text">If enabled, a score associated with each bracket will be accumulated towards a final score. You may specify the points a participant could gain below.</div>
+                        </div>
+                        <div class="ps-2" id="scoreOptions">
+                            <div class="row mb-2">
+                                <div class="col-auto">
+                                    <label for="scorePerBracket" class="col-form-label">Score per bracket per round <span class="text-danger">*</span> :</label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="number" name="score_bracket" id="scorePerBracket" class="form-control" min="0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 form-check ms-2">
+                                    <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" onChange="toggleIncreamentScore(this)" min="0" checked>
+                                    <label for="incrementScore" class="form-check-label">Increament Score :</label>
+                                </div>
+                                <div class="col-3 ms-1">
+                                    <input type="number" name="increament_score" id="incrementScore" class="form-control" min="0">
+                                </div>
+                            </div>
+                            <div class="enable-scoreoption-hint form-text">
+                                <p>Specify an increment the score should increase by for each round.</p>
+                                <p>For example, if winning participants attain 2 points in their bracket in round 1, and an increment of 3 is specified, then in round 2, winning participants will attain 5 points, and in round 3 winning participants will attain 8 points, etc.</p>
+                                <p>In this case, the cumulative score will be calculated as follows: 2+5+8...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <div class="ps-2">
                             <input type="checkbox" class="form-check-input enable-shuffling" name="enable-shuffle" id="enableShuffle" onChange="toggleShuffleParticipants(this)" checked>
                             <label class="form-check-label" for="enableShuffle">
                                 <h6>Shuffle Participants</h6>

@@ -75,10 +75,14 @@ class TournamentController extends BaseController
             'searchable' => $this->request->getPost('title'),
             'archive' => 0,
             'shuffle_enable' => $this->request->getPost('enable-shuffle'),
-            'description' => $this->request->getPost('description')
+            'description' => $this->request->getPost('description'),
+            'score_bracket' => $this->request->getPost('score_bracket'),
+            'increament_score' => $this->request->getPost('increament_score')
         ];
 
-        $tournament_id = $tournamentModel->insert($data);
+        $tournamentData = new \App\Entities\Tournament($data);
+
+        $tournament_id = $tournamentModel->insert($tournamentData);
 
         if (!$tournament_id) {
             return json_encode(['error' => "Failed to save the tournament name."]);
