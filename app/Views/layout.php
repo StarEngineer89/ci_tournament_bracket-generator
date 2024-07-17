@@ -138,8 +138,8 @@
         <script type="text/javascript">
         let apiURL = "<?= base_url('api') ?>";
 
+        var defaultTimezone = '<?= user_timezone(auth()->user()->id) ?>';
         $(document).ready(function() {
-            var defaultTimezone = '<?= user_timezone(auth()->user()->id) ?>';
             const timezoneSelect = $('#timezone');
             timezoneSelect.val(defaultTimezone);
             updateTime(defaultTimezone);
@@ -147,6 +147,7 @@
             let currentYear = new Date().getFullYear();
             let dstStart = getSecondSundayOfMarch(currentYear, defaultTimezone);
             const formattedDate = formatDateToTimeZone(dstStart, defaultTimezone);
+            $('#timezoneStatus').text(`This timezone is currently in ${defaultTimezone}.`);
             $('#daylightSaving').text(`Daylight saving time begins on: ${formattedDate}.`);
 
             <?php if (session()->getTempdata('welcome_message')) : ?>

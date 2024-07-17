@@ -15,10 +15,10 @@ if (!function_exists('user_timezone')) {
 
         // Retrieve user settings based on user ID
         $settings = $userSettingsModel->where(['user_id' => $userId, 'setting_name' => USERSETTING_TIMEZONE])->first();
-
+        
         $config = config('App');
         // Return the timezone or null if not set
-        return $settings['timezone'] ?? $config->appTimezone;
+        return $settings['setting_value'] ?? $config->appTimezone;
     }
 }
 

@@ -178,7 +178,11 @@ $(document).ready(function () {
     const timezones = moment.tz.names();
 
     timezones.forEach(timezone => {
-        timezoneSelect.append(new Option(timezone, timezone));
+        const option = new Option(timezone, timezone);
+        if (timezone === defaultTimezone) {
+            option.selected = true;
+        }
+        timezoneSelect.append(option);
     });
 
     timezoneSelect.on('change', function() {
@@ -188,11 +192,10 @@ $(document).ready(function () {
         let currentYear = new Date().getFullYear();
         let dstStart = getSecondSundayOfMarch(currentYear, selectedTimezone);
         const formattedDate = formatDateToTimeZone(dstStart, selectedTimezone);
-        $('#daylightSaving').text(`Daylight saving time begins on: ${formattedDate}.`);
 
         // Update other timezone information if needed
-        $('#timezoneStatus').text("This timezone is currently in standard time.");
-        $('#daylightSaving').text(`Daylight saving time begins on: ${dstStart}.`);
+        $('#timezoneStatus').text(`This timezone is currently in ${selectedTimezone}.`);
+        $('#daylightSaving').text(`Daylight saving time begins on: ${formattedDate}.`);
     });
 })
 
