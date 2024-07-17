@@ -2,6 +2,7 @@ let shufflingPromise = null;
 
 function callShuffle(enableShuffling = true) {
     const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
+    $('#overlay').removeClass('d-none')
 
     exampleTeams = [];
     
@@ -37,6 +38,7 @@ function callShuffle(enableShuffling = true) {
         });
 
         generateBrackets(exampleTeams);
+        $('#overlay').addClass('d-none')
     },
         function (error) { myDisplayer(error); }
     );

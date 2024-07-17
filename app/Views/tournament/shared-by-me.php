@@ -5,9 +5,9 @@
     </div>
 </div>
 
-<div class="buttons d-flex justify-content-end">
+<div class="buttons d-flex justify-content-end mb-3">
     <?php if ($navActive == 'shared'): ?>
-    <div class="buttons d-flex justify-content-end mb-3">
+    <div class="buttons d-flex justify-content-end">
         <input type="radio" class="btn-check" name="share-type" id="shared-by" value="by" autocomplete="off" <?= ($shareType != 'wh') ? 'checked' : '' ?>>
         <label class="btn" for="shared-by">Shared by me</label>
 
@@ -15,8 +15,10 @@
         <label class="btn" for="shared-with">Shared with me</label>
     </div>
     <?php else: ?>
-    <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
+    <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus ms-2"></i> Create</a>
     <?php endif ?>
+
+    <a href="<?= base_url('tournaments/export?filter=' . $navActive) ?>" class="btn btn-primary">Export</a>
 </div>
 
 <table id="tournamentTable" class="shared-by-me table align-middle">

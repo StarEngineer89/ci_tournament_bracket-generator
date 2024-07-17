@@ -33,6 +33,7 @@
             <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkReset">Bulk Reset</a></li>
             <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkStatusUpdate">Bulk Status Update</a></li>
         </ul>
+        <a href="<?= base_url('tournaments/export?filter=' . $navActive) ?>" class="btn btn-primary ms-2">Export</a>
     </div>
     <?php endif ?>
 </div>

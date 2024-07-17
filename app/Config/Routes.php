@@ -19,6 +19,7 @@ $routes->group('tournaments', static function ($routes) {
     $routes->get('create', 'TournamentController::create');
     $routes->get('(:num)/view', 'TournamentController::view/$1');
     $routes->get('shared/(:segment)', 'TournamentController::viewShared/$1');
+    $routes->get('export', 'TournamentController::export');
 });
 
 $routes->post('consent', 'CookieConsent::consent');

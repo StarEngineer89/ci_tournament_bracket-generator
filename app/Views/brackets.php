@@ -68,7 +68,7 @@ $(document).ready(function() {
     if (descriptionTrigger) {
         const description = $('#description').html();
         descriptionTrigger.addEventListener('click', () => {
-            appendDescription(description, 'success')
+            appendDescription(description, 'secondary')
             descriptionTrigger.classList.add('d-none')
 
             const myAlert = document.getElementById('descriptionAlert')

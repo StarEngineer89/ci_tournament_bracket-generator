@@ -223,4 +223,105 @@ class TournamentController extends BaseController
         $settings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings]);
     }
+
+    public function export()
+    {
+        $tournamentModel = model('\App\Models\TournamentModel');
+        
+        if ($this->request->getGet('filter') == 'shared') {
+            $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+            $tournaments = $shareSettingsModel->tournamentDetails();
+            
+            if ($this->request->getGet('query')) {
+                $searchString = $this->request->getGet('query');
+                $tournaments->like(['tournaments.searchable' => $searchString]);
+            }
+            
+            if ($this->request->getGet('type') == 'wh') {
+                $tempRows = $tournaments->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
+                
+                $tournaments = [];
+                $access_tokens = [];
+                if ($tempRows) {
+                    foreach ($tempRows as $tempRow) {
+                        $user_ids = explode(',', $tempRow['users']);
+                        
+                        $add_in_list = false;
+                        if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
+                            $add_in_list = true;
+                        }
+
+                        if (($tempRow['target'] == SHARE_TO_EVERYONE || $tempRow['target'] == SHARE_TO_PUBLIC) && $tempRow['access_time']) {
+                            $add_in_list = true;
+                        }
+
+                        /** Omit the record from Shared with me if the share was created by himself */
+                        if ($tempRow['user_id'] == auth()->user()->id || $tempRow['deleted_at']) {
+                            $add_in_list = false;
+                        }
+
+                        if ($add_in_list && !in_array($tempRow['token'], $access_tokens)) {
+                            $tournaments[] = $tempRow;
+                            $access_tokens[] = $tempRow['token'];
+                        }
+                    }
+                }
+            } else {
+                $tempRows = $tournaments->where('share_settings.user_id', auth()->user()->id)->findAll();
+
+                $tournaments = [];
+                if ($tempRows) {
+                    foreach ($tempRows as $tempRow) {
+                        $tournaments[$tempRow['tournament_id']] = $tempRow;
+                    }
+                }
+            }
+        } else {
+            $tournaments = $tournamentModel->where(['user_id' => auth()->user()->id]);
+
+            if ($this->request->getGet('filter') == 'archived') {
+                $tournaments->where(['archive' => 1]);
+            } else {
+                $tournaments->where('archive', 0);
+            }
+
+            if ($this->request->getGet('query')) {
+                $searchString = $this->request->getGet('query');
+                $tournaments->like(['searchable' => $searchString]);
+            }
+            
+            $tournaments = $tournaments->findAll();
+        }
+
+        $filename = 'tournaments_' . date('Ymd') . '.csv';
+
+        header("Content-Type: text/csv");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+
+        $output = fopen('php://output', 'w');
+
+        // Add the CSV column headers
+        fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Created Time', 'URL']);
+
+        // Fetch the data and write it to the CSV
+        foreach ($tournaments as $tournament) {
+            $statusLabel = TOURNAMENT_STATUS_LABELS[$tournament['status']];
+            $type = $tournament['type'] == 1 ? 'Single' : 'Double';
+            $createdTime = convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id));
+
+            $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
+
+            fputcsv($output, [
+                $tournamentId,
+                $tournament['name'],
+                $type,
+                $statusLabel,
+                $createdTime,
+                base_url('tournaments/' . $tournamentId . '/view')
+            ]);
+        }
+
+        fclose($output);
+        exit;
+    }
 }

@@ -898,4 +898,13 @@ var drawTournamentsTable = () => {
     <button id="stopMusicButton" class="d-none">Pause Music</button>
 </div>
 
+<div id="overlay" class="d-none">
+    <div class="snippet p-3 .bg-light" data-title="dot-elastic">
+        <p>Generating Tournament Brackets...</p>
+        <div class="stage">
+            <div class="dot-elastic"></div>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
