@@ -10,13 +10,22 @@ if (!function_exists('user_timezone')) {
      */
     function user_timezone($userId = null): string
     {
+        $config = config('App');
+        
+        if (!$userId) {
+            if (auth()->user()) {
+                $userId = auth()->user()->id;
+            } else {
+                return $config->appTimezone;
+            }
+        }
+
         // Load the UserSettingsModel
         $userSettingsModel = model('App\Models\UserSettingModel');
 
         // Retrieve user settings based on user ID
         $settings = $userSettingsModel->where(['user_id' => $userId, 'setting_name' => USERSETTING_TIMEZONE])->first();
         
-        $config = config('App');
         // Return the timezone or null if not set
         return $settings['setting_value'] ?? $config->appTimezone;
     }
@@ -32,7 +41,8 @@ if (!function_exists('convert_to_user_timezone')) {
      */
     function convert_to_user_timezone($datetime, $timezone)
     {
-        $date = new \DateTime($datetime, new \DateTimeZone('UTC'));
+        $config = config('App');
+        $date = new \DateTime($datetime, new \DateTimeZone($config->appTimezone));
         $date->setTimezone(new \DateTimeZone($timezone));
         return $date->format('Y-m-d H:i:s');
     }

@@ -5,14 +5,14 @@
 <?= $this->section('pageStyles') ?>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/nano.min.css">
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="/js/participants.js"></script>
 <script src="/js/tournament.js"></script>
 <!-- <script src="/js/player.js"></script> -->
@@ -33,7 +33,16 @@ $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
-    $("textarea#description").summernote();
+    $("textarea#description").summernote({
+        callbacks: {
+            onMediaDelete: function(target) {
+                // Handle media deletion if needed
+            },
+            onVideoInsert: function(target) {
+                $(target).wrap('<div class="responsive-video"></div>');
+            }
+        }
+    });
 
     <?php if (isset($participants)): ?>
     var participants = JSON.parse('<?= $participants ?>')
@@ -910,7 +919,7 @@ var drawTournamentsTable = () => {
             </div>
             <div class="modal-body">
                 <h6>Please populate the participant list first before generating the brackets.</h6>
-                <h6>There should be more than 2 participants.</h6>
+                <h6>There should be at least 2 or more participants.</h6>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Confirm</button>

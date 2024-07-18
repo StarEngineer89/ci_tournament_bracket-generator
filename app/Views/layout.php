@@ -138,7 +138,7 @@
         <script type="text/javascript">
         let apiURL = "<?= base_url('api') ?>";
 
-        var defaultTimezone = '<?= user_timezone(auth()->user()->id) ?>';
+        var defaultTimezone = '<?= user_timezone() ?>';
         $(document).ready(function() {
             const timezoneSelect = $('#timezone');
             timezoneSelect.val(defaultTimezone);
@@ -154,6 +154,14 @@
             appendNotification('<?= session()->getTempdata('welcome_message') ?>', 'success');
             <?php session()->remove('welcome_message') ?>
             <?php endif; ?>
+
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal) {
+                settingsModal.addEventListener('show.bs.modal', event => {
+                    const selectedTimezone = $('#timezone').val();
+                    updateTime(selectedTimezone);
+                })
+            }
         })
 
         // Show the modal if cookie consent is not given

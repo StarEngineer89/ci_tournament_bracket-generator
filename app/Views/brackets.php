@@ -62,7 +62,7 @@ $(document).ready(function() {
     const appendDescription = (description, type) => {
         const wrapper = document.createElement('div')
         let editBtn = ''
-        <?php if ($tournament['user_id'] == auth()->user()->id): ?>
+        <?php if (auth()->user() && $tournament['user_id'] == auth()->user()->id): ?>
         editBtn = '<button type="button" class="btn-edit" id="editDescriptionBtn" onclick="enableDescriptionEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>'
         <?php endif ?>
         wrapper.innerHTML = [
@@ -76,6 +76,7 @@ $(document).ready(function() {
         descriptionPlaceholder.append(wrapper)
     }
 
+    <?php if ($tournament['description']): ?>
     const descriptionTrigger = document.getElementById('toggleDescriptionBtn')
     if (descriptionTrigger) {
         const description = $('#description').html();
@@ -93,6 +94,7 @@ $(document).ready(function() {
     $('#toggleDescriptionBtn').click();
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
+    <?php endif; ?>
 })
 </script>
 <?= $this->endSection() ?>
@@ -136,9 +138,11 @@ $(document).ready(function() {
                     <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
                 </svg>
             </button>
+            <?php if ($tournament['description']): ?>
             <button type="button" class="btn" id="toggleDescriptionBtn">
                 <i class="fa-solid fa-book"></i>
             </button>
+            <?php endif ?>
         </div>
         <div id="liveAlertPlaceholder"></div>
         <div id="liveAlertMsg" class="d-none">

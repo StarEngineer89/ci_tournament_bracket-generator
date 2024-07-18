@@ -15,10 +15,10 @@
         <label class="btn" for="shared-with">Shared with me</label>
     </div>
     <?php else: ?>
-    <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus ms-2"></i><i class="fa-solid fa-file-csv"></i> Create</a>
+    <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus ms-2"></i> Create</a>
     <?php endif ?>
 
-    <a href="<?= base_url('tournaments/export?filter=' . $navActive) ?>" class="btn btn-success">Export</a>
+    <a href="<?= base_url('tournaments/export?filter=' . $navActive) ?>" class="btn btn-success"><i class="fa-solid fa-file-csv"></i> Export</a>
 </div>
 
 <table id="tournamentTable" class="shared-by-me table align-middle">

@@ -245,9 +245,9 @@ function formatTime(date, options) {
 }
 
 function updateTime(selectedTimezone) {
-    const utcDate = new Date();
+    const utcDate = new Date().toLocaleString("en-US", { timeZone: 'UTC' });
     const localDate = new Date().toLocaleString("en-US", { timeZone: selectedTimezone });
-    const formattedUtcTime = formatTime(utcDate, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    const formattedUtcTime = formatTime(new Date(utcDate), { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     const formattedLocalTime = formatTime(new Date(localDate), { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
     $('#utcTime').text(formattedUtcTime);
@@ -284,6 +284,14 @@ const enableDescriptionEdit = (button) => {
 
     $('#summernote').summernote({
         height: 400,
+        callbacks: {
+            onMediaDelete: function(target) {
+                // Handle media deletion if needed
+            },
+            onVideoInsert: function(target) {
+                $(target).wrap('<div class="responsive-video"></div>');
+            }
+        }
     })
 
     let buttonsWrapper = document.createElement('div')
