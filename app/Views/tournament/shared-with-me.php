@@ -12,7 +12,7 @@
     <input type="radio" class="btn-check" name="share-type" id="shared-with" value="wh" autocomplete="off" <?= ($shareType == 'wh') ? 'checked' : '' ?>>
     <label class="btn" for="shared-with">Shared with me</label>
 
-    <a href="<?= base_url('tournaments/export?filter=shared&type=wh') ?>" class="btn btn-primary ms-2">Export</a>
+    <a href="<?= base_url('tournaments/export?filter=shared&type=wh') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
 </div>
 
 <table id="tournamentTable" class="table align-middle">

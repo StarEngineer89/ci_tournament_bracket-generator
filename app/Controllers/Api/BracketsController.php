@@ -326,6 +326,7 @@ class BracketsController extends BaseController
         $baseC         = $this->_base / 2;
         $teamMark    = 0;
         $nextInc        = $this->_base / 2;
+        $isBye = false;
 
         for ($i = 1; $i <= ($this->_base - 1); $i++) {
             $baseR = $i / $baseT;
@@ -346,6 +347,10 @@ class BracketsController extends BaseController
                     return $b['nextGame'] == $this->_bracketNo;
                 }))
             );
+
+            if (!isset($participants[$teamMark + 1])) {
+                $participants[$teamMark + 1] = null;
+            }
 
             $bracket = array(
                 'lastGames' => ($round == 1) ? null : json_encode([$last[0]['game'], $last[1]['game']]),
@@ -371,6 +376,10 @@ class BracketsController extends BaseController
                 $baseT = $baseT + $baseC;
                 $baseR = $i / $baseT;
             }
+        }
+
+        if (!isset($participants[$teamMark + 1])) {
+            $participants[$teamMark + 1] = null;
         }
 
         $bracket = array(

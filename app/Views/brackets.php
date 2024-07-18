@@ -2,7 +2,12 @@
 
 <?= $this->section('title') ?>Tournament Brackets<?= $this->endSection() ?>
 
+<?= $this->section('pageStyles') ?>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<?= $this->endSection() ?>
+
 <?= $this->section('pageScripts') ?>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="/js/brackets.js"></script>
 <script type="text/javascript">
 <?php if (url_is('/tournaments/shared/*')) : ?>
@@ -21,6 +26,8 @@ const hasEditPermission =
 </script>
 
 <script type="text/javascript">
+let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
+
 $(document).ready(function() {
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
     const appendAlert = (message, type) => {
@@ -54,9 +61,14 @@ $(document).ready(function() {
     const descriptionPlaceholder = document.getElementById('descriptionPlaceholder')
     const appendDescription = (description, type) => {
         const wrapper = document.createElement('div')
+        let editBtn = ''
+        <?php if ($tournament['user_id'] == auth()->user()->id): ?>
+        editBtn = '<button type="button" class="btn-edit" id="editDescriptionBtn" onclick="enableDescriptionEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>'
+        <?php endif ?>
         wrapper.innerHTML = [
-            `<div class="container alert alert-${type} alert-dismissible" id="descriptionAlert" role="alert">`,
-            `   <div>${description}</div>`,
+            `<div class="container border pt-5 pe-3 alert alert-${type} alert-dismissible" id="descriptionAlert" role="alert">`,
+            `   <div class="description" id="description">${description}</div>`,
+            editBtn,
             '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
             '</div>'
         ].join('')
@@ -68,7 +80,7 @@ $(document).ready(function() {
     if (descriptionTrigger) {
         const description = $('#description').html();
         descriptionTrigger.addEventListener('click', () => {
-            appendDescription(description, 'secondary')
+            appendDescription(description, 'light')
             descriptionTrigger.classList.add('d-none')
 
             const myAlert = document.getElementById('descriptionAlert')
@@ -79,6 +91,8 @@ $(document).ready(function() {
     }
 
     $('#toggleDescriptionBtn').click();
+    document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
+    document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
 })
 </script>
 <?= $this->endSection() ?>
@@ -157,5 +171,45 @@ $(document).ready(function() {
     <button id="stopMusicButton" class="d-none">Pause Music</button>
 </div>
 <?php endif; ?>
+
+
+<!-- Save Confirmation Modal -->
+<div class="modal fade" id="saveDescriptionConfirmModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveModalLabel">Confirm Save</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to save the changes?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSaveButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dismiss Confirmation Modal -->
+<div class="modal fade" id="dismissDescriptionEditConfirmModal" tabindex="-1" aria-labelledby="dismissModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dismissModalLabel">Confirm Dismiss</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to dismiss the changes?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmDismissButton">Dismiss</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <?= $this->endSection() ?>

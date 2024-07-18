@@ -53,7 +53,7 @@
                 <?php if (auth()->user() && auth()->user()->id) : ?>
                 <div class="d-flex">
                     <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                        User Setting
+                        <?= auth()->user()->username ?>'s profile
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">General Settings</a></li>

@@ -258,16 +258,82 @@ let toggleScoreOption = (checkbox) => {
     if ($(checkbox).is(':checked')) {
         $('#scorePerBracket').prop('disabled', false)
         $('#scoreOptions').removeClass('d-none')
+        $('.enable-scoreoption-hint').removeClass('d-none')
     } else {
         $('#scorePerBracket').prop('disabled', true)
         $('#scoreOptions').addClass('d-none')
+        $('.enable-scoreoption-hint').addClass('d-none')
     }
 }
 
-let toggleIncreamentScore = (checkbox) => {
+let toggleIncrementScore = (checkbox) => {
     if ($(checkbox).is(':checked')) {
         $('#incrementScore').prop('disabled', false)
+        $('.enable-increamentscoreoption-hint').removeClass('d-none')
     } else {
         $('#incrementScore').prop('disabled', true)
+        $('.enable-increamentscoreoption-hint').addClass('d-none')
     }
+}
+
+const enableDescriptionEdit = (button) => {
+    const descriptionDiv = button.parentElement.querySelector('.description')
+    const originalText = descriptionDiv.innerHTML
+    originalDescriptionContent = originalText
+    descriptionDiv.innerHTML = `<div id="summernote">${originalText}</div>`
+
+    $('#summernote').summernote({
+        height: 400,
+    })
+
+    let buttonsWrapper = document.createElement('div')
+    buttonsWrapper.className = 'd-flex justify-content-end mt-3'
+
+    const saveButton = document.createElement('button')
+    saveButton.innerText = 'Save'
+    saveButton.className = 'btn btn-primary'
+    saveButton.onclick = () => {
+        newDescriptionContent = $('#summernote').summernote('code')
+        currentDescriptionDiv = descriptionDiv
+        $('#saveDescriptionConfirmModal').modal('show')
+    }
+
+    const dismissButton = document.createElement('button')
+    dismissButton.innerText = 'Dismiss'
+    dismissButton.className = 'btn btn-secondary ms-2'
+    dismissButton.onclick = () => {
+        currentDescriptionDiv = descriptionDiv
+        $('#dismissDescriptionEditConfirmModal').modal('show')
+    }
+
+    buttonsWrapper.append(saveButton)
+    buttonsWrapper.append(dismissButton)
+
+    descriptionDiv.append(buttonsWrapper)
+    
+    document.getElementById('editDescriptionBtn').classList.add('d-none')
+}
+
+const saveDescription = () => {
+    $.ajax({
+        url: apiURL + `/tournaments/${tournament_id}/update`,
+        type: 'POST',
+        data: {
+            description: newDescriptionContent
+        },
+        success: function(response) {
+            currentDescriptionDiv.innerHTML = newDescriptionContent
+            document.getElementById('editDescriptionBtn').classList.remove('d-none')
+            $('#saveDescriptionConfirmModal').modal('hide')
+        },
+        error: function() {
+            alert('Failed to save description.')
+        }
+    })
+}
+
+const dismissEdit = () => {
+    currentDescriptionDiv.innerHTML = originalDescriptionContent
+    document.getElementById('editDescriptionBtn').classList.remove('d-none')
+    $('#dismissDescriptionEditConfirmModal').modal('hide')
 }

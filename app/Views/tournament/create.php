@@ -5,14 +5,14 @@
 <?= $this->section('pageStyles') ?>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/nano.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-te/1.4.0/jquery-te.css" />
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-te/1.4.0/jquery-te.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 <script src="/js/participants.js"></script>
 <script src="/js/tournament.js"></script>
 <!-- <script src="/js/player.js"></script> -->
@@ -33,7 +33,7 @@ $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
-    $("textarea#description").jqte();
+    $("textarea#description").summernote();
 
     <?php if (isset($participants)): ?>
     var participants = JSON.parse('<?= $participants ?>')
@@ -143,7 +143,7 @@ $(document).ready(function() {
     });
 
     $('#generate').on('click', function() {
-        if (!itemList.children.length) {
+        if (itemList.children.length < 2) {
             $('#generateErrorModal').modal('show')
             return false;
         }
@@ -721,13 +721,14 @@ var drawTournamentsTable = () => {
 
                     <div class="input-group mb-3">
                         <textarea id="description" name="description"></textarea>
+                        <div class="form-text">Enter an optional description that will be displayed in the tournament.</div>
                     </div>
 
                     <div class="form-check mb-3">
                         <div class="ps-2">
                             <input type="checkbox" class="form-check-input" name="score_option" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
                             <label class="form-check-label" for="enableScoreOption">
-                                <h6>Enable Score Option</h6>
+                                <h6>Enable Scoring</h6>
                             </label>
                             <div class="enable-scoreoption-hint form-text">If enabled, a score associated with each bracket will be accumulated towards a final score. You may specify the points a participant could gain below.</div>
                         </div>
@@ -737,19 +738,19 @@ var drawTournamentsTable = () => {
                                     <label for="scorePerBracket" class="col-form-label">Score per bracket per round <span class="text-danger">*</span> :</label>
                                 </div>
                                 <div class="col-3">
-                                    <input type="number" name="score_bracket" id="scorePerBracket" class="form-control" min="0">
+                                    <input type="number" name="score_bracket" id="scorePerBracket" class="form-control" min="0" required>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-6 form-check ms-2">
-                                    <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" onChange="toggleIncreamentScore(this)" min="0" checked>
-                                    <label for="incrementScore" class="form-check-label">Increament Score :</label>
+                                <div class="col-6 form-check ps-2">
+                                    <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" onChange="toggleIncrementScore(this)" min="0" checked>
+                                    <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
                                 </div>
                                 <div class="col-3 ms-1">
                                     <input type="number" name="increament_score" id="incrementScore" class="form-control" min="0">
                                 </div>
                             </div>
-                            <div class="enable-scoreoption-hint form-text">
+                            <div class="enable-increamentscoreoption-hint form-text">
                                 <p>Specify an increment the score should increase by for each round.</p>
                                 <p>For example, if winning participants attain 2 points in their bracket in round 1, and an increment of 3 is specified, then in round 2, winning participants will attain 5 points, and in round 3 winning participants will attain 8 points, etc.</p>
                                 <p>In this case, the cumulative score will be calculated as follows: 2+5+8...</p>
@@ -908,7 +909,8 @@ var drawTournamentsTable = () => {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h6>Please populate the participant list first before generating the brackets</h6>
+                <h6>Please populate the participant list first before generating the brackets.</h6>
+                <h6>There should be more than 2 participants.</h6>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Confirm</button>

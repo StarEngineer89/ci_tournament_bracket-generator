@@ -301,24 +301,51 @@ class TournamentController extends BaseController
         $output = fopen('php://output', 'w');
 
         // Add the CSV column headers
-        fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Created Time', 'URL']);
+        if ($this->request->getGet('filter') == 'shared' && $this->request->getGet('type') == 'wh') {
+            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Accessbility', 'Shared By', 'Shared Time', 'URL']);
+        } else {
+            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Created Time', 'URL']);
+        }
 
         // Fetch the data and write it to the CSV
         foreach ($tournaments as $tournament) {
             $statusLabel = TOURNAMENT_STATUS_LABELS[$tournament['status']];
             $type = $tournament['type'] == 1 ? 'Single' : 'Double';
-            $createdTime = convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id));
 
             $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
 
-            fputcsv($output, [
-                $tournamentId,
-                $tournament['name'],
-                $type,
-                $statusLabel,
-                $createdTime,
-                base_url('tournaments/' . $tournamentId . '/view')
-            ]);
+            if ($this->request->getGet('filter') == 'shared' && $this->request->getGet('type') == 'wh') {
+                if ($tournament['permission'] == SHARE_PERMISSION_EDIT) {
+                    $tournament['permission'] = 'Can Edit';
+                }
+
+                if ($tournament['permission'] == SHARE_PERMISSION_VIEW) {
+                    $tournament['permission'] = 'Can View';
+                }
+
+                $url = base_url('tournaments/shared/' . $tournament['token']);
+                $createdTime = convert_to_user_timezone($tournament['access_time'], user_timezone(auth()->user()->id));
+                fputcsv($output, [
+                    $tournamentId,
+                    $tournament['name'],
+                    $type,
+                    $statusLabel,
+                    $tournament['permission'],
+                    $tournament['username'],
+                    $createdTime,
+                    $url
+                ]);
+            } else {
+                $createdTime = convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id));
+                fputcsv($output, [
+                    $tournamentId,
+                    $tournament['name'],
+                    $type,
+                    $statusLabel,
+                    $createdTime,
+                    base_url('tournaments/' . $tournamentId . '/view')
+                ]);
+            }
         }
 
         fclose($output);
