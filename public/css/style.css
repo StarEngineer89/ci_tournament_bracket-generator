@@ -110,7 +110,15 @@
   left: 20px;
   font-size: 0.85em;
   min-height: 40px;
-  ;
+}
+.brackets div.bracketbox span.score {
+  position: absolute;
+  right: 0;
+  font-size: 0.85em;
+  min-height: 40px;
+  padding: 0 10px;
+  background: #f7fa4b;
+  line-height: 40px;
 }
 .brackets div.bracketbox>span.bracketNo {
   left: 70px !important;
@@ -193,10 +201,11 @@
 
 .brackets>div .bracket-team,
 .brackets>div .final span {
-  padding: 10px;
+  padding: 0 10px;
   border: 1px solid #000;
   background-color: #fff;
   min-width: 150px;
+  line-height: 40px;
 }
 
 .brackets>div .final span {

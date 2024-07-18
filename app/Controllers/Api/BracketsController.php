@@ -67,7 +67,7 @@ class BracketsController extends BaseController
                 $participant_id = $req->participant;
             }
 
-            $teamnames[$req->index] = ['id' => $participant_id, 'name' => $req->name];
+            $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name];
 
             $insert_data = array('teamnames' => json_encode($teamnames));
 

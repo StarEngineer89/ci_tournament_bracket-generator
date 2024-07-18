@@ -10,10 +10,6 @@ $(document).on('ready', function () {
     /*
      * Build our bracket "model"
      */
-    function drawBrackets() {
-        if (brackets.length > 0)
-            renderBrackets(brackets);
-    }
 
     function makeDoubleElimination(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
@@ -69,228 +65,6 @@ $(document).on('ready', function () {
         return doubleEliminationBrackets;
     }
 
-    /*
-     * Inject our brackets
-     */
-    function renderBrackets(struct) {
-        var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
-
-        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 190 * groupCount + "px" + '"></div>'),
-            grouped = _.groupBy(struct, function (s) { return s.roundNo; });
-
-        // document.getElementById('brackets').style.width = 170 * (groupCount + 1) + 'px';
-
-        for (g = 1; g <= groupCount; g++) {
-            var round = $('<div class="r' + g + '"></div>');
-            
-            var roundName = $('<div class="text-center p-2 m-1 border" style="height: auto"></div>')
-            if (grouped[g][0].final_match) {
-                roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
-            } else {
-                roundName.html("Round " + grouped[g][0].roundNo) 
-            }
-            round.append(roundName)
-
-            var bracketBoxList = $('<div class="bracketbox-list"></div>')
-
-            _.each(grouped[g], function (gg) {
-
-                // if(gg.bye)
-                // round.append('<div></div>');
-                // else {
-                var obj = document.createElement('span');
-                obj.dataset.order = gg.bracketNo;
-                obj.dataset.bracket = gg.id;
-                obj.dataset.next = gg.nextGame;
-                obj.dataset.round = gg.roundNo;
-                obj.textContent = ' ';
-
-                var teams = JSON.parse(gg.teamnames);
-                var teama = obj.cloneNode();
-                teama.className = 'bracket-team teama';
-                if (teams[0] != undefined) {
-                    teama.dataset.id = teams[0].id;
-                    teama.textContent = teams[0].name;
-
-                    if (teams[0].id == gg.winner)
-                        teama.classList.add('winner');
-
-                }
-
-                var teamb = obj.cloneNode();
-                teamb.className = 'bracket-team teamb';
-                if (teams[1] != undefined) {
-                    teamb.dataset.id = teams[1].id;
-                    teamb.textContent = teams[1].name;
-
-                    if (teams[1].id == gg.winner)
-                        teamb.classList.add('winner');
-                }
-
-                var bracket = document.createElement('div')
-
-                if (gg.final_match) {
-                    bracket.className = "bracketbox final";
-                    teama.className = (teams[0]) ? "teama winner" : 'teama';
-                } else {
-                    var bracketNo = document.createElement('span')
-                    bracketNo.classList.add('bracketNo')
-                    bracketNo.innerHTML = gg.bracketNo
-                    bracket.append(bracketNo)
-                    bracket.className = "bracketbox";
-                }
-
-                bracket.append(teama);
-
-                if (!gg.final_match || gg.final_match === undefined)
-                    bracket.append(teamb);
-
-                bracketBoxList.append(bracket);
-                // }
-
-            });
-
-            round.append(bracketBoxList)
-
-            group.append(round);
-        }
-
-        if (hasEditPermission) {
-            $.contextMenu({
-                selector: '.bracket-team',
-                build: function ($triggerElement, e) {
-                    let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
-                    return {
-                        items: {
-                            mark: {
-                                name: (!isWinner) ? "Mark as Winner" : "Unmark as winner",
-                                callback: (key, opt, e) => {
-                                    if (!isWinner)
-                                        markWinner(key, opt, e)
-                                    else
-                                        unmarkWinner(key, opt, e)
-                                },
-                            },
-                            change: {
-                                name: "Change a participant",
-                                callback: (key, opt, e) => {
-                                    const element = opt.$trigger;
-                                    $.ajax({
-                                        type: "GET",
-                                        url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
-                                        success: function (result) {
-                                            var select = document.createElement('select');
-                                            select.setAttribute('class', "form-select");
-                                            var index = (element.hasClass("teama")) ? 0 : 1;
-
-                                            select.setAttribute('onChange', "changeParticipant($(this), '" + element.data('bracket') + "', " + index + ")");
-
-                                            var option = document.createElement('option');
-                                            select.appendChild(option);
-
-                                            result = JSON.parse(result);
-                                            if (result.length > 0) {
-                                                result.forEach((participant, i) => {
-                                                    var option = document.createElement('option');
-                                                    option.setAttribute('value', participant.id);
-                                                    option.textContent = participant.name;
-
-                                                    select.appendChild(option);
-                                                });
-
-                                                element.contents().remove();
-                                                element.append(select);
-
-                                                editing_mode = true;
-                                            } else {
-                                                alert("There is no participants to be selected");
-                                            }
-                                        },
-                                        error: function (error) {
-                                            console.log(error);
-                                        }
-                                    }).done(() => {
-                                        setTimeout(function () {
-                                            $("#overlay").fadeOut(300);
-                                        }, 500);
-                                    });
-                                }
-                            },
-                            create: {
-                                name: "Add a participant",
-                                callback: (key, opt, e) => {
-                                    var opts = prompt('Participant Name:', 'Guild');
-                                    var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
-
-                                    if (!_.isNaN(opts)) {
-                                        let duplicated = false;
-                                        let force_add = false;
-
-                                        $('.bracketbox span[data-round=' + opt.$trigger.data("round") + ']').each((i, ele) => {
-                                            if (ele.textContent == opts) {
-                                                duplicated = true;
-                                                force_add = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
-                                            }
-                                        });
-
-                                        if (!duplicated || force_add) {
-                                            updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode });
-                                        }
-                                    } else
-                                        alert('Please input the name of the participant.');
-                                }
-                            },
-                            delete: {
-                                name: "Delete Bracket",
-                                callback: (key, opt, e) => {
-                                    var element_id = opt.$trigger.data('bracket');
-                                    let triggerElement = opt.$trigger
-                                    $.ajax({
-                                        type: "delete",
-                                        url: apiURL + '/brackets/delete/' + element_id,
-                                        success: function (result) {
-                                            // var orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + triggerElement.data('next') + "']"), function (ele) { return ele.dataset.order }));
-                                            // var index = orders.findIndex((value) => { return value == triggerElement.data('order') });
-                                            // document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]')[index].innerHTML = '&nbsp;';
-                                            document.querySelectorAll('[data-order="' + triggerElement.data('order') + '"]').forEach((ele, i) => {
-                                                ele.innerHTML = '';
-                                                ele.classList.remove("winner");
-                                            })
-                                            document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]').forEach((ele, i) => {
-                                                // ele.innerHTML = '';
-                                            })
-
-                                            // triggerElement.parent().parent().remove();
-                                        },
-                                        error: function (error) {
-                                            console.log(error);
-                                        }
-                                    }).done(() => {
-                                        setTimeout(function () {
-                                            $("#overlay").fadeOut(300);
-                                        }, 500);
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        // group.append('<div class="r'+(groupCount+1)+'"><div class="final"><div class="bracketbox"><span class="bracket-team teamc">&nbsp;</span></div></div></div>');
-
-        $('#brackets').append(group);
-
-        adjustBracketsStyles()
-
-        bracketCount++;
-        $('html,body').animate({
-            scrollTop: $("#b" + (bracketCount - 1)).offset().top
-        });
-
-        
-    }
-
     function saveBrackets(brackets) {
         $.ajax({
             type: "POST",
@@ -300,31 +74,6 @@ $(document).on('ready', function () {
             dataType: "JSON",
             success: function (result) {
                 renderBrackets(result.brackets);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function () {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-    }
-
-    function loadBrackets() {
-        $("#overlay").fadeIn(300);
-
-        $.ajax({
-            type: "get",
-            url: apiURL + '/tournaments/' + tournament_id + '/brackets',
-            success: function (result) {
-                result = JSON.parse(result);
-                if (result.length > 0) {
-                    bracketCount = result.length;
-                    brackets = result;
-
-                    drawBrackets();
-                }
             },
             error: function (error) {
                 console.log(error);
@@ -411,6 +160,284 @@ $(document).on('ready', function () {
     }
 });
 
+function loadBrackets() {
+    $("#overlay").fadeIn(300);
+
+    $.ajax({
+        type: "get",
+        url: apiURL + '/tournaments/' + tournament_id + '/brackets',
+        success: function (result) {
+            result = JSON.parse(result);
+            if (result.length > 0) {
+                bracketCount = result.length;
+                brackets = result;
+
+                drawBrackets();
+            }
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function () {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+}
+
+function drawBrackets() {
+    if (brackets.length > 0)
+        renderBrackets(brackets);
+}
+
+/*
+    * Inject our brackets
+    */
+function renderBrackets(struct) {
+    var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
+
+    var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 190 * groupCount + "px" + '"></div>'),
+        grouped = _.groupBy(struct, function (s) { return s.roundNo; });
+
+    // document.getElementById('brackets').style.width = 170 * (groupCount + 1) + 'px';
+
+    for (g = 1; g <= groupCount; g++) {
+        var round = $('<div class="r' + g + '"></div>');
+        
+        var roundName = $('<div class="text-center p-2 m-1 border" style="height: auto"></div>')
+        if (grouped[g][0].final_match) {
+            roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
+        } else {
+            roundName.html("Round " + grouped[g][0].roundNo) 
+        }
+        round.append(roundName)
+
+        var bracketBoxList = $('<div class="bracketbox-list"></div>')
+
+        _.each(grouped[g], function (gg) {
+            var obj = document.createElement('span');
+            obj.dataset.order = gg.bracketNo;
+            obj.dataset.bracket = gg.id;
+            obj.dataset.next = gg.nextGame;
+            obj.dataset.round = gg.roundNo;
+            obj.textContent = ' ';
+
+            var scoreBox = document.createElement('span')
+            scoreBox.classList.add('score')
+
+            var teams = JSON.parse(gg.teamnames);
+            var teama = obj.cloneNode(true);
+            teama.className = 'bracket-team teama';
+            if (teams[0] != undefined) {
+                teama.dataset.id = teams[0].id;
+                var nameSpan = document.createElement('span')
+                nameSpan.classList.add('name')
+                nameSpan.textContent = teams[0].name;
+                teama.appendChild(nameSpan)
+
+                var score = scoreBox.cloneNode(true)
+                var scorePoint = scoreBracket * (g - 1)
+                for (round_i = 0; round_i < g - 1; round_i++) {
+                    scorePoint += incrementScore * round_i
+                }
+
+                if (teams[0].id == gg.winner) {
+                    teama.classList.add('winner');
+                    scorePoint += scoreBracket
+                    scorePoint += incrementScore * (g - 1)
+                }
+
+                score.textContent = scorePoint
+                teama.appendChild(score)
+            }
+
+            var teamb = obj.cloneNode();
+            teamb.className = 'bracket-team teamb';
+            if (teams[1] != undefined) {
+                teamb.dataset.id = teams[1].id;
+                var nameSpan = document.createElement('span')
+                nameSpan.classList.add('name')
+                nameSpan.textContent = teams[1].name
+                teamb.appendChild(nameSpan)
+
+                var score = scoreBox.cloneNode(true)
+                var scorePoint = scoreBracket * (g - 1)
+                for (round_i = 0; round_i < g - 1; round_i++) {
+                    scorePoint += incrementScore * round_i
+                }
+
+                if (teams[1].id == gg.winner) {
+                    teamb.classList.add('winner');
+                    scorePoint += scoreBracket
+                    scorePoint += incrementScore * (g - 1)
+                }
+
+                score.textContent = scorePoint
+                teamb.appendChild(score)
+            }
+
+            var bracket = document.createElement('div')
+
+            if (gg.final_match) {
+                bracket.className = "bracketbox final";
+                teama.className = (teams[0]) ? "teama winner" : 'teama';
+            } else {
+                var bracketNo = document.createElement('span')
+                bracketNo.classList.add('bracketNo')
+                bracketNo.innerHTML = gg.bracketNo
+                bracket.append(bracketNo)
+                bracket.className = "bracketbox";
+            }
+
+            bracket.append(teama);
+
+            if (!gg.final_match || gg.final_match === undefined)
+                bracket.append(teamb);
+
+            bracketBoxList.append(bracket);
+            // }
+
+        });
+
+        round.append(bracketBoxList)
+
+        group.append(round);
+    }
+
+    if (hasEditPermission) {
+        $.contextMenu({
+            selector: '.bracket-team',
+            build: function ($triggerElement, e) {
+                let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
+                return {
+                    items: {
+                        mark: {
+                            name: (!isWinner) ? "Mark as Winner" : "Unmark as winner",
+                            callback: (key, opt, e) => {
+                                if (!isWinner)
+                                    markWinner(key, opt, e)
+                                else
+                                    unmarkWinner(key, opt, e)
+                            },
+                        },
+                        change: {
+                            name: "Change a participant",
+                            callback: (key, opt, e) => {
+                                const element = opt.$trigger;
+                                $.ajax({
+                                    type: "GET",
+                                    url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
+                                    success: function (result) {
+                                        var select = document.createElement('select');
+                                        select.setAttribute('class', "form-select");
+                                        var index = (element.hasClass("teama")) ? 0 : 1;
+
+                                        select.setAttribute('onChange', "changeParticipant($(this), '" + element.data('bracket') + "', " + index + ")");
+
+                                        var option = document.createElement('option');
+                                        select.appendChild(option);
+
+                                        result = JSON.parse(result);
+                                        if (result.length > 0) {
+                                            result.forEach((participant, i) => {
+                                                var option = document.createElement('option');
+                                                option.setAttribute('value', participant.id);
+                                                option.textContent = participant.name;
+
+                                                select.appendChild(option);
+                                            });
+
+                                            element.contents().remove();
+                                            element.append(select);
+
+                                            editing_mode = true;
+                                        } else {
+                                            alert("There is no participants to be selected");
+                                        }
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
+                                    }
+                                }).done(() => {
+                                    setTimeout(function () {
+                                        $("#overlay").fadeOut(300);
+                                    }, 500);
+                                });
+                            }
+                        },
+                        create: {
+                            name: "Add a participant",
+                            callback: (key, opt, e) => {
+                                var opts = prompt('Participant Name:', 'Guild');
+                                var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
+
+                                if (!_.isNaN(opts)) {
+                                    let duplicated = false;
+                                    let force_add = false;
+
+                                    $('.bracketbox span[data-round=' + opt.$trigger.data("round") + ']').each((i, ele) => {
+                                        if ($(ele).find('.name').text() == opts) {
+                                            duplicated = true;
+                                            force_add = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
+                                        }
+                                    });
+
+                                    if (!duplicated || force_add) {
+                                        updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode });
+                                    }
+                                } else
+                                    alert('Please input the name of the participant.');
+                            }
+                        },
+                        delete: {
+                            name: "Delete Bracket",
+                            callback: (key, opt, e) => {
+                                var element_id = opt.$trigger.data('bracket');
+                                let triggerElement = opt.$trigger
+                                $.ajax({
+                                    type: "delete",
+                                    url: apiURL + '/brackets/delete/' + element_id,
+                                    success: function (result) {
+                                        // var orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + triggerElement.data('next') + "']"), function (ele) { return ele.dataset.order }));
+                                        // var index = orders.findIndex((value) => { return value == triggerElement.data('order') });
+                                        // document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]')[index].innerHTML = '&nbsp;';
+                                        document.querySelectorAll('[data-order="' + triggerElement.data('order') + '"]').forEach((ele, i) => {
+                                            ele.innerHTML = '';
+                                            ele.classList.remove("winner");
+                                        })
+                                        document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]').forEach((ele, i) => {
+                                            // ele.innerHTML = '';
+                                        })
+
+                                        // triggerElement.parent().parent().remove();
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
+                                    }
+                                }).done(() => {
+                                    setTimeout(function () {
+                                        $("#overlay").fadeOut(300);
+                                    }, 500);
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    // group.append('<div class="r'+(groupCount+1)+'"><div class="final"><div class="bracketbox"><span class="bracket-team teamc">&nbsp;</span></div></div></div>');
+
+    $('#brackets').append(group);
+
+    adjustBracketsStyles()
+
+    bracketCount++;
+    $('html,body').animate({
+        scrollTop: $("#b" + (bracketCount - 1)).offset().top
+    });
+}
+
 function changeParticipant(ele, bracket_id, index) {
     let ability = true;
     $('.bracketbox span[data-round=' + ele.parent().data("round") + ']').each((i, e) => {
@@ -439,12 +466,8 @@ function updateBracket(element, data) {
         contentType: "application/json",
         dataType: "JSON",
         success: function (result) {
-            let box = element;
-            box.data('id', result.data.participant_id);
-            box.contents().remove();
-            box.append(data.name);
-
-            editing_mode = false;
+            $('#brackets').contents().remove();
+            loadBrackets()
         },
         error: function (error) {
             console.log(error);
@@ -467,7 +490,7 @@ function markWinner(key, opt, e) {
     const next_id = opt.$trigger.data('next');
     let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
     next_bracket = next_bracketObj.dataset.bracket;
-    const text = opt.$trigger.text();
+    const nameSpan = opt.$trigger.find('.name').clone()
 
     $.ajax({
         type: "PUT",
@@ -475,7 +498,7 @@ function markWinner(key, opt, e) {
         contentType: "application/json",
         data: JSON.stringify({ winner: opt.$trigger.data('id'), action_code: markWinnerActionCode }),
         success: function (result) {
-            document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = text;
+            console.log(result)
         },
         error: function (error) {
             console.log(error);
@@ -491,32 +514,10 @@ function markWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + next_bracket,
         contentType: "application/json",
-        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.text() }),
+        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.find('.name').text() }),
         success: function (result) {
-            ele.parent().contents().removeClass('winner')
-            ele.addClass('winner');
-            next_bracketObj.dataset.id = ele.data('id');
-            next_bracketObj.innerHTML = ele.text();
-
-            if (next_bracketObj.parentElement.classList.contains('final')) {
-                next_bracketObj.classList.add('winner');
-
-                var player = document.getElementById('myAudio');
-                player.addEventListener("timeupdate", function () {
-                    if ((player.currentTime - player._startTime) >= player.value) {
-                        player.pause();
-                        document.getElementById('stopMusicButton').classList.add('d-none');
-                    };
-                });
-
-                player.value = player.dataset.duration;
-                player._startTime = player.dataset.starttime;
-                player.currentTime = player.dataset.starttime;
-                player.play();
-
-                document.getElementById('stopMusicButton').classList.remove('d-none');
-                document.getElementById('stopMusicButton').textContent = "Pause Music"
-            }
+            $('#brackets').contents().remove();
+            loadBrackets()
         },
         error: function (error) {
             console.log(error);
@@ -535,17 +536,27 @@ function unmarkWinner(key, opt, e) {
     let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
     next_bracket = next_bracketObj.dataset.bracket;
 
+    const ele = opt.$trigger;
     $.ajax({
         type: "PUT",
         url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
         contentType: "application/json",
         data: JSON.stringify({ winner: '' }),
         success: function (result) {
-            document.querySelectorAll('[data-order="' + next_id + '"]')[index].innerHTML = '';
-            next_bracketObj.classList.remove('winner');
+            ele.find('.score').remove()
+            var scoreBox = document.createElement('span')
+            scoreBox.classList.add('score')
+            var scorePoint = scoreBracket * (parseInt(ele.data('round')) - 1)
+            for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
+                scorePoint += incrementScore * round_i
+            }
+            scoreBox.textContent = scorePoint
+            ele.append(scoreBox)
 
-            document.getElementById('stopMusicButton').classList.add('d-none');
-            document.getElementById('stopMusicButton').textContent = "Pause Music"
+            if (document.getElementById('stopMusicButton')) {
+                document.getElementById('stopMusicButton').classList.add('d-none');
+                document.getElementById('stopMusicButton').textContent = "Pause Music"
+            }
         },
         error: function (error) {
             console.log(error);
@@ -556,7 +567,6 @@ function unmarkWinner(key, opt, e) {
         }, 500);
     });
 
-    const ele = opt.$trigger;
     $.ajax({
         type: "PUT",
         url: apiURL + '/brackets/update/' + next_bracket,
