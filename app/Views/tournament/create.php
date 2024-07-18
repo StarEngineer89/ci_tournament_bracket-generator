@@ -756,13 +756,12 @@ var drawTournamentsTable = () => {
                                     <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
                                 </div>
                                 <div class="col-3 ms-1">
-                                    <input type="number" name="increament_score" id="incrementScore" class="form-control" min="0">
+                                    <input type="number" name="increament_score" id="incrementScore" class="form-control" min="0" required>
                                 </div>
                             </div>
                             <div class="enable-increamentscoreoption-hint form-text">
                                 <p>Specify an increment the score should increase by for each round.</p>
                                 <p>For example, if winning participants attain 2 points in their bracket in round 1, and an increment of 3 is specified, then in round 2, winning participants will attain 5 points, and in round 3 winning participants will attain 8 points, etc.</p>
-                                <p>In this case, the cumulative score will be calculated as follows: 2+5+8...</p>
                             </div>
                         </div>
                     </div>

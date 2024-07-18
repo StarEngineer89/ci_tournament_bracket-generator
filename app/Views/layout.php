@@ -85,6 +85,7 @@
                                 <div class="col-12 mb-3">
                                     <p class="mb-0">All timestamps will be based on the following Timezone setting.</p>
                                     <p class="mb-0">Default is EST (time offset is −5 hours (UTC/GMT -5) during standard time and −4 hours (UTC/GMT -4) during daylight saving time)</p>
+                                    <p class="mt-3">You may need to refresh the page after modifications to the timezone settings to observe the updated timestamps</p>
                                 </div>
                             </div>
                             <div class="row">
