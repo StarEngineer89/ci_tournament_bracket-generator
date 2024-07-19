@@ -117,7 +117,7 @@
   font-size: 0.85em;
   min-height: 40px;
   padding: 0 10px;
-  background: #f7fa4b;
+  background: #fad684;
   line-height: 40px;
 }
 .brackets div.bracketbox>span.bracketNo {
@@ -200,7 +200,7 @@
 }
 
 .brackets>div .bracket-team,
-.brackets>div .final span {
+.brackets>div .final > span {
   padding: 0 10px;
   border: 1px solid #000;
   background-color: #fff;

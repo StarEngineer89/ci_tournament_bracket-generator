@@ -51,7 +51,7 @@ class BracketsController extends BaseController
             if (!isset($req->participant))  {
                 $participant = (auth()->user()) ? $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id'], 'user_id' => auth()->user()->id])->first() : null;
                 if ($participant) {
-                    $participant_id = $req->participant;
+                    $participant_id = $participant->id;
                 } else {
                     $userId = (auth()->user()) ? auth()->user()->id : 0;
                     $entity = new \App\Entities\Participant([
