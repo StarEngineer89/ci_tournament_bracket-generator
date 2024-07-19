@@ -126,8 +126,10 @@ $(document).on('ready', function () {
                         scorePoint += incrementScore * (g - 1)
                     }
 
-                    score.textContent = scorePoint
-                    teama.appendChild(score)
+                    if (isScoreEnabled) {
+                        score.textContent = scorePoint
+                        teama.appendChild(score)
+                    }
                 }
 
                 var teamb = obj.cloneNode();
@@ -151,8 +153,10 @@ $(document).on('ready', function () {
                         scorePoint += incrementScore * (g - 1)
                     }
 
-                    score.textContent = scorePoint
-                    teamb.appendChild(score)
+                    if (isScoreEnabled) {
+                        score.textContent = scorePoint
+                        teamb.appendChild(score)
+                    }
                 }
 
                 var bracket = document.createElement('div')
@@ -475,11 +479,13 @@ function updateBracket(element, data) {
             
             box.append(nameSpan);
 
-            var scoreBox = document.createElement('span')
-            scoreBox.classList.add('score')
-            var scorePoint = 0
-            scoreBox.textContent = scorePoint
-            box.append(scoreBox)
+            if (isScoreEnabled) {
+                var scoreBox = document.createElement('span')
+                scoreBox.classList.add('score')
+                var scorePoint = 0
+                scoreBox.textContent = scorePoint
+                box.append(scoreBox)
+            }
 
             editing_mode = false;
         },
@@ -534,23 +540,27 @@ function markWinner(key, opt, e) {
             ele.parent().contents().removeClass('winner')
             ele.addClass('winner');
             
-            var scoreBox = document.createElement('span')
-            scoreBox.classList.add('score')
-            var scorePoint = 0
-            for (round_i = 0; round_i < parseInt(ele.data('round')); round_i++) {
-                scorePoint += scoreBracket
-                scorePoint += incrementScore * round_i
+            if (isScoreEnabled) {
+                var scoreBox = document.createElement('span')
+                scoreBox.classList.add('score')
+                var scorePoint = 0
+                for (round_i = 0; round_i < parseInt(ele.data('round')); round_i++) {
+                    scorePoint += scoreBracket
+                    scorePoint += incrementScore * round_i
+                }
+                scoreBox.textContent = scorePoint
+                ele.append(scoreBox)
             }
-            scoreBox.textContent = scorePoint
-            ele.append(scoreBox)
 
             next_bracketObj.dataset.id = ele.data('id');
             $(next_bracketObj).append(nameSpan);
 
-            scoreBox = document.createElement('span')
-            scoreBox.classList.add('score')
-            scoreBox.textContent = scorePoint
-            $(next_bracketObj).append(scoreBox)
+            if (isScoreEnabled) {
+                scoreBox = document.createElement('span')
+                scoreBox.classList.add('score')
+                scoreBox.textContent = scorePoint
+                $(next_bracketObj).append(scoreBox)
+            }
 
             if (next_bracketObj.parentElement.classList.contains('final')) {
                 next_bracketObj.classList.add('winner');
@@ -602,14 +612,17 @@ function unmarkWinner(key, opt, e) {
         data: JSON.stringify({ winner: '' }),
         success: function (result) {
             ele.find('.score').remove()
-            var scoreBox = document.createElement('span')
-            scoreBox.classList.add('score')
-            var scorePoint = scoreBracket * (parseInt(ele.data('round')) - 1)
-            for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
-                scorePoint += incrementScore * round_i
+
+            if (isScoreEnabled) {
+                var scoreBox = document.createElement('span')
+                scoreBox.classList.add('score')
+                var scorePoint = scoreBracket * (parseInt(ele.data('round')) - 1)
+                for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
+                    scorePoint += incrementScore * round_i
+                }
+                scoreBox.textContent = scorePoint
+                ele.append(scoreBox)
             }
-            scoreBox.textContent = scorePoint
-            ele.append(scoreBox)
 
             if (document.getElementById('stopMusicButton')) {
                 document.getElementById('stopMusicButton').classList.add('d-none');

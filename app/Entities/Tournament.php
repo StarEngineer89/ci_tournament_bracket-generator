@@ -19,6 +19,7 @@ class Tournament extends Entity
         'shuffle_enable' => null,
         'description' => null,
         'score_bracket' => null,
-        'increament_score' => null
+        'increament_score' => null,
+        'score_enabled' => null
     ];
 }

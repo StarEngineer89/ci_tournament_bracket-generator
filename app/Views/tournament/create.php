@@ -735,7 +735,7 @@ var drawTournamentsTable = () => {
 
                     <div class="form-check mb-3">
                         <div class="ps-2">
-                            <input type="checkbox" class="form-check-input" name="score_option" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
+                            <input type="checkbox" class="form-check-input" name="score_enabled" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
                             <label class="form-check-label" for="enableScoreOption">
                                 <h6>Enable Scoring</h6>
                             </label>
@@ -761,7 +761,11 @@ var drawTournamentsTable = () => {
                             </div>
                             <div class="enable-increamentscoreoption-hint form-text">
                                 <p>Specify an increment the score should increase by for each round.</p>
-                                <p>For example, if winning participants attain 2 points in their bracket in round 1, and an increment of 3 is specified, then in round 2, winning participants will attain 5 points, and in round 3 winning participants will attain 8 points, etc.</p>
+                                <p>
+                                    For example, if winning participants attain 100 points in their bracket in round 1, and an increment of 200 is specified, then in round 2, winning participants will attain 300 points, and in round 3 winning participants will attain 700 points, etc.
+                                    In this case, the cumulative result would be accumulated each round as follows:
+                                    100 + 300 + ...
+                                </p>
                             </div>
                         </div>
                     </div>

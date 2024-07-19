@@ -76,6 +76,7 @@ class TournamentController extends BaseController
             'archive' => 0,
             'shuffle_enable' => $this->request->getPost('enable-shuffle'),
             'description' => $this->request->getPost('description'),
+            'score_enabled' => ($this->request->getPost('score_enabled') == 'on') ? 1 : 0,
             'score_bracket' => $this->request->getPost('score_bracket'),
             'increament_score' => $this->request->getPost('increament_score')
         ];
