@@ -762,7 +762,7 @@ var drawTournamentsTable = () => {
                             <div class="enable-increamentscoreoption-hint form-text">
                                 <p>Specify an increment the score should increase by for each round.</p>
                                 <p>
-                                    For example, if winning participants attain 100 points in their bracket in round 1, and an increment of 200 is specified, then in round 2, winning participants will attain 300 points, and in round 3 winning participants will attain 700 points, etc.
+                                    For example, if winning participants attain 100 points in their bracket in round 1, and an increment of 200 is specified, then in round 2, winning participants will attain 300 points, and in round 3 winning participants will attain 500 points, etc.
                                     In this case, the cumulative result would be accumulated each round as follows:
                                     100 + 300 + ...
                                 </p>
