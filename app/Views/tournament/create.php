@@ -40,7 +40,11 @@ $(document).ready(function() {
             },
             onVideoInsert: function(target) {
                 $(target).wrap('<div class="responsive-video"></div>');
+            },
+            onVideoUpload: function(files) {
+                uploadVideo(files[0]);
             }
+
         }
     });
 
@@ -96,15 +100,17 @@ $(document).ready(function() {
             data: data,
             beforeSend: function() {
                 //$("#preview").fadeOut();
+                $('#tournamentSettings').modal('hide');
+                $('#beforeProcessing').removeClass('d-none')
                 $("#err").fadeOut();
             },
             success: function(result) {
+                $('#beforeProcessing').addClass('d-none')
                 var result = JSON.parse(result);
                 if (result.error) {
                     // invalid file format.
                     $("#err").html("Invalid File !").fadeIn();
                 } else {
-                    $('#tournamentSettings').modal('hide');
                     tournament_id = result.data.tournament_id;
                     eleminationType = (result.data.type == 1) ? "Single" : "Double";
                     if (result.data.music !== undefined && result.data.music[0] !== undefined) {
@@ -378,6 +384,11 @@ $(document).ready(function() {
             data: {
                 id: tournament_id
             },
+            beforeSend: function() {
+                //$("#preview").fadeOut();
+                $('#beforeProcessing').removeClass('d-none')
+                $("#err").fadeOut();
+            },
             success: function(result) {
                 renderParticipants(result)
                 $(selectTournamentConfirmModal).modal('hide')
@@ -460,8 +471,10 @@ var csvUpload = (element) => {
         processData: false,
         beforeSend: function() {
             $("#err").fadeOut();
+            $('#beforeProcessing').removeClass('d-none')
         },
         success: function(result) {
+            $('#beforeProcessing').addClass('d-none')
             ptNames = result.names
             let validatedParticipantNames = validateParticipantNames(ptNames)
             let duplicatedNames = validatedParticipantNames.duplicates
@@ -946,7 +959,7 @@ var drawTournamentsTable = () => {
     <button id="stopMusicButton" class="d-none">Pause Music</button>
 </div>
 
-<div id="overlay" class="d-none">
+<div id="generateProcessing" class="overlay d-none">
     <div class="snippet p-3 .bg-light" data-title="dot-elastic">
         <p>Generating Tournament Brackets...</p>
         <div class="stage">

@@ -117,6 +117,14 @@
             </div>
         </div>
 
+        <div id="beforeProcessing" class="overlay d-none">
+            <div class="snippet p-3 .bg-light" data-title="dot-elastic">
+                <p>Processing, please wait...</p>
+                <div class="stage">
+                    <div class="dot-elastic"></div>
+                </div>
+            </div>
+        </div>
 
         <!-- Cookie Consent Modal -->
         <div id="cookieConsentModal" style="display:none; position:fixed; bottom:0; width:100%; background-color:#f1f1f1; padding:10px; text-align:center;">

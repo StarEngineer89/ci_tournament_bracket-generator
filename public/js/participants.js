@@ -2,7 +2,7 @@ let shufflingPromise = null;
 
 function callShuffle(enableShuffling = true) {
     const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
-    $('#overlay').removeClass('d-none')
+    $('#generateProcessing').removeClass('d-none')
 
     exampleTeams = [];
     
