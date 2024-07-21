@@ -38,7 +38,8 @@ function callShuffle(enableShuffling = true) {
         });
 
         generateBrackets(exampleTeams);
-        $('#overlay').addClass('d-none')
+        $('#generateProcessing').addClass('d-none')
+        $('#beforeProcessing').removeClass('d-none')
     },
         function (error) { myDisplayer(error); }
     );

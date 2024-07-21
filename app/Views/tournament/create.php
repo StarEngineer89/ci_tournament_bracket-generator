@@ -390,6 +390,7 @@ $(document).ready(function() {
                 $("#err").fadeOut();
             },
             success: function(result) {
+                $('#beforeProcessing').addClass('d-none')
                 renderParticipants(result)
                 $(selectTournamentConfirmModal).modal('hide')
             },
