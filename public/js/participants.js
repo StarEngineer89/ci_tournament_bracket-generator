@@ -38,8 +38,6 @@ function callShuffle(enableShuffling = true) {
         });
 
         generateBrackets(exampleTeams);
-        $('#generateProcessing').addClass('d-none')
-        $('#beforeProcessing').removeClass('d-none')
     },
         function (error) { myDisplayer(error); }
     );
@@ -263,6 +261,10 @@ function generateBrackets(list) {
         url: apiURL + '/brackets/generate',
         data: { 'type': eleminationType, 'tournament_id': tournament_id, 'list': list },
         dataType: "JSON",
+        beforeSend: function() {
+            $('#generateProcessing').addClass('d-none')
+            $('#beforeProcessing').removeClass('d-none')
+        },
         success: function (result) {
             if (result.result == 'success') window.location.href = '/tournaments/' + tournament_id + '/view';
         },
