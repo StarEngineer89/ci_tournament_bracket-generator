@@ -101,11 +101,13 @@ $(document).ready(function() {
             beforeSend: function() {
                 //$("#preview").fadeOut();
                 $('#tournamentSettings').modal('hide');
+                $('#beforeProcessing').addClass('generateProcessing')
                 $('#beforeProcessing').removeClass('d-none')
                 $("#err").fadeOut();
             },
             success: function(result) {
                 $('#beforeProcessing').addClass('d-none')
+                $('#beforeProcessing').removeClass('generateProcessing')
                 var result = JSON.parse(result);
                 if (result.error) {
                     // invalid file format.

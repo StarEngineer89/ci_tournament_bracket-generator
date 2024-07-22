@@ -380,7 +380,7 @@
   z-index: 1100;
 }
 
-#generateProcessing.overlay {
+#generateProcessing.overlay, .generateProcessing.overlay {
   align-items: baseline;
 }
 
@@ -389,7 +389,8 @@
   position: relative;
 }
 
-#generateProcessing .snippet {
+#generateProcessing .snippet,
+.generateProcessing .snippet {
   top: 150px;
 }
 

@@ -263,6 +263,7 @@ function generateBrackets(list) {
         dataType: "JSON",
         beforeSend: function() {
             $('#generateProcessing').addClass('d-none')
+            $('#beforeProcessing').addClass('generateProcessing')
             $('#beforeProcessing').removeClass('d-none')
         },
         success: function (result) {
