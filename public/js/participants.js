@@ -288,8 +288,11 @@ var addParticipants = (data) => {
             'tournament_id': data.tournament_id
         },
         dataType: "JSON",
+        beforeSend: function() {
+            $('#beforeProcessing').removeClass('d-none')
+        },
         success: function(result) {
-
+            $('#beforeProcessing').addClass('d-none')
             if (result.count) {
                 renderParticipants(result.participants);
 
@@ -322,7 +325,8 @@ var validateParticipantNames = (names) => {
     let validNames = []
     let duplicates = []
     names.forEach(name => {
-        if (exisingNames.includes(name) || validNames.includes(name)) {
+        const normalizedValue = name.replace(/\s+/g, '').toLowerCase();
+        if (exisingNames.some(element => element.replace(/\s+/g, '').toLowerCase() === normalizedValue) || validNames.some(element => element.replace(/\s+/g, '').toLowerCase())) {
             duplicates.push(name)
         } else {
             validNames.push(name)
