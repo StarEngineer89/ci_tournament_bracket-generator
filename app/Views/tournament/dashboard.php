@@ -93,7 +93,9 @@
             <div class="modal-body">
 
                 <form id="tournamentForm" method="POST" endtype="multipart/form-data">
-                    <?= $settingsBlock ?>
+                    <div class="settings-update">
+                        <?= $settingsBlock ?>
+                    </div>
 
                     <div id="music-settings-panel">
                         <?= $musicSettingsBlock ?>

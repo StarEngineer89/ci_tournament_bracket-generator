@@ -512,11 +512,16 @@ function markWinner(key, opt, e) {
     next_bracket = next_bracketObj.dataset.bracket;
     const nameSpan = opt.$trigger.find('.name').clone()
 
+    let is_final = false
+    if (next_bracketObj.classList.contains('final')) {
+        is_final = true
+    }
+
     $.ajax({
         type: "PUT",
         url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
         contentType: "application/json",
-        data: JSON.stringify({ winner: opt.$trigger.data('id'), action_code: markWinnerActionCode }),
+        data: JSON.stringify({ winner: opt.$trigger.data('id'), action_code: markWinnerActionCode, is_final: is_final }),
         success: function (result) {
             console.log(result)
         },
@@ -604,6 +609,11 @@ function unmarkWinner(key, opt, e) {
     let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
     next_bracket = next_bracketObj.dataset.bracket;
 
+    let is_final = false
+    if (next_bracketObj.classList.contains('final')) {
+        is_final = true
+    }
+
     const ele = opt.$trigger;
     $.ajax({
         type: "PUT",
@@ -642,7 +652,7 @@ function unmarkWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + next_bracket,
         contentType: "application/json",
-        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode }),
+        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode, is_final: is_final }),
         success: function (result) {
             ele.parent().contents().removeClass('winner')
             next_bracketObj.dataset.id = '';

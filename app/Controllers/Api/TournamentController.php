@@ -400,7 +400,11 @@ class TournamentController extends BaseController
         if ($history && count($history)) {
             foreach ($history as $row) {
                 $params = json_decode($row['params']);
-                $participants = $params->participants;
+                $participants = [];
+                if (isset($params->participants)) {
+                    $participants = $params->participants;
+                }
+                
                 if ($row['action'] == BRACKET_ACTIONCODE_MARK_WINNER) {
                     $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no marked as a winner in round $params->round_no";
                 }
@@ -419,6 +423,13 @@ class TournamentController extends BaseController
 
                 if ($row['action'] == BRACKET_ACTIONCODE_DELETE) {
                     $action = "Bracket #$params->bracket_no containing participants [\"$participants[0]\", \"$participants[1]\"] in round $params->round_no deleted";
+                }
+
+                if ($row['action'] == BRACKET_ACTIONCODE_CLEAR) {
+                    $tournamentModel = model('\App\Models\TournamentModel');
+                    $tournament = $tournamentModel->find($tournament_id);
+                    $tournamentName = $tournament['name'];
+                    $action = "Tournament \"$tournamentName\" was reset.";
                 }
 
                 $data[] = [

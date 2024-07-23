@@ -80,6 +80,23 @@ class BracketsController extends BaseController
 
         $this->bracketsModel->update($id, $insert_data);
 
+        /** Change the tournament status
+         *  If mark as winner in final, set status to completed
+         *  If unmark a winner, set status to progress
+         */
+        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER && $req->is_final) {
+            $tournamentModel = model('\App\Models\TournamentModel');
+            $tournament = $tournamentModel->find($bracket['tournament_id']);
+            $tournament['status'] = TOURNAMENT_STATUS_COMPLETED;
+            $tournamentModel->save($tournament);
+        }
+        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
+            $tournamentModel = model('\App\Models\TournamentModel');
+            $tournament = $tournamentModel->find($bracket['tournament_id']);
+            $tournament['status'] = TOURNAMENT_STATUS_INPROGRESS;
+            $tournamentModel->save($tournament);
+        }
+
         /** Update tournament searchable data  */
         $tournament_model = model('\App\Models\TournamentModel');
         $tournament = $tournament_model->find($bracket['tournament_id']);
@@ -222,6 +239,21 @@ class BracketsController extends BaseController
         $tournament = $tournament_model->find($tournament_id);
         $tournament['searchable'] = $tournament['name'];
         $tournament_model->save($tournament);
+
+        /**
+         * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
+         */
+        $logActionsModel = model('\App\Models\LogActionsModel');
+        $insert_data = ['tournament_id' => $tournament['id'], 'action' => BRACKET_ACTIONCODE_CLEAR];
+        if (auth()->user()) {
+            $insert_data['user_id'] = auth()->user()->id;
+        } else {
+            $insert_data['user_id'] = 0;
+        }
+        $data = [];
+        $insert_data['params'] = json_encode($data);
+
+        $logActionsModel->insert($insert_data);
 
         return json_encode(array('result' => 'success'));
     }
