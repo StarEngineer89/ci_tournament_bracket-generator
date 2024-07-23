@@ -839,10 +839,11 @@ $(document).ready(function() {
             type: "POST",
             data: data,
             beforeSend: function() {
-                //$("#preview").fadeOut();
-                $("#err").fadeOut();
+                $('#beforeProcessing').removeClass('d-none')
             },
             success: function(result) {
+                $('#beforeProcessing').addClass('d-none')
+
                 var result = JSON.parse(result);
                 if (result.error) {
                     // invalid file format.
