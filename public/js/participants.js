@@ -325,8 +325,8 @@ var validateParticipantNames = (names) => {
     let validNames = []
     let duplicates = []
     names.forEach(name => {
-        const normalizedValue = name.toLowerCase();
-        if (exisingNames.some(element => element.toLowerCase() === normalizedValue) || validNames.some(element => element.toLowerCase())) {
+        const normalizedValue = name.replace(/\s+/g, '').toLowerCase();
+        if (exisingNames.some(element => element.replace(/\s+/g, '').toLowerCase() === normalizedValue) || validNames.some(element => element.replace(/\s+/g, '').toLowerCase() === normalizedValue)) {
             duplicates.push(name)
         } else {
             validNames.push(name)

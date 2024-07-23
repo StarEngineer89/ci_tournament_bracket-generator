@@ -297,7 +297,9 @@ $(document).ready(function() {
         var items = $('#newList span.p-name')
         const names = _.map(items, (ele) => {
             return {
-                'name': ele.textContent
+                'id': ele.parentElement.dataset.id,
+                'name': ele.textContent,
+                'lowercase': ele.textContent.replace(/\s+/g, '').toLowerCase()
             }
         })
 
@@ -305,24 +307,84 @@ $(document).ready(function() {
             return false;
         }
 
-        let duplications = _.chain(names).groupBy('name').filter(function(v) {
+        let duplications = _.chain(names).groupBy('lowercase').filter(function(v) {
             return v.length > 1
         }).flatten().uniq().value()
 
         if (duplications.length) {
+            const groupedByLowercase = Object.values(
+                duplications.reduce((acc, name) => {
+                    if (!acc[name.lowercase]) {
+                        acc[name.lowercase] = [];
+                    }
+                    acc[name.lowercase].push(name);
+                    return acc;
+                }, {})
+            );
+
+            let elements = []
+            groupedByLowercase.forEach(group => {
+                group.forEach(ele => {
+                    if (elements[ele.lowercase]) {
+                        duplicates.push(ele.id)
+                    } else {
+                        elements[ele.lowercase] = ele
+                    }
+                })
+            })
+
             duplications = _.map(_.uniq(duplications, function(item) {
                 return item.name;
             }), function(item) {
                 return item.name
             })
 
-            const duplicate_names = duplications.join(", ")
-            appendAlert(`The following duplicate participants were found.<br/>${duplicate_names}`, 'danger');
+            duplicate_names = duplications.join(", ")
+            $('#removeDuplicationsConfirmModal span.names').html(duplicate_names)
+            $('#removeDuplicationsConfirmModal').modal('show')
         } else {
             appendAlert('No duplicates detected.', 'success');
         }
 
     });
+
+    $('#removeDuplicationsConfirmBtn').on('click', function() {
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/participants/deletes',
+            data: {
+                'p_ids': duplicates,
+                'tournament_id': 0
+            },
+            dataType: "JSON",
+            beforeSend: function() {
+                $('#beforeProcessing').removeClass('d-none')
+            },
+            success: function(result) {
+                $('#beforeProcessing').addClass('d-none')
+                $('#removeDuplicationsConfirmModal').modal('hide')
+                if (result.count) {
+                    renderParticipants(result.participants);
+
+                    $('#participantNames').val(null);
+                    $('input.csv-import').val(null)
+                    $('#confirmSave').modal('hide');
+                    $('#collapseAddParticipant').removeClass('show');
+
+                    appendAlert('Records inserted successfully!', 'success');
+                }
+
+                $('#collapseAddParticipant').removeClass('show');
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function() {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
 
     const selectBackgroundColorModal = document.getElementById('selectBackgroundColorModal');
     if (selectBackgroundColorModal) {
@@ -942,6 +1004,30 @@ var drawTournamentsTable = () => {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="removeDuplicationsConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="removeDuplicationsConfirmModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="removeDuplicationsConfirmModalLabel">Confirm to remove duplicates</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                <h6>The following duplicate participants were found.<br /><span class="names"></span></h6>
+                </p>
+                <p class="mt-3">Are you sure you want to proceed?
+                <h6 class="text-danger">This action cannot be undone!</h6>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard</button>
+                <button type="button" class="btn btn-danger" id="removeDuplicationsConfirmBtn">Remove</button>
             </div>
         </div>
     </div>

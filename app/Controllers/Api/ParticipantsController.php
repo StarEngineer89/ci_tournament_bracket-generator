@@ -66,6 +66,19 @@ class ParticipantsController extends BaseController
         return json_encode(array('result' => 'success'));
     }
     
+    public function deleteParticipants()
+    {
+        if ($participant_ids = $this->request->getPost('p_ids')) {
+            $this->participantsModel->whereIn('id', $participant_ids)->delete();
+        } else {
+            return json_encode(array('result' => 'failed', 'msg' => 'There is not participant selected'));
+        }
+
+        $participants = $this->participantsModel->where(['tournament_id' => 0, 'user_id' => auth()->user()->id])->findAll();
+
+        return json_encode(array('result' => 'success', 'count' => count($participants), 'participants' => $participants));
+    }
+    
     public function clearParticipants()
     {
         if ($tournament_id = $this->request->getGet('t_id')) {
