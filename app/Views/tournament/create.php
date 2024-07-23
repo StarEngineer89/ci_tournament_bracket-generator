@@ -371,7 +371,7 @@ $(document).ready(function() {
                     $('#confirmSave').modal('hide');
                     $('#collapseAddParticipant').removeClass('show');
 
-                    appendAlert('Records inserted successfully!', 'success');
+                    appendAlert('Duplicate record(s) removed!', 'success');
                 }
 
                 $('#collapseAddParticipant').removeClass('show');
