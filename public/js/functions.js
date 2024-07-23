@@ -351,6 +351,7 @@ const dismissEdit = () => {
 var changeEliminationType = (element) => {
     let parent = $(element).parent();
     parent.find('.form-text').addClass('d-none');
+    $('.elimination-type-hint').removeClass('d-none');
 
     if ($(element).val() == 1) {
         parent.find('.single-type-hint').removeClass('d-none');

@@ -521,6 +521,14 @@ $(document).ready(function() {
 
                         if (result.tournamentSettings) {
                             $('#eliminationType').val(result.tournamentSettings.type)
+                            if (result.tournamentSettings.type == '<?= TOURNAMENT_TYPE_SINGLE ?>') {
+                                $('.single-type-hint').removeClass('d-none')
+                                $('.double-type-hint').addClass('d-none')
+                            } else {
+                                $('.double-type-hint').removeClass('d-none')
+                                $('.single-type-hint').addClass('d-none')
+                            }
+
                             $('#description').summernote('destroy');
                             $('#description').text(result.tournamentSettings.description)
 

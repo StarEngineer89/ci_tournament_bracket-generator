@@ -145,51 +145,48 @@ class TournamentController extends BaseController
     {
         $tournamentModel = model('\App\Models\TournamentModel');
         $tournament = $tournamentModel->find($tournament_id);
-        $tournament['type'] = $this->request->getPost('type');
-        $tournament['shuffle_enabled'] = $this->request->getPost('shuffle_enabled');
-        $tournament['description'] = $this->request->getPost('description');
-        $tournament['score_bracket'] = $this->request->getPost('score_bracket');
-        $tournament['increment_score'] = $this->request->getPost('increment_score');
-        $tournament['increment_score_enabled'] = $this->request->getPost('increment_score_enabled');
-        $tournament['score_enabled'] = $this->request->getPost('score_enabled');
+        $tournament = new \App\Entities\Tournament($tournament);
+        $tournament->fill($this->request->getPost());
         $tournamentModel->save($tournament);
 
         /**
          * Update Music Settings
          */
-        $musicSettingModel = model('\App\Models\MusicSettingModel');
-        foreach ($this->request->getPost('audioType') as $index => $value) {
+        if ($this->request->getPost('audioType')) {
+            $musicSettingModel = model('\App\Models\MusicSettingModel');
+            foreach ($this->request->getPost('audioType') as $index => $value) {
 
-            $musicSetting = $musicSettingModel->where(['tournament_id' => $tournament_id, 'type' => $value])->findAll();
-            
-            if (count($musicSetting)) {
-                $musicSetting = $musicSetting[0];
-            } else {
-                $musicSetting = [];
-            }
+                $musicSetting = $musicSettingModel->where(['tournament_id' => $tournament_id, 'type' => $value])->findAll();
+                
+                if (count($musicSetting)) {
+                    $musicSetting = $musicSetting[0];
+                } else {
+                    $musicSetting = [];
+                }
 
-            if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
-                $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index]);
-                
-                $musicSetting['path'] = $path;
-                $musicSetting['source'] = $this->request->getPost('source')[$index];
-                $musicSetting['tournament_id'] = $tournament_id;
-                $musicSetting['user_id'] = auth()->user()->id;
-                $musicSetting['type'] = $index;
-                $musicSetting['duration'] = $this->request->getPost('duration')[$index];
-                $musicSetting['start'] = $this->request->getPost('start')[$index];
-                $musicSetting['end'] = $this->request->getPost('stop')[$index];
-                $musicSetting['url'] = ($this->request->getPost('source')[$index] == 'f') ? null : $this->request->getPost('url')[$index];
-                
-                $musicSettingModel->save($musicSetting);
-            } else {
-                if ($musicSetting) {
-                    $musicSettingModel->delete($musicSetting['id']);
+                if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
+                    $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index]);
+                    
+                    $musicSetting['path'] = $path;
+                    $musicSetting['source'] = $this->request->getPost('source')[$index];
+                    $musicSetting['tournament_id'] = $tournament_id;
+                    $musicSetting['user_id'] = auth()->user()->id;
+                    $musicSetting['type'] = $index;
+                    $musicSetting['duration'] = $this->request->getPost('duration')[$index];
+                    $musicSetting['start'] = $this->request->getPost('start')[$index];
+                    $musicSetting['end'] = $this->request->getPost('stop')[$index];
+                    $musicSetting['url'] = ($this->request->getPost('source')[$index] == 'f') ? null : $this->request->getPost('url')[$index];
+                    
+                    $musicSettingModel->save($musicSetting);
+                } else {
+                    if ($musicSetting) {
+                        $musicSettingModel->delete($musicSetting['id']);
+                    }
                 }
             }
         }
 
-        $tournamentName = $tournament['name'];
+        $tournamentName = $tournament->name;
         $msg = "Tournament [$tournamentName] was updated successfully.";
         if (!is_null($this->request->getPost('archive'))) {
             if ($this->request->getPost('archive')) {
