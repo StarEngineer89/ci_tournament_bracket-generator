@@ -93,6 +93,8 @@
             <div class="modal-body">
 
                 <form id="tournamentForm" method="POST" endtype="multipart/form-data">
+                    <?= $settingsBlock ?>
+
                     <div id="music-settings-panel">
                         <?= $musicSettingsBlock ?>
                     </div>
@@ -287,6 +289,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.1/js/bootstrapValidator.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="/js/tournament.js"></script>
 <script src="/js/participants.js"></script>
 
@@ -508,14 +511,58 @@ $(document).ready(function() {
 
                 $.ajax({
                     type: "GET",
-                    url: apiURL + '/tournaments/' + tournament_id + '/music-settings',
+                    url: apiURL + '/tournaments/' + tournament_id + '/fetch-settings',
                     success: function(result) {
                         result = JSON.parse(result);
                         $('#music-settings-panel').html(result.html);
                         $('#tournamentForm').data('id', tournament_id);
 
-                        if (result.data.length > 0) {
-                            result.data.forEach((item, i) => {
+                        if (result.tournamentSettings) {
+                            $('#eliminationType').val(result.tournamentSettings.type)
+                            $('#description').summernote('destroy');
+                            $('#description').text(result.tournamentSettings.description)
+
+                            $("textarea#description").summernote({
+                                callbacks: {
+                                    onMediaDelete: function(target) {
+                                        // Handle media deletion if needed
+                                    },
+                                    onVideoInsert: function(target) {
+                                        $(target).wrap('<div class="responsive-video"></div>');
+                                    },
+                                    onVideoUpload: function(files) {
+                                        uploadVideo(files[0]);
+                                    }
+
+                                }
+                            });
+
+                            if (result.tournamentSettings.score_enabled == 'on') {
+                                $('#enableScoreOption').attr('checked', true)
+                                $('#scorePerBracket').val(result.tournamentSettings.score_bracket)
+
+                                if (result.tournamentSettings.increment_score_enabled == 'on') {
+                                    $('#enableIncrementScore').attr('checked', true)
+                                    $('#incrementScore').val(result.tournamentSettings.increment_score)
+                                } else {
+                                    $('#enableIncrementScore').attr('checked', false)
+                                }
+                                toggleIncrementScore(document.getElementById('enableIncrementScore'))
+                            } else {
+                                $('#enableScoreOption').attr('checked', false)
+                            }
+                            toggleScoreOption(document.getElementById('enableScoreOption'))
+
+                            if (result.tournamentSettings.shuffle_enabled == 'on') {
+                                $('#enableShuffle').attr('checked', true)
+                            } else {
+                                $('#enableShuffle').attr('checked', false)
+                            }
+                            toggleShuffleParticipants(document.getElementById('enableShuffle'))
+                        }
+
+                        if (result.musicSettings.length > 0) {
+                            result.musicSettings.forEach((item, i) => {
                                 let panel = $('.music-setting').eq(item.type);
                                 panel.find("#toggle-music-settings-" + item.type).prop(
                                     'checked', true);
@@ -835,7 +882,7 @@ $(document).ready(function() {
         }) => [name, value]));
 
         $.ajax({
-            url: apiURL + '/tournaments/' + $('#tournamentForm').data('id') + '/update-music',
+            url: apiURL + '/tournaments/' + $('#tournamentForm').data('id') + '/update',
             type: "POST",
             data: data,
             beforeSend: function() {
@@ -1625,6 +1672,7 @@ function bulkRestore() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <style>
 .resizable {
     position: relative;

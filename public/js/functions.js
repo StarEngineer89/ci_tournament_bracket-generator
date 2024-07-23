@@ -347,3 +347,14 @@ const dismissEdit = () => {
     document.getElementById('editDescriptionBtn').classList.remove('d-none')
     $('#dismissDescriptionEditConfirmModal').modal('hide')
 }
+
+var changeEliminationType = (element) => {
+    let parent = $(element).parent();
+    parent.find('.form-text').addClass('d-none');
+
+    if ($(element).val() == 1) {
+        parent.find('.single-type-hint').removeClass('d-none');
+    } else {
+        parent.find('.double-type-hint').removeClass('d-none');
+    }
+}

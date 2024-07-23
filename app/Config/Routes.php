@@ -49,9 +49,8 @@ $routes->group('api', static function ($routes) {
         $routes->post('save', 'Api\TournamentController::save');
         $routes->get('(:num)/brackets', 'Api\BracketsController::getBrackets/$1');
         $routes->post('(:num)/update', 'Api\TournamentController::update/$1');
-        $routes->post('(:num)/update-music', 'Api\TournamentController::updateMusic/$1');
         $routes->post('upload', 'Api\TournamentController::upload');
-        $routes->get('(:num)/music-settings', 'Api\TournamentController::getMusicSettings/$1');
+        $routes->get('(:num)/fetch-settings', 'Api\TournamentController::getSettings/$1');
         $routes->get('(:num)/clear', 'Api\BracketsController::clearBrackets/$1');
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
         $routes->post('(:num)/share', 'Api\TournamentController::share/$1');

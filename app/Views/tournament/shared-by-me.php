@@ -70,7 +70,7 @@
                             <a href="javascript:;" class="reset" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
                             <a href="javascript:;" class="delete" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
                             <a href="javascript:;" class="change-status" data-id="<?= $tournament['tournament_id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
-                            <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['tournament_id'] ?>">Music Settings</a>
+                            <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['tournament_id'] ?>">Settings</a>
                             <a href="javascript:;" class="share" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
                             <a href="javascript:;" class="view-log" data-id="<?= $tournament['tournament_id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
                         </div>

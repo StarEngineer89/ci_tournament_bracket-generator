@@ -16,10 +16,11 @@ class Tournament extends Entity
         'type' => null,
         'searchable' => null,
         'archive' => null,
-        'shuffle_enable' => null,
+        'shuffle_enabled' => null,
         'description' => null,
         'score_bracket' => null,
-        'increament_score' => null,
+        'increment_score' => null,
+        'increment_score_enabled' => null,
         'score_enabled' => null
     ];
 }

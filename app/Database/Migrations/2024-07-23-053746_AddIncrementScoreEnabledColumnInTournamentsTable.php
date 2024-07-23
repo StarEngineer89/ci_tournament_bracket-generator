@@ -4,14 +4,14 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddShuffleEnableColumnInTournamentsTable extends Migration
+class AddIncrementScoreEnabledColumnInTournamentsTable extends Migration
 {
     public function up()
     {
         $this->forge->addColumn('tournaments', [
-            'shuffle_enabled' => [
+            'increment_score_enabled' => [
                 'type' => 'tinyint',
-                'null' => true, 
+                'null' => true,
                 'default' => 0
             ],
         ]);
@@ -19,6 +19,6 @@ class AddShuffleEnableColumnInTournamentsTable extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('tournaments', 'shuffle_enabled');
+        $this->forge->dropColumn('tournaments', 'increment_score_enabled');
     }
 }

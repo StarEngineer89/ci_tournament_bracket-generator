@@ -15,7 +15,7 @@ class AddScoreColumnsInTournamentTable extends Migration
             ],
         ]);
         $this->forge->addColumn('tournaments', [
-            'increament_score' => [
+            'increment_score' => [
                 'type' => 'tinyint',
                 'null' => true
             ],
@@ -25,6 +25,6 @@ class AddScoreColumnsInTournamentTable extends Migration
     public function down()
     {
         $this->forge->dropColumn('tournaments', 'score_bracket');
-        $this->forge->dropColumn('tournaments', 'increament_score');
+        $this->forge->dropColumn('tournaments', 'increment_score');
     }
 }

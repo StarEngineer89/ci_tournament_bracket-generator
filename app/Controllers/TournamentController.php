@@ -87,12 +87,13 @@ class TournamentController extends BaseController
             $table = view('tournament/list', ['tournaments' => $tournaments, 'navActive' => $navActive, 'searchString' => $searchString]);
         }
 
+        $settingsBlock = view('tournament/tournament-settings', []);
         $musicSettingsBlock = view('tournament/music-setting', []);
 
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $users = $userModel->select(['id', 'username'])->findAll();
 
-        return view('tournament/dashboard', ['table' => $table, 'musicSettingsBlock' => $musicSettingsBlock, 'users' => $users, 'navActive' => $navActive]);
+        return view('tournament/dashboard', ['table' => $table, 'musicSettingsBlock' => $musicSettingsBlock, 'settingsBlock' => $settingsBlock, 'users' => $users, 'navActive' => $navActive]);
     }
 
     public function create()
@@ -112,9 +113,10 @@ class TournamentController extends BaseController
             }
         }
 
+        $settingsBlock = view('tournament/tournament-settings', []);
         $musicSettingsBlock = view('tournament/music-setting', []);
 
-        return view('tournament/create', ['musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
+        return view('tournament/create', ['musicSettingsBlock' => $musicSettingsBlock, 'settingsBlock' => $settingsBlock, 'userSettings' => $settingsArray]);
     }
 
     public function view($id)
@@ -147,6 +149,7 @@ class TournamentController extends BaseController
 
             $participants = $participantModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $id])->findAll();
 
+            $settingsBlock = view('tournament/tournament-settings', []);
             $musicSettingsBlock = view('tournament/music-setting', []);
             $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_BRACKET_GENERATION])->orderBy('type','asc')->findAll();
             
@@ -160,7 +163,7 @@ class TournamentController extends BaseController
                 }
             }
 
-            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $settings, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
+            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $settings, 'settingsBlock' => $settingsBlock, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
