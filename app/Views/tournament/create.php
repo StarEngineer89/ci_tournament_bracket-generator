@@ -281,6 +281,7 @@ $(document).ready(function() {
                     $('#indexList').html('')
                     $('.empty-message-wrapper').removeClass('d-none')
                     $('#clearParticipantsConfirmModal').modal('hide')
+                    appendAlert('Participant list cleared!', 'success');
                 }
             },
             error: function(error) {
