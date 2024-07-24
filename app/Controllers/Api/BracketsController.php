@@ -84,13 +84,13 @@ class BracketsController extends BaseController
          *  If mark as winner in final, set status to completed
          *  If unmark a winner, set status to progress
          */
-        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER && $req->is_final) {
+        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER && isset($req->is_final) && $req->is_final) {
             $tournamentModel = model('\App\Models\TournamentModel');
             $tournament = $tournamentModel->find($bracket['tournament_id']);
             $tournament['status'] = TOURNAMENT_STATUS_COMPLETED;
             $tournamentModel->save($tournament);
         }
-        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
+        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER && isset($req->is_final) && $req->is_final) {
             $tournamentModel = model('\App\Models\TournamentModel');
             $tournament = $tournamentModel->find($bracket['tournament_id']);
             $tournament['status'] = TOURNAMENT_STATUS_INPROGRESS;
