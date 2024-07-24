@@ -513,7 +513,7 @@ function markWinner(key, opt, e) {
     const nameSpan = opt.$trigger.find('.name').clone()
 
     let is_final = false
-    if (next_bracketObj.parent.classList.contains('final')) {
+    if (next_bracketObj.parentElement.classList.contains('final')) {
         is_final = true
     }
 
@@ -610,7 +610,7 @@ function unmarkWinner(key, opt, e) {
     next_bracket = next_bracketObj.dataset.bracket;
 
     let is_final = false
-    if (next_bracketObj.parent.classList.contains('final')) {
+    if (next_bracketObj.parentElement.classList.contains('final')) {
         is_final = true
     }
 
