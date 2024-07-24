@@ -246,6 +246,8 @@ class TournamentController extends BaseController
         $musicSettingModel->where('tournament_id', $id)->delete();
         $bracketModel->where('tournament_id', $id)->delete();
         $tournamentModel->delete($id);
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+        $shareSettingsModel->where('tournament_id', $id)->delete();
 
         return json_encode(['msg' => "Tournament was deleted successfully."]);
     }
