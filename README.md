@@ -53,9 +53,9 @@ On the final prompt `Run `spark migrate --all`now? [y, n]:`, select `'y'`.
 - Create the client ID and download the client_secret.json file or copy the Client ID and Client Secret.
 - Add the credentials into the .env file
 
-  > `GOOGLE_CLIENT_ID = 321680786543-37doh2oa8k1fk07ntf49v6p16028t54s.apps.googleusercontent.com`
+  > `GOOGLE_CLIENT_ID = {google_client_id}`
 
-  > `GOOGLE_CLIENT_SECRET = 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`
+  > `GOOGLE_CLIENT_SECRET = {google_client_secret}`
 
   > `GOOGLE_REDIRECT_URI = http://localhost:8080/auth/google/callback`
 
