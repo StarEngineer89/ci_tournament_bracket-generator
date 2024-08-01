@@ -84,7 +84,7 @@ $(document).on('ready', function () {
             var round = $('<div class="r' + g + '"></div>');
             
             var roundName = $('<div class="text-center p-2 m-1 border" style="height: auto"></div>')
-            if (grouped[g][0].final_match && grouped[g][0] !== "0") {
+            if (grouped[g][0].final_match && grouped[g][0].final_match !== "0") {
                 roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
             } else {
                 roundName.html("Round " + grouped[g][0].roundNo) 
@@ -132,7 +132,7 @@ $(document).on('ready', function () {
                     }
                 }
 
-                var teamb = obj.cloneNode();
+                var teamb = obj.cloneNode(true);
                 teamb.className = 'bracket-team teamb';
                 if (teams[1] != undefined) {
                     teamb.dataset.id = teams[1].id;
@@ -161,7 +161,7 @@ $(document).on('ready', function () {
 
                 var bracket = document.createElement('div')
 
-                if (gg.final_match) {
+                if (gg.final_match && gg.final_match !== "0") {
                     bracket.className = "bracketbox final";
                     teama.className = (teams[0]) ? "teama winner" : 'teama';
                 } else {
