@@ -84,7 +84,7 @@ $(document).on('ready', function () {
             var round = $('<div class="r' + g + '"></div>');
             
             var roundName = $('<div class="text-center p-2 m-1 border" style="height: auto"></div>')
-            if (grouped[g][0].final_match) {
+            if (grouped[g][0].final_match && grouped[g][0] !== "0") {
                 roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
             } else {
                 roundName.html("Round " + grouped[g][0].roundNo) 
@@ -174,7 +174,7 @@ $(document).on('ready', function () {
 
                 bracket.append(teama);
 
-                if (!gg.final_match || gg.final_match === undefined)
+                if (!gg.final_match || gg.final_match === undefined || gg.final_match === '0')
                     bracket.append(teamb);
 
                 bracketBoxList.append(bracket);
