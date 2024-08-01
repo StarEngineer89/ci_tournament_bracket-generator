@@ -655,6 +655,7 @@ function unmarkWinner(key, opt, e) {
         data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode, is_final: is_final }),
         success: function (result) {
             ele.parent().contents().removeClass('winner')
+            next_bracketObj.classList.remove('winner')
             next_bracketObj.dataset.id = '';
             next_bracketObj.innerHTML = '';
         },
