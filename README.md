@@ -9,8 +9,11 @@ to your `app` folder. The affected files can be copied or merged from
 
 ## Setup
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+Rename `env` to `.env` and tailor for your app, specifically the baseURL and any database settings.
+
+or
+
+Set the baseURL in app/Config/App.php file and any database settings in app/Config/Database.php file.
 
 ## Server Requirements
 
@@ -33,7 +36,16 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 
 ## Shield Authentication enable
 
-To use the user authentication, run the following command.
+Shield is the official authentication and authorization framework for CodeIgniter 4. While it provides a base set of tools commonly used in websites, it is designed to be flexible and easily customizable.
+
+The primary goals for Shield are:
+
+- It must be very flexible and allow developers to extend/override almost any part of it.
+- It must have security at its core. It is an auth lib after all.
+- To cover many auth needs right out of the box, but be simple to add additional functionality to.
+
+To install Shield auth, run the following command.
+
 `php spark shield:setup`
 
 When prompt a questions to overwrite the existing configurations, select `'n'`.
