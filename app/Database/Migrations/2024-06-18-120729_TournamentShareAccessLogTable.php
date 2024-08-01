@@ -12,13 +12,15 @@ class TournamentShareAccessLogTable extends Migration
 
         $this->forge->addField([
             'id'             => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'user_id'        => ['type' => 'int', 'constraint' => 11, 'null' => 0],
-            'share_id'       => ['type' => 'int', 'constraint' => 11, 'null' => 0, 'default' => 0],
+            'user_id'        => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
+            'share_id'       => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'created_at'     => ['type' => 'datetime', 'null' => false],
             'updated_at'     => ['type' => 'datetime', 'null' => false],
             'deleted_at'     => ['type' => 'datetime', 'null' => true],
         ]);
         $this->forge->addPrimaryKey('id');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('share_id', 'share_settings', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('tournament_share_access_logs', false, $attributes);
     }
 

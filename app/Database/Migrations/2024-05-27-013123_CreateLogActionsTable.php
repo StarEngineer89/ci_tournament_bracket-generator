@@ -12,8 +12,8 @@ class CreateLogActionsTable extends Migration
 
         $this->forge->addField([
             'id'             => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'user_id'        => ['type' => 'int', 'constraint' => 11, 'null' => 0],
-            'tournament_id'  => ['type' => 'int', 'constraint' => 11, 'null' => 0, 'default' => 0],
+            'user_id'        => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
+            'tournament_id'  => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'action'         => ['type' => 'tinyint', 'constraint' => 1, 'null' => 0],
             'params'         => ['type' => 'varchar', 'constraint' => 128, 'null' => 0],
             'created_at'     => ['type' => 'datetime', 'null' => false],
@@ -21,6 +21,8 @@ class CreateLogActionsTable extends Migration
             'deleted_at'     => ['type' => 'datetime', 'null' => true],
         ]);
         $this->forge->addPrimaryKey('id');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('tournament_id', 'tournaments', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('log_actions', false, $attributes);
     }
 
