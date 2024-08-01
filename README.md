@@ -1,7 +1,7 @@
 ## Installation & updates
 
 Clone the repository
-`git clone https://github.com/StarEngineer89/ci_tournament_bracket-generator`
+`git clone https://github.com/StarEngineer89/ci_tournament_bracket-generator` then `composer update`
 
 When updating, check the release notes to see if there are any changes you might need to apply
 to your `app` folder. The affected files can be copied or merged from
@@ -35,6 +35,11 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 
 To use the user authentication, run the following command.
 `php spark shield:setup`
+When prompt a questions to overwrite the existing configurations, select `'n'`.
+
+## Migrate the database tables
+
+`php spark migrate`
 
 ## Google authentication
 
