@@ -72,7 +72,8 @@ On the final prompt `Run `spark migrate --all`now? [y, n]:`, select `'y'`.
 
   On Windows
 
-  > `mklink /D "C:\path\to\your\codeigniter\public\uploads" "C:\path\to\your\codeigniter\writable\uploads"`
+  > `mklink /D \"C:\path\to\your\codeigniter\public\uploads\" \"C:\path\to\your\codeigniter\writable\uploads\"`
 
-  > On Linux
+  On Linux
+
   > `ln -s /path/to/your/codeigniter/writable/uploads /path/to/your/codeigniter/public/uploads`
