@@ -9,7 +9,9 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
-<div class="text-center">
-    <div class="d-flex justify-content-center"></div>
+<div class="text-center align-middle">
+    <div class="d-flex justify-content-center">
+        <h1>Welcome!<br>to<br>Tournament!</h1>
+    </div>
 </div>
 <?= $this->endSection() ?>
