@@ -74,12 +74,13 @@ class TournamentController extends BaseController
             'type' => $this->request->getPost('type'),
             'searchable' => $this->request->getPost('title'),
             'archive' => 0,
-            'shuffle_enabled' => $this->request->getPost('shuffle_enabled'),
+            'shuffle_enabled' => ($this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0,
             'description' => $this->request->getPost('description'),
-            'score_enabled' => $this->request->getPost('score_enabled'),
+            'score_enabled' => ($this->request->getPost('score_enabled') == 'on') ? 1 : 0,
             'score_bracket' => $this->request->getPost('score_bracket'),
-            'increment_score' => $this->request->getPost('increment_score'),
-            'increment_score_enabled' => $this->request->getPost('increment_score_enabled')
+            'increment_score' => $this->request->getPost('increment_score') == 'on',
+            'increment_score_enabled' => ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0,
+            'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0
         ];
 
         $tournamentData = new \App\Entities\Tournament($data);
@@ -147,6 +148,12 @@ class TournamentController extends BaseController
         $tournament = $tournamentModel->find($tournament_id);
         $tournament = new \App\Entities\Tournament($tournament);
         $tournament->fill($this->request->getPost());
+        
+        $tournament->shuffle_enabled = ($this->request->getPost('shuffle_enabled') && $this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
+        $tournament->score_enabled = ($this->request->getPost('score_enabled') && $this->request->getPost('score_enabled') == 'on') ? 1 : 0;
+        $tournament->increment_score_enabled = ($this->request->getPost('increment_score_enabled') && $this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
+        $tournament->visibility = ($this->request->getPost('visibility') && $this->request->getPost('visibility') == 'on') ? 1 : 0;
+        
         $tournamentModel->save($tournament);
 
         /**

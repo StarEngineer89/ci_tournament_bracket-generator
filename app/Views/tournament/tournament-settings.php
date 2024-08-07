@@ -16,6 +16,16 @@
     <div class="form-text">Enter an optional description that will be displayed in the tournament.</div>
 </div>
 
+<div class="form-check border-bottom mb-3 pb-3">
+    <div class="ps-2">
+        <input type="checkbox" class="form-check-input enable-visibility" name="visibility" id="enableVisibility" onChange="toggleVisibility(this)" checked>
+        <label class="form-check-label" for="enableVisibility">
+            <h6>Visibility</h6>
+        </label>
+        <div class="visibility-hint form-text">"If enabled, the tournament will be visible publicly on the Tournament Gallery. Tournaments listed on the Tournament Gallery may be viewed by spectators/guests as read-only mode."</div>
+    </div>
+</div>
+
 <div class="form-check mb-3">
     <div class="ps-2">
         <input type="checkbox" class="form-check-input" name="score_enabled" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
@@ -35,7 +45,7 @@
         </div>
         <div class="row">
             <div class="col-6 form-check ps-2">
-                <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" name="increment_score_enabled" onChange="toggleIncrementScore(this)" min="0" checked>
+                <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" name="increment_score_enabled" onChange="toggleIncrementScore(this)" checked>
                 <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
             </div>
             <div class="col-3 ms-1">

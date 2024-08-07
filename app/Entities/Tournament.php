@@ -21,6 +21,7 @@ class Tournament extends Entity
         'score_bracket' => null,
         'increment_score' => null,
         'increment_score_enabled' => null,
-        'score_enabled' => null
+        'score_enabled' => null,
+        'visibility' => null
     ];
 }

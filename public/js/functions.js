@@ -359,3 +359,11 @@ var changeEliminationType = (element) => {
         parent.find('.double-type-hint').removeClass('d-none');
     }
 }
+
+let toggleVisibility = (checkbox) => {
+    if ($(checkbox).is(':checked')) {
+        $('.visibility-hint').removeClass('d-none');
+    } else {
+        $('.visibility-hint').addClass('d-none');
+    }
+}

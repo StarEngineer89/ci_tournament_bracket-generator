@@ -1,3 +1,11 @@
+.main-content {
+  min-height: calc(100vh - 250px)
+}
+.footer {
+  background-color: #555;
+  color: #fff;
+  min-height: 177px;
+}
 #tournamentSettings input.form-control-sm {
   max-width: 60px;
 }

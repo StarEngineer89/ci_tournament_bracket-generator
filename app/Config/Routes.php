@@ -6,6 +6,7 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
+$routes->get('/gallery', 'Home::gallery');
 $routes->get('/participants', 'Home::participants');
 $routes->get('/brackets', 'Home::brackets');
 $routes->match(['get', 'post'], '/player/(:any)', 'RenderAudioController::index/$1');

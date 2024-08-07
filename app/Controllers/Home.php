@@ -6,20 +6,14 @@ class Home extends BaseController
 {
     public function index()
     {
-        return redirect()->to('tournaments');;
+        return view('home');
     }
 
-    public function participants(): string
+    public function gallery()
     {
-        return view('participants-list');
-    }
+        $tournamentsModel = model('\App\Models\TournamentModel');
+        $tournaments = $tournamentsModel->where(['visibility' => 1])->findAll();
 
-    public function brackets()
-    {
-        $BracketModel = model('\App\Models\BracketModel');
-
-        $brackets = $BracketModel->where('user_id', auth()->user()->id)->findAll();
-
-        return view('brackets', ['brackets' => $brackets]);
+        return view('gallery', ['tournaments' => $tournaments]);
     }
 }

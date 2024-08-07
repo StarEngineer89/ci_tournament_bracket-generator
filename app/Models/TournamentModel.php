@@ -12,7 +12,7 @@ class TournamentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_bracket', 'increment_score', 'increment_score_enabled', 'score_enabled'];
+    protected $allowedFields    = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_bracket', 'increment_score', 'increment_score_enabled', 'score_enabled', 'visibility'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

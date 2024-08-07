@@ -22,53 +22,85 @@
     <body class="bg-light">
 
         <main role="main" class="container-fluid">
-            <div class="header d-grid gap-2 d-flex flex-wrap justify-content-end p-2">
-                <?php if (auth()->user() && auth()->user()->id) : ?>
-                <div class="notification-box me-3">
-                    <?php $notificationService = service('notification'); ?>
-                    <?php $notifications = $notificationService->getNotifications(auth()->user()->id) ?>
-                    <button class="btn btn-secondary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-bell"></i>
+            <div class="header p-2 border-bottom">
+                <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+                    <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?= base_url() ?>">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= base_url('gallery') ?>">Tournament Gallery</a>
+                            </li>
+                            <?php if (auth()->user() && auth()->user()->id) : ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= base_url('tournaments') ?>">Dashboard</a>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+
+                    <?php if (auth()->user() && auth()->user()->id) : ?>
+                    <div class="notification-box me-3">
+                        <?php $notificationService = service('notification'); ?>
+                        <?php $notifications = $notificationService->getNotifications(auth()->user()->id) ?>
+                        <button class="btn btn-secondary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-bell"></i>
+                            <?php if (count($notifications)): ?>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <?= count($notifications) ?>
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                            <?php endif ?>
+                        </button>
                         <?php if (count($notifications)): ?>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            <?= count($notifications) ?>
-                            <span class="visually-hidden">unread messages</span>
-                        </span>
+                        <ul class="dropdown-menu  dropdown-menu-end">
+                            <?php foreach ($notifications as $notification): ?>
+                            <li>
+                                <p class="dropdown-item p-2">
+                                    <a class="" href="#" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><?= $notification['message'] ?></a>
+                                    <a class="delete" onclick="deleteNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><i class="fa fa-remove"></i></a>
+                                </p>
+                            </li>
+                            <?php endforeach ?>
+                        </ul>
                         <?php endif ?>
-                    </button>
-                    <?php if (count($notifications)): ?>
-                    <ul class="dropdown-menu  dropdown-menu-end">
-                        <?php foreach ($notifications as $notification): ?>
-                        <li>
-                            <p class="dropdown-item p-2">
-                                <a class="" href="#" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><?= $notification['message'] ?></a>
-                                <a class="delete" onclick="deleteNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><i class="fa fa-remove"></i></a>
-                            </p>
-                        </li>
-                        <?php endforeach ?>
-                    </ul>
-                    <?php endif ?>
-                </div>
-                <?php endif ?>
-                <?php if (auth()->user() && auth()->user()->id) : ?>
-                <div class="d-flex">
-                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                        <?= auth()->user()->username ?>'s profile
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">General Settings</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="<?php echo base_url('logout') ?>">Log out</a></li>
-                    </ul>
-                </div>
-                <?php endif; ?>
+                    </div>
+
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?= auth()->user()->username ?>'s profile
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">General Settings</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="<?php echo base_url('logout') ?>">Log out</a></li>
+                        </ul>
+                    </div>
+                    <?php else: ?>
+                    <a class="btn btn-primary me-3" href="<?= base_url('login') ?>">Login</a>
+                    <a class="btn btn-primary" href="<?= base_url('register') ?>">Signup</a>
+                    <?php endif; ?>
+                </nav>
             </div>
 
-            <div id="notificationAlertPlaceholder" class="position-relative"></div>
+            <div class="main-content container p-5">
+                <div id="notificationAlertPlaceholder" class="position-relative"></div>
 
-            <?= $this->renderSection('main') ?>
+                <?= $this->renderSection('main') ?>
+            </div>
+
+            <div class="footer border-top p-3">
+                footer
+            </div>
         </main>
 
         <!-- Modal -->
@@ -135,8 +167,10 @@
 
         <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
         <script src="/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>

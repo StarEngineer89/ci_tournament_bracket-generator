@@ -284,9 +284,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.1/js/bootstrapValidator.min.js"></script>
@@ -547,11 +545,18 @@ $(document).ready(function() {
                                 }
                             });
 
-                            if (result.tournamentSettings.score_enabled == 'on') {
+                            if (result.tournamentSettings.visibility == 1) {
+                                $('#enableVisibility').attr('checked', true)
+                            } else {
+                                $('#enableVisibility').attr('checked', false)
+                            }
+                            toggleVisibility(document.getElementById('enableVisibility'))
+
+                            if (result.tournamentSettings.score_enabled == 1) {
                                 $('#enableScoreOption').attr('checked', true)
                                 $('#scorePerBracket').val(result.tournamentSettings.score_bracket)
 
-                                if (result.tournamentSettings.increment_score_enabled == 'on') {
+                                if (result.tournamentSettings.increment_score_enabled == 1) {
                                     $('#enableIncrementScore').attr('checked', true)
                                     $('#incrementScore').val(result.tournamentSettings.increment_score)
                                 } else {
@@ -563,7 +568,7 @@ $(document).ready(function() {
                             }
                             toggleScoreOption(document.getElementById('enableScoreOption'))
 
-                            if (result.tournamentSettings.shuffle_enabled == 'on') {
+                            if (result.tournamentSettings.shuffle_enabled == 1) {
                                 $('#enableShuffle').attr('checked', true)
                             } else {
                                 $('#enableShuffle').attr('checked', false)
