@@ -107,7 +107,7 @@ $(document).ready(function() {
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?= base_url() ?>">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="<?= base_url('tournaments') ?>">Dashboard</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Brackets</li>
             </ol>
         </nav>

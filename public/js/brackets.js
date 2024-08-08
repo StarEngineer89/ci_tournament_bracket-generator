@@ -15,60 +15,6 @@ $(document).on('ready', function () {
             renderBrackets(brackets);
     }
 
-    function makeDoubleElimination(struct) {
-        var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
-
-        var grouped = _.groupBy(struct, function (s) { return s.roundNo; });
-
-        var doubleEliminationBrackets = [], bracketNo = 1, nextInc = grouped[1].length * 2, base = nextInc * 2, i = 1;
-        for (round = 1; round <= groupCount; round++) {
-            var last = _.map(_.filter(doubleEliminationBrackets, function (b) { return b.nextGame == i; }), function (b) { return { game: b.bracketNo, teams: b.teamnames }; });
-
-            _.each(grouped[round], function (gg) {
-
-                doubleEliminationBrackets.push({
-                    lastGames: round == 1 ? null : [last[0].game, last[1].game],
-                    nextGame: nextInc + i > base ? null : nextInc + i,
-                    teamnames: gg.teamnames,
-                    bracketNo: bracketNo++,
-                    roundNo: round,
-                    bye: gg.bye
-                });
-
-                if (i % 2 != 0) nextInc--;
-                i++;
-            });
-
-            if (i < base) {
-                _.each(grouped[round], function (gg) {
-                    doubleEliminationBrackets.push({
-                        lastGames: round == 1 ? null : [last[0].game, last[1].game],
-                        nextGame: nextInc + i > base ? null : nextInc + i,
-                        teamnames: gg.teamnames,
-                        bracketNo: bracketNo++,
-                        roundNo: round,
-                        bye: gg.bye
-                    });
-
-                    if (i % 2 != 0) nextInc--;
-                    i++;
-                });
-            }
-        }
-
-        doubleEliminationBrackets.push({
-            lastGames: round == 1 ? null : [last[0].game, last[1].game],
-            nextGame: nextInc + i >= base ? null : nextInc + i,
-            teamnames: [undefined, undefined],
-            bracketNo: bracketNo++,
-            roundNo: round,
-            bye: null,
-            final_match: true
-        });
-
-        return doubleEliminationBrackets;
-    }
-
     /*
      * Inject our brackets
      */
@@ -104,11 +50,19 @@ $(document).on('ready', function () {
                 var scoreBox = document.createElement('span')
                 scoreBox.classList.add('score')
 
+                var pidBox = document.createElement('span')
+                pidBox.classList.add('p-id')
+
                 var teams = JSON.parse(gg.teamnames);
                 var teama = obj.cloneNode(true);
                 teama.className = 'bracket-team teama';
                 if (teams[0] != undefined) {
+                    var pid = pidBox.cloneNode(true)
+                    pid.textContent = parseInt(teams[0].order) + 1
+                    teama.appendChild(pid)
+
                     teama.dataset.id = teams[0].id;
+                    teama.dataset.p_order = teams[0].order;
                     var nameSpan = document.createElement('span')
                     nameSpan.classList.add('name')
                     nameSpan.textContent = teams[0].name;
@@ -135,7 +89,12 @@ $(document).on('ready', function () {
                 var teamb = obj.cloneNode(true);
                 teamb.className = 'bracket-team teamb';
                 if (teams[1] != undefined) {
+                    var pid = pidBox.cloneNode(true)
+                    pid.textContent = parseInt(teams[1].order) + 1
+                    teamb.appendChild(pid)
+
                     teamb.dataset.id = teams[1].id;
+                    teamb.dataset.p_order = teams[1].order;
                     var nameSpan = document.createElement('span')
                     nameSpan.classList.add('name')
                     nameSpan.textContent = teams[1].name
@@ -521,7 +480,7 @@ function markWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
         contentType: "application/json",
-        data: JSON.stringify({ winner: opt.$trigger.data('id'), action_code: markWinnerActionCode, is_final: is_final }),
+        data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final }),
         success: function (result) {
             console.log(result)
         },
@@ -539,7 +498,7 @@ function markWinner(key, opt, e) {
         type: "PUT",
         url: apiURL + '/brackets/update/' + next_bracket,
         contentType: "application/json",
-        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.find('.name').text() }),
+        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.find('.name').text(), order: opt.$trigger.data('p_order') }),
         success: function (result) {
             $(next_bracketObj).contents().remove()
             ele.parent().contents().removeClass('winner')
@@ -559,6 +518,10 @@ function markWinner(key, opt, e) {
 
             next_bracketObj.dataset.id = ele.data('id');
             $(next_bracketObj).append(nameSpan);
+            var pidBox = document.createElement('span')
+            pidBox.classList.add('p-id')
+            pidBox.textContent = parseInt(ele.data('p_order')) + 1
+            $(next_bracketObj).prepend(pidBox)
 
             if (isScoreEnabled) {
                 scoreBox = document.createElement('span')
