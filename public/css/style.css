@@ -1,3 +1,7 @@
+.profile-menu.dropdown-menu {
+  right: 0;
+  left: auto;
+}
 .main-content {
   min-height: calc(100vh - 250px)
 }

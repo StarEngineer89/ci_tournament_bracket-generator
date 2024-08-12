@@ -77,8 +77,9 @@
                         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= auth()->user()->username ?>'s profile
                         </button>
-                        <ul class="dropdown-menu">
+                        <ul class="profile-menu dropdown-menu">
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">General Settings</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('profile') ?>">Profile Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
