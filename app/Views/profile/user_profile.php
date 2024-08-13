@@ -68,7 +68,7 @@ $(document).ready(function() {
                 <div class="container">
                     <form>
                         <div class="row mb-3">
-                            <label for="inputEmail3" class="col-sm-3 col-form-label">Email</label>
+                            <label for="inputEmail3" class="col-sm-3 col-form-label text-start">Email</label>
                             <div class="col-sm-6">
                                 <input type="email" class="form-control" id="inputEmail3">
                             </div>
@@ -77,10 +77,7 @@ $(document).ready(function() {
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
-                            <div class="col-sm-6">
-                                <input type="password" class="form-control" id="inputPassword3">
-                            </div>
+                            <label for="inputPassword3" class="col-sm-3 col-form-label text-start">Password</label>
                             <div class="col-sm-3 text-start">
                                 <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a>
                             </div>
@@ -104,19 +101,25 @@ $(document).ready(function() {
                 <form id="changePasswordForm" action="<?= site_url('profile/update-password') ?>" method="post">
                     <?= csrf_field() ?>
 
-                    <div class="mb-3 border-bottom">
-                        <label for="current_password" class="form-label">Current Password</label>
-                        <input type="password" class="form-control" name="current_password" id="current_password" required>
+                    <div class="row mb-3 pb-3 border-bottom">
+                        <label for="current_password" class="form-label col-md-4 col-sm-12">Current Password</label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control" name="current_password" id="current_password" required>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="new_password" class="form-label">New Password</label>
-                        <input type="password" class="form-control" name="new_password" id="new_password" required>
+                    <div class="row mb-3">
+                        <label for="new_password" class="form-label col-md-4 col-sm-12">New Password</label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control" name="new_password" id="new_password" required>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm New Password</label>
-                        <input type="password" class="form-control" name="confirm_password" id="confirm_password" required>
+                    <div class="row mb-3">
+                        <label for="confirm_password" class="form-label col-md-4 col-sm-12">Confirm Password</label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control" name="confirm_password" id="confirm_password" required>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">Change Password</button>
@@ -135,22 +138,30 @@ $(document).ready(function() {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="text-hint mb-3">
+                    To change your account email, enter your current email address and the new email address you want to use. After clicking "Update Email," a verification code will be sent to your new email address. Enter the code in the field provided to finalize the update process.
+                </div>
                 <form action="<?= site_url('profile/update-email') ?>" method="post">
                     <?= csrf_field() ?>
 
-                    <div class="mb-3">
-                        <label for="current_email" class="form-label">Current Email</label>
-                        <input type="email" class="form-control" name="current_email" id="current_email" required>
+                    <div class="row mb-3">
+                        <label for="current_email" class="form-label col-md-4 col-sm-12">Current Email</label>
+                        <div class="col-sm-8">
+                            <input type="email" class="form-control" name="current_email" id="current_email" value="<?= auth()->user()->email ?>" disabled>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="new_email" class="form-label">New Email</label>
-                        <input type="email" class="form-control" name="new_email" id="new_email" required>
+                    <div class="row mb-3">
+                        <label for="new_email" class="form-label col-md-4 col-sm-12">New Email</label>
+                        <div class="col-sm-8">
+                            <input type="email" class="form-control" name="new_email" id="new_email" required>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">Update Email</button>
                 </form>
-
+            </div>
+            <div class="modal-footer visually-hidden">
                 <form action="<?= base_url('profile/confirm-email-update') ?>" method="post">
                     <div class="mb-3">
                         <label for="verification_code" class="form-label">Verification Code</label>
@@ -158,8 +169,7 @@ $(document).ready(function() {
                         <div class="form-text">Enter the verification code sent to your new email address.</div>
                     </div>
                 </form>
-            </div>
-            <div class="modal-footer">
+
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="submitPassword">Confirm</button>
             </div>
