@@ -2,13 +2,37 @@
 
 <?= $this->section('title') ?>Tournament Gallery<?= $this->endSection() ?>
 
-<?= $this->section('pageStyles') ?><?= $this->endSection() ?>
+<?= $this->section('pageStyles') ?>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script type="text/javascript">
 var table = null;
 var datatableRows;
+
+table = $('#tournamentGalleryTable').DataTable({
+    "order": [
+        [0, "asc"]
+    ], // Initial sorting by the first column ascending
+    "paging": true, // Enable pagination
+    "searching": true, // Enable search box
+    "columnDefs": [{
+        "orderable": false,
+        "targets": [2, 3]
+    }],
+});
+
+$('#typeFilter').on('change', function() {
+    var selectedType = $(this).val().toLowerCase();
+    table.columns(2).search(selectedType).draw();
+});
+
+$('#stautsFilter').on('change', function() {
+    var selectedStatus = $(this).val().toLowerCase();
+    table.columns(3).search(selectedStatus).draw();
+});
 </script>
 <?= $this->endSection() ?>
 
@@ -22,7 +46,7 @@ var datatableRows;
         </div>
     </div>
 
-    <table id="tournamentTable" class="table align-middle">
+    <table id="tournamentGalleryTable" class="table align-middle">
         <thead>
             <tr>
                 <th scope="col">#<br />&nbsp;</th>

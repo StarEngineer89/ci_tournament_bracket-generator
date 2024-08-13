@@ -26,28 +26,8 @@
                 <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
                     <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
 
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="<?= base_url() ?>">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?= base_url('gallery') ?>">Tournament Gallery</a>
-                            </li>
-                            <?php if (auth()->user() && auth()->user()->id) : ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?= base_url('tournaments') ?>">Dashboard</a>
-                            </li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-
                     <?php if (auth()->user() && auth()->user()->id) : ?>
-                    <div class="notification-box me-3">
+                    <div class="notification-box me-3 order-md-3">
                         <?php $notificationService = service('notification'); ?>
                         <?php $notifications = $notificationService->getNotifications(auth()->user()->id) ?>
                         <button class="btn btn-secondary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -73,7 +53,7 @@
                         <?php endif ?>
                     </div>
 
-                    <div class="d-flex">
+                    <div class="d-flex order-md-4">
                         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= auth()->user()->username ?>'s profile
                         </button>
@@ -87,13 +67,34 @@
                         </ul>
                     </div>
                     <?php else: ?>
-                    <a class="btn btn-primary me-3" href="<?= base_url('login') ?>">Login</a>
-                    <a class="btn btn-primary" href="<?= base_url('register') ?>">Signup</a>
+                    <a class="btn btn-primary me-md-3 order-md-3" href="<?= base_url('login') ?>">Login</a>
+                    <a class="btn btn-primary order-md-4" href="<?= base_url('register') ?>">Signup</a>
                     <?php endif; ?>
+
+                    <button class="navbar-toggler order-sm-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?= base_url() ?>">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= base_url('gallery') ?>">Tournament Gallery</a>
+                            </li>
+                            <?php if (auth()->user() && auth()->user()->id) : ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= base_url('tournaments') ?>">Dashboard</a>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+
                 </nav>
             </div>
 
-            <div class="main-content container p-5">
+            <div class="main-content container p-md-5">
                 <div id="notificationAlertPlaceholder" class="position-relative"></div>
 
                 <?= $this->renderSection('main') ?>
