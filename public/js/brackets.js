@@ -3,9 +3,28 @@ let bracketCount = 0,
 
 let eleminationType = "Single";
 let editing_mode = false;
+var ws;
 
 $(document).on('ready', function () {
-    loadBrackets();
+    
+    $("#overlay").fadeIn(300);
+    try{
+        ws = new WebSocket('ws://localhost:8089');
+        ws.onopen = function(e) {
+            console.log("Connection established!");
+            loadBrackets();
+        };
+
+        ws.onmessage = function(e) {
+            console.log(e.data);
+            loadBrackets();
+        };
+    }catch(exception){
+        alert("Websocket is not running now. The result will not be updated real time.");
+        loadBrackets();
+    }
+    initialize();
+
 
     /*
      * Build our bracket "model"
@@ -270,7 +289,9 @@ $(document).on('ready', function () {
         }
         // group.append('<div class="r'+(groupCount+1)+'"><div class="final"><div class="bracketbox"><span class="bracket-team teamc">&nbsp;</span></div></div></div>');
 
-        $('#brackets').append(group);
+        // $('#brackets').append(group);
+        $('#brackets').html(group);
+        initialize();
 
         adjustBracketsStyles()
 
@@ -301,7 +322,6 @@ $(document).on('ready', function () {
     }
 
     function loadBrackets() {
-        $("#overlay").fadeIn(300);
 
         $.ajax({
             type: "get",
@@ -324,79 +344,83 @@ $(document).on('ready', function () {
             }, 500);
         });
     }
+    function initialize(){
+        $('#reset-single').on('click', function () {
+            $.ajax({
+                type: "POST",
+                url: apiURL + '/brackets/switch',
+                data: { 'type': 'Single', 'tournament_id': tournament_id },
+                success: function (result) {
+                    alert("Brackets was cleared successfully.");
 
-    $('#reset-single').on('click', function () {
-        $.ajax({
-            type: "POST",
-            url: apiURL + '/brackets/switch',
-            data: { 'type': 'Single', 'tournament_id': tournament_id },
-            success: function (result) {
-                alert("Brackets was cleared successfully.");
-
-                eleminationType = "Single";
-                brackets = [];
-                bracketCount = 0;
-                $('#brackets').html('');
-                loadBrackets()
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function () {
-                $("#overlay").fadeOut(300);
-            }, 500);
+                    eleminationType = "Single";
+                    brackets = [];
+                    bracketCount = 0;
+                    $('#brackets').html('');
+                    ws.send('reset!');
+                    loadBrackets()
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            }).done(() => {
+                setTimeout(function () {
+                    $("#overlay").fadeOut(300);
+                }, 500);
+            });
         });
-    });
 
-    $('#reset-double').on('click', function () {
-        $.ajax({
-            type: "POST",
-            url: apiURL + '/brackets/switch',
-            data: { type: 'Double', 'tournament_id': tournament_id },
-            success: function (result) {
-                alert("Brackets was cleared successfully.");
+        $('#reset-double').on('click', function () {
+            $.ajax({
+                type: "POST",
+                url: apiURL + '/brackets/switch',
+                data: { type: 'Double', 'tournament_id': tournament_id },
+                success: function (result) {
+                    alert("Brackets was cleared successfully.");
 
-                eleminationType = "Double";
-                brackets = [];
-                bracketCount = 0;
-                $('#brackets').html('');
-                loadBrackets()
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function () {
-                $("#overlay").fadeOut(300);
-            }, 500);
+                    eleminationType = "Double";
+                    brackets = [];
+                    bracketCount = 0;
+                    $('#brackets').html('');
+                    ws.send('reset!');
+                    loadBrackets()
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            }).done(() => {
+                setTimeout(function () {
+                    $("#overlay").fadeOut(300);
+                }, 500);
+            });
         });
-    });
 
-    $('#clear').on('click', function () {
-        $.ajax({
-            type: "GET",
-            url: apiURL + '/tournaments/' + tournament_id + '/clear',
-            success: function (result) {
-                alert("Brackets was cleared successfully.");
+        $('#clear').on('click', function () {
+            $.ajax({
+                type: "GET",
+                url: apiURL + '/tournaments/' + tournament_id + '/clear',
+                success: function (result) {
+                    ws.send('reset!');
+                    alert("Brackets was cleared successfully.");
 
-                window.location.href = '/tournaments/' + tournament_id + '/view';
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function () {
-                $("#overlay").fadeOut(300);
-            }, 500);
+                    window.location.href = '/tournaments/' + tournament_id + '/view';
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            }).done(() => {
+                setTimeout(function () {
+                    $("#overlay").fadeOut(300);
+                }, 500);
+            });
         });
-    });
 
-    const stopBtn = document.getElementById('stopMusicButton')
-    if (stopBtn) {
-        stopBtn.addEventListener('click', function () {
-            stopMusicPlaying()
-        });
+        const stopBtn = document.getElementById('stopMusicButton')
+        if (stopBtn) {
+            stopBtn.addEventListener('click', function () {
+                stopMusicPlaying()
+            });
+        }
     }
 });
 
@@ -428,6 +452,7 @@ function updateBracket(element, data) {
         contentType: "application/json",
         dataType: "JSON",
         success: function (result) {
+            ws.send('updated!');
             let box = element;
             box.data('id', result.data.participant_id);
             box.contents().remove();
@@ -482,6 +507,7 @@ function markWinner(key, opt, e) {
         contentType: "application/json",
         data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final }),
         success: function (result) {
+            ws.send('marked!');
             console.log(result)
         },
         error: function (error) {
@@ -500,6 +526,7 @@ function markWinner(key, opt, e) {
         contentType: "application/json",
         data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.find('.name').text(), order: opt.$trigger.data('p_order') }),
         success: function (result) {
+            ws.send('marked!');
             $(next_bracketObj).contents().remove()
             ele.parent().contents().removeClass('winner')
             ele.addClass('winner');
@@ -584,6 +611,7 @@ function unmarkWinner(key, opt, e) {
         contentType: "application/json",
         data: JSON.stringify({ winner: '' }),
         success: function (result) {
+            ws.send('unmarked!');
             ele.find('.score').remove()
 
             if (isScoreEnabled) {
@@ -617,6 +645,7 @@ function unmarkWinner(key, opt, e) {
         contentType: "application/json",
         data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode, is_final: is_final }),
         success: function (result) {
+            ws.send('unmarked!');
             ele.parent().contents().removeClass('winner')
             next_bracketObj.classList.remove('winner')
             next_bracketObj.dataset.id = '';

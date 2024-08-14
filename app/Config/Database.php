@@ -28,7 +28,7 @@ class Database extends Config
         'DSN'          => '',
         'hostname'     => 'localhost',
         'username'     => 'root',
-        'password'     => 'mysql@root',
+        'password'     => '',
         'database'     => 'tournaments',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
