@@ -230,6 +230,9 @@
 .brackets>div .final span {
   margin-left: 20px;
 }
+.brackets>div .final span.p-id{
+  margin-left: 0;
+}
 
 .brackets .bracketbox .winner {
   color: red;
