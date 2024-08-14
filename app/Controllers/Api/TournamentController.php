@@ -78,7 +78,7 @@ class TournamentController extends BaseController
             'description' => $this->request->getPost('description'),
             'score_enabled' => ($this->request->getPost('score_enabled') == 'on') ? 1 : 0,
             'score_bracket' => $this->request->getPost('score_bracket'),
-            'increment_score' => $this->request->getPost('increment_score') == 'on',
+            'increment_score' => $this->request->getPost('increment_score'),
             'increment_score_enabled' => ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0,
             'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0
         ];

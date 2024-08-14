@@ -22,7 +22,7 @@
         <label class="form-check-label" for="enableVisibility">
             <h6>Visibility</h6>
         </label>
-        <div class="visibility-hint form-text">"If enabled, the tournament will be visible publicly on the Tournament Gallery. Tournaments listed on the Tournament Gallery may be viewed by spectators/guests as read-only mode."</div>
+        <div class="visibility-hint form-text">If enabled, the tournament will be visible publicly on the Tournament Gallery. Tournaments listed on the Tournament Gallery may be viewed by spectators/guests as read-only mode.</div>
     </div>
 </div>
 

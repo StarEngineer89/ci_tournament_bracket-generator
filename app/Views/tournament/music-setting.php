@@ -3,7 +3,7 @@
     <div class="form-check border-bottom mb-3">
         <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[0]" id="toggle-music-settings-0" onChange="musicSettingToggleChange(this)">
         <label class="form-check-label" for="toggle-music-settings-0">
-            <h6>Music during the generation</h6>
+            <h6>Music during Brackets Generation</h6>
         </label>
     </div>
 

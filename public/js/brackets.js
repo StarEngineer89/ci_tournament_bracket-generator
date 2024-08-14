@@ -9,7 +9,7 @@ $(document).on('ready', function () {
     
     $("#overlay").fadeIn(300);
     try{
-        ws = new WebSocket('ws://localhost:8089');
+        ws = new WebSocket('ws://'+location.hostname+':8089');
         ws.onopen = function(e) {
             console.log("Connection established!");
             loadBrackets();

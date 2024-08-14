@@ -21,7 +21,7 @@ const unmarkWinnerActionCode = '<?= BRACKET_ACTIONCODE_UNMARK_WINNER ?>';
 const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?>';
 const addParticipantActionCode = '<?= BRACKET_ACTIONCODE_ADD_PARTICIPANT ?>';
 const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
-const hasEditPermission = '<?= session('share_permission') && session('share_permission') == SHARE_PERMISSION_VIEW ? false : true ?>';
+const hasEditPermission = '<?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') ? true : false ?>';
 const isScoreEnabled = '<?= $tournament['score_enabled'] ?>';
 const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['score_bracket'] : 0 ?>)
 const incrementScore = parseInt(<?= ($tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>)

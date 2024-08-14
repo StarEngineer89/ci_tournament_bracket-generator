@@ -76,7 +76,7 @@
             <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
             <td scope="row"><?= $order++ ?></td>
             <td data-label="name">
-                <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
+                <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view?mode=edit') ?>"><?= $tournament['name'] ?></a>
             </td>
             <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
             <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
