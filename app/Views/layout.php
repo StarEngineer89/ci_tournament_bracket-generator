@@ -22,7 +22,7 @@
     <body class="bg-light">
 
         <main role="main" class="container-fluid">
-            <div class="header p-2 border-bottom">
+            <div class="header p-2 border-bottom sticky-top bg-light">
                 <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
                     <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
 

@@ -257,7 +257,7 @@ function updateTime(selectedTimezone) {
 let toggleScoreOption = (checkbox) => {
     if ($(checkbox).is(':checked')) {
         $('#scorePerBracket').prop('disabled', false)
-        $('#incrementScore').prop('disabled', false)
+        //$('#incrementScore').prop('disabled', false)
         $('#scoreOptions').removeClass('d-none')
         $('.enable-scoreoption-hint').removeClass('d-none')
     } else {

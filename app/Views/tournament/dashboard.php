@@ -561,6 +561,8 @@ $(document).ready(function() {
                                     $('#incrementScore').val(result.tournamentSettings.increment_score)
                                 } else {
                                     $('#enableIncrementScore').attr('checked', false)
+                                    $('#incrementScore').attr('disabled', true)
+                                    $('#incrementScore').val(result.tournamentSettings.increment_score)
                                 }
                                 toggleIncrementScore(document.getElementById('enableIncrementScore'))
                             } else {
