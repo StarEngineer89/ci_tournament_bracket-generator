@@ -21,87 +21,119 @@
 
     <body class="bg-light">
 
-        <main role="main" class="container-fluid">
+        <main role="main">
             <div class="header p-2 border-bottom sticky-top bg-light">
-                <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
-                    <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
+                <div class="container-fluid">
+                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary">
+                        <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
 
-                    <?php if (auth()->user() && auth()->user()->id) : ?>
-                    <div class="notification-box me-3 order-md-3">
-                        <?php $notificationService = service('notification'); ?>
-                        <?php $notifications = $notificationService->getNotifications(auth()->user()->id) ?>
-                        <button class="btn btn-secondary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-bell"></i>
+                        <?php if (auth()->user() && auth()->user()->id) : ?>
+                        <div class="notification-box me-3 order-md-3">
+                            <?php $notificationService = service('notification'); ?>
+                            <?php $notifications = $notificationService->getNotifications(auth()->user()->id) ?>
+                            <button class="btn btn-secondary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa fa-bell"></i>
+                                <?php if (count($notifications)): ?>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    <?= count($notifications) ?>
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                                <?php endif ?>
+                            </button>
                             <?php if (count($notifications)): ?>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                <?= count($notifications) ?>
-                                <span class="visually-hidden">unread messages</span>
-                            </span>
+                            <ul class="dropdown-menu  dropdown-menu-end">
+                                <?php foreach ($notifications as $notification): ?>
+                                <li>
+                                    <p class="dropdown-item p-2">
+                                        <a class="" href="#" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><?= $notification['message'] ?></a>
+                                        <a class="delete" onclick="deleteNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><i class="fa fa-remove"></i></a>
+                                    </p>
+                                </li>
+                                <?php endforeach ?>
+                            </ul>
                             <?php endif ?>
+                        </div>
+
+                        <div class="d-flex order-md-4">
+                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                <?= auth()->user()->username ?>'s profile
+                            </button>
+                            <ul class="profile-menu dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">General Settings</a></li>
+                                <li><a class="dropdown-item" href="<?= base_url('profile') ?>">Profile Settings</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="<?php echo base_url('logout') ?>">Log out</a></li>
+                            </ul>
+                        </div>
+                        <?php else: ?>
+                        <a class="btn btn-primary me-md-3 order-md-3" href="<?= base_url('login') ?>">Login</a>
+                        <a class="btn btn-primary order-md-4" href="<?= base_url('register') ?>">Signup</a>
+                        <?php endif; ?>
+
+                        <button class="navbar-toggler order-sm-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
                         </button>
-                        <?php if (count($notifications)): ?>
-                        <ul class="dropdown-menu  dropdown-menu-end">
-                            <?php foreach ($notifications as $notification): ?>
-                            <li>
-                                <p class="dropdown-item p-2">
-                                    <a class="" href="#" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><?= $notification['message'] ?></a>
-                                    <a class="delete" onclick="deleteNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><i class="fa fa-remove"></i></a>
-                                </p>
-                            </li>
-                            <?php endforeach ?>
-                        </ul>
-                        <?php endif ?>
-                    </div>
 
-                    <div class="d-flex order-md-4">
-                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= auth()->user()->username ?>'s profile
-                        </button>
-                        <ul class="profile-menu dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">General Settings</a></li>
-                            <li><a class="dropdown-item" href="<?= base_url('profile') ?>">Profile Settings</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="<?php echo base_url('logout') ?>">Log out</a></li>
-                        </ul>
-                    </div>
-                    <?php else: ?>
-                    <a class="btn btn-primary me-md-3 order-md-3" href="<?= base_url('login') ?>">Login</a>
-                    <a class="btn btn-primary order-md-4" href="<?= base_url('register') ?>">Signup</a>
-                    <?php endif; ?>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="<?= base_url() ?>">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="<?= base_url('gallery') ?>">Tournament Gallery</a>
+                                </li>
+                                <?php if (auth()->user() && auth()->user()->id) : ?>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="<?= base_url('tournaments') ?>">Dashboard</a>
+                                </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
 
-                    <button class="navbar-toggler order-sm-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="<?= base_url() ?>">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?= base_url('gallery') ?>">Tournament Gallery</a>
-                            </li>
-                            <?php if (auth()->user() && auth()->user()->id) : ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="<?= base_url('tournaments') ?>">Dashboard</a>
-                            </li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-
-                </nav>
+                    </nav>
+                </div>
             </div>
 
-            <div class="main-content container p-md-5">
+            <div class="main-content container p-md-5 p-3">
                 <div id="notificationAlertPlaceholder" class="position-relative"></div>
 
                 <?= $this->renderSection('main') ?>
             </div>
 
             <div class="footer border-top p-3">
-                footer
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h4>Quick Links</h4>
+                            <ul class="link-group">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/">About</a></li>
+                                <li><a href="/gallery">Gallery</a></li>
+                                <li><a href="/tournaments">Tournaments</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Quick Links</h4>
+                            <ul class="link-group">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/">About</a></li>
+                                <li><a href="/gallery">Gallery</a></li>
+                                <li><a href="/tournaments">Tournaments</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Quick Links</h4>
+                            <ul class="link-group">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/">About</a></li>
+                                <li><a href="/gallery">Gallery</a></li>
+                                <li><a href="/tournaments">Tournaments</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
 

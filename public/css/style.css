@@ -561,3 +561,11 @@
 .settings-update .elimination-type-hint {
   display: block;
 }
+.link-group{
+  list-style: none;
+  padding: 0;
+}
+.link-group a{
+  text-decoration: none;
+  color: inherit;
+}
