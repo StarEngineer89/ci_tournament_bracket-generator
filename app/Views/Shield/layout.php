@@ -80,12 +80,28 @@
         if (!document.cookie.includes('cookie_consent')) {
             document.getElementById('cookieConsentModal').style.display = 'block';
         }
+        setCookie = (name, value, days) => {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        let acceptCookies = () => {
+            setCookie('cookie_consent', 'accepted', 365);
+            document.getElementById('cookieConsentModal').style.display = 'none';
+        }
+
+        let rejectCookies = () => {
+            setCookie('cookie_consent', 'rejected', 365);
+            document.getElementById('cookieConsentModal').style.display = 'none';
+            alert('Cookies rejected. To reactivate, clear your browser history and visit the site again.');
+        }
     </script>
     <script src="/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="/js/functions.js"></script>
 <?= $this->renderSection('pageScripts') ?>
 </body>
 </html>
