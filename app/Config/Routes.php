@@ -22,6 +22,7 @@ $routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
 $routes->get('auth/google', 'GoogleAuthController::login');
 $routes->get('auth/google/callback', 'GoogleAuthController::callback');
 
+$routes->get('gallery/(:num)/view', 'TournamentController::view/$1');
 $routes->group('tournaments', static function ($routes) {
     $routes->get('/', 'TournamentController::index');
     $routes->get('create', 'TournamentController::create');

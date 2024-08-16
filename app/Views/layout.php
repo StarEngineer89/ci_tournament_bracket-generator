@@ -106,7 +106,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-4">
-                            <h4>Quick Links</h4>
+                            <h4>Pages</h4>
                             <ul class="link-group">
                                 <li><a href="/">Home</a></li>
                                 <li><a href="/">About</a></li>
@@ -124,12 +124,11 @@
                             </ul>
                         </div>
                         <div class="col-md-4">
-                            <h4>Quick Links</h4>
+                            <h4>Contact Us</h4>
                             <ul class="link-group">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">About</a></li>
-                                <li><a href="/gallery">Gallery</a></li>
-                                <li><a href="/tournaments">Tournaments</a></li>
+                                <li><a href="/">Contact</a></li>
+                                <li><a href="/gallery">Terms</a></li>
+                                <li><a href="/">Help</a></li>
                             </ul>
                         </div>
                     </div>

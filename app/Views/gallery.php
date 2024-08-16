@@ -46,47 +46,49 @@ $('#stautsFilter').on('change', function() {
         </div>
     </div>
 
-    <table id="tournamentGalleryTable" class="table align-middle">
-        <thead>
-            <tr>
-                <th scope="col">#<br />&nbsp;</th>
-                <th scope="col">Tournament Name<br />&nbsp;</th>
-                <th scope="col">
-                    <label for="typeFilter">Type:</label>
-                    <select id="typeFilter" class="form-select form-select-sm">
-                        <option value="">All Types</option>
-                        <option value="Single">Single</option>
-                        <option value="Double">Double</option>
-                    </select>
-                </th>
-                <th scope="col">
-                    <label for="statusFilter">Status:</label>
-                    <select id="stautsFilter" class="form-select form-select-sm">
-                        <option value="">All Status</option>
-                        <option value="In progress">In progress</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Abandoned">Abandoned</option>
-                    </select>
-                </th>
-                <th scope="col">Created Time<br />&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php $order = 1; ?>
-            <?php foreach ($tournaments as $index => $tournament) : ?>
-            <?php if (isset($tournament['status'])): ?>
-            <tr data-id="<?= $tournament['id'] ?>">
-                <td scope="row"><?= $order++ ?></td>
-                <td data-label="name">
-                    <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
-                </td>
-                <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
-                <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
-                <td><?= convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) ?></td>
-            </tr>
-            <?php endif ?>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table id="tournamentGalleryTable" class="table align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">#<br />&nbsp;</th>
+                    <th scope="col">Tournament Name<br />&nbsp;</th>
+                    <th scope="col">
+                        <label for="typeFilter">Type:</label>
+                        <select id="typeFilter" class="form-select form-select-sm">
+                            <option value="">All Types</option>
+                            <option value="Single">Single</option>
+                            <option value="Double">Double</option>
+                        </select>
+                    </th>
+                    <th scope="col">
+                        <label for="statusFilter">Status:</label>
+                        <select id="stautsFilter" class="form-select form-select-sm">
+                            <option value="">All Status</option>
+                            <option value="In progress">In progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Abandoned">Abandoned</option>
+                        </select>
+                    </th>
+                    <th scope="col">Created Time<br />&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $order = 1; ?>
+                <?php foreach ($tournaments as $index => $tournament) : ?>
+                <?php if (isset($tournament['status'])): ?>
+                <tr data-id="<?= $tournament['id'] ?>">
+                    <td scope="row"><?= $order++ ?></td>
+                    <td data-label="name">
+                        <a href="<?= base_url('gallery/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
+                    </td>
+                    <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
+                    <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
+                    <td><?= (auth()->user()) ? convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) : $tournament['created_at'] ?></td>
+                </tr>
+                <?php endif ?>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 <?= $this->endSection() ?>
