@@ -40,7 +40,7 @@
                 <label for="scorePerBracket" class="col-form-label">Score per bracket per round <span class="text-danger">*</span> :</label>
             </div>
             <div class="col-3">
-                <input type="number" name="score_bracket" id="scorePerBracket" class="form-control" min="0" required>
+                <input type="number" name="score_bracket" id="scorePerBracket" class="form-control" min="0" value="0" required>
             </div>
         </div>
         <div class="row">
@@ -49,7 +49,7 @@
                 <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
             </div>
             <div class="col-3 ms-1">
-                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" required>
+                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" value="0" required>
             </div>
         </div>
         <div class="enable-increamentscoreoption-hint form-text">
