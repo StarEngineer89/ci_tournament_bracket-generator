@@ -309,7 +309,7 @@ const enableDescriptionEdit = (button) => {
     }
 
     const dismissButton = document.createElement('button')
-    dismissButton.innerText = 'Dismiss'
+    dismissButton.innerText = 'Discard'
     dismissButton.className = 'btn btn-secondary ms-2'
     dismissButton.onclick = () => {
         currentDescriptionDiv = descriptionDiv
