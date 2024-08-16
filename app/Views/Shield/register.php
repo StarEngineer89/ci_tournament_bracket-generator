@@ -5,7 +5,7 @@
 <?= $this->section('main') ?>
 <div class="main-content">
     <div class="container d-flex justify-content-center p-5">
-        <div class="card col-12 col-md-5 shadow-sm">
+        <div class="card col-12 col-md-6 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title mb-5"><?= lang('Auth.register') ?></h5>
 
