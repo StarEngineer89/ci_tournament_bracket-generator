@@ -96,7 +96,7 @@
                 </div>
             </div>
 
-            <div class="main-content container p-md-5 p-3">
+            <div class="main-content container-fluid p-md-5 p-3">
                 <div id="notificationAlertPlaceholder" class="position-relative"></div>
 
                 <?= $this->renderSection('main') ?>

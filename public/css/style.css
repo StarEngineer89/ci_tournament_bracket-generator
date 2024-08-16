@@ -3,7 +3,10 @@
   left: auto;
 }
 .main-content {
-  min-height: calc(100vh - 250px)
+  min-height: calc(100vh - 250px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .footer {
   background-color: #555;

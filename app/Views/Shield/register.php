@@ -3,7 +3,7 @@
 <?= $this->section('title') ?><?= lang('Auth.register') ?> <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
-
+<div class="main-content">
     <div class="container d-flex justify-content-center p-5">
         <div class="card col-12 col-md-5 shadow-sm">
             <div class="card-body">
@@ -61,6 +61,6 @@
             </div>
         </div>
     </div>
-    
+</div>
 
 <?= $this->endSection() ?>
