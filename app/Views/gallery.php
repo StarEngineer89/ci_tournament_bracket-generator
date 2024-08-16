@@ -33,6 +33,34 @@ $('#stautsFilter').on('change', function() {
     var selectedStatus = $(this).val().toLowerCase();
     table.columns(3).search(selectedStatus).draw();
 });
+function handleKeyPress(event) {
+    if (event.keyCode === 13) {
+        event.preventDefault(); // Prevent form submission
+        fetchDataAndUpdateTable();
+    }
+}
+
+function fetchDataAndUpdateTable() {
+    let data = {
+        query: $('#tournamentSearchInputBox').val()
+    }
+
+    let url = new URL(window.location.href);
+
+    // Get search params from URL
+    let searchParams = new URLSearchParams(url.search);
+
+    // Add new parameter
+    searchParams.set('query', $('#tournamentSearchInputBox').val());
+
+    // Update search property of URL object
+    url.search = searchParams.toString();
+
+    // Replace current history state with new URL
+    history.replaceState(null, '', url.href);
+
+    window.location.href = url.href
+}
 </script>
 <?= $this->endSection() ?>
 
@@ -45,7 +73,12 @@ $('#stautsFilter').on('change', function() {
             <p>Ready to watch some thrilling matches? Step right in, enjoy watching the competition unfold, and cheer on your favorite participants!</p>
         </div>
     </div>
-
+    <div class="container justify-content-center mb-3">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>" placeholder="Search for a tournament name or find out which tournaments a participant is competing in" onkeydown="handleKeyPress(event)">
+            <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()"><i class="fa fa-search"></i> Search</button>
+        </div>
+    </div>
     <div class="table-responsive">
         <table id="tournamentGalleryTable" class="table align-middle">
             <thead>

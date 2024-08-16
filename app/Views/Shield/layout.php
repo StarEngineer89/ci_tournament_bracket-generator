@@ -55,23 +55,15 @@
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    <h4>Quick Links</h4>
-                    <ul class="link-group">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/">About</a></li>
-                        <li><a href="/gallery">Gallery</a></li>
-                        <li><a href="/tournaments">Tournaments</a></li>
-                    </ul>
                 </div>
                 <div class="col-md-4">
-                    <h4>Contact Us</h4>
-                    <ul class="link-group">
-                        <li><a href="/">Contact</a></li>
-                        <li><a href="/gallery">Terms</a></li>
-                        <li><a href="/">Help</a></li>
-                    </ul>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="footer-copy border-top p-3">
+        <div class="container text-center">
+            copyright ©️ 2024
         </div>
     </div>
     
@@ -93,6 +85,7 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/js/functions.js"></script>
 <?= $this->renderSection('pageScripts') ?>
 </body>
 </html>

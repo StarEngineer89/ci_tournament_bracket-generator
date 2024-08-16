@@ -342,10 +342,16 @@
   /* Darker shade of blue on hover */
 }
 
-#tournamentTable_filter {
+#tournamentTable_filter,
+#tournamentGalleryTable_filter {
   display: none;
 }
-
+#tournamentGalleryTable_length{
+  text-align: left;
+}
+#tournamentTable_wrapper{
+  margin-top: 1rem;
+}
 #tournamentSearchInputBox::placeholder {
   font-size: 12px;
 }
@@ -571,4 +577,11 @@
 .link-group a{
   text-decoration: none;
   color: inherit;
+}
+.card.login{
+  max-width: 400px;
+}
+.footer-copy{
+  background: #555;
+  color: #fff;
 }

@@ -38,7 +38,7 @@
 
         <div id="liveAlertPlaceholder"></div>
 
-        <div class="table-responsive" id="tournamentsTableWrapper">
+        <div id="tournamentsTableWrapper">
             <?php echo $table ?>
         </div>
     </div>

@@ -38,80 +38,80 @@
     <a href="<?= base_url('tournaments/export?filter=' . $navActive) ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
     <?php endif ?>
 </div>
-
-<table id="tournamentTable" class="table align-middle">
-    <thead>
-        <tr>
-            <th scope="col" width="20px">
-                <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
-            </th>
-            <th scope="col">#<br />&nbsp;</th>
-            <th scope="col">Tournament Name<br />&nbsp;</th>
-            <th scope="col">
-                <label for="typeFilter">Type:</label>
-                <select id="typeFilter" class="form-select form-select-sm">
-                    <option value="">All Types</option>
-                    <option value="Single">Single</option>
-                    <option value="Double">Double</option>
-                </select>
-            </th>
-            <th scope="col">
-                <label for="statusFilter">Status:</label>
-                <select id="stautsFilter" class="form-select form-select-sm">
-                    <option value="">All Status</option>
-                    <option value="In progress">In progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Abandoned">Abandoned</option>
-                </select>
-            </th>
-            <th scope="col">Created Time<br />&nbsp;</th>
-            <th scope="col">Actions<br />&nbsp;</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php $order = 1; ?>
-        <?php foreach ($tournaments as $index => $tournament) : ?>
-        <?php if (isset($tournament['status'])): ?>
-        <tr data-id="<?= $tournament['id'] ?>">
-            <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
-            <td scope="row"><?= $order++ ?></td>
-            <td data-label="name">
-                <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view?mode=edit') ?>"><?= $tournament['name'] ?></a>
-            </td>
-            <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
-            <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
-            <td><?= convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) ?></td>
-            <td>
-                <div class="btn-groups list-group">
-                    <button class="btn text-start collapse-actions-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActions-<?= $index ?>" aria-expanded="false" aria-controls="collapseActions-<?= $index ?>">
-                        <i class="fa-solid fa-plus"></i> View Actions
-                    </button>
-                    <div class="collapse" id="collapseActions-<?= $index ?>">
-                        <div class="card card-body p-3">
-                            <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>" onclick="renameTorunament(this)">Rename</a>
-                            <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
-                            <?php if ($tournament['archive'] == 1): ?>
-                            <a href="javascript:;" class="restore" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>
-                            <?php else: ?>
-                            <a href="javascript:;" class="archive" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>
-                            <?php endif ?>
-                            <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
-                            <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
-                            <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Settings</a>
-                            <a href="javascript:;" class="share" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
-                            <a href="javascript:;" class="view-log" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+<div class="table-responsive">
+    <table id="tournamentTable" class="table align-middle">
+        <thead>
+            <tr>
+                <th scope="col" width="20px">
+                    <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
+                </th>
+                <th scope="col">#<br />&nbsp;</th>
+                <th scope="col">Tournament Name<br />&nbsp;</th>
+                <th scope="col">
+                    <label for="typeFilter">Type:</label>
+                    <select id="typeFilter" class="form-select form-select-sm">
+                        <option value="">All Types</option>
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                    </select>
+                </th>
+                <th scope="col">
+                    <label for="statusFilter">Status:</label>
+                    <select id="stautsFilter" class="form-select form-select-sm">
+                        <option value="">All Status</option>
+                        <option value="In progress">In progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Abandoned">Abandoned</option>
+                    </select>
+                </th>
+                <th scope="col">Created Time<br />&nbsp;</th>
+                <th scope="col">Actions<br />&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $order = 1; ?>
+            <?php foreach ($tournaments as $index => $tournament) : ?>
+            <?php if (isset($tournament['status'])): ?>
+            <tr data-id="<?= $tournament['id'] ?>">
+                <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
+                <td scope="row"><?= $order++ ?></td>
+                <td data-label="name">
+                    <a href="<?= base_url('tournaments/' . $tournament['id'] . '/view?mode=edit') ?>"><?= $tournament['name'] ?></a>
+                </td>
+                <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
+                <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
+                <td><?= convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) ?></td>
+                <td>
+                    <div class="btn-groups list-group">
+                        <button class="btn text-start collapse-actions-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActions-<?= $index ?>" aria-expanded="false" aria-controls="collapseActions-<?= $index ?>">
+                            <i class="fa-solid fa-plus"></i> View Actions
+                        </button>
+                        <div class="collapse" id="collapseActions-<?= $index ?>">
+                            <div class="card card-body p-3">
+                                <a href="javascript:;" class="rename" data-id="<?= $tournament['id'] ?>" onclick="renameTorunament(this)">Rename</a>
+                                <a href="javascript:;" class="reset" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                                <?php if ($tournament['archive'] == 1): ?>
+                                <a href="javascript:;" class="restore" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>
+                                <?php else: ?>
+                                <a href="javascript:;" class="archive" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>
+                                <?php endif ?>
+                                <a href="javascript:;" class="delete" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
+                                <a href="javascript:;" class="change-status" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>">Change Status</a>
+                                <a href="javascript:;" class="music-setting-link" data-id="<?= $tournament['id'] ?>">Settings</a>
+                                <a href="javascript:;" class="share" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
+                                <a href="javascript:;" class="view-log" data-id="<?= $tournament['id'] ?>" data-name="<?= $tournament['name'] ?>" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
-                <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="cancelUpdateTorunament(this)">Cancel</a>
-            </td>
-        </tr>
-        <?php endif ?>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-
+                    <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="saveChange(event)">Save</a>
+                    <a href="javascript:;" class="save visually-hidden" data-id="<?= $tournament['id'] ?>" data-status="<?= $tournament['status'] ?>" onClick="cancelUpdateTorunament(this)">Cancel</a>
+                </td>
+            </tr>
+            <?php endif ?>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
 <!-- Modal -->
 <div class="modal fade" id="archiveConfirmModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="archiveConfirmModal" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
