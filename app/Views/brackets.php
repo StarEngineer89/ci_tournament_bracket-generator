@@ -64,7 +64,7 @@ $(document).ready(function() {
     const appendDescription = (description, type) => {
         const wrapper = document.createElement('div')
         let editBtn = ''
-        <?php if (auth()->user() && $tournament['user_id'] == auth()->user()->id): ?>
+        <?php if (auth()->user() && $tournament['user_id'] == auth()->user()->id && (isset($_GET['mode']) && $_GET['mode'] == 'edit')): ?>
         editBtn = '<button type="button" class="btn-edit" id="editDescriptionBtn" onclick="enableDescriptionEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>'
         <?php endif ?>
         wrapper.innerHTML = [
