@@ -50,8 +50,8 @@
                     <ul class="link-group">
                         <li><a href="/">Home</a></li>
                         <li><a href="/">About</a></li>
-                        <li><a href="/gallery">Gallery</a></li>
-                        <li><a href="/tournaments">Tournaments</a></li>
+                        <li><a href="<?= base_url('gallery') ?>">Tournament Gallery</a></li>
+                        <li><a href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">

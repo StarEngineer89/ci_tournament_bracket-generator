@@ -129,7 +129,7 @@
 .brackets div.bracketbox span.p-id {
     font-size: 0.85em;
     padding: 13px 10px;
-    background: #95e965;
+    background: #f8d1d1;
 }
 .brackets div.bracketbox span.score {
   position: absolute;
@@ -239,7 +239,7 @@
 
 .brackets .bracketbox .winner {
   color: red;
-  background-color: #fcb9b9;
+  background-color: #ace8f4;
 }
 
 #shareHistoryModal .share-settings .path {
@@ -346,7 +346,10 @@
 #tournamentGalleryTable_filter {
   display: none;
 }
-#tournamentGalleryTable_length{
+#tournamentGalleryTable_length,
+#tournamentTable_length,
+#tournamentGalleryTable_info,
+#tournamentTable_info{
   text-align: left;
 }
 #tournamentTable_wrapper{

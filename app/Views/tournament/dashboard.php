@@ -11,8 +11,8 @@
     <a class="nav-link <?= ($navActive == 'shared') ? 'active' : '' ?>" id="v-pills-settings-tab" href="<?= base_url('tournaments?filter=shared')?>">Shared Tournaments</a>
 </div>
 
-<div class="card col-12 shadow-sm">
-    <div class="card-body container">
+<div class="card shadow-sm">
+    <div class="card-body p-3">
         <h5 class="card-title d-flex justify-content-center">
             <? //= lang('Auth.login') ?>Tournament Dashboard
         </h5>

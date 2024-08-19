@@ -197,6 +197,7 @@ $(document).ready(function () {
         $('#timezoneStatus').text(`This timezone is currently in ${selectedTimezone}.`);
         $('#daylightSaving').text(`Daylight saving time begins on: ${formattedDate}.`);
     });
+    $('[data-toggle="tooltip"]').tooltip();
 })
 
 function getSecondSundayOfMarch(year, timeZone) {

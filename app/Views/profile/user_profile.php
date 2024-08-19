@@ -70,7 +70,7 @@ $(document).ready(function() {
                         <div class="row mb-3">
                             <label for="inputEmail3" class="col-sm-3 col-form-label text-start">Email</label>
                             <div class="col-sm-6">
-                                <input type="email" class="form-control" id="inputEmail3">
+                                <input type="email" class="form-control" id="inputEmail3" value="<?= $userInfo->email ?>" disabled>
                             </div>
                             <div class="col-sm-3 text-start">
                                 <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a>
