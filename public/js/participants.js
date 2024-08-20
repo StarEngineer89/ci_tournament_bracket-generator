@@ -267,7 +267,7 @@ function generateBrackets(list) {
             $('#beforeProcessing').removeClass('d-none')
         },
         success: function (result) {
-            if (result.result == 'success') window.location.href = '/tournaments/' + tournament_id + '/view';
+            if (result.result == 'success') window.location.href = '/tournaments/' + tournament_id + '/view?mode=edit';
         },
         error: function (error) {
             console.log(error);

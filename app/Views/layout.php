@@ -25,7 +25,7 @@
             <div class="header p-2 border-bottom sticky-top bg-light">
                 <div class="container-fluid">
                     <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative">
-                        <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
+                        <a class="navbar-brand" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo"/></a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>
                         <div class="notification-box me-3 order-md-3">
@@ -96,7 +96,7 @@
                 </div>
             </div>
 
-            <div class="main-content container-fluid p-md-5 p-3">
+            <div class="main-content container-fluid p-3">
                 <div id="notificationAlertPlaceholder" class="position-fixed"></div>
 
                 <?= $this->renderSection('main') ?>

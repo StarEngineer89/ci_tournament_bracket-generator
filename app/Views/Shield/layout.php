@@ -18,7 +18,7 @@
     <div class="header p-2 border-bottom sticky-top bg-light">
         <div class="container-fluid">
             <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary">
-                <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
+                <a class="navbar-brand" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo"/></a>
 
                 <button class="navbar-toggler order-sm-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

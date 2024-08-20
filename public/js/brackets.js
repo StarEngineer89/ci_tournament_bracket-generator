@@ -403,7 +403,7 @@ $(document).on('ready', function () {
                     ws.send('reset!');
                     alert("Brackets was cleared successfully.");
 
-                    window.location.href = '/tournaments/' + tournament_id + '/view';
+                    window.location.href = '/tournaments/' + tournament_id + '/view?mode=edit';
                 },
                 error: function (error) {
                     console.log(error);

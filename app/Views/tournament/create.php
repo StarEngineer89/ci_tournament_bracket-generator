@@ -661,7 +661,7 @@ var drawTournamentsTable = () => {
 
 <?= $this->section('main') ?>
 
-<div class="card container shadow-sm">
+<div class="card shadow-sm">
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">

@@ -21,7 +21,7 @@ table = $('#tournamentGalleryTable').DataTable({
     scrollX: true,
     "columnDefs": [{
         "orderable": false,
-        "targets": [2, 3]
+        "targets": [2, 3, 4]
     }],
 });
 
@@ -34,6 +34,21 @@ $('#stautsFilter').on('change', function() {
     var selectedStatus = $(this).val().toLowerCase();
     table.columns(3).search(selectedStatus).draw();
 });
+
+$('#userByFilter').on('change', function() {
+    var selectedUser = $(this).val().toLowerCase().trim();
+    table.columns(4).search(selectedUser).draw();
+});
+var nameColumns = $('td[data-label="name"] span', datatableRows)
+var names = []
+nameColumns.each((i, element) => {
+    if (!names.includes(element.textContent.trim())) {
+        var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+        $('#userByFilter').append(option)
+
+        names.push(element.textContent.trim())
+    }
+})
 function handleKeyPress(event) {
     if (event.keyCode === 13) {
         event.preventDefault(); // Prevent form submission
@@ -104,7 +119,12 @@ function fetchDataAndUpdateTable() {
                                 <option value="Abandoned">Abandoned</option>
                             </select>
                         </th>
-                        <th scope="col">Created By<br />&nbsp;</th>
+                        <th scope="col">                            
+                            <label for="userByFilter">Shared By:</label>
+                            <select id="userByFilter" class="form-select form-select-sm">
+                                <option value="">All Users</option>
+                            </select>
+                        </th>
                         <th scope="col">Created Time<br />&nbsp;</th>
                     </tr>
                 </thead>
@@ -119,7 +139,7 @@ function fetchDataAndUpdateTable() {
                         </td>
                         <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
                         <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
-                        <td><span  data-toggle="tooltip" data-placement="top" title="<?= $tournament['email'] ?>"><?= $tournament['username'] ?></span></td>
+                        <td data-label="name"><span  data-toggle="tooltip" data-placement="top" title="<?= $tournament['email'] ?>"><?= $tournament['username'] ?></span></td>
                         <td><?= (auth()->user()) ? convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) : $tournament['created_at'] ?></td>
                     </tr>
                     <?php endif ?>

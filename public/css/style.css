@@ -2,11 +2,16 @@
   right: 0;
   left: auto;
 }
+.logo{
+  height: 50px;
+}
 .main-content {
   min-height: calc(100vh - 250px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+}
+.main-content .card{
+  flex: auto;
 }
 .footer {
   background-color: #555;
@@ -346,11 +351,13 @@
 #tournamentGalleryTable_filter {
   display: none;
 }
-#tournamentGalleryTable_length,
-#tournamentTable_length,
 #tournamentGalleryTable_info,
 #tournamentTable_info{
   text-align: left;
+}
+#tournamentGalleryTable,
+#tournamentTable{
+  width: 100%!important;
 }
 #tournamentTable_wrapper{
   margin-top: 1rem;
