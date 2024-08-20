@@ -590,6 +590,7 @@ var drawTournamentsTable = () => {
                 d.search_tournament = $('#searchTournament').val();
             }
         },
+        scrollX: true,
         "columns": [{
                 "data": null,
                 "render": function(data, type, row, meta) {

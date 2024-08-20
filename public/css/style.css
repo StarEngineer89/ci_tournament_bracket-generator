@@ -429,10 +429,6 @@
   min-width: 10em;
 }
 
-#selectTournamentModal .tournaments-table {
-  overflow: scroll;
-}
-
 .overlay {
   position: fixed;
   top: 0;
