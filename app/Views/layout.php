@@ -72,12 +72,12 @@
                         <a class="btn btn-primary order-md-4" href="<?= base_url('register') ?>">Signup</a>
                         <?php endif; ?>
 
-                        <button class="navbar-toggler order-sm-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler order-md-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <ul class="nav nav-pills me-auto mb-2 mb-lg-0 flex-column flex-sm-row">
                                 <li class="nav-item">
                                     <a class="nav-link  <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">Home</a>
                                 </li>
