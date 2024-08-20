@@ -369,6 +369,7 @@ $(document).ready(function() {
         ], // Initial sorting by the first column ascending
         "paging": true, // Enable pagination
         "searching": true, // Enable search box
+        scrollX: true,
         "columnDefs": [{
             "orderable": false,
             "targets": orderFalseColumns
@@ -400,6 +401,7 @@ $(document).ready(function() {
         ], // Initial sorting by the first column ascending
         "paging": true, // Enable pagination
         "searching": true, // Enable search box
+        scrollX: true,
         "columnDefs": [{
             "orderable": false,
             "targets": [0, 3, 4, 6]

@@ -18,6 +18,7 @@ table = $('#tournamentGalleryTable').DataTable({
     ], // Initial sorting by the first column ascending
     "paging": true, // Enable pagination
     "searching": true, // Enable search box
+    scrollX: true,
     "columnDefs": [{
         "orderable": false,
         "targets": [2, 3]

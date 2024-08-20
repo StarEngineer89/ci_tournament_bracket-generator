@@ -588,3 +588,12 @@
   background: #555;
   color: #fff;
 }
+#notificationAlertPlaceholder{
+  top: 100px;
+}
+.notification-box .dropdown-menu{
+  top: 70px;
+}
+.notification-box .dropdown-item{
+  white-space: normal;
+}

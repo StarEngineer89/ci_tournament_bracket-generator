@@ -24,7 +24,7 @@
         <main role="main">
             <div class="header p-2 border-bottom sticky-top bg-light">
                 <div class="container-fluid">
-                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary">
+                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative">
                         <a class="navbar-brand me-5" href="<?= base_url() ?>">Logo</a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>
@@ -54,7 +54,7 @@
                             <?php endif ?>
                         </div>
 
-                        <div class="d-flex order-md-4">
+                        <div class="d-flex order-md-4 position-relative">
                             <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?= auth()->user()->username ?>'s profile
                             </button>
@@ -97,7 +97,7 @@
             </div>
 
             <div class="main-content container-fluid p-md-5 p-3">
-                <div id="notificationAlertPlaceholder" class="position-relative"></div>
+                <div id="notificationAlertPlaceholder" class="position-fixed"></div>
 
                 <?= $this->renderSection('main') ?>
             </div>
