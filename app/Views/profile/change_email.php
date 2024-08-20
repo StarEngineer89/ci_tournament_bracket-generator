@@ -9,20 +9,18 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
-<div class="text-center align-middle">
-    <div class="d-flex justify-content-center">
-        <h1>Change Email</h1>
-        <?= session('message') ?>
-        <?= \Config\Services::validation()->listErrors() ?>
+<div class="d-flex justify-content-center" style="flex:auto;">
+    <h1>Change Email</h1>
+    <?= session('message') ?>
+    <?= \Config\Services::validation()->listErrors() ?>
 
-        <form action="<?= site_url('profile/update-email') ?>" method="post">
-            <?= csrf_field() ?>
+    <form action="<?= site_url('profile/update-email') ?>" method="post">
+        <?= csrf_field() ?>
 
-            <label for="new_email">New Email</label>
-            <input type="email" name="new_email" id="new_email" value="<?= old('new_email') ?>" required>
+        <label for="new_email">New Email</label>
+        <input type="email" name="new_email" id="new_email" value="<?= old('new_email') ?>" required>
 
-            <button type="submit">Change Email</button>
-        </form>
-    </div>
+        <button type="submit">Change Email</button>
+    </form>
 </div>
 <?= $this->endSection() ?>

@@ -120,7 +120,7 @@ function fetchDataAndUpdateTable() {
                             </select>
                         </th>
                         <th scope="col">                            
-                            <label for="userByFilter">Shared By:</label>
+                            <label for="userByFilter">Created By:</label>
                             <select id="userByFilter" class="form-select form-select-sm">
                                 <option value="">All Users</option>
                             </select>

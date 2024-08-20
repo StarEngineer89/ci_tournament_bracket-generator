@@ -1,6 +1,15 @@
+.navbar{
+  --bs-navbar-active-color: #0d6efd;
+  --bs-navbar-hover-color: #0d6efd;
+}
+.profile:hover .profile-menu{
+  display: block;
+  top: 100%;
+}
 .profile-menu.dropdown-menu {
   right: 0;
   left: auto;
+  margin-top: 2px;
 }
 .logo{
   height: 50px;

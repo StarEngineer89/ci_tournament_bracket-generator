@@ -34,56 +34,54 @@ $(document).ready(function() {
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
-<div class="text-center align-middle">
-    <div class="d-flex justify-content-center">
-        <div class="card col-12 shadow-sm" style="max-height: calc(100vh - 60px); overflow:scroll">
-            <div class="card-body">
-                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="<?= base_url() ?>">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Information</li>
-                    </ol>
-                </nav>
-                <h5 class="card-title d-flex justify-content-center mb-5">User Information</h5>
+<div class="d-flex justify-content-center" style="flex:auto;">
+    <div class="card col-12 shadow-sm">
+        <div class="card-body">
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="<?= base_url() ?>">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Information</li>
+                </ol>
+            </nav>
+            <h5 class="card-title d-flex justify-content-center mb-5">User Information</h5>
 
-                <?php if (session('error') !== null) : ?>
-                <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
-                <?php elseif (session('errors') !== null) : ?>
-                <div class="alert alert-danger" role="alert">
-                    <?php if (is_array(session('errors'))) : ?>
-                    <?php foreach (session('errors') as $error) : ?>
-                    <?= $error ?>
-                    <br>
-                    <?php endforeach ?>
-                    <?php else : ?>
-                    <?= session('errors') ?>
-                    <?php endif ?>
-                </div>
+            <?php if (session('error') !== null) : ?>
+            <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
+            <?php elseif (session('errors') !== null) : ?>
+            <div class="alert alert-danger" role="alert">
+                <?php if (is_array(session('errors'))) : ?>
+                <?php foreach (session('errors') as $error) : ?>
+                <?= $error ?>
+                <br>
+                <?php endforeach ?>
+                <?php else : ?>
+                <?= session('errors') ?>
                 <?php endif ?>
+            </div>
+            <?php endif ?>
 
-                <?php if (session('message') !== null) : ?>
-                <div class="alert alert-success" role="alert"><?= session('message') ?><?= \Config\Services::validation()->listErrors() ?></div>
-                <?php endif ?>
+            <?php if (session('message') !== null) : ?>
+            <div class="alert alert-success" role="alert"><?= session('message') ?><?= \Config\Services::validation()->listErrors() ?></div>
+            <?php endif ?>
 
-                <div class="container">
-                    <form>
-                        <div class="row mb-3">
-                            <label for="inputEmail3" class="col-sm-3 col-form-label text-start">Email</label>
-                            <div class="col-sm-6">
-                                <input type="email" class="form-control" id="inputEmail3" value="<?= $userInfo->email ?>" disabled>
-                            </div>
-                            <div class="col-sm-3 text-start">
-                                <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a>
-                            </div>
+            <div class="container">
+                <form>
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-3 col-form-label text-start">Email</label>
+                        <div class="col-sm-6">
+                            <input type="email" class="form-control" id="inputEmail3" value="<?= $userInfo->email ?>" disabled>
                         </div>
-                        <div class="row mb-3">
-                            <label for="inputPassword3" class="col-sm-3 col-form-label text-start">Password</label>
-                            <div class="col-sm-3 text-start">
-                                <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a>
-                            </div>
+                        <div class="col-sm-3 text-start">
+                            <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputPassword3" class="col-sm-3 col-form-label text-start">Password</label>
+                        <div class="col-sm-3 text-start">
+                            <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
