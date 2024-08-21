@@ -334,11 +334,11 @@ const saveDescription = () => {
         },
         beforeSend: function() {
             $('#beforeProcessing').removeClass('d-none')
+            $('#saveDescriptionConfirmModal').modal('hide')
         },
         success: function(response) {
             currentDescriptionDiv.innerHTML = newDescriptionContent
             document.getElementById('editDescriptionBtn').classList.remove('d-none')
-            $('#saveDescriptionConfirmModal').modal('hide')
             $('#beforeProcessing').addClass('d-none')
         },
         error: function() {
