@@ -21,12 +21,12 @@ const unmarkWinnerActionCode = '<?= BRACKET_ACTIONCODE_UNMARK_WINNER ?>';
 const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?>';
 const addParticipantActionCode = '<?= BRACKET_ACTIONCODE_ADD_PARTICIPANT ?>';
 const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
-const hasEditPermission = '<?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') ? true : false ?>';
+const hasEditPermission = '<?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') || ($settings['target'] == 'p' && $settings['permission'] == 'e') || (auth()->user() && in_array(auth()->user()->id, explode(",", $settings['users'])) && $settings['permission'] == 'e' ) ? true : false ?>';
 const isScoreEnabled = '<?= $tournament['score_enabled'] ?>';
 const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['score_bracket'] : 0 ?>)
 const incrementScore = parseInt(<?= ($tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>)
-</script>
 
+</script>
 <script type="text/javascript">
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
 
@@ -168,9 +168,9 @@ $(document).ready(function() {
     </div>
 </div>
 
-<?php if (isset($settings) && $settings) : ?>
-<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
-    <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+<?php if (isset($musicSettings) && $musicSettings) : ?>
+<audio id="myAudio" preload="auto" data-starttime="<?= ($musicSettings[0]['start']) ? $musicSettings[0]['start'] : '' ?>" data-duration="<?= ($musicSettings[0]['duration']) ? $musicSettings[0]['duration'] : '' ?>">
+    <source src="<?= ($musicSettings[0]['source'] == 'f') ? '/uploads/' . $musicSettings[0]['path'] : '/uploads/' . $musicSettings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 
 <div class="buttons skipButtons">

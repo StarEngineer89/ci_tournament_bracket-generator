@@ -201,7 +201,7 @@ class TournamentController extends BaseController
         if (auth()->user()) {
             $shareAccessModel->insert(['share_id' => $settings['id'], 'user_id' => auth()->user()->id]);
         } else {
-            $shareAccessModel->insert(['share_id' => $settings['id'], 'user_id' => 0]);
+            //$shareAccessModel->insert(['share_id' => $settings['id'], 'user_id' => 0]);
         }
         
 
@@ -223,8 +223,8 @@ class TournamentController extends BaseController
             return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $musicSettings, 'musicSettingsBlock' => $musicSettingsBlock, 'permission' => $settings['permission']]);
         }
 
-        $settings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings]);
+        $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings]);
     }
 
     public function export()

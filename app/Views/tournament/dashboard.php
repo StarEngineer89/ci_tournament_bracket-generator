@@ -516,6 +516,7 @@ $(document).ready(function() {
                     url: apiURL + '/tournaments/' + tournament_id + '/fetch-settings',
                     success: function(result) {
                         result = JSON.parse(result);
+                        $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
                         $('#music-settings-panel').html(result.html);
                         $('#tournamentForm').data('id', tournament_id);
 

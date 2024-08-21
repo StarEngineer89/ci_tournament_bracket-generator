@@ -96,6 +96,9 @@ function fetchDataAndUpdateTable() {
                 <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()"><i class="fa fa-search"></i> Search</button>
             </div>
         </div>
+        <div class="buttons d-flex justify-content-end">
+            <a href="<?= base_url('gallery/export?filter=all') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
+        </div>
         <div class="table-responsive">
             <table id="tournamentGalleryTable" class="table align-middle">
                 <thead>
