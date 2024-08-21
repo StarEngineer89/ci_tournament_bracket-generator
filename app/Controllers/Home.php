@@ -28,7 +28,6 @@ class Home extends BaseController
             $temp = $tournament;
             $user = $userModel->find($tournament['user_id']);
             $userId = $userIdentityModel->find($tournament['user_id']);
-            // var_dump($user);exit;
             $temp['username'] = $user->username;
             $temp['email'] = $userId->secret;
             $newTournaments[] = $temp;
@@ -39,6 +38,7 @@ class Home extends BaseController
 
     public function export(){
         $tournamentModel = model('\App\Models\TournamentModel');
+        $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $tournaments = $tournamentModel->where(['visibility' => 1]);
         $tournaments = $tournaments->findAll();
         $filename = 'tournaments_' . date('Ymd') . '.csv';
@@ -52,7 +52,7 @@ class Home extends BaseController
         if ($this->request->getGet('filter') == 'shared' && $this->request->getGet('type') == 'wh') {
             fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Accessbility', 'Shared By', 'Shared Time', 'URL']);
         } else {
-            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Created Time', 'URL']);
+            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Created By', 'Created Time', 'URL']);
         }
 
         // Fetch the data and write it to the CSV
@@ -62,12 +62,15 @@ class Home extends BaseController
 
             $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
 
+            $user = $userModel->find($tournament['user_id']);
+
             $createdTime = $tournament['created_at'];
             fputcsv($output, [
                 $tournamentId,
                 $tournament['name'],
                 $type,
                 $statusLabel,
+                $user->username,
                 $createdTime,
                 base_url('gallery/' . $tournamentId . '/view')
             ]);

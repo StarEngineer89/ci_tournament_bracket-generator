@@ -151,7 +151,7 @@ class TournamentController extends BaseController
 
             $settingsBlock = view('tournament/tournament-settings', []);
             $musicSettingsBlock = view('tournament/music-setting', []);
-            $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_BRACKET_GENERATION])->orderBy('type','asc')->findAll();
+            $musicSettings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_BRACKET_GENERATION])->orderBy('type','asc')->findAll();
             
             $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
 
@@ -163,12 +163,12 @@ class TournamentController extends BaseController
                 }
             }
 
-            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $settings, 'settingsBlock' => $settingsBlock, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
+            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $musicSettings, 'settingsBlock' => $settingsBlock, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
-        $settings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        $musicSettings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings]);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings]);
     }
     
     public function viewShared($token)
@@ -220,7 +220,7 @@ class TournamentController extends BaseController
             $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => MUSIC_TYPE_BRACKET_GENERATION])->findAll();
             $musicSettingsBlock = view('tournament/music-setting', []);
 
-            return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $musicSettings, 'musicSettingsBlock' => $musicSettingsBlock, 'permission' => $settings['permission']]);
+            return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings, 'musicSettingsBlock' => $musicSettingsBlock, 'permission' => $settings['permission']]);
         }
 
         $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
