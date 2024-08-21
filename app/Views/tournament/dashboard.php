@@ -953,9 +953,11 @@ $(document).ready(function() {
             beforeSend: function() {
                 //$("#preview").fadeOut();
                 $("#err").fadeOut();
+                $('#beforeProcessing').removeClass('d-none');
             },
             success: function(result) {
                 $('#shareModal').modal('hide');
+                $('#beforeProcessing').addClass('d-none');
             },
             error: function(e) {
                 $("#err").html(e).fadeIn();
@@ -1208,7 +1210,7 @@ function fetchShareSettings(tournament_id) {
 
                     tbody += `<tr data-id="${item.id}" data-tournament-id="${item.tournament_id}">
                         <td>${i + 1}</td>
-                        <td><span class="path" data-bs-toggle="tooltip" data-bs-title="<?= base_url('/tournaments/shared/') ?>${item.token}"><?= base_url('/tournaments/shared/') ?>${item.token}</span></td>
+                        <td><div class="input-group"><input class="path" data-bs-toggle="tooltip" data-bs-title="<?= base_url('/tournaments/shared/') ?>${item.token}" id="shareUrl${i}" value="<?= base_url('/tournaments/shared/') ?>${item.token}" readonly/><button data-bs-toggle="tooltip" class="btn btn-outline-secondary copyUrl" data-fid="shareUrl${i}" data-bs-title="Link Copy"><i class="fa fa-copy"></i></button></div></td>
                         <td><span class="date">${item.created_at}</span></td>
                         <td><span class="date modified">${item.created_at == item.updated_at ? '' : item.updated_at}</span></td>
                         <td class="target">${target}</td>
@@ -1224,6 +1226,23 @@ function fetchShareSettings(tournament_id) {
                 });
 
                 $('table.share-settings tbody').html(tbody);
+                $('.copyUrl').click(function(){
+                    // Get the text field
+                    var shareID = $(this).data('fid');
+                    var copyText = document.getElementById(shareID);
+
+                    // Select the text field
+                    copyText.select();
+                    copyText.setSelectionRange(0, 99999); // For mobile devices
+
+                    // Copy the text inside the text field
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(copyText.value);
+                    } else {
+                        document.execCommand('copy');
+                    }
+                    $(this).attr('data-bs-title', 'Copied!');
+                })
                 $('.close-share-history').data('id', tournament_id);
 
             } else {
@@ -1246,6 +1265,9 @@ function purgeShare(id) {
     $.ajax({
         type: "GET",
         url: `${apiURL}/tournaments/purge-share/${id}`,
+        beforeSend: function() {
+            $('#beforeProcessing').removeClass('d-none')
+        },
         success: function(result) {
             result = JSON.parse(result);
 
@@ -1259,6 +1281,7 @@ function purgeShare(id) {
             }
 
             $('#purgeShareConfirm').modal('hide');
+            $('#beforeProcessing').addClass('d-none')
         },
         error: function(error) {
             console.log(error);

@@ -332,10 +332,14 @@ const saveDescription = () => {
         data: {
             description: newDescriptionContent
         },
+        beforeSend: function() {
+            $('#beforeProcessing').removeClass('d-none')
+        },
         success: function(response) {
             currentDescriptionDiv.innerHTML = newDescriptionContent
             document.getElementById('editDescriptionBtn').classList.remove('d-none')
             $('#saveDescriptionConfirmModal').modal('hide')
+            $('#beforeProcessing').addClass('d-none')
         },
         error: function() {
             alert('Failed to save description.')
