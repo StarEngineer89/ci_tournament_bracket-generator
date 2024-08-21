@@ -629,3 +629,6 @@
 .notification-box .dropdown-item{
   white-space: normal;
 }
+.modal{
+  --bs-modal-width: 800px;
+}
