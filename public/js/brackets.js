@@ -244,7 +244,7 @@ $(document).on('ready', function () {
                                         });
 
                                         if (!duplicated || force_add) {
-                                            updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode, order: (opt.$trigger.data("order") - 1) * 2 + index });
+                                            updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode, order: (opt.$trigger.data("order") - 1) * 2 + index + 1 });
                                         }
                                     } else
                                         alert('Please input the name of the participant.');
@@ -271,6 +271,7 @@ $(document).on('ready', function () {
                                             })
 
                                             // triggerElement.parent().parent().remove();
+                                            ws.send('Deleted Brackets!');
                                         },
                                         error: function (error) {
                                             console.log(error);
@@ -438,7 +439,12 @@ function changeParticipant(ele, bracket_id, index) {
     });
 
     if (ability) {
-        updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: ele.parent().data("p_order") });
+        let participant_order = ele.parent().data('p_order')
+        if (!participant_order) {
+            participant_order = (parseInt(ele.parent().data('order')) - 1) * 2 + index + 1
+        }
+
+        updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order });
     }
 }
 
@@ -457,7 +463,7 @@ function updateBracket(element, data) {
             box.data('id', result.data.participant_id);
             box.contents().remove();
 
-            box.html('<span class="p-id">'+(data.order+1)+'</span>');
+            box.html('<span class="p-id">'+ data.order +'</span>');
 
             var nameSpan = document.createElement('span')
             nameSpan.classList.add('name')
