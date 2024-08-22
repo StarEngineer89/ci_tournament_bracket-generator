@@ -244,7 +244,7 @@ $(document).on('ready', function () {
                                         });
 
                                         if (!duplicated || force_add) {
-                                            updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode });
+                                            updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode, order: (opt.$trigger.data("order") - 1) * 2 + index });
                                         }
                                     } else
                                         alert('Please input the name of the participant.');
