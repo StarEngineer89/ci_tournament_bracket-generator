@@ -438,7 +438,7 @@ function changeParticipant(ele, bracket_id, index) {
     });
 
     if (ability) {
-        updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode });
+        updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: ele.parent().data("p_order") });
     }
 }
 
@@ -456,6 +456,8 @@ function updateBracket(element, data) {
             let box = element;
             box.data('id', result.data.participant_id);
             box.contents().remove();
+
+            box.html('<span class="p-id">'+(data.order+1)+'</span>');
 
             var nameSpan = document.createElement('span')
             nameSpan.classList.add('name')
