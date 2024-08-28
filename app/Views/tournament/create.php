@@ -733,7 +733,7 @@ var drawTournamentsTable = () => {
                     <form class="row row-cols-lg-auto g-3 align-items-center mt-1" enctype="multipart/form-data" method="post">
                         <div class="input-group mb-3">
                             <input type="file" class="form-control csv-import" data-source="file" name="file" accept=".csv" required>
-                            <button type="button" class="input-group-text btn btn-primary" for="file-input" onClick="csvUpload(this)">Upload</button>
+                            <button type="button" class="input-group-text btn btn-primary" for="file-input" onClick="csvUpload(this)"><i class="fa fa-upload"></i> Upload</button>
                         </div>
                     </form>
                 </div>
@@ -744,6 +744,10 @@ var drawTournamentsTable = () => {
                     <p class="text-center">Wow, such empty!</p>
                     <p> To get started, "Add Participants" or from Additional Options, "Reuse Participants" from a previous tournament.</p>
                     <p> Once you've populated the participants list, proceed with the "Generate Brackets" option to generate the tournament!</p>
+                    <p>Btw, if you want to personalize your participants with images, you may do so here or in the tournament brackets via the upload option.</p>
+                    <p>Example:<br>
+                    If user clicks on image turns into a bin icon that they can select to Discard image or if they click away it retains image.
+Hovering on image provides zoomed out version.</p>
                     <p> FYI, you may right click (or hold on mobile) to edit/delete individual participants here.</p>
                 </div>
                 <div class="col-12 d-flex">

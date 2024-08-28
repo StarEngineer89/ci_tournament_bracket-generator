@@ -125,7 +125,7 @@
                     <input class="form-check-input" type="radio" name="usertype" id="share-public" value="<?= SHARE_TO_PUBLIC ?>" data-target="Public">
                     <label class="form-check-label" for="share-public">
                         Public on the web
-                        <div class="form-text">Anyone on the internet can find and access. (No sign-in required). <br>Note: This setting doesn't determine visibility on the Tournament Gallery.</div>
+                        <div class="form-text">Anyone on the internet can find and access. (No sign-in required). <br>Note: This setting doesn't determine visibility on the Tournament Gallery.<br>If visibility setting is enabled for the tournament, the most recent generated public url will be added to the Public URL field associated with the tournament on the Gallery.</div>
                     </label>
                 </div>
                 <div class="form-check">
