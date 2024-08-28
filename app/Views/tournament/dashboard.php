@@ -290,6 +290,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.1/js/bootstrapValidator.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script> -->
+<!-- Popperjs -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
+<!-- Tempus Dominus JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+
 <script src="/js/tournament.js"></script>
 <script src="/js/participants.js"></script>
 
@@ -334,7 +340,31 @@ var task = new Bloodhound({
 task.initialize();
 
 $(document).ready(function() {
-    $('[data-bs-toggle="tooltip"]').tooltip()
+    $('[data-bs-toggle="tooltip"]').tooltip();
+
+    const linkedPicker1Element = document.getElementById('startAvPicker');
+    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element);
+    const linked2 = new tempusDominus.TempusDominus(document.getElementById('endAvPicker'), {
+        useCurrent: false,
+    });
+
+    //using event listeners
+    linkedPicker1Element.addEventListener('change.td', (e) => {
+        linked2.updateOptions({
+            restrictions: {
+                minDate: e.detail.date,
+            },
+        });
+    });
+
+    //using subscribe method
+    const subscription = linked2.subscribe('change.td', (e) => {
+    linked1.updateOptions({
+    restrictions: {
+        maxDate: e.date,
+    },
+    });
+    });
 
     $('#confirmReset').on('click', function() {
         const tournament_id = resetModal.getAttribute('data-id');
@@ -390,10 +420,6 @@ $(document).ready(function() {
         table.columns(4).search(selectedPermission).draw();
     });
 
-    $('#userByFilter').on('change', function() {
-        var selectedUser = $(this).val().toLowerCase().trim();
-        table.columns(5).search(selectedUser).draw();
-    });
     <?php else: ?>
     table = $('#tournamentTable').DataTable({
         "order": [
@@ -404,7 +430,7 @@ $(document).ready(function() {
         scrollX: true,
         "columnDefs": [{
             "orderable": false,
-            "targets": [0, 3, 4, 6]
+            "targets": [0, 3, 4, 9]
         }],
         // Add custom initComplete to initialize select all checkbox
         "initComplete": function(settings, json) {
@@ -427,6 +453,20 @@ $(document).ready(function() {
         var selectedStatus = $(this).val().toLowerCase();
         table.columns(4).search(selectedStatus).draw();
     });
+    $('#userByFilter').on('change', function() {
+        var selectedUser = $(this).val().toLowerCase().trim();
+        table.columns(9).search(selectedUser).draw();
+    });
+    var nameColumns = $('td[data-label="name"] span', datatableRows)
+    var names = []
+    nameColumns.each((i, element) => {
+        if (!names.includes(element.textContent.trim())) {
+            var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+            $('#userByFilter').append(option)
+
+            names.push(element.textContent.trim())
+        }
+    })
     <?php endif ?>
 
     datatableRows = table.rows({
@@ -519,6 +559,11 @@ $(document).ready(function() {
                         $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
                         $('#music-settings-panel').html(result.html);
                         $('#tournamentForm').data('id', tournament_id);
+                        if(result.tournamentSettings.user_id > 0){
+                            $(".tor-warning").hide();
+                        }else{
+                            $(".tor-warning").show();
+                        }
 
                         if (result.tournamentSettings) {
                             $('#eliminationType').val(result.tournamentSettings.type)
@@ -554,6 +599,7 @@ $(document).ready(function() {
                                 $('#enableVisibility').attr('checked', false)
                             }
                             toggleVisibility(document.getElementById('enableVisibility'))
+                            toggleAvailability(document.getElementById('enableAvailability'))
 
                             if (result.tournamentSettings.score_enabled == 1) {
                                 $('#enableScoreOption').attr('checked', true)
@@ -926,7 +972,12 @@ $(document).ready(function() {
     });
 
     $('#urlCopyBtn').on('click', function() {
-        copyClipboard();
+        copyClipboard("tournamentURL");
+    });
+
+    $('.btnCopy').on('click', function() {
+        var copyId = $(this).data("copyid");
+        copyClipboard(copyId);
     });
 
     $('#confirmShare').on('click', function() {
@@ -1136,9 +1187,9 @@ function saveChange() {
     });
 }
 
-function copyClipboard() {
+function copyClipboard(url_id) {
     // Get the text field
-    var copyText = document.getElementById("tournamentURL");
+    var copyText = document.getElementById(url_id);
 
     // Select the text field
     copyText.select();
@@ -1715,6 +1766,8 @@ function bulkRestore() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css"> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <style>
 .resizable {

@@ -74,7 +74,7 @@ class Filters extends BaseFilters
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
-            'session' => ['except' => ['/', 'login*', 'register', 'auth/a/*', 'auth/google', 'auth/google/*', 'logout', 'tournaments/shared/*',  'api/*', 'gallery', 'gallery/*']],
+            'session' => ['except' => ['/', 'login*', 'register', 'auth/a/*', 'auth/google', 'auth/google/*', 'logout', 'tournaments/shared/*', 'tournaments/*/view', 'tournaments/create',  'api/*', 'gallery', 'gallery/*']],
             'cookieconsent' => ['except' => ['consent']],
         ],
         'after' => [

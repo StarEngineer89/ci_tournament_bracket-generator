@@ -1,3 +1,9 @@
+<div class="form-text tor-warning">
+⚠️ WARNING ⚠️
+This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin!<br>  
+If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and music settings and more!) from your very own dedicated Tournament Dashboard available for registered users!<br>
+Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
+</div>
 <div class="input-group mb-3">
     <span class="input-group-text" id="type">Elimination Type</span>
     <select class="form-select" id="eliminationType" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
@@ -23,6 +29,38 @@
             <h6>Visibility</h6>
         </label>
         <div class="visibility-hint form-text">If enabled, the tournament will be visible publicly on the Tournament Gallery. Tournaments listed on the Tournament Gallery may be viewed by spectators/guests as read-only mode.</div>
+    </div>
+</div>
+
+<div class="form-check border-bottom mb-3 pb-3">
+    <div class="ps-2">
+        <input type="checkbox" class="form-check-input enable-availability" name="availability" id="enableAvailability" onChange="toggleAvailability(this)" checked>
+        <label class="form-check-label" for="enableAvailability">
+            <h6>Availability</h6>
+        </label>
+        <div class="availability-option">
+            <div class="availability-hint form-text">Specify tournament availability window.</div>
+            
+            <div class="row mt-3">
+                <div class="col-6">
+                    <div class="input-group">
+                        <div class="input-group-text">Start</div>
+                        <input type="text" class="form-control datetime startAv" id="startAvPicker"  readonly>
+                        <input type="hidden" class="form-control form-control-sm startAt" name="start[0]">
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="input-group">
+                        <div class="input-group-text">End</div>
+                        <input type="text" class="form-control datetime endAv" id="endAvPicker" required readonly>
+                        <input type="hidden" class="form-control form-control-sm stopAt" name="stop[0]">
+                    </div>
+                    <div class="invalid-feedback d-none" id="stop-time-error-0">Stop time must be greater than start time.</div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 

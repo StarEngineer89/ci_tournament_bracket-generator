@@ -26,10 +26,23 @@ class Home extends BaseController
         $newTournaments = array();
         foreach($tournaments as $tournament){
             $temp = $tournament;
-            $user = $userModel->find($tournament['user_id']);
-            $userId = $userIdentityModel->find($tournament['user_id']);
-            $temp['username'] = $user->username;
-            $temp['email'] = $userId->secret;
+            $temp['username'] = 'Guest';
+            $temp['email'] = '';
+            if($tournament['user_id'] > 0){
+                $user = $userModel->find($tournament['user_id']);
+                $userId = $userIdentityModel->find($tournament['user_id']);
+                $temp['username'] = $user->username;
+                $temp['email'] = $userId->secret;
+            }
+
+            $participantModel = model('\App\Models\ParticipantModel');
+            $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
+
+            $shareSettingModel = model('\App\Models\ShareSettingsModel');
+            $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
+            $temp['public_url'] = '';
+            if($sharedTournament) $temp['public_url'] = base_url('/tournaments/shared/') . $sharedTournament['token'];
+
             $newTournaments[] = $temp;
         }
 

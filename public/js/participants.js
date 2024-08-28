@@ -259,7 +259,7 @@ function generateBrackets(list) {
     $.ajax({
         type: "post",
         url: apiURL + '/brackets/generate',
-        data: { 'type': eleminationType, 'tournament_id': tournament_id, 'list': list },
+        data: { 'type': eleminationType, 'tournament_id': tournament_id, 'user_id': user_id, 'list': list },
         dataType: "JSON",
         beforeSend: function() {
             $('#generateProcessing').addClass('d-none')
@@ -285,6 +285,7 @@ var addParticipants = (data) => {
         url: apiURL + '/participants/new',
         data: {
             'name': data.names,
+            'user_id' : data.user_id,
             'tournament_id': data.tournament_id
         },
         dataType: "JSON",

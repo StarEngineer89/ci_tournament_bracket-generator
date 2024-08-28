@@ -327,7 +327,8 @@ class BracketsController extends BaseController
 
     public function createBrackets($type = 's')
     {
-        $participants = $this->participantsModel->select(['id', 'name', 'order'])->where(['tournament_id' => $this->request->getPost('tournament_id'), 'user_id' => auth()->user()->id])->orderBy('order')->findAll();
+        $user_id = (auth()->user()) ? auth()->user()->id : 0;
+        $participants = $this->participantsModel->select(['id', 'name', 'order'])->where(['tournament_id' => $this->request->getPost('tournament_id'), 'user_id' => $user_id])->orderBy('order')->findAll();
         
         $knownBrackets = array(2, 4, 8, 16, 32);
 
@@ -391,7 +392,7 @@ class BracketsController extends BaseController
                 'bracketNo' => $i,
                 'roundNo' => $round,
                 'bye' => $isBye,
-                'user_id' => auth()->user()->id,
+                'user_id' => $user_id,
                 'tournament_id' => $this->request->getPost('tournament_id')
             );
 
@@ -422,7 +423,7 @@ class BracketsController extends BaseController
             'roundNo' => $round,
             'bye' => $isBye,
             'final_match' => 1,
-            'user_id' => auth()->user()->id,
+            'user_id' => $user_id,
             'tournament_id' => $this->request->getPost('tournament_id')
         );
 

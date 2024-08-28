@@ -68,6 +68,8 @@ class TournamentController extends BaseController
             
         } else {
             $tournamentModel = model('\App\Models\TournamentModel');
+            $userModel = model('CodeIgniter\Shield\Models\UserModel');
+            $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
 
             $tournaments = $tournamentModel->where(['user_id' => auth()->user()->id]);
 
@@ -83,8 +85,32 @@ class TournamentController extends BaseController
             }
             // var_dump($tournaments->builder()->getCompiledSelect());
             $tournaments = $tournaments->findAll();
+
+            $tns = [];
+
+            foreach($tournaments as $tournament){
+                $temp = $tournament;
+                
+                $temp['username'] = 'Guest';
+                $temp['email'] = '';
+                if($tournament['user_id'] > 0){
+                    $user = $userModel->find($tournament['user_id']);
+                    $userId = $userIdentityModel->find($tournament['user_id']);
+                    $temp['username'] = $user->username;
+                    $temp['email'] = $userId->secret;
+                }
+                
+                $participantModel = model('\App\Models\ParticipantModel');
+                $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
+
+                $shareSettingModel = model('\App\Models\ShareSettingsModel');
+                $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
+                $temp['public_url'] = '';
+                if($sharedTournament) $temp['public_url'] = base_url('/tournaments/shared/') . $sharedTournament['token'];
+                $tns[] = $temp;
+            }
             
-            $table = view('tournament/list', ['tournaments' => $tournaments, 'navActive' => $navActive, 'searchString' => $searchString]);
+            $table = view('tournament/list', ['tournaments' => $tns, 'navActive' => $navActive, 'searchString' => $searchString]);
         }
 
         $settingsBlock = view('tournament/tournament-settings', []);
@@ -101,15 +127,17 @@ class TournamentController extends BaseController
         $userSettingModel = model('\App\Models\UserSettingModel');
         $participantModel = model('\App\Models\ParticipantModel');
 
-        $participants = $participantModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->delete();
-
-        $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
-
         // Convert settings to key-value array
         $settingsArray = [];
-        if (count($userSettings)) {
-            foreach ($userSettings as $setting) {
-                $settingsArray[$setting['setting_name']] = $setting['setting_value'];
+        if( auth()->user() ){
+
+            $participants = $participantModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->delete();
+
+            $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
+            if (count($userSettings)) {
+                foreach ($userSettings as $setting) {
+                    $settingsArray[$setting['setting_name']] = $setting['setting_value'];
+                }
             }
         }
 

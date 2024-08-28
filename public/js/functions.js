@@ -372,3 +372,11 @@ let toggleVisibility = (checkbox) => {
         $('.visibility-hint').addClass('d-none');
     }
 }
+
+let toggleAvailability = (checkbox) => {
+    if ($(checkbox).is(':checked')) {
+        $('.availability-option').removeClass('d-none');
+    } else {
+        $('.availability-option').addClass('d-none');
+    }
+}

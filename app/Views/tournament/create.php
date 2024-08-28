@@ -19,6 +19,7 @@
 <script type="text/javascript">
 let eleminationType;
 let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
+var user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>;
 let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
 let audio = document.getElementById("myAudio");
 let videoStartTime = 0;
@@ -221,6 +222,7 @@ $(document).ready(function() {
         if (ptNames.length) {
             addParticipants({
                 names: ptNames,
+                user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
                 tournament_id: tournament_id
             });
         }
@@ -233,6 +235,7 @@ $(document).ready(function() {
         if (ptNames.length) {
             addParticipants({
                 names: ptNames,
+                user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
                 tournament_id: tournament_id
             });
         } else {
@@ -247,6 +250,7 @@ $(document).ready(function() {
         if (filteredNames.length) {
             addParticipants({
                 names: filteredNames,
+                user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
                 tournament_id: tournament_id
             });
         } else {
@@ -559,6 +563,7 @@ var csvUpload = (element) => {
                 <?php endif ?>
                 addParticipants({
                     names: ptNames,
+                    user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
                     tournament_id: tournament_id
                 });
             }
@@ -586,7 +591,7 @@ var drawTournamentsTable = () => {
             "type": "POST",
             "dataSrc": "",
             "data": function(d) {
-                d.user_id = <?= auth()->user()->id ?>; // Include the user_id parameter
+                d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
                 d.search_tournament = $('#searchTournament').val();
             }
         },

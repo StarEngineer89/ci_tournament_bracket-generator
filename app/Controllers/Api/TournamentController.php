@@ -61,8 +61,9 @@ class TournamentController extends BaseController
     public function save()
     {
         $tournamentModel = model('\App\Models\TournamentModel');
+        $user_id = (auth()->user()) ? auth()->user()->id : 0;
 
-        $existing = $tournamentModel->where(['name' => $this->request->getPost('name'), 'user_id' => auth()->user()->id])->findAll();
+        $existing = $tournamentModel->where(['name' => $this->request->getPost('name'), 'user_id' => $user_id])->findAll();
 
         if ($existing) {
             return json_encode(['error' => "The same tournament name is existing. Please use another name."]);
@@ -70,7 +71,7 @@ class TournamentController extends BaseController
 
         $data = [
             'name' => $this->request->getPost('title'),
-            'user_id' => auth()->user()->id,
+            'user_id' => $user_id,
             'type' => $this->request->getPost('type'),
             'searchable' => $this->request->getPost('title'),
             'archive' => 0,
