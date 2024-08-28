@@ -37,18 +37,22 @@
             
             <div class="row mt-3">
                 <div class="col-6">
-                    <div class="input-group">
+                    <div class="input-group" id="startAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
                         <div class="input-group-text">Start</div>
-                        <input type="text" class="form-control datetime startAv" id="startAvPicker"  readonly>
-                        <input type="hidden" class="form-control form-control-sm startAt" name="start[0]">
+                        <input type="text" class="form-control datetime startAv" id="startAvPickerInput"  readonly>
+                        <span class="input-group-text" data-td-target="#startAvPicker" data-td-toggle="datetimepicker">
+                            <i class="fas fa-calendar"></i>
+                        </span>
                     </div>
                 </div>
 
                 <div class="col-6">
-                    <div class="input-group">
+                    <div class="input-group" id="endAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
                         <div class="input-group-text">End</div>
-                        <input type="text" class="form-control datetime endAv" id="endAvPicker" required readonly>
-                        <input type="hidden" class="form-control form-control-sm stopAt" name="stop[0]">
+                        <input type="text" class="form-control datetime endAv" id="endAvPickerInput" required readonly>
+                        <span class="input-group-text" data-td-target="#endAvPicker" data-td-toggle="datetimepicker">
+                            <i class="fas fa-calendar"></i>
+                        </span>
                     </div>
                     <div class="invalid-feedback d-none" id="stop-time-error-0">Stop time must be greater than start time.</div>
                 </div>
