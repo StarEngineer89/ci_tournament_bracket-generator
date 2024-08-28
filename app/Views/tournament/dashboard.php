@@ -559,11 +559,6 @@ $(document).ready(function() {
                         $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
                         $('#music-settings-panel').html(result.html);
                         $('#tournamentForm').data('id', tournament_id);
-                        if(result.tournamentSettings.user_id > 0){
-                            $(".tor-warning").hide();
-                        }else{
-                            $(".tor-warning").show();
-                        }
 
                         if (result.tournamentSettings) {
                             $('#eliminationType').val(result.tournamentSettings.type)

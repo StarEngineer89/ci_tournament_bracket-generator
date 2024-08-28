@@ -113,6 +113,19 @@ $(document).ready(function() {
         <h5 class="card-title d-flex justify-content-center mb-5">
             <? //= lang('Auth.login') ?><?= $tournament['name'] ?> Brackets
         </h5>
+        <?php if($tournament['user_id'] == 0) :?>
+        <div class="container alert alert-warning text-center">
+        ⚠️ WARNING ⚠️<br>
+            This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin! 
+            <br>
+            If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and music settings and more!) from your very own dedicated Tournament Dashboard available for registered users!
+            <br>
+            Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
+            <?php if(!auth()->user()): ?><br>
+            <a href="<?= base_url('/login')?>" class="btn btn-primary">Signup/Login to preserve tournament</a>
+            <?php endif;?>
+        </div>
+        <?php endif;?>
 
         <?php if (session('error') !== null) : ?>
         <div class="alert alert-danger" role="alert"><?= session('error') ?></div>

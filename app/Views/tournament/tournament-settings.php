@@ -1,9 +1,3 @@
-<div class="form-text tor-warning">
-⚠️ WARNING ⚠️
-This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin!<br>  
-If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and music settings and more!) from your very own dedicated Tournament Dashboard available for registered users!<br>
-Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
-</div>
 <div class="input-group mb-3">
     <span class="input-group-text" id="type">Elimination Type</span>
     <select class="form-select" id="eliminationType" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
