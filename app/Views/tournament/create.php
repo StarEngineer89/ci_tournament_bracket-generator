@@ -196,6 +196,24 @@ $(document).ready(function() {
         <?php endif; ?>
     });
 
+    var leaveConfirm = false;
+    $(window).on('unload', function(e){
+        if(!leaveConfirm){
+            e.preventDefault();
+            $("#leaveConfirm").modal('show');
+        }
+    })
+
+    $("#leaveConfirm .signin").on('click', function(){
+        leaveConfirm = true;
+        location.href="/login";
+    })
+
+    $("#leaveConfirm .leave").on('click', function(){
+        leaveConfirm = true;
+        $(window).trigger('unload');
+    })
+
     $('#addParticipants').on('click', function() {
         var opts = $('#participantNames').val();
 
@@ -746,8 +764,7 @@ var drawTournamentsTable = () => {
                     <p> Once you've populated the participants list, proceed with the "Generate Brackets" option to generate the tournament!</p>
                     <p>Btw, if you want to personalize your participants with images, you may do so here or in the tournament brackets via the upload option.</p>
                     <p>Example:<br>
-                    If user clicks on image turns into a bin icon that they can select to Discard image or if they click away it retains image.
-Hovering on image provides zoomed out version.</p>
+                    If user clicks on image turns into a bin icon that they can select to Discard image or if they click away it retains image. Hovering on image provides zoomed out version.</p>
                     <p> FYI, you may right click (or hold on mobile) to edit/delete individual participants here.</p>
                 </div>
                 <div class="col-12 d-flex">
@@ -755,6 +772,27 @@ Hovering on image provides zoomed out version.</p>
                     <div id="newList" class="list-group col-10"></div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="leaveConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="leaveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Duplicate record(s) detected!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>You're about to leave this page and thus will lose access to the tournament!</h1>
+                <p>You can preserve this tournament by signing up/signing in and accessing much more features from your very own dedicated Tournament Dashboard available for registered users!</p>
+                <p>Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary signin">Signup/Signin to preserve tournament</button>
+                <button type="button" class="btn btn-danger leave">Discard duplicate record(s)</button>
             </div>
         </div>
     </div>

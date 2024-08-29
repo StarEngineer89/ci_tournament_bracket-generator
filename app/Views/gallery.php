@@ -40,7 +40,8 @@ $('#userByFilter').on('change', function() {
     table.columns(4).search(selectedUser).draw();
 });
 
-$('.btnCopy').on('click', function() {
+$(document).on('click', '.btnCopy', function(e) {
+    console.log(e);
     var copyId = $(this).data("copyid");
     copyClipboard(copyId);
 });
@@ -119,6 +120,7 @@ function fetchDataAndUpdateTable() {
             </div>
         </div>
         <div class="buttons d-flex justify-content-end">
+        <a href="<?= base_url('tournaments/create') ?>" class="btn btn-success ms-2"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
             <a href="<?= base_url('gallery/export?filter=all') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
         </div>
         <div class="table-responsive">

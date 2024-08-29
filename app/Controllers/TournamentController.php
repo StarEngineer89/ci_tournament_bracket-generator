@@ -154,6 +154,8 @@ class TournamentController extends BaseController
         $musicSettingModel = model('\App\Models\MusicSettingModel');
         $userSettingModel = model('\App\Models\UserSettingModel');
 
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+
         $tournament = $tournamentModel->find($id);
 
         if (!$tournament) {
@@ -161,6 +163,21 @@ class TournamentController extends BaseController
             $session->setFlashdata(['error' => "This tournament is not existing!"]);
 
             return redirect()->to('/tournaments');
+        }
+        if($tournament['user_id'] == 0){
+            $shareSetting = $shareSettingsModel->where(['tournament_id' => $id, 'user_id' => 0])->first();
+            if(!$shareSetting){
+                $config = new \Config\Encryption();
+                $token = hash_hmac('sha256', 'tournament_' . $id . '_created_by_0_' . time(), $config->key);
+                $data = array(
+                    'user_id' => 0,
+                    'tournament_id' => $id,
+                    'target' => 'p',
+                    'permission' => 'e',
+                    'token' => $token
+                );
+                $shareSettingsModel->insert($data);
+            }
         }
         
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
@@ -211,7 +228,16 @@ class TournamentController extends BaseController
             $session = \Config\Services::session();
             $session->setFlashdata(['error' => "This link is incorrect!"]);
 
-            return redirect()->to('/tournaments');
+            return redirect()->to('/gallery');
+        }else{
+            if(time() - strtotime($settings['created_at']) > 24*60*60){
+                $session = \Config\Services::session();
+                $session->setFlashdata(['error' => "This link has been expired!"]);
+                log_message('debug', "This page has been expired.");
+                $shareSettingModel->where(['token'=> $token])->delete();
+
+                return redirect()->to('/gallery');
+            }
         }
 
         $tournament = $tournamentModel->find($settings['tournament_id']);
@@ -220,7 +246,7 @@ class TournamentController extends BaseController
             $session = \Config\Services::session();
             $session->setFlashdata(['error' => "This tournament is not existing!"]);
 
-            return redirect()->to('/tournaments');
+            return redirect()->to('/gallery');
         }
 
         $brackets = $bracketModel->where('tournament_id', $settings['tournament_id'])->findAll();

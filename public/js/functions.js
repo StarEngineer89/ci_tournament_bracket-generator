@@ -376,7 +376,11 @@ let toggleVisibility = (checkbox) => {
 let toggleAvailability = (checkbox) => {
     if ($(checkbox).is(':checked')) {
         $('.availability-option').removeClass('d-none');
+        $('.startAv').attr('disabled', false);
+        $('.endAv').attr('disabled', false);
     } else {
         $('.availability-option').addClass('d-none');
+        $('.startAv').attr('disabled', true);
+        $('.endAv').attr('disabled', true);
     }
 }

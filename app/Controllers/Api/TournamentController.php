@@ -146,14 +146,20 @@ class TournamentController extends BaseController
     public function update($tournament_id)
     {
         $tournamentModel = model('\App\Models\TournamentModel');
-        $tournament = $tournamentModel->find($tournament_id);
-        $tournament = new \App\Entities\Tournament($tournament);
-        $tournament->fill($this->request->getPost());
+        $tournament = $tournamentModel->find(intval($tournament_id));
+        // $tournament = new \App\Entities\Tournament($tournament);
+        // $tournament->fill($this->request->getPost());
         
-        $tournament->shuffle_enabled = ($this->request->getPost('shuffle_enabled') && $this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
-        $tournament->score_enabled = ($this->request->getPost('score_enabled') && $this->request->getPost('score_enabled') == 'on') ? 1 : 0;
-        $tournament->increment_score_enabled = ($this->request->getPost('increment_score_enabled') && $this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
-        $tournament->visibility = ($this->request->getPost('visibility') && $this->request->getPost('visibility') == 'on') ? 1 : 0;
+        $tournament['shuffle_enabled'] = ($this->request->getPost('shuffle_enabled') && $this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
+        $tournament['score_enabled'] = ($this->request->getPost('score_enabled') && $this->request->getPost('score_enabled') == 'on') ? 1 : 0;
+        $tournament['increment_score_enabled'] = ($this->request->getPost('increment_score_enabled') && $this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
+        $tournament['visibility'] = ($this->request->getPost('visibility') && $this->request->getPost('visibility') == 'on') ? 1 : 0;
+
+        $tournament['availability'] = ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0;
+        if($tournament['availability'] > 0){
+            $tournament['available_start'] = $this->request->getPost('startAvPicker');
+            $tournament['available_end'] = $this->request->getPost('endAvPicker');
+        }
         
         $tournamentModel->save($tournament);
 
@@ -194,7 +200,7 @@ class TournamentController extends BaseController
             }
         }
 
-        $tournamentName = $tournament->name;
+        $tournamentName = $tournament['name'];
         $msg = "Tournament [$tournamentName] was updated successfully.";
         if (!is_null($this->request->getPost('archive'))) {
             if ($this->request->getPost('archive')) {

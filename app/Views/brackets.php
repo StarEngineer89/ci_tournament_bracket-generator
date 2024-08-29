@@ -96,6 +96,29 @@ $(document).ready(function() {
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
+
+    
+    var leaveConfirm = false;
+    window.addEventListener('beforeunload', function(e){
+        if(leaveConfirm) return ;
+
+        e.returnValue = 'leaveConfirm';
+        $("#leaveConfirm").modal('show');
+        e.preventDefault();
+        return "Are you sure?";
+        // return ;
+    
+    })
+
+    $("#leaveConfirm .signin").on('click', function(){
+        leaveConfirm = true;
+        location.href="/login";
+    })
+
+    $("#leaveConfirm .leave").on('click', function(){
+        leaveConfirm = true;
+        window.dispatchEvent(new Event('beforeunload'));
+    })
 })
 </script>
 <?= $this->endSection() ?>
@@ -179,6 +202,26 @@ $(document).ready(function() {
         </div>
 
         <div id="brackets" class="brackets p-5"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="leaveConfirm" data-bs-keyboard="false" tabindex="-1" aria-labelledby="leaveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel">You're about to leave this page and thus will lose access to the tournament!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You can preserve this tournament by signing up/signing in and accessing much more features from your very own dedicated Tournament Dashboard available for registered users!</p>
+                <p>Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary signin">Signup/Signin to preserve tournament</button>
+                <button type="button" class="btn btn-danger leave">Discard</button>
+            </div>
+        </div>
     </div>
 </div>
 

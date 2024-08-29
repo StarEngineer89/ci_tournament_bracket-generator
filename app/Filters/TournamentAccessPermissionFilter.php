@@ -38,7 +38,7 @@ class TournamentAccessPermissionFilter implements FilterInterface
             log_message('debug', "This page is not valid.");
             $session->setFlashdata(['error' => "This page is not valid."]);
             
-            return redirect()->route('tournaments');
+            return redirect()->route('gallery');
         }
 
         $tournament = $tournamentModel->find($shareSetting['tournament_id']);

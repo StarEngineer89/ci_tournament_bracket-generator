@@ -343,9 +343,10 @@ $(document).ready(function() {
     $('[data-bs-toggle="tooltip"]').tooltip();
 
     const linkedPicker1Element = document.getElementById('startAvPicker');
-    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element);
+    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {'localization': {format: 'yyyy-MM-dd HH:mm'}});
     const linked2 = new tempusDominus.TempusDominus(document.getElementById('endAvPicker'), {
         useCurrent: false,
+        'localization': {format: 'yyyy-MM-dd HH:mm:ss'}
     });
 
     //using event listeners
@@ -592,6 +593,15 @@ $(document).ready(function() {
                                 $('#enableVisibility').attr('checked', true)
                             } else {
                                 $('#enableVisibility').attr('checked', false)
+                            }
+                            if (result.tournamentSettings.availability == 1) {
+                                $('#enableAvailability').attr('checked', true);
+                                $('#startAvPickerInput').val(result.tournamentSettings.available_start);
+                                $('#endAvPickerInput').val(result.tournamentSettings.available_start);
+                            } else {
+                                $('#enableAvailability').attr('checked', false);
+                                $('#startAvPickerInput').val('');
+                                $('#endAvPickerInput').val('');
                             }
                             toggleVisibility(document.getElementById('enableVisibility'))
                             toggleAvailability(document.getElementById('enableAvailability'))
@@ -906,6 +916,7 @@ $(document).ready(function() {
     $('#submit').on('click', function() {
         const form = document.getElementById('tournamentForm');
         if (!form.checkValidity()) {
+            console.log(form.reportValidity());
             event.preventDefault()
             event.stopPropagation()
             form.classList.add('was-validated');

@@ -163,7 +163,7 @@ function renderParticipants(participantsArray) {
 
                     const inputBox = document.createElement('div');
                     inputBox.appendChild(nameBox);
-                    inputBox.classList.add('col-auto');
+                    inputBox.classList.add('col');
 
                     const buttonBox = document.createElement('div');
                     const button = document.createElement('button');
