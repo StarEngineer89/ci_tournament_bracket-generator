@@ -36,6 +36,7 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'tournamentAccessPermission' => \App\Filters\TournamentAccessPermissionFilter::class,
         'cookieconsent' => \App\Filters\CookieConsentFilter::class,
+        'TournamentPreservedFilter' => \App\Filters\TournamentPreservedFilter::class,
     ];
 
     /**
@@ -108,6 +109,7 @@ class Filters extends BaseFilters
      * @var array<string, array<string, list<string>>>
      */
     public array $filters = [
-        'tournamentAccessPermission' => ['before' => ['tournaments/shared/*']]
+        'tournamentAccessPermission' => ['before' => ['tournaments/shared/*']],
+        'TournamentPreservedFilter' => ['after' => ['login*', 'register']]
     ];
 }
