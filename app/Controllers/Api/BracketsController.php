@@ -47,9 +47,10 @@ class BracketsController extends BaseController
         $teamnames = json_decode($bracket['teamnames']);
         $original = $teamnames;
 
+        $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
         if (isset($req->index)) {
             if (!isset($req->participant))  {
-                $participant = (auth()->user()) ? $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id'], 'user_id' => auth()->user()->id])->first() : null;
+                
                 if ($participant) {
                     $participant_id = $participant->id;
                 } else {
@@ -67,11 +68,11 @@ class BracketsController extends BaseController
                 $participant_id = $req->participant;
             }
 
-            $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'order' => $req->order];
+            $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'image'=> $participant['image'], 'order' => $req->order];
 
             $insert_data = array('teamnames' => json_encode($teamnames));
 
-            $result['participant_id'] = $participant_id;;
+            $result['participant'] = $participant;
         }
 
         if (!isset($insert_data)) {
@@ -328,7 +329,7 @@ class BracketsController extends BaseController
     public function createBrackets($type = 's')
     {
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
-        $participants = $this->participantsModel->select(['id', 'name', 'order'])->where(['tournament_id' => $this->request->getPost('tournament_id'), 'user_id' => $user_id])->orderBy('order')->findAll();
+        $participants = $this->participantsModel->select(['id', 'name', 'image', 'order'])->where(['tournament_id' => $this->request->getPost('tournament_id'), 'user_id' => $user_id])->orderBy('order')->findAll();
         
         $knownBrackets = array(2, 4, 8, 16, 32);
 

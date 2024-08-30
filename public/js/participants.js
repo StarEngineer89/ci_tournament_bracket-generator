@@ -34,7 +34,9 @@ function callShuffle(enableShuffling = true) {
 
     shufflingPromise.then(() => {
         Array.from(itemList.children).forEach((item, i) => {
-            exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'order': i });
+            let img = '';
+            if($(item).find('img').length > 0) img = $(item).find('img').attr('src');
+            exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'image': img, 'order': i });
         });
 
         generateBrackets(exampleTeams);
@@ -132,7 +134,9 @@ function renderParticipants(participantsArray) {
         item.setAttribute('id', participant.id);
         item.setAttribute('class', "list-group-item");
         item.setAttribute('data-id', participant.id);
-        item.innerHTML = `<span class="p-name col-10 text-center">` + participant.name + '</span>';
+        let item_html = `<span class="p-name col text-center">` + participant.name + '</span>';
+        if(participant.image) item_html = `<img src="${participant.image}" class="p-image col-auto" height="30px"/>` + item_html;
+        item.innerHTML = item_html;
 
         if (itemList.length > 0)
             itemList.insertBefore(item);
@@ -174,11 +178,12 @@ function renderParticipants(participantsArray) {
                     buttonBox.classList.add('col-auto');
 
                     const html = document.createElement('div');
+                    html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
                     html.appendChild(inputBox);
                     html.appendChild(buttonBox);
                     html.classList.add('row', 'g-3', 'align-items-center');
 
-                    opt.$trigger.children().last().html(html);
+                    opt.$trigger.html(html);
                 }
             },
             delete: {
@@ -234,16 +239,32 @@ function loadParticipants() {
     });
 }
 
+function chooseImage(e, element_id){
+    $("#image_" + element_id).trigger('click');
+}
+function checkBig(el){
+    if(el.files[0].size > 1048576){
+        alert('Max image size is 1MB. Please upload small image.');
+        this.value='';
+    }
+}
 function saveParticipant(e, element_id) {
     const name = $(e.target).parents('.list-group-item').find('.name-input').val();
-
+    var formData = new FormData();
+    formData.append('name', name);
+    formData.append('image', $("#image_" + element_id)[0].files[0]);
     $.ajax({
         type: "POST",
         url: apiURL + '/participants/update/' + element_id,
-        data: { 'name': name },
+        data: formData,
+        contentType: false,
+        cache: false,
+        processData: false,
         success: function (result) {
             result = JSON.parse(result);
-            $(e.target).parents('.list-group-item').children().last().html(result.data.name);
+            let participant = `<span class="p-name col text-center">${result.data.name}</span>`;
+            if(result.data.image) participant = `<img src="${result.data.image}" class="p-image col-auto" height="30px"/>` + participant;
+            $(e.target).parents('.list-group-item').html(participant);
         },
         error: function (error) {
             console.log(error);

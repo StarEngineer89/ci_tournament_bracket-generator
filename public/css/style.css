@@ -631,3 +631,9 @@
 .modal{
   --bs-modal-width: 800px;
 }
+.object-cover{
+  object-fit: cover;
+}
+.object-contain{
+  object-fit: contain;
+}

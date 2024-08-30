@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/nano.min.css">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
@@ -13,6 +14,11 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<!-- Popperjs -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
+<!-- Tempus Dominus JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+
 <script src="/js/participants.js"></script>
 <script src="/js/tournament.js"></script>
 <!-- <script src="/js/player.js"></script> -->
@@ -34,6 +40,31 @@ $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
+    
+    const linkedPicker1Element = document.getElementById('startAvPicker');
+    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {'localization': {format: 'yyyy-MM-dd HH:mm'}});
+    const linked2 = new tempusDominus.TempusDominus(document.getElementById('endAvPicker'), {
+        useCurrent: false,
+        'localization': {format: 'yyyy-MM-dd HH:mm:ss'}
+    });
+
+    //using event listeners
+    linkedPicker1Element.addEventListener('change.td', (e) => {
+        linked2.updateOptions({
+            restrictions: {
+                minDate: e.detail.date,
+            },
+        });
+    });
+
+    //using subscribe method
+    const subscription = linked2.subscribe('change.td', (e) => {
+        linked1.updateOptions({
+            restrictions: {
+                maxDate: e.date,
+            },
+        });
+    });
     $("textarea#description").summernote({
         callbacks: {
             onMediaDelete: function(target) {
@@ -548,6 +579,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 var csvUpload = (element) => {
+    if(!$('.csv-import').val()){
+        $('.csv-import').addClass('is-invalid');
+        return false;
+    }
+    $('.csv-import').removeClass('is-invalid');
     var formData = new FormData();
     formData.append('file', $('.csv-import')[0].files[0]);
     $.ajax({

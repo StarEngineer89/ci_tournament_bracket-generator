@@ -55,9 +55,20 @@ class ParticipantsController extends BaseController
 
     public function updateParticipant($id)
     {
-        $this->participantsModel->update($id, $this->request->getPost());
+        $participant = $this->participantsModel->find($id);
+        $participant['name'] = $this->request->getPost('name');
+        $path = WRITEPATH . 'uploads/';
+		$file = $this->request->getFile('image');
+        if($file){
+            $filepath = '';
+            if (! $file->hasMoved()) {
+                $filepath = '/uploads/' . $file->store();
+                $participant['image'] = $filepath;
+            }
+        }
+        $this->participantsModel->update($id, $participant);
 
-        return json_encode(array('result' => 'success', 'data' => $this->request->getPost()));
+        return json_encode(array('result' => 'success', 'data' => $participant));
     }
 
     public function deleteParticipant($id)

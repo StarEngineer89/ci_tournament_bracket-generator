@@ -360,11 +360,11 @@ $(document).ready(function() {
 
     //using subscribe method
     const subscription = linked2.subscribe('change.td', (e) => {
-    linked1.updateOptions({
-    restrictions: {
-        maxDate: e.date,
-    },
-    });
+        linked1.updateOptions({
+            restrictions: {
+                maxDate: e.date,
+            },
+        });
     });
 
     $('#confirmReset').on('click', function() {

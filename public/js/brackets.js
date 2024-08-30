@@ -80,6 +80,10 @@ $(document).on('ready', function () {
                     pid.textContent = parseInt(teams[0].order) + 1
                     teama.appendChild(pid)
 
+                    if(teams[0].image){
+                        $(teama).append(`<img src="${teams[0].image}" height="30px" width="30px" class="p-image object-cover"/>`);
+                    }
+
                     teama.dataset.id = teams[0].id;
                     teama.dataset.p_order = teams[0].order;
                     var nameSpan = document.createElement('span')
@@ -111,6 +115,10 @@ $(document).on('ready', function () {
                     var pid = pidBox.cloneNode(true)
                     pid.textContent = parseInt(teams[1].order) + 1
                     teamb.appendChild(pid)
+
+                    if(teams[1].image){
+                        $(teamb).append(`<img src="${teams[1].image}" height="30px" width="30px" class="p-image object-cover"/>`);
+                    }
 
                     teamb.dataset.id = teams[1].id;
                     teamb.dataset.p_order = teams[1].order;
@@ -460,10 +468,13 @@ function updateBracket(element, data) {
         success: function (result) {
             ws.send('updated!');
             let box = element;
-            box.data('id', result.data.participant_id);
+            box.data('id', result.data.participant.id);
             box.contents().remove();
 
             box.html('<span class="p-id">'+ data.order +'</span>');
+            if(result.data.participant.image){
+                box.append(`<img src="${result.data.participant.image}" height="30px" width="30px" class="p-image object-cover"/>`)
+            }
 
             var nameSpan = document.createElement('span')
             nameSpan.classList.add('name')
