@@ -40,12 +40,18 @@ $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
-    
+
     const linkedPicker1Element = document.getElementById('startAvPicker');
-    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {'localization': {format: 'yyyy-MM-dd HH:mm'}});
+    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {
+        'localization': {
+            format: 'yyyy-MM-dd HH:mm'
+        }
+    });
     const linked2 = new tempusDominus.TempusDominus(document.getElementById('endAvPicker'), {
         useCurrent: false,
-        'localization': {format: 'yyyy-MM-dd HH:mm:ss'}
+        'localization': {
+            format: 'yyyy-MM-dd HH:mm:ss'
+        }
     });
 
     //using event listeners
@@ -228,19 +234,19 @@ $(document).ready(function() {
     });
 
     var leaveConfirm = false;
-    $(window).on('unload', function(e){
-        if(!leaveConfirm){
+    $(window).on('unload', function(e) {
+        if (!leaveConfirm) {
             e.preventDefault();
             $("#leaveConfirm").modal('show');
         }
     })
 
-    $("#leaveConfirm .signin").on('click', function(){
+    $("#leaveConfirm .signin").on('click', function() {
         leaveConfirm = true;
-        location.href="/login";
+        location.href = "/login";
     })
 
-    $("#leaveConfirm .leave").on('click', function(){
+    $("#leaveConfirm .leave").on('click', function() {
         leaveConfirm = true;
         $(window).trigger('unload');
     })
@@ -579,7 +585,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 var csvUpload = (element) => {
-    if(!$('.csv-import').val()){
+    if (!$('.csv-import').val()) {
         $('.csv-import').addClass('is-invalid');
         return false;
     }
@@ -796,11 +802,9 @@ var drawTournamentsTable = () => {
             <div class="participant-list d-flex flex-wrap" <?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? 'style="background-color: ' . $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] . '"' : '' ?>>
                 <div class="empty-message-wrapper col-12 p-2 text-bg-info rounded">
                     <p class="text-center">Wow, such empty!</p>
-                    <p> To get started, "Add Participants" or from Additional Options, "Reuse Participants" from a previous tournament.</p>
+                    <p> To get started, "Add Participants" or from Additional Options, "Reuse Participants" from a another tournament.</p>
                     <p> Once you've populated the participants list, proceed with the "Generate Brackets" option to generate the tournament!</p>
                     <p>Btw, if you want to personalize your participants with images, you may do so here or in the tournament brackets via the upload option.</p>
-                    <p>Example:<br>
-                    If user clicks on image turns into a bin icon that they can select to Discard image or if they click away it retains image. Hovering on image provides zoomed out version.</p>
                     <p> FYI, you may right click (or hold on mobile) to edit/delete individual participants here.</p>
                 </div>
                 <div class="col-12 d-flex">
@@ -823,8 +827,8 @@ var drawTournamentsTable = () => {
             </div>
             <div class="modal-body">
                 <h5>You're about to leave this page and thus will lose access to the tournament!</h1>
-                <p>You can preserve this tournament by signing up/signing in and accessing much more features from your very own dedicated Tournament Dashboard available for registered users!</p>
-                <p>Are you sure you want to proceed?</p>
+                    <p>You can preserve this tournament by signing up/signing in and accessing much more features from your very own dedicated Tournament Dashboard available for registered users!</p>
+                    <p>Are you sure you want to proceed?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary signin">Signup/Signin to preserve tournament</button>

@@ -21,7 +21,7 @@ table = $('#tournamentGalleryTable').DataTable({
     scrollX: true,
     "columnDefs": [{
         "orderable": false,
-        "targets": [2, 3]
+        "targets": [2, 3, 7, 8]
     }],
 });
 
@@ -37,7 +37,7 @@ $('#stautsFilter').on('change', function() {
 
 $('#userByFilter').on('change', function() {
     var selectedUser = $(this).val().toLowerCase().trim();
-    table.columns(4).search(selectedUser).draw();
+    table.columns(8).search(selectedUser).draw();
 });
 
 $(document).on('click', '.btnCopy', function(e) {
@@ -72,6 +72,7 @@ nameColumns.each((i, element) => {
         names.push(element.textContent.trim())
     }
 })
+
 function handleKeyPress(event) {
     if (event.keyCode === 13) {
         event.preventDefault(); // Prevent form submission
@@ -120,7 +121,7 @@ function fetchDataAndUpdateTable() {
             </div>
         </div>
         <div class="buttons d-flex justify-content-end">
-        <a href="<?= base_url('tournaments/create') ?>" class="btn btn-success ms-2"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
+            <a href="<?= base_url('tournaments/create') ?>" class="btn btn-success ms-2"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>
             <a href="<?= base_url('gallery/export?filter=all') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
         </div>
         <div class="table-responsive">
@@ -150,7 +151,7 @@ function fetchDataAndUpdateTable() {
                         <th scope="col">Availability Start<br />&nbsp;</th>
                         <th scope="col">Availability End<br />&nbsp;</th>
                         <th scope="col">Public URL<br />&nbsp;</th>
-                        <th scope="col">                            
+                        <th scope="col">
                             <label for="userByFilter">Created By:</label>
                             <select id="userByFilter" class="form-select form-select-sm">
                                 <option value="">All Users</option>
@@ -179,7 +180,7 @@ function fetchDataAndUpdateTable() {
                                 <button class="btn btn-outline-secondary input-group-text btnCopy" data-copyid="tournamentURL_<?= $tournament['id'] ?>" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!">Copy</button>
                             </div><?php endif;?>
                         </td>
-                        <td data-label="name"><span  data-toggle="tooltip" data-placement="top" title="<?= $tournament['email'] ?>"><?= $tournament['username'] ?></span></td>
+                        <td data-label="name"><span data-toggle="tooltip" data-placement="top" title="<?= $tournament['email'] ?>"><?= $tournament['username'] ?></span></td>
                         <td><?= (auth()->user()) ? convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) : $tournament['created_at'] ?></td>
                     </tr>
                     <?php endif ?>

@@ -32,7 +32,11 @@ class TournamentController extends BaseController
 
         // Apply the filter if the user_id parameter is provided
         if ($userBy) {
-            $model->where('user_id', $userBy);
+            if ($userBy == 0) {
+                $model->where(['visibility' => 1]);
+            } else {
+                $model->where('user_id', $userBy);
+            }
         }
 
         $searchable = $this->request->getPost('search_tournament');
@@ -81,9 +85,12 @@ class TournamentController extends BaseController
             'score_bracket' => $this->request->getPost('score_bracket'),
             'increment_score' => $this->request->getPost('increment_score'),
             'increment_score_enabled' => ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0,
-            'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0
+            'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0,
+            'availability' => ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0,
+            'available_start' => $this->request->getPost('startAvPicker'),
+            'available_end' => $this->request->getPost('endAvPicker')
         ];
-
+        
         $tournamentData = new \App\Entities\Tournament($data);
 
         $tournament_id = $tournamentModel->insert($tournamentData);
@@ -154,7 +161,7 @@ class TournamentController extends BaseController
         $tournament['score_enabled'] = ($this->request->getPost('score_enabled') && $this->request->getPost('score_enabled') == 'on') ? 1 : 0;
         $tournament['increment_score_enabled'] = ($this->request->getPost('increment_score_enabled') && $this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
         $tournament['visibility'] = ($this->request->getPost('visibility') && $this->request->getPost('visibility') == 'on') ? 1 : 0;
-
+        
         $tournament['availability'] = ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0;
         if($tournament['availability'] > 0){
             $tournament['available_start'] = $this->request->getPost('startAvPicker');

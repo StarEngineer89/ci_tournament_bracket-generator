@@ -77,6 +77,34 @@ $(document).ready(function() {
         descriptionPlaceholder.append(wrapper)
     }
 
+    const warningPlaceholder = document.getElementById('warningPlaceholder')
+    const appendWarning = (message, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="container alert alert-${type} alert-dismissible" id="tournamentWarning" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        warningPlaceholder.append(wrapper)
+    }
+    const warningTrigger = document.getElementById('toggleWarningBtn')
+    if (warningTrigger) {
+        const msg = $('#warningMsg').html();
+        warningTrigger.addEventListener('click', () => {
+            appendWarning(msg, 'warning')
+            warningTrigger.classList.add('d-none')
+
+            const warning = document.getElementById('tournamentWarning')
+            warning.addEventListener('closed.bs.alert', event => {
+                warningTrigger.classList.remove('d-none')
+            })
+        })
+    }
+    $('#toggleWarningBtn').click();
+
+
     <?php if ($tournament['description']): ?>
     const descriptionTrigger = document.getElementById('toggleDescriptionBtn')
     if (descriptionTrigger) {
@@ -97,25 +125,25 @@ $(document).ready(function() {
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
 
-    
+
     var leaveConfirm = false;
-    window.addEventListener('beforeunload', function(e){
-        if(leaveConfirm) return ;
+    window.addEventListener('beforeunload', function(e) {
+        if (leaveConfirm) return;
 
         e.returnValue = 'leaveConfirm';
         $("#leaveConfirm").modal('show');
         e.preventDefault();
         return "Are you sure?";
         // return ;
-    
+
     })
 
-    $("#leaveConfirm .signin").on('click', function(){
+    $("#leaveConfirm .signin").on('click', function() {
         leaveConfirm = true;
-        location.href="/login";
+        location.href = "/login";
     })
 
-    $("#leaveConfirm .leave").on('click', function(){
+    $("#leaveConfirm .leave").on('click', function() {
         leaveConfirm = true;
         window.dispatchEvent(new Event('beforeunload'));
     })
@@ -136,19 +164,6 @@ $(document).ready(function() {
         <h5 class="card-title d-flex justify-content-center mb-5">
             <? //= lang('Auth.login') ?><?= $tournament['name'] ?> Brackets
         </h5>
-        <?php if($tournament['user_id'] == 0) :?>
-        <div class="container alert alert-warning text-center">
-        ⚠️ WARNING ⚠️<br>
-            This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin! 
-            <br>
-            If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and music settings and more!) from your very own dedicated Tournament Dashboard available for registered users!
-            <br>
-            Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
-            <?php if(!auth()->user()): ?><br>
-            <a href="<?= base_url('/login')?>" class="btn btn-primary">Signup/Login to preserve tournament</a>
-            <?php endif;?>
-        </div>
-        <?php endif;?>
 
         <?php if (session('error') !== null) : ?>
         <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
@@ -180,7 +195,29 @@ $(document).ready(function() {
                 <i class="fa-solid fa-book"></i>
             </button>
             <?php endif ?>
+
+            <button type="button" class="btn" id="toggleWarningBtn">
+                <i class="fa-solid fa-warning"></i>
+            </button>
         </div>
+
+        <?php if($tournament['user_id'] == 0) :?>
+        <div id="warningPlaceholder"></div>
+        <div id="warningMsg" class="d-none">
+            <div class="text-center">⚠️ WARNING ⚠️</div>
+            This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin!
+            <br>
+            If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and music settings and more!) from your very own dedicated Tournament Dashboard available for registered users!
+            <br>
+            Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
+            <div class="text-center">
+                <?php if(!auth()->user()): ?><br>
+                <a href="<?= base_url('/login')?>" class="btn btn-primary">Signup/Login to preserve tournament</a>
+                <?php endif;?>
+            </div>
+        </div>
+        <?php endif;?>
+
         <div id="liveAlertPlaceholder"></div>
         <div id="liveAlertMsg" class="d-none">
             Note: <br />
