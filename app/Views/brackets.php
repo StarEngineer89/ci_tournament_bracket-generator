@@ -125,27 +125,33 @@ $(document).ready(function() {
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
 
+    window.onbeforeunload = function(e) {
+        let nextUrl = e.target.activeElement.href
+        if (nextUrl && (nextUrl.contains('login') || nextUrl.contains('register'))) {
+            e.preventDefault()
+            return false
+        }
 
-    var leaveConfirm = false;
-    window.addEventListener('beforeunload', function(e) {
-        if (leaveConfirm) return;
+        // Show Bootstrap modal
+        var modal = new bootstrap.Modal(document.getElementById('leaveConfirm'));
+        modal.show();
 
-        e.returnValue = 'leaveConfirm';
-        $("#leaveConfirm").modal('show');
-        e.preventDefault();
-        return "Are you sure?";
-        // return ;
+        // Prevent the default action (closing the window/tab)
+        // e.preventDefault();
+        // e.returnValue = false;
 
-    })
+        // Handle the modal confirmation
+        document.getElementById('leaveToSignin').addEventListener('click', function() {
+            // Allow the window/tab to close
+            window.removeEventListener('beforeunload', function() {});
+            window.location.href = "/login"; // or use `window.close()` in some cases
+        });
 
-    $("#leaveConfirm .signin").on('click', function() {
-        leaveConfirm = true;
-        location.href = "/login";
-    })
+        return true
+    }
 
     $("#leaveConfirm .leave").on('click', function() {
-        leaveConfirm = true;
-        window.dispatchEvent(new Event('beforeunload'));
+        $('#leaveConfirm').modal('hide')
     })
 })
 </script>
@@ -196,9 +202,11 @@ $(document).ready(function() {
             </button>
             <?php endif ?>
 
+            <?php if($tournament['user_id'] == 0) :?>
             <button type="button" class="btn" id="toggleWarningBtn">
                 <i class="fa-solid fa-warning"></i>
             </button>
+            <?php endif; ?>
         </div>
 
         <?php if($tournament['user_id'] == 0) :?>
@@ -255,7 +263,7 @@ $(document).ready(function() {
                 <p>Are you sure you want to proceed?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary signin">Signup/Signin to preserve tournament</button>
+                <button type="button" class="btn btn-primary signin" id="leaveToSignin">Signup/Signin to preserve tournament</button>
                 <button type="button" class="btn btn-danger leave">Discard</button>
             </div>
         </div>
