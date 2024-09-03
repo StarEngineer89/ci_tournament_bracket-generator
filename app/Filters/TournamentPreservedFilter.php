@@ -42,6 +42,25 @@ class TournamentPreservedFilter implements FilterInterface
      */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        log_message('debug', "TournamentPreservedFilter is working");
+        //log_message('debug', "TournamentPreservedFilter is working");
+        if(isset($_COOKIE['tournament_id']) && auth()->user()){
+            $tournament_id = $_COOKIE['tournament_id'];
+            $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+            $tournamentModel = model('\App\Models\TournamentModel');
+            $sharedTournament = $shareSettingsModel->where(['tournament_id'=> $tournament_id, 'user_id' => 0])->first();
+            if($sharedTournament){
+                $sharedTournament['user_id'] = auth()->user()->id;
+                $shareSettingsModel->save($sharedTournament);
+
+                $tournament = $tournamentModel->find($tournament_id);
+                $tournament['user_id'] = auth()->user()->id;
+                $tournamentModel->save($tournament);
+
+                $bracketModel = model('\App\Models\BracketModel');
+                $bracketModel->where(['tournament_id'=> $tournament_id, 'user_id'=> 0])->set('user_id', auth()->user()->id)->update();
+            }
+
+            setcookie('tournament_id', '', time()-3600);
+        }
     }
 }

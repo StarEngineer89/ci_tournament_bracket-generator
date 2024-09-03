@@ -9,7 +9,7 @@ $routes->get('/', 'Home::index');
 $routes->get('/gallery', 'Home::gallery');
 $routes->get('/participants', 'Home::participants');
 $routes->get('/brackets', 'Home::brackets');
-$routes->match(['get', 'post'], '/player/(:any)', 'RenderAudioController::index/$1');
+// $routes->match(['get', 'post'], '/player/(:any)', 'RenderAudioController::index/$1');
 
 $routes->get('profile', 'ProfileController::index');
 $routes->get('profile/change-email', 'ProfileController::changeEmail', ['as' => 'profile.change-email']);

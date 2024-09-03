@@ -28,7 +28,13 @@ const incrementScore = parseInt(<?= ($tournament['increment_score']) ? $tourname
 </script>
 <script type="text/javascript">
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
-
+<?php if(!auth()->user()){ ?>
+    var dc = new Date();
+    dc.setTime(dc.getTime() + (24*60*60*1000));
+    document.cookie = 'tournament_id=<?= $tournament["id"] ?>;expires=' + dc.toUTCString() + ';path=/';
+<?php }else{?>
+    document.cookie = 'tournament_id=;Max-Age=0'
+<?php } ?>
 $(document).ready(function() {
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
     const appendAlert = (message, type) => {
