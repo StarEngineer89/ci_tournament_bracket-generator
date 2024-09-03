@@ -68,19 +68,19 @@
                 <th scope="col">Availability Start<br />&nbsp;</th>
                 <th scope="col">Availability End<br />&nbsp;</th>
                 <th scope="col">Public URL<br />&nbsp;</th>
-                <th scope="col">                            
+                <!-- <th scope="col">                            
                     <label for="userByFilter">Created By:</label>
                     <select id="userByFilter" class="form-select form-select-sm">
                         <option value="">All Users</option>
                     </select>
-                </th>
+                </th> -->
                 <th scope="col">Created Time<br />&nbsp;</th>
                 <th scope="col">Actions<br />&nbsp;</th>
             </tr>
         </thead>
         <tbody>
             <?php $order = 1; ?>
-            <?php foreach ($tournaments as $index => $tournament) : ?>
+            <?php foreach ($tournaments as $index => $tournament) : ?><?php log_message('debug', json_encode($tournament)) ?>
             <?php if (isset($tournament['status'])): ?>
             <tr data-id="<?= $tournament['id'] ?>">
                 <td><input type="checkbox" class="item-checkbox form-check-input ms-2"></td>
@@ -91,15 +91,15 @@
                 <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
                 <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
                 <td><?= $tournament['participants'] ?></td>
-                <td></td>
-                <td></td>
+                <td><?= (auth()->user() && $tournament['available_start']) ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?></td>
+                <td><?= (auth()->user() && $tournament['available_end']) ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?></td>
                 <td><?php if($tournament['public_url'] != '') :?>
                     <div class="col-auto input-group">
                         <input type="text" class="form-control" id="tournamentURL_<?= $tournament['id'] ?>" value="<?= $tournament['public_url'] ?>" aria-label="Tournament URL" aria-describedby="urlCopy" readonly="">
                         <button class="btn btn-outline-secondary input-group-text btnCopy" data-copyid="tournamentURL_<?= $tournament['id'] ?>" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!">Copy</button>
                     </div><?php endif;?>
                 </td>
-                <td data-label="name"><span  data-toggle="tooltip" data-placement="top" title="<?= $tournament['email'] ?>"><?= $tournament['username'] ?></span></td>
+                <!-- <td data-label="name"><span  data-toggle="tooltip" data-placement="top" title="<?= $tournament['email'] ?>"><?= $tournament['username'] ?></span></td> -->
                 <td><?= convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) ?></td>
                 <td>
                     <div class="btn-groups list-group">

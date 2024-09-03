@@ -163,9 +163,12 @@ class TournamentController extends BaseController
         $tournament['visibility'] = ($this->request->getPost('visibility') && $this->request->getPost('visibility') == 'on') ? 1 : 0;
         
         $tournament['availability'] = ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0;
-        if($tournament['availability'] > 0){
+        if($tournament['availability']){
             $tournament['available_start'] = $this->request->getPost('startAvPicker');
             $tournament['available_end'] = $this->request->getPost('endAvPicker');
+        } else {
+            $tournament['available_start'] = null;
+            $tournament['available_end'] = null;
         }
         
         $tournamentModel->save($tournament);
