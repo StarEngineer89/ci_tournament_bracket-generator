@@ -805,7 +805,7 @@ var drawTournamentsTable = () => {
                     <p> To get started, "Add Participants" or from Additional Options, "Reuse Participants" from another tournament.</p>
                     <p> Once you've populated the participants list, proceed with the "Generate Brackets" option to generate the tournament!</p>
                     <p> FYI, you may right click (or hold on mobile) to edit/delete individual participants here.</p>
-                    <p>Btw, if you want to personalize your participants with images, you may do so here or in the tournament brackets via the upload option.</p>
+                    <p> Btw, if you want to personalize your participants with images, you may do so here or in the tournament brackets by clicking the placeholder photo icon.</p>
                 </div>
                 <div class="col-12 d-flex">
                     <div id="indexList" class="list-group col-auto"></div>

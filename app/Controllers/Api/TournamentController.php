@@ -32,11 +32,9 @@ class TournamentController extends BaseController
 
         // Apply the filter if the user_id parameter is provided
         if ($userBy) {
-            if ($userBy == 0) {
-                $model->where(['visibility' => 1]);
-            } else {
-                $model->where('user_id', $userBy);
-            }
+            $model->where('user_id', $userBy);
+        } else {
+            $model->where(['visibility' => 1]);
         }
 
         $searchable = $this->request->getPost('search_tournament');
