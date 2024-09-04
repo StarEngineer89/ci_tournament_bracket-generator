@@ -52,7 +52,7 @@ class BracketsController extends BaseController
             if (!isset($req->participant))  {
                 
                 if ($participant) {
-                    $participant_id = $participant->id;
+                    $participant_id = $participant['id'];
                 } else {
                     $userId = (auth()->user()) ? auth()->user()->id : 0;
                     $entity = new \App\Entities\Participant([
@@ -60,9 +60,11 @@ class BracketsController extends BaseController
                         'user_id' => $userId,
                         'tournament_id' => $bracket['tournament_id'],
                         'order' => $bracket['bracketNo'] * 2 - $req->index,
+                        'image' => null,
                         'active' => 1
                     ]);
                     $participant_id = $this->participantsModel->insert($entity);
+                    $participant = $this->participantsModel->find($participant_id);
                 }  
             } else {
                 $participant_id = $req->participant;
