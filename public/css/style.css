@@ -156,17 +156,17 @@
 }
 .brackets div.bracketbox span.p-id {
     font-size: 0.85em;
-    padding: 13px 10px;
+    padding: 0px 10px;
     background: #ace8f4;
 }
 .brackets div.bracketbox span.score {
   position: absolute;
   right: 0;
   font-size: 0.85em;
-  min-height: 42px;
+  /* min-height: 42px; */
   padding: 0 10px;
   background: #fad684;
-  line-height: 40px;
+  line-height: 38px;
 }
 .brackets div.bracketbox span.name {
   padding: 0 10px;
@@ -249,13 +249,17 @@
 .brackets>div>div>div:last-of-type {
   margin-bottom: 0px;
 }
-
+.brackets>div .bracket-team{
+  display: flex;
+  height: 40px;
+  align-items: center;
+}
 .brackets>div .bracket-team,
 .brackets>div .final > span {
   border: 1px solid #000;
   background-color: #fff;
   min-width: 150px;
-  line-height: 40px;
+  line-height: 38px;
 }
 
 .brackets>div .final span {
@@ -633,7 +637,27 @@
 }
 .object-cover{
   object-fit: cover;
+  /* font-size: 0; */
 }
 .object-contain{
   object-fit: contain;
+}
+.p-image{
+  position: relative;
+}
+.p-image.active img, .p-image:hover img{
+  transform: scale(1.5);
+  transition: ease-in-out 0.2s;
+}
+.list-group-item .btn,
+.bracket-team .btn{
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.list-group-item .p-image.active .btn,
+.bracket-team .p-image.active .btn{
+  display: block;
 }

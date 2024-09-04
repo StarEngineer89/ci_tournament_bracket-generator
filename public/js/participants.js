@@ -136,9 +136,9 @@ function renderParticipants(participantsArray) {
         item.setAttribute('data-id', participant.id);
         let item_html = `<span class="p-name col text-center">` + participant.name + '</span>';
         if(participant.image) {
-            item_html = `<img src="${participant.image}" class="p-image col-auto" height="30px" id="pimage_${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + item_html;
+            item_html = `<div class="p-image"><img src="${participant.image}" class="col-auto" height="30px" id="pimage_${participant.id}" data-pid="${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
         }else{
-            item_html = `<img src="/images/avatar.jpg" class="p-image temp col-auto" id="pimage_${participant.id}" onClick="chooseImage(event, ${participant.id})" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + item_html;
+            item_html = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${participant.id}" data-pid="${participant.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
         }
         item.innerHTML = item_html;
 
@@ -243,6 +243,19 @@ function loadParticipants() {
     });
 }
 
+$(document).on("click", ".p-image img", function(){
+    var pid = $(this).data('pid');
+    if($(this).hasClass('temp')){
+        $("#image_" + pid).trigger('click');
+    }else{
+        $(this).parent().addClass('active');
+    }
+})
+
+$(document).on("click", function(e){
+    if(!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
+})
+
 function chooseImage(e, element_id){
     $("#image_" + element_id).trigger('click');
 }
@@ -285,8 +298,7 @@ function removeImage(e, element_id){
         success: function (result) {
             result = JSON.parse(result);
             $("#pimage_"+element_id).attr('src', '/images/avatar.jpg');
-            $("#pimage_"+element_id + ' ~ .btn').addClass('d-none');
-            $("#pimage_"+element_id).removeClass('temp');
+            $("#pimage_"+element_id).addClass('temp');
         },
         error: function (error) {
             console.log(error);
@@ -313,9 +325,9 @@ function saveParticipant(e, element_id) {
             result = JSON.parse(result);
             let participant = `<span class="p-name col text-center">${result.data.name}</span>`;
             if(result.data.image){
-                participant = `<img src="${result.data.image}" class="p-image col-auto" height="30px" id="pimage_${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + participant;
+                participant = `<div class="p-image"><img src="${result.data.image}" class="col-auto" height="30px" id="pimage_${participant.id}" data-pid="${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
             }else{
-                participant = `<img src="/images/avatar.jpg" class="p-image temp col-auto" id="pimage_${participant.id}" onClick="chooseImage(event, ${participant.id})" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + participant;
+                participant = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${participant.id}" data-pid="${participant.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
             }
             $(e.target).parents('.list-group-item').html(participant);
         },

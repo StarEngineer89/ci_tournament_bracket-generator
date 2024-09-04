@@ -133,7 +133,7 @@ $(document).ready(function() {
 
     window.onbeforeunload = function(e) {
         let nextUrl = e.target.activeElement.href
-        if (nextUrl && (nextUrl.contains('login') || nextUrl.contains('register'))) {
+        if (nextUrl && (nextUrl.includes('login') || nextUrl.includes('register'))) {
             e.preventDefault()
             return false
         }
