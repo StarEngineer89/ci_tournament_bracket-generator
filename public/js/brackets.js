@@ -479,7 +479,7 @@ function updateBracket(element, data) {
             if(result.data.participant.image){
                 box.append(`<div class="p-image"><img src="${result.data.participant.image}" height="30px" width="30px" class="object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
             }else{
-                box.append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn col-auto" btn-danger onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
+                box.append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn col-auto btn-danger" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
             }
 
             var nameSpan = document.createElement('span')
@@ -520,6 +520,7 @@ function markWinner(key, opt, e) {
     let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
     next_bracket = next_bracketObj.dataset.bracket;
     const nameSpan = opt.$trigger.find('.name').clone()
+    const pimageDiv = opt.$trigger.find('.p-image').clone();
 
     let is_final = false
     if (next_bracketObj.parentElement.classList.contains('final')) {
@@ -555,6 +556,8 @@ function markWinner(key, opt, e) {
             $(next_bracketObj).contents().remove()
             ele.parent().contents().removeClass('winner')
             ele.addClass('winner');
+
+            $(next_bracketObj).append(pimageDiv);
             
             if (isScoreEnabled) {
                 var scoreBox = document.createElement('span')
@@ -713,18 +716,19 @@ function adjustBracketsStyles() {
     })
   });
 }
-
-$(document).on("click", function(e){
-    if(!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
-})
-$(document).on("click", ".p-image img", function(e){
-    var pid = $(this).data('pid');
-    if($(this).hasClass('temp')){
-        $("#image_" + pid).trigger('click');
-    }else{
-        $(this).parent().addClass('active');
-    }
-})
+if(hasEditPermission){
+    $(document).on("click", function(e){
+        if(!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
+    })
+    $(document).on("click", ".p-image img", function(e){
+        var pid = $(this).data('pid');
+        if($(this).hasClass('temp')){
+            $("#image_" + pid).trigger('click');
+        }else{
+            $(this).parent().addClass('active');
+        }
+    })
+}
 function chooseImage(e, element_id){
     $("#image_" + element_id).trigger('click');
 }

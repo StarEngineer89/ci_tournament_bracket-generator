@@ -8,7 +8,6 @@
 
 <?= $this->section('pageScripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-<script src="/js/brackets.js"></script>
 <script type="text/javascript">
 <?php if (url_is('/tournaments/shared/*')) : ?>
 apiURL = "<?= base_url('api/shared') ?>";
@@ -161,6 +160,8 @@ $(document).ready(function() {
     })
 })
 </script>
+
+<script src="/js/brackets.js"></script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
