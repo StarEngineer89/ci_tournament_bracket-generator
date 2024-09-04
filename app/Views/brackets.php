@@ -28,11 +28,11 @@ const incrementScore = parseInt(<?= ($tournament['increment_score']) ? $tourname
 <script type="text/javascript">
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
 <?php if(!auth()->user()){ ?>
-    var dc = new Date();
-    dc.setTime(dc.getTime() + (24*60*60*1000));
-    document.cookie = 'tournament_id=<?= $tournament["id"] ?>;expires=' + dc.toUTCString() + ';path=/';
+var dc = new Date();
+dc.setTime(dc.getTime() + (24 * 60 * 60 * 1000));
+document.cookie = 'tournament_id=<?= $tournament["id"] ?>;expires=' + dc.toUTCString() + ';path=/';
 <?php }else{?>
-    document.cookie = 'tournament_id=;Max-Age=0'
+document.cookie = 'tournament_id=;Max-Age=0'
 <?php } ?>
 $(document).ready(function() {
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
@@ -235,14 +235,14 @@ $(document).ready(function() {
 
         <div id="liveAlertPlaceholder"></div>
         <div id="liveAlertMsg" class="d-none">
-            Note: <br />
-            The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
             <?php if ((auth()->user() && auth()->user()->id == $tournament['user_id']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
-            <br />
             You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box throughout the tournament availability window (assuming its set).<br>
             This limitation isn't applicable to the tournament host.<br>
             In other words, actions will be restricted for all after availability ends (e.g. if tournament is shared with edit permissions) except for the host, in which even if availability ends, the host would still be able to control actions.
+            <br />
             <?php endif ?>
+            Note: <br />
+            The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
         </div>
 
         <div id="descriptionPlaceholder"></div>
