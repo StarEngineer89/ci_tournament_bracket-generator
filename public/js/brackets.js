@@ -81,9 +81,9 @@ $(document).on('ready', function () {
                     teama.appendChild(pid)
                     
                     if(teams[0].image){
-                        $(teama).append(`<img src="${teams[0].image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${pid}"/>`);
+                        $(teama).append(`<img src="${teams[0].image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${teams[0].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[0].id})" name="image_${teams[0].id}" id="image_${teams[0].id}"/><button class="btn col-auto" onClick="removeImage(event, ${teams[0].id})"><i class="fa fa-trash-alt"></i></button>`);
                     }else{
-                        $(teama).append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image temp object-cover" id="pimage_${pid}"/>`)
+                        $(teama).append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image temp object-cover" id="pimage_${teams[0].id}" onClick="chooseImage(event, ${teams[0].id})"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[0].id})" name="image_${teams[0].id}" id="image_${teams[0].id}"/><button class="btn col-auto" onClick="removeImage(event, ${teams[0].id})"><i class="fa fa-trash-alt"></i></button>`)
                     }
 
                     teama.dataset.id = teams[0].id;
@@ -119,9 +119,9 @@ $(document).on('ready', function () {
                     teamb.appendChild(pid)
 
                     if(teams[1].image){
-                        $(teamb).append(`<img src="${teams[1].image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${pid}"/>`);
+                        $(teamb).append(`<img src="${teams[1].image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${teams[1].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[1].id})" name="image_${teams[1].id}" id="image_${teams[1].id}"/><button class="btn col-auto" onClick="removeImage(event, ${teams[1].id})"><i class="fa fa-trash-alt"></i></button>`);
                     }else{
-                        $(teamb).append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image temp object-cover" id="pimage_${pid}"/>`)
+                        $(teamb).append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image temp object-cover" id="pimage_${teams[1].id}" onClick="chooseImage(event, ${teams[1].id})"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[1].id})" name="image_${teams[1].id}" id="image_${teams[1].id}"/><button class="btn col-auto" onClick="removeImage(event, ${teams[1].id})"><i class="fa fa-trash-alt"></i></button>`)
                     }
 
                     teamb.dataset.id = teams[1].id;
@@ -477,9 +477,9 @@ function updateBracket(element, data) {
 
             box.html('<span class="p-id">'+ data.order +'</span>');
             if(result.data.participant.image){
-                box.append(`<img src="${result.data.participant.image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${result.data.participant.id}"/>`)
+                box.append(`<img src="${result.data.participant.image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn col-auto" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button>`)
             }else{
-                box.append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image temp object-cover" id="pimage_${result.data.participant.id}"/>`)
+                box.append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image temp object-cover" id="pimage_${result.data.participant.id}" onClick="chooseImage(event, ${result.data.participant.id})"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn col-auto" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button>`)
             }
 
             var nameSpan = document.createElement('span')
@@ -712,4 +712,59 @@ function adjustBracketsStyles() {
         }
     })
   });
+}
+
+function chooseImage(e, element_id){
+    $("#image_" + element_id).trigger('click');
+}
+function checkBig(el, element_id){
+    if(el.files[0].size > 1048576){
+        alert('Max image size is 1MB. Please upload small image.');
+        this.value='';
+    }else{
+        var formData = new FormData();
+        formData.append('image', $("#image_" + element_id)[0].files[0]);
+
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/participants/update/' + element_id,
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (result) {
+                result = JSON.parse(result);
+                $("#pimage_"+element_id).attr('src', result.data.image);
+                $("#pimage_"+element_id + ' ~ .btn').removeClass('d-none');
+                $("#pimage_"+element_id).removeClass('temp');
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    }
+}
+function removeImage(e, element_id){
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/participants/update/' + element_id,
+        data: {'action': 'removeImage'},
+        success: function (result) {
+            result = JSON.parse(result);
+            $("#pimage_"+element_id).attr('src', '/images/avatar.jpg');
+            $("#pimage_"+element_id + ' ~ .btn').addClass('d-none');
+            $("#pimage_"+element_id).removeClass('temp');
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function () {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
 }
