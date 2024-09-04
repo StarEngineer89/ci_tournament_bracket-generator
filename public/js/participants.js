@@ -135,7 +135,11 @@ function renderParticipants(participantsArray) {
         item.setAttribute('class', "list-group-item");
         item.setAttribute('data-id', participant.id);
         let item_html = `<span class="p-name col text-center">` + participant.name + '</span>';
-        if(participant.image) item_html = `<img src="${participant.image}" class="p-image col-auto" height="30px"/>` + item_html;
+        if(participant.image) {
+            item_html = `<img src="${participant.image}" class="p-image col-auto" height="30px" id="pimage_${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + item_html;
+        }else{
+            item_html = `<img src="/images/avatar.jpg" class="p-image temp col-auto" id="pimage_${participant.id}" onClick="chooseImage(event, ${participant.id})" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + item_html;
+        }
         item.innerHTML = item_html;
 
         if (itemList.length > 0)
@@ -178,7 +182,7 @@ function renderParticipants(participantsArray) {
                     buttonBox.classList.add('col-auto');
 
                     const html = document.createElement('div');
-                    html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
+                    //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
                     html.appendChild(inputBox);
                     html.appendChild(buttonBox);
                     html.classList.add('row', 'g-3', 'align-items-center');
@@ -242,11 +246,56 @@ function loadParticipants() {
 function chooseImage(e, element_id){
     $("#image_" + element_id).trigger('click');
 }
-function checkBig(el){
+function checkBig(el, element_id){
     if(el.files[0].size > 1048576){
         alert('Max image size is 1MB. Please upload small image.');
         this.value='';
+    }else{
+        var formData = new FormData();
+        formData.append('image', $("#image_" + element_id)[0].files[0]);
+
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/participants/update/' + element_id,
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (result) {
+                result = JSON.parse(result);
+                $("#pimage_"+element_id).attr('src', result.data.image);
+                $("#pimage_"+element_id + ' ~ .btn').removeClass('d-none');
+                $("#pimage_"+element_id).removeClass('temp');
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
     }
+}
+function removeImage(e, element_id){
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/participants/update/' + element_id,
+        data: {'action': 'removeImage'},
+        success: function (result) {
+            result = JSON.parse(result);
+            $("#pimage_"+element_id).attr('src', '/images/avatar.jpg');
+            $("#pimage_"+element_id + ' ~ .btn').addClass('d-none');
+            $("#pimage_"+element_id).removeClass('temp');
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function () {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
 }
 function saveParticipant(e, element_id) {
     const name = $(e.target).parents('.list-group-item').find('.name-input').val();
@@ -263,7 +312,11 @@ function saveParticipant(e, element_id) {
         success: function (result) {
             result = JSON.parse(result);
             let participant = `<span class="p-name col text-center">${result.data.name}</span>`;
-            if(result.data.image) participant = `<img src="${result.data.image}" class="p-image col-auto" height="30px"/>` + participant;
+            if(result.data.image){
+                participant = `<img src="${result.data.image}" class="p-image col-auto" height="30px" id="pimage_${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + participant;
+            }else{
+                participant = `<img src="/images/avatar.jpg" class="p-image temp col-auto" id="pimage_${participant.id}" onClick="chooseImage(event, ${participant.id})" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-alert d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button>` + participant;
+            }
             $(e.target).parents('.list-group-item').html(participant);
         },
         error: function (error) {

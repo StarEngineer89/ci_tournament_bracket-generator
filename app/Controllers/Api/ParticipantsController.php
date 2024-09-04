@@ -56,7 +56,9 @@ class ParticipantsController extends BaseController
     public function updateParticipant($id)
     {
         $participant = $this->participantsModel->find($id);
-        $participant['name'] = $this->request->getPost('name');
+        if($this->request->getPost('name')) {
+            $participant['name'] = $this->request->getPost('name');
+        }
         $path = WRITEPATH . 'uploads/';
 		$file = $this->request->getFile('image');
         if($file){
@@ -65,6 +67,9 @@ class ParticipantsController extends BaseController
                 $filepath = '/uploads/' . $file->store();
                 $participant['image'] = $filepath;
             }
+        }
+        if($this->request->getPost('action') == 'removeImage'){
+            $participant['image'] = '';
         }
         $this->participantsModel->update($id, $participant);
 

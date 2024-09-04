@@ -79,9 +79,11 @@ $(document).on('ready', function () {
                     var pid = pidBox.cloneNode(true)
                     pid.textContent = parseInt(teams[0].order) + 1
                     teama.appendChild(pid)
-
+                    
                     if(teams[0].image){
-                        $(teama).append(`<img src="${teams[0].image}" height="30px" width="30px" class="p-image object-cover"/>`);
+                        $(teama).append(`<img src="${teams[0].image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${pid}"/>`);
+                    }else{
+                        $(teama).append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image placeholder object-cover" id="pimage_${pid}"/>`)
                     }
 
                     teama.dataset.id = teams[0].id;
@@ -117,7 +119,9 @@ $(document).on('ready', function () {
                     teamb.appendChild(pid)
 
                     if(teams[1].image){
-                        $(teamb).append(`<img src="${teams[1].image}" height="30px" width="30px" class="p-image object-cover"/>`);
+                        $(teamb).append(`<img src="${teams[1].image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${pid}"/>`);
+                    }else{
+                        $(teamb).append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image placeholder object-cover" id="pimage_${pid}"/>`)
                     }
 
                     teamb.dataset.id = teams[1].id;
@@ -473,7 +477,9 @@ function updateBracket(element, data) {
 
             box.html('<span class="p-id">'+ data.order +'</span>');
             if(result.data.participant.image){
-                box.append(`<img src="${result.data.participant.image}" height="30px" width="30px" class="p-image object-cover"/>`)
+                box.append(`<img src="${result.data.participant.image}" height="30px" width="30px" class="p-image object-cover" id="pimage_${pid}"/>`)
+            }else{
+                box.append(`<img src="/images/avatar.jpg" height="30px" width="30px" class="p-image placeholder object-cover" id="pimage_${pid}"/>`)
             }
 
             var nameSpan = document.createElement('span')
