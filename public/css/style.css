@@ -649,8 +649,8 @@
   transform: scale(1.5);
   transition: ease-in-out 0.2s;
 }
-.list-group-item .btn,
-.bracket-team .btn{
+.list-group-item .btn-danger,
+.bracket-team .btn-danger{
   display: none;
   position: absolute;
   top: 50%;
