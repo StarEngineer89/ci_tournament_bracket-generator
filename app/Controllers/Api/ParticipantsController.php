@@ -68,7 +68,7 @@ class ParticipantsController extends BaseController
                 $filepath = '/uploads/' . $file->store();
                 $participant['image'] = $filepath;
 
-                $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id'], 'user_id'=> $participant['user_id']])->findAll();
+                $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id']])->findAll();
                 foreach($brackets as $bracket){
                     $teamnames = json_decode($bracket['teamnames'], true);
                     $temp = [];
@@ -88,7 +88,7 @@ class ParticipantsController extends BaseController
         }
         if($this->request->getPost('action') == 'removeImage'){
             $participant['image'] = '';
-            $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id'], 'user_id'=> $participant['user_id']])->findAll();
+            $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id']])->findAll();
             foreach($brackets as $bracket){
                 $teamnames = json_decode($bracket['teamnames'], true);
                 $temp = [];

@@ -154,7 +154,7 @@ $(document).on('ready', function () {
 
                 if (gg.final_match && gg.final_match !== "0") {
                     bracket.className = "bracketbox final";
-                    teama.className = (teams[0]) ? "teama winner" : 'teama';
+                    teama.className = (teams[0]) ? "bracket-team teama winner" : 'bracket-team teama';
                 } else {
                     var bracketNo = document.createElement('span')
                     bracketNo.classList.add('bracketNo')
