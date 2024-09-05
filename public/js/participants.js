@@ -128,6 +128,8 @@ function renderParticipants(participantsArray) {
         return false
     }
 
+    enable_confirmPopup = true;
+
     $('.empty-message-wrapper').addClass('d-none')
     participantsArray.forEach((participant, i) => {
         var item = document.createElement('div');
@@ -261,7 +263,7 @@ function chooseImage(e, element_id){
 }
 function checkBig(el, element_id){
     if(el.files[0].size > 1048576){
-        alert('Max image size is 1MB. Please upload small image.');
+        alert('Error uploading image! Max image size is 1MB. Please upload small image.');
         this.value='';
     }else{
         var formData = new FormData();

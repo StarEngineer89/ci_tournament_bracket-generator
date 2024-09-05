@@ -34,6 +34,8 @@ let insert_count = 0;
 let ptNames
 let filteredNames
 
+var enable_confirmPopup = false;
+
 const itemList = document.getElementById('newList');
 
 $(window).on('load', function() {
@@ -235,7 +237,7 @@ $(document).ready(function() {
 
 <?php if(!auth()->user()) : ?>    
     $(document).on('click', function(e) {
-        if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
+        if (enable_confirmPopup == true && (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A')) {
             e.preventDefault()
 
             // Show Bootstrap modal
