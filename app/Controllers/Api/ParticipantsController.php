@@ -20,6 +20,7 @@ class ParticipantsController extends BaseController
         parent::initController($request, $response, $logger);
 
         $this->participantsModel = model('\App\Models\ParticipantModel');
+        $this->bracketsModel = model('\App\Models\BracketModel');
     }
 
     public function addParticipant($names = null)
@@ -66,10 +67,44 @@ class ParticipantsController extends BaseController
             if (! $file->hasMoved()) {
                 $filepath = '/uploads/' . $file->store();
                 $participant['image'] = $filepath;
+
+                $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id'], 'user_id'=> $participant['user_id']])->findAll();
+                foreach($brackets as $bracket){
+                    $teamnames = json_decode($bracket['teamnames'], true);
+                    $temp = [];
+                    log_message('debug', print_r($teamnames, true));
+                    foreach($teamnames as $teamname){
+    
+                        if($teamname && $teamname['id'] == $participant['id']){
+                            $teamname['image'] = $filepath;
+                        }
+                        $temp[] = $teamname;
+                    }
+                    $new_bracket = $bracket;
+                    $new_bracket['teamnames'] = json_encode($temp);
+                    $this->bracketsModel->update($new_bracket['id'], $new_bracket);
+                }
             }
         }
         if($this->request->getPost('action') == 'removeImage'){
             $participant['image'] = '';
+            $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id'], 'user_id'=> $participant['user_id']])->findAll();
+            foreach($brackets as $bracket){
+                $teamnames = json_decode($bracket['teamnames'], true);
+                $temp = [];
+                log_message('debug', print_r($teamnames, true));
+                foreach($teamnames as $teamname){
+
+                    if($teamname && $teamname['id'] == $participant['id']){
+                        $teamname['image'] = '';
+                    }
+                    $temp[] = $teamname;
+                }
+                $new_bracket = $bracket;
+                $new_bracket['teamnames'] = json_encode($temp);
+                $this->bracketsModel->update($new_bracket['id'], $new_bracket);
+            }
+
         }
         $this->participantsModel->update($id, $participant);
 

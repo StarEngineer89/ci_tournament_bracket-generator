@@ -129,35 +129,28 @@ $(document).ready(function() {
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
-
-    window.onbeforeunload = function(e) {
-        let nextUrl = e.target.activeElement.href
-        if (nextUrl && (nextUrl.includes('login') || nextUrl.includes('register'))) {
+<?php if(!auth()->user()) : ?>
+    $(document).on('click', function(e){
+        
+        if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
             e.preventDefault()
-            return false
+
+            // Show Bootstrap modal
+            var modal = new bootstrap.Modal(document.getElementById('leaveConfirm'));
+            modal.show();
         }
-
-        // Show Bootstrap modal
-        var modal = new bootstrap.Modal(document.getElementById('leaveConfirm'));
-        modal.show();
-
-        // Prevent the default action (closing the window/tab)
-        // e.preventDefault();
-        // e.returnValue = false;
-
-        // Handle the modal confirmation
-        document.getElementById('leaveToSignin').addEventListener('click', function() {
-            // Allow the window/tab to close
-            window.removeEventListener('beforeunload', function() {});
-            window.location.href = "/login"; // or use `window.close()` in some cases
-        });
-
-        return true
-    }
+    })
+    
+    // Handle the modal confirmation
+    document.getElementById('leaveToSignin').addEventListener('click', function() {
+        // Allow the window/tab to close
+        window.location.href = "/login"; // or use `window.close()` in some cases
+    });
 
     $("#leaveConfirm .leave").on('click', function() {
         $('#leaveConfirm').modal('hide')
     })
+<?php endif;?>
 })
 </script>
 

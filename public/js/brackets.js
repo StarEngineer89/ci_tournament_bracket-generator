@@ -25,6 +25,7 @@ $(document).on('ready', function () {
     }
     initialize();
 
+});
 
     /*
      * Build our bracket "model"
@@ -435,7 +436,236 @@ $(document).on('ready', function () {
             });
         }
     }
-});
+    
+    function updateBracket(element, data) {
+        $("#overlay").fadeIn(300);
+
+        $.ajax({
+            type: "put",
+            url: apiURL + '/brackets/update/' + element.data('bracket'),
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            dataType: "JSON",
+            success: function (result) {
+                ws.send('updated!');
+                // let box = element;
+                // box.data('id', result.data.participant.id);
+                // box.contents().remove();
+
+                // box.html('<span class="p-id">'+ data.order +'</span>');
+                // if(result.data.participant.image){
+                //     box.append(`<div class="p-image"><img src="${result.data.participant.image}" height="30px" width="30px" class="object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
+                // }else{
+                //     box.append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn col-auto btn-danger" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
+                // }
+
+                // var nameSpan = document.createElement('span')
+                // nameSpan.classList.add('name')
+                // nameSpan.textContent = data.name
+                
+                // box.append(nameSpan);
+
+                // if (isScoreEnabled) {
+                //     var scoreBox = document.createElement('span')
+                //     scoreBox.classList.add('score')
+                //     var scorePoint = 0
+                //     scoreBox.textContent = scorePoint
+                //     box.append(scoreBox)
+                // }
+
+                // editing_mode = false;
+                loadBrackets();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    }
+
+    function markWinner(key, opt, e) {
+        if (editing_mode) {
+            alert('You should change the participant first');
+            return;
+        }
+
+        let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + opt.$trigger.data('next') + "']"), function (ele) { return ele.dataset.order }));
+        let index = orders.findIndex((value) => { return value == opt.$trigger.data('order') });
+        const next_id = opt.$trigger.data('next');
+        let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
+        next_bracket = next_bracketObj.dataset.bracket;
+        const nameSpan = opt.$trigger.find('.name').clone()
+        const pimageDiv = opt.$trigger.find('.p-image').clone();
+
+        let is_final = false
+        if (next_bracketObj.parentElement.classList.contains('final')) {
+            is_final = true
+        }
+
+        $.ajax({
+            type: "PUT",
+            url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
+            contentType: "application/json",
+            data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final }),
+            success: function (result) {
+                ws.send('marked!');
+                console.log(result)
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+
+        const ele = opt.$trigger;
+        $.ajax({
+            type: "PUT",
+            url: apiURL + '/brackets/update/' + next_bracket,
+            contentType: "application/json",
+            data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.find('.name').text(), order: opt.$trigger.data('p_order') }),
+            success: function (result) {
+                ws.send('marked!');
+                $(next_bracketObj).contents().remove()
+                ele.parent().contents().removeClass('winner')
+                ele.addClass('winner');
+
+                $(next_bracketObj).append(pimageDiv);
+                
+                if (isScoreEnabled) {
+                    var scoreBox = document.createElement('span')
+                    scoreBox.classList.add('score')
+                    var scorePoint = 0
+                    for (round_i = 0; round_i < parseInt(ele.data('round')); round_i++) {
+                        scorePoint += scoreBracket
+                        scorePoint += incrementScore * round_i
+                    }
+                    scoreBox.textContent = scorePoint
+                    ele.append(scoreBox)
+                }
+
+                next_bracketObj.dataset.id = ele.data('id');
+                $(next_bracketObj).append(nameSpan);
+                var pidBox = document.createElement('span')
+                pidBox.classList.add('p-id')
+                pidBox.textContent = parseInt(ele.data('p_order')) + 1
+                $(next_bracketObj).prepend(pidBox)
+
+                if (isScoreEnabled) {
+                    scoreBox = document.createElement('span')
+                    scoreBox.classList.add('score')
+                    scoreBox.textContent = scorePoint
+                    $(next_bracketObj).append(scoreBox)
+                }
+
+                if (next_bracketObj.parentElement.classList.contains('final')) {
+                    next_bracketObj.classList.add('winner');
+
+                    var player = document.getElementById('myAudio');
+                    if (player) {
+                        player.addEventListener("timeupdate", function () {
+                            if ((player.currentTime - player._startTime) >= player.value) {
+                                player.pause();
+                                document.getElementById('stopMusicButton').classList.add('d-none');
+                            };
+                        });
+
+                        player.value = player.dataset.duration;
+                        player._startTime = player.dataset.starttime;
+                        player.currentTime = player.dataset.starttime;
+                        player.play();
+                    }
+
+                    if (document.getElementById('stopMusicButton')) {
+                        document.getElementById('stopMusicButton').classList.remove('d-none');
+                        document.getElementById('stopMusicButton').textContent = "Pause Music"
+                    }
+                    
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    }
+
+    function unmarkWinner(key, opt, e) {
+        const next_id = opt.$trigger.data('next');
+        let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + next_id + "']"), function (ele) { return ele.dataset.order }));
+        let index = orders.findIndex((value) => { return value == opt.$trigger.data('order') });
+        let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
+        next_bracket = next_bracketObj.dataset.bracket;
+
+        let is_final = false
+        if (next_bracketObj.parentElement.classList.contains('final')) {
+            is_final = true
+        }
+
+        const ele = opt.$trigger;
+        $.ajax({
+            type: "PUT",
+            url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
+            contentType: "application/json",
+            data: JSON.stringify({ winner: '' }),
+            success: function (result) {
+                ws.send('unmarked!');
+                ele.find('.score').remove()
+
+                if (isScoreEnabled) {
+                    var scoreBox = document.createElement('span')
+                    scoreBox.classList.add('score')
+                    var scorePoint = scoreBracket * (parseInt(ele.data('round')) - 1)
+                    for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
+                        scorePoint += incrementScore * round_i
+                    }
+                    scoreBox.textContent = scorePoint
+                    ele.append(scoreBox)
+                }
+
+                if (document.getElementById('stopMusicButton')) {
+                    document.getElementById('stopMusicButton').classList.add('d-none');
+                    document.getElementById('stopMusicButton').textContent = "Pause Music"
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+
+        $.ajax({
+            type: "PUT",
+            url: apiURL + '/brackets/update/' + next_bracket,
+            contentType: "application/json",
+            data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode, is_final: is_final }),
+            success: function (result) {
+                ws.send('unmarked!');
+                ele.parent().contents().removeClass('winner')
+                next_bracketObj.classList.remove('winner')
+                next_bracketObj.dataset.id = '';
+                next_bracketObj.innerHTML = '';
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    }
 
 function changeParticipant(ele, bracket_id, index) {
     let ability = true;
@@ -456,237 +686,10 @@ function changeParticipant(ele, bracket_id, index) {
             participant_order = (parseInt(ele.parent().data('order')) - 1) * 2 + index + 1
         }
 
+        editing_mode = false;
+
         updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order });
     }
-}
-
-function updateBracket(element, data) {
-    $("#overlay").fadeIn(300);
-
-    $.ajax({
-        type: "put",
-        url: apiURL + '/brackets/update/' + element.data('bracket'),
-        data: JSON.stringify(data),
-        contentType: "application/json",
-        dataType: "JSON",
-        success: function (result) {
-            ws.send('updated!');
-            let box = element;
-            box.data('id', result.data.participant.id);
-            box.contents().remove();
-
-            box.html('<span class="p-id">'+ data.order +'</span>');
-            if(result.data.participant.image){
-                box.append(`<div class="p-image"><img src="${result.data.participant.image}" height="30px" width="30px" class="object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
-            }else{
-                box.append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn col-auto btn-danger" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
-            }
-
-            var nameSpan = document.createElement('span')
-            nameSpan.classList.add('name')
-            nameSpan.textContent = data.name
-            
-            box.append(nameSpan);
-
-            if (isScoreEnabled) {
-                var scoreBox = document.createElement('span')
-                scoreBox.classList.add('score')
-                var scorePoint = 0
-                scoreBox.textContent = scorePoint
-                box.append(scoreBox)
-            }
-
-            editing_mode = false;
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function () {
-            $("#overlay").fadeOut(300);
-        }, 500);
-    });
-}
-
-function markWinner(key, opt, e) {
-    if (editing_mode) {
-        alert('You should change the participant first');
-        return;
-    }
-
-    let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + opt.$trigger.data('next') + "']"), function (ele) { return ele.dataset.order }));
-    let index = orders.findIndex((value) => { return value == opt.$trigger.data('order') });
-    const next_id = opt.$trigger.data('next');
-    let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
-    next_bracket = next_bracketObj.dataset.bracket;
-    const nameSpan = opt.$trigger.find('.name').clone()
-    const pimageDiv = opt.$trigger.find('.p-image').clone();
-
-    let is_final = false
-    if (next_bracketObj.parentElement.classList.contains('final')) {
-        is_final = true
-    }
-
-    $.ajax({
-        type: "PUT",
-        url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
-        contentType: "application/json",
-        data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final }),
-        success: function (result) {
-            ws.send('marked!');
-            console.log(result)
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function () {
-            $("#overlay").fadeOut(300);
-        }, 500);
-    });
-
-    const ele = opt.$trigger;
-    $.ajax({
-        type: "PUT",
-        url: apiURL + '/brackets/update/' + next_bracket,
-        contentType: "application/json",
-        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.find('.name').text(), order: opt.$trigger.data('p_order') }),
-        success: function (result) {
-            ws.send('marked!');
-            $(next_bracketObj).contents().remove()
-            ele.parent().contents().removeClass('winner')
-            ele.addClass('winner');
-
-            $(next_bracketObj).append(pimageDiv);
-            
-            if (isScoreEnabled) {
-                var scoreBox = document.createElement('span')
-                scoreBox.classList.add('score')
-                var scorePoint = 0
-                for (round_i = 0; round_i < parseInt(ele.data('round')); round_i++) {
-                    scorePoint += scoreBracket
-                    scorePoint += incrementScore * round_i
-                }
-                scoreBox.textContent = scorePoint
-                ele.append(scoreBox)
-            }
-
-            next_bracketObj.dataset.id = ele.data('id');
-            $(next_bracketObj).append(nameSpan);
-            var pidBox = document.createElement('span')
-            pidBox.classList.add('p-id')
-            pidBox.textContent = parseInt(ele.data('p_order')) + 1
-            $(next_bracketObj).prepend(pidBox)
-
-            if (isScoreEnabled) {
-                scoreBox = document.createElement('span')
-                scoreBox.classList.add('score')
-                scoreBox.textContent = scorePoint
-                $(next_bracketObj).append(scoreBox)
-            }
-
-            if (next_bracketObj.parentElement.classList.contains('final')) {
-                next_bracketObj.classList.add('winner');
-
-                var player = document.getElementById('myAudio');
-                if (player) {
-                    player.addEventListener("timeupdate", function () {
-                        if ((player.currentTime - player._startTime) >= player.value) {
-                            player.pause();
-                            document.getElementById('stopMusicButton').classList.add('d-none');
-                        };
-                    });
-
-                    player.value = player.dataset.duration;
-                    player._startTime = player.dataset.starttime;
-                    player.currentTime = player.dataset.starttime;
-                    player.play();
-                }
-
-                if (document.getElementById('stopMusicButton')) {
-                    document.getElementById('stopMusicButton').classList.remove('d-none');
-                    document.getElementById('stopMusicButton').textContent = "Pause Music"
-                }
-                
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function () {
-            $("#overlay").fadeOut(300);
-        }, 500);
-    });
-}
-
-function unmarkWinner(key, opt, e) {
-    const next_id = opt.$trigger.data('next');
-    let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + next_id + "']"), function (ele) { return ele.dataset.order }));
-    let index = orders.findIndex((value) => { return value == opt.$trigger.data('order') });
-    let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
-    next_bracket = next_bracketObj.dataset.bracket;
-
-    let is_final = false
-    if (next_bracketObj.parentElement.classList.contains('final')) {
-        is_final = true
-    }
-
-    const ele = opt.$trigger;
-    $.ajax({
-        type: "PUT",
-        url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
-        contentType: "application/json",
-        data: JSON.stringify({ winner: '' }),
-        success: function (result) {
-            ws.send('unmarked!');
-            ele.find('.score').remove()
-
-            if (isScoreEnabled) {
-                var scoreBox = document.createElement('span')
-                scoreBox.classList.add('score')
-                var scorePoint = scoreBracket * (parseInt(ele.data('round')) - 1)
-                for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
-                    scorePoint += incrementScore * round_i
-                }
-                scoreBox.textContent = scorePoint
-                ele.append(scoreBox)
-            }
-
-            if (document.getElementById('stopMusicButton')) {
-                document.getElementById('stopMusicButton').classList.add('d-none');
-                document.getElementById('stopMusicButton').textContent = "Pause Music"
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function () {
-            $("#overlay").fadeOut(300);
-        }, 500);
-    });
-
-    $.ajax({
-        type: "PUT",
-        url: apiURL + '/brackets/update/' + next_bracket,
-        contentType: "application/json",
-        data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode, is_final: is_final }),
-        success: function (result) {
-            ws.send('unmarked!');
-            ele.parent().contents().removeClass('winner')
-            next_bracketObj.classList.remove('winner')
-            next_bracketObj.dataset.id = '';
-            next_bracketObj.innerHTML = '';
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    }).done(() => {
-        setTimeout(function () {
-            $("#overlay").fadeOut(300);
-        }, 500);
-    });
 }
 
 function adjustBracketsStyles() {
@@ -748,10 +751,7 @@ function checkBig(el, element_id){
             cache: false,
             processData: false,
             success: function (result) {
-                result = JSON.parse(result);
-                $("#pimage_"+element_id).attr('src', result.data.image);
-                $("#pimage_"+element_id + ' ~ .btn').removeClass('d-none');
-                $("#pimage_"+element_id).removeClass('temp');
+                loadBrackets();
             },
             error: function (error) {
                 console.log(error);
@@ -769,10 +769,7 @@ function removeImage(e, element_id){
         url: apiURL + '/participants/update/' + element_id,
         data: {'action': 'removeImage'},
         success: function (result) {
-            result = JSON.parse(result);
-            $("#pimage_"+element_id).attr('src', '/images/avatar.jpg');
-            $("#pimage_"+element_id + ' ~ .btn').addClass('d-none');
-            $("#pimage_"+element_id).removeClass('temp');
+            loadBrackets();
         },
         error: function (error) {
             console.log(error);

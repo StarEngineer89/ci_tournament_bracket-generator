@@ -46,43 +46,43 @@ class BracketsController extends BaseController
         $bracket = $this->bracketsModel->find($id);
         $teamnames = json_decode($bracket['teamnames']);
         $original = $teamnames;
-
-        $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
-        if (isset($req->index)) {
-            if (!isset($req->participant))  {
-                
-                if ($participant) {
-                    $participant_id = $participant['id'];
+        if(isset($req->name)){
+            $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
+            if (isset($req->index)) {
+                if (!isset($req->participant))  {
+                    
+                    if ($participant) {
+                        $participant_id = $participant['id'];
+                    } else {
+                        $userId = (auth()->user()) ? auth()->user()->id : 0;
+                        $entity = new \App\Entities\Participant([
+                            'name' => $req->name,
+                            'user_id' => $userId,
+                            'tournament_id' => $bracket['tournament_id'],
+                            'order' => $bracket['bracketNo'] * 2 - $req->index,
+                            'image' => null,
+                            'active' => 1
+                        ]);
+                        $participant_id = $this->participantsModel->insert($entity);
+                        $participant = $this->participantsModel->find($participant_id);
+                    }  
                 } else {
-                    $userId = (auth()->user()) ? auth()->user()->id : 0;
-                    $entity = new \App\Entities\Participant([
-                        'name' => $req->name,
-                        'user_id' => $userId,
-                        'tournament_id' => $bracket['tournament_id'],
-                        'order' => $bracket['bracketNo'] * 2 - $req->index,
-                        'image' => null,
-                        'active' => 1
-                    ]);
-                    $participant_id = $this->participantsModel->insert($entity);
-                    $participant = $this->participantsModel->find($participant_id);
-                }  
-            } else {
-                $participant_id = $req->participant;
+                    $participant_id = $req->participant;
+                }
+
+                $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'image'=> $participant['image'], 'order' => $req->order];
+
+                $insert_data = array('teamnames' => json_encode($teamnames));
+
+                $result['participant'] = $participant;
             }
 
-            $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'image'=> $participant['image'], 'order' => $req->order];
+            if (!isset($insert_data)) {
+                $insert_data = $req;
+            }
 
-            $insert_data = array('teamnames' => json_encode($teamnames));
-
-            $result['participant'] = $participant;
+            $this->bracketsModel->update($id, $insert_data);
         }
-
-        if (!isset($insert_data)) {
-            $insert_data = $req;
-        }
-
-        $this->bracketsModel->update($id, $insert_data);
-
         /** Change the tournament status
          *  If mark as winner in final, set status to completed
          *  If unmark a winner, set status to progress

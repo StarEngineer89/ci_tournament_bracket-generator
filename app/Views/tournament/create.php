@@ -233,24 +233,25 @@ $(document).ready(function() {
         <?php endif; ?>
     });
 
-    var leaveConfirm = false;
-    $(window).on('unload', function(e) {
-        if (!leaveConfirm) {
-            e.preventDefault();
-            $("#leaveConfirm").modal('show');
+<?php if(!auth()->user()) : ?>    
+    $(document).on('click', function(e) {
+        if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
+            e.preventDefault()
+
+            // Show Bootstrap modal
+            var modal = new bootstrap.Modal(document.getElementById('leaveConfirm'));
+            modal.show();
         }
     })
 
     $("#leaveConfirm .signin").on('click', function() {
-        leaveConfirm = true;
         location.href = "/login";
     })
 
     $("#leaveConfirm .leave").on('click', function() {
-        leaveConfirm = true;
-        $(window).trigger('unload');
+        $('#leaveConfirm').modal('hide')
     })
-
+<?php endif;?>
     $('#addParticipants').on('click', function() {
         var opts = $('#participantNames').val();
 

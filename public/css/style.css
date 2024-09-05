@@ -664,3 +664,6 @@
 .bracket-team .p-image.active .btn{
   display: block;
 }
+.participant-list{
+  overflow-y: auto;
+}
