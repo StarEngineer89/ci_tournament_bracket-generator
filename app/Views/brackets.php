@@ -129,9 +129,9 @@ $(document).ready(function() {
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
-<?php if(!auth()->user()) : ?>
-    $(document).on('click', function(e){
-        
+    <?php if(!auth()->user()) : ?>
+    $(document).on('click', function(e) {
+
         if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
             e.preventDefault()
 
@@ -140,7 +140,7 @@ $(document).ready(function() {
             modal.show();
         }
     })
-    
+
     // Handle the modal confirmation
     document.getElementById('leaveToSignin').addEventListener('click', function() {
         // Allow the window/tab to close
@@ -150,7 +150,7 @@ $(document).ready(function() {
     $("#leaveConfirm .leave").on('click', function() {
         $('#leaveConfirm').modal('hide')
     })
-<?php endif;?>
+    <?php endif;?>
 })
 </script>
 
@@ -228,14 +228,14 @@ $(document).ready(function() {
 
         <div id="liveAlertPlaceholder"></div>
         <div id="liveAlertMsg" class="d-none">
+            Note: <br />
+            The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
             <?php if ((auth()->user() && auth()->user()->id == $tournament['user_id']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
             You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box throughout the tournament availability window (assuming its set).<br>
             This limitation isn't applicable to the tournament host.<br>
             In other words, actions will be restricted for all after availability ends (e.g. if tournament is shared with edit permissions) except for the host, in which even if availability ends, the host would still be able to control actions.
             <br />
             <?php endif ?>
-            Note: <br />
-            The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
         </div>
 
         <div id="descriptionPlaceholder"></div>
