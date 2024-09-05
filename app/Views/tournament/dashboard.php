@@ -609,25 +609,27 @@ $(document).ready(function() {
                             if (result.tournamentSettings.score_enabled == 1) {
                                 $('#enableScoreOption').attr('checked', true)
                                 $('#scorePerBracket').val(result.tournamentSettings.score_bracket)
-
-                                if (result.tournamentSettings.increment_score_enabled == 1) {
-                                    $('#enableIncrementScore').attr('checked', true)
-                                    $('#incrementScore').val(result.tournamentSettings.increment_score)
-                                } else {
-                                    $('#enableIncrementScore').attr('checked', false)
-                                    $('#incrementScore').attr('disabled', true)
-                                    $('#incrementScore').val(result.tournamentSettings.increment_score)
-                                }
-                                toggleIncrementScore(document.getElementById('enableIncrementScore'))
                             } else {
-                                $('#enableScoreOption').attr('checked', false)
+                                $('#enableScoreOption').removeAttr('checked')
                             }
+                            
+                            if (result.tournamentSettings.increment_score_enabled == 1) {
+                                $('#enableIncrementScore').attr('checked', true)
+                                $('#incrementScore').removeAttr('disabled')
+                                $('#incrementScore').val(result.tournamentSettings.increment_score)
+                            } else {
+                                $('#enableIncrementScore').removeAttr('checked')
+                                $('#incrementScore').attr('disabled', true)
+                                $('#incrementScore').val(result.tournamentSettings.increment_score)
+                            }
+                            toggleIncrementScore(document.getElementById('enableIncrementScore'))
+                            
                             toggleScoreOption(document.getElementById('enableScoreOption'))
 
                             if (result.tournamentSettings.shuffle_enabled == 1) {
-                                $('#enableShuffle').attr('checked', true)
+                                $('#enableShuffle').prop('checked', true)
                             } else {
-                                $('#enableShuffle').attr('checked', false)
+                                $('#enableShuffle').prop('checked', false)
                             }
                             toggleShuffleParticipants(document.getElementById('enableShuffle'))
                         }

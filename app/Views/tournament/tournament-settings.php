@@ -81,11 +81,11 @@
         </div>
         <div class="row">
             <div class="col-6 form-check ps-2">
-                <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" name="increment_score_enabled" onChange="toggleIncrementScore(this)">
+                <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" name="increment_score_enabled" onChange="toggleIncrementScore(this)" checked>
                 <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
             </div>
             <div class="col-3 ms-1">
-                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" required disabled>
+                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" required>
             </div>
         </div>
         <div class="enable-increamentscoreoption-hint form-text">
