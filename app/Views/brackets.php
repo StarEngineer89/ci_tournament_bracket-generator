@@ -151,10 +151,6 @@ $(document).ready(function() {
         $('#leaveConfirm').modal('hide')
     })
     <?php endif;?>
-
-    $('span.tooltip-span').on('click', function(e) {
-        const tooltip = new bootstrap.Tooltip(e)
-    })
 })
 </script>
 

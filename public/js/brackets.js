@@ -33,6 +33,13 @@ $(document).on('ready', function () {
     function drawBrackets() {
         if (brackets.length > 0)
             renderBrackets(brackets);
+
+        document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+            var tooltip = new bootstrap.Tooltip(element)
+            $(element).on('click', function () {
+                console.log('click')
+            })
+        })
     }
 
     /*
@@ -93,6 +100,7 @@ $(document).on('ready', function () {
                     nameSpan.classList.add('name')
                     nameSpan.classList.add('tooltip-span')
                     nameSpan.setAttribute('data-bs-toggle', "tooltip")
+                    nameSpan.setAttribute('data-bs-title', teams[0].name)
                     nameSpan.textContent = teams[0].name;
                     teama.appendChild(nameSpan)
 
@@ -133,6 +141,7 @@ $(document).on('ready', function () {
                     nameSpan.classList.add('name')
                     nameSpan.classList.add('tooltip-span')
                     nameSpan.setAttribute('data-bs-toggle', "tooltip")
+                    nameSpan.setAttribute('data-bs-title', teams[1].name)
                     nameSpan.textContent = teams[1].name
                     teamb.appendChild(nameSpan)
 
