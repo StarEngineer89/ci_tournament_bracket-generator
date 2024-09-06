@@ -572,14 +572,20 @@ class TournamentController extends BaseController
         // Fetch the participants
         $participants = $participantsModel->where('tournament_id', $tournamentId)->findAll();
         /** Clear existing participants */
-        $participantsModel->where(['tournament_id' => 0, 'user_id' => auth()->user()->id])->delete();
+        if (auth()->user()) {
+            $user_id = auth()->user()->id;
+        } else {
+            $user_id = 0;
+        }
+
+        $participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->delete();
 
         /** Create new participants list from previous tournaments */
         foreach ($participants as $participant) {
             if ($participant['name']) {
                 $newParticipant = new \App\Entities\Participant([
                     'name' => $participant['name'],
-                    'user_id' => auth()->user()->id,
+                    'user_id' => $user_id,
                     'tournament_id' => 0,
                     'order' => $participant['order'],
                     'active' => 1

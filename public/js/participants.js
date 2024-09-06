@@ -262,6 +262,14 @@ function chooseImage(e, element_id){
     $("#image_" + element_id).trigger('click');
 }
 function checkBig(el, element_id){
+    var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+    if (!allowedTypes.includes(el.files[0].type)) {
+        alert('Error uploading image! Please upload image as *.jpeg, *.jpg, *.png, *.gif format.');
+        this.value = '';
+        return
+    }
+
     if(el.files[0].size > 1048576){
         alert('Error uploading image! Max image size is 1MB. Please upload small image.');
         this.value='';
