@@ -829,17 +829,16 @@ var performReuseParticipants = (tournament_id = null) => {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteModalLabel">Duplicate record(s) detected!</h1>
+                <h1 class="modal-title fs-5" id="deleteModalLabel">You're about to leave this page and thus will lose access to the tournament!</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5>You're about to leave this page and thus will lose access to the tournament!</h1>
-                    <p>You can preserve this tournament by signing up/signing in and accessing much more features from your very own dedicated Tournament Dashboard available for registered users!</p>
-                    <p>Are you sure you want to proceed?</p>
+                <p>You can preserve this tournament by signing up/signing in and accessing much more features from your very own dedicated Tournament Dashboard available for registered users!</p>
+                <p>Are you sure you want to proceed?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary signin">Signup/Signin to preserve tournament</button>
-                <button type="button" class="btn btn-danger leave">Discard duplicate record(s)</button>
+                <button type="button" class="btn btn-danger leave">Discard</button>
             </div>
         </div>
     </div>
