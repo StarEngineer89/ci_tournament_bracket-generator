@@ -263,6 +263,7 @@ let toggleScoreOption = (checkbox) => {
         $('.enable-scoreoption-hint').removeClass('d-none')
     } else {
         $('#scorePerBracket').prop('disabled', true)
+        $('#enableIncrementScore').prop('checked', false)
         $('#incrementScore').prop('disabled', true)
         $('#scoreOptions').addClass('d-none')
         $('.enable-scoreoption-hint').addClass('d-none')
