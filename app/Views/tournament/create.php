@@ -235,25 +235,6 @@ $(document).ready(function() {
         <?php endif; ?>
     });
 
-    <?php if(!auth()->user()) : ?>
-    $(document).on('click', function(e) {
-        if (enable_confirmPopup == true && (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A')) {
-            e.preventDefault()
-
-            // Show Bootstrap modal
-            var modal = new bootstrap.Modal(document.getElementById('leaveConfirm'));
-            modal.show();
-        }
-    })
-
-    $("#leaveConfirm .signin").on('click', function() {
-        location.href = "/login";
-    })
-
-    $("#leaveConfirm .leave").on('click', function() {
-        $('#leaveConfirm').modal('hide')
-    })
-    <?php endif;?>
     $('#addParticipants').on('click', function() {
         var opts = $('#participantNames').val();
 
@@ -837,7 +818,7 @@ var performReuseParticipants = (tournament_id = null) => {
                 <p>Are you sure you want to proceed?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary signin">Signup/Signin to preserve tournament</button>
+                <button type="button" class="btn btn-primary signin">Signup/Signin to preserve tournament</button>
                 <button type="button" class="btn btn-danger leave">Discard</button>
             </div>
         </div>
@@ -857,7 +838,7 @@ var performReuseParticipants = (tournament_id = null) => {
                     <h6 class="text-danger"><span class="names"></span></h6>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary include">Include duplicate record(s)</button>
+                <button type="button" class="btn btn-primary include">Include duplicate record(s)</button>
                 <button type="button" class="btn btn-danger remove">Discard duplicate record(s)</button>
             </div>
         </div>
@@ -1007,8 +988,8 @@ var performReuseParticipants = (tournament_id = null) => {
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard</button>
-                <button type="button" class="btn btn-danger" id="selectTournamentConfirmBtn">Confirm</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Discard</button>
+                <button type="button" class="btn btn-primary" id="selectTournamentConfirmBtn">Confirm</button>
             </div>
         </div>
     </div>
@@ -1050,7 +1031,7 @@ var performReuseParticipants = (tournament_id = null) => {
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Discard</button>
                 <button type="button" class="btn btn-danger" id="removeDuplicationsConfirmBtn">Remove</button>
             </div>
         </div>
