@@ -235,7 +235,7 @@ $(document).ready(function() {
         <?php endif; ?>
     });
 
-<?php if(!auth()->user()) : ?>    
+    <?php if(!auth()->user()) : ?>
     $(document).on('click', function(e) {
         if (enable_confirmPopup == true && (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A')) {
             e.preventDefault()
@@ -253,7 +253,7 @@ $(document).ready(function() {
     $("#leaveConfirm .leave").on('click', function() {
         $('#leaveConfirm').modal('hide')
     })
-<?php endif;?>
+    <?php endif;?>
     $('#addParticipants').on('click', function() {
         var opts = $('#participantNames').val();
 
@@ -492,43 +492,9 @@ $(document).ready(function() {
         })
     }
 
-    const selectTournamentConfirmModal = document.getElementById('selectTournamentConfirmModal');
-    if (selectTournamentConfirmModal) {
-        selectTournamentConfirmModal.addEventListener('show.bs.modal', event => {
-            selectTournamentConfirmModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-tournament-id'));
-
-            var tournamentNameElement = selectTournamentConfirmModal.querySelector('.tournament-name')
-            tournamentNameElement.textContent = event.relatedTarget.getAttribute('data-name')
-        })
-    }
-
     $('#selectTournamentConfirmBtn').on('click', function() {
         const tournament_id = selectTournamentConfirmModal.dataset.id
-
-        $.ajax({
-            type: "POST",
-            url: apiURL + '/tournaments/reuse-participants',
-            data: {
-                id: tournament_id
-            },
-            beforeSend: function() {
-                //$("#preview").fadeOut();
-                $('#beforeProcessing').removeClass('d-none')
-                $("#err").fadeOut();
-            },
-            success: function(result) {
-                $('#beforeProcessing').addClass('d-none')
-                renderParticipants(result)
-                $(selectTournamentConfirmModal).modal('hide')
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function() {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
+        performReuseParticipants(tournament_id);
     })
 
 });
@@ -698,7 +664,7 @@ var drawTournamentsTable = () => {
                 "data": null,
                 "render": function(data, type, row, meta) {
                     return `
-                        <a class="edit-btn" data-tournament-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#selectTournamentConfirmModal">Reuse</a>
+                        <a class="edit-btn" data-tournament-id="${row.id}" data-name="${row.name}" onClick="reuseParticipant(this)">Reuse</a>
                     `;
                 }
             }
@@ -723,6 +689,44 @@ var drawTournamentsTable = () => {
         tournamentsTable.columns(3).search(selectedStatus).draw();
     });
 
+}
+var reuseParticipant = (element) => {
+    if ($('.participant-list .list-group-item').length) {
+        const selectTournamentConfirmModal = document.getElementById('selectTournamentConfirmModal');
+        selectTournamentConfirmModal.dataset.id = element.dataset.tournamentId
+        var tournamentNameElement = selectTournamentConfirmModal.querySelector('.tournament-name')
+        tournamentNameElement.textContent = element.dataset.name
+        $('#selectTournamentConfirmModal').modal('show')
+    } else {
+        performReuseParticipants(element.dataset.tournamentId)
+    }
+}
+var performReuseParticipants = (tournament_id = null) => {
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/tournaments/reuse-participants',
+        data: {
+            id: tournament_id
+        },
+        beforeSend: function() {
+            //$("#preview").fadeOut();
+            $('#beforeProcessing').removeClass('d-none')
+            $("#err").fadeOut();
+        },
+        success: function(result) {
+            $('#beforeProcessing').addClass('d-none')
+            renderParticipants(result)
+            $(selectTournamentConfirmModal).modal('hide')
+            $(selectTournamentModal).modal('hide')
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
 }
 </script>
 

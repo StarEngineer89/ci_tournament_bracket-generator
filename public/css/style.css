@@ -262,7 +262,7 @@
   line-height: 38px;
 }
 
-.brackets>div .final span {
+.brackets>div .final > span {
   margin-left: 20px;
 }
 .brackets>div .final span.p-id{

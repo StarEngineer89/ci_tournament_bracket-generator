@@ -91,6 +91,8 @@ $(document).on('ready', function () {
                     teama.dataset.p_order = teams[0].order;
                     var nameSpan = document.createElement('span')
                     nameSpan.classList.add('name')
+                    nameSpan.classList.add('tooltip-span')
+                    nameSpan.setAttribute('data-bs-toggle', "tooltip")
                     nameSpan.textContent = teams[0].name;
                     teama.appendChild(nameSpan)
 
@@ -129,6 +131,8 @@ $(document).on('ready', function () {
                     teamb.dataset.p_order = teams[1].order;
                     var nameSpan = document.createElement('span')
                     nameSpan.classList.add('name')
+                    nameSpan.classList.add('tooltip-span')
+                    nameSpan.setAttribute('data-bs-toggle', "tooltip")
                     nameSpan.textContent = teams[1].name
                     teamb.appendChild(nameSpan)
 
@@ -550,6 +554,7 @@ $(document).on('ready', function () {
                 }
 
                 next_bracketObj.dataset.id = ele.data('id');
+                next_bracketObj.dataset.p_order = ele.data('p_order');
                 $(next_bracketObj).append(nameSpan);
                 var pidBox = document.createElement('span')
                 pidBox.classList.add('p-id')

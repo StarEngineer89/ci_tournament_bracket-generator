@@ -129,7 +129,7 @@ $(document).ready(function() {
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
-    <?php if(!auth()->user()) : ?>
+    <?php if(!auth()->user() && !$tournament['user_id']) : ?>
     $(document).on('click', function(e) {
 
         if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
@@ -151,6 +151,10 @@ $(document).ready(function() {
         $('#leaveConfirm').modal('hide')
     })
     <?php endif;?>
+
+    $('span.tooltip-span').on('click', function(e) {
+        const tooltip = new bootstrap.Tooltip(e)
+    })
 })
 </script>
 
