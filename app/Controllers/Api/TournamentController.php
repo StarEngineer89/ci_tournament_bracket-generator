@@ -65,6 +65,11 @@ class TournamentController extends BaseController
         $tournamentModel = model('\App\Models\TournamentModel');
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
 
+        $db = \Config\Database::connect();
+        if (!auth()->user()) {
+            $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+        }
+
         $existing = $tournamentModel->where(['name' => $this->request->getPost('name'), 'user_id' => $user_id])->findAll();
 
         if ($existing) {
@@ -109,7 +114,7 @@ class TournamentController extends BaseController
                         'path' => $path,
                         'source' => $this->request->getPost('source')[$index],
                         'tournament_id' => $tournament_id,
-                        'user_id' => auth()->user()->id,
+                        'user_id' => $user_id,
                         'type' => $index,
                         'duration' => $this->request->getPost('duration')[$index],
                         'start' => $this->request->getPost('start')[$index],
@@ -126,6 +131,10 @@ class TournamentController extends BaseController
                     $data['music'][] = $setting;
                 }
             }
+        }
+        
+        if (!auth()->user()) {
+            $db->query('SET FOREIGN_KEY_CHECKS = 1;');
         }
 
         $data['tournament_id'] = $tournament_id;
