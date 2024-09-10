@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 class ParticipantsController extends BaseController
 {
     protected $participantsModel;
+    protected $bracketsModel;
 
     public function initController(
         RequestInterface $request,
