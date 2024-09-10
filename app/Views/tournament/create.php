@@ -18,7 +18,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
 <!-- Tempus Dominus JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
-
+<script>
+var hash = '<?= uniqid(rand(), TRUE);?>';
+</script>
 <script src="/js/participants.js"></script>
 <script src="/js/tournament.js"></script>
 <!-- <script src="/js/player.js"></script> -->

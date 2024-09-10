@@ -382,7 +382,8 @@ var addParticipants = (data) => {
         data: {
             'name': data.names,
             'user_id' : data.user_id,
-            'tournament_id': data.tournament_id
+            'tournament_id': data.tournament_id,
+            'hash': hash
         },
         dataType: "JSON",
         beforeSend: function() {

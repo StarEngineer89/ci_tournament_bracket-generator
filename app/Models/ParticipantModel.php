@@ -12,7 +12,7 @@ class ParticipantModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'user_id', 'tournament_id', 'order', 'active', 'image'];
+    protected $allowedFields    = ['name', 'user_id', 'tournament_id', 'order', 'active', 'image', 'sessionid'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

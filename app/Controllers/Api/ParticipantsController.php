@@ -32,6 +32,8 @@ class ParticipantsController extends BaseController
         $tournament_id = $this->request->getPost('tournament_id') ? $this->request->getPost('tournament_id') : 0;
         $user_id = $this->request->getPost('user_id') ? $this->request->getPost('user_id') : 0;
         
+        $hash = $this->request->getPost('hash');
+        
         $participants = []; $inserted_count = 0;
         if ($names) {
             foreach ($names as $name) {
@@ -39,7 +41,8 @@ class ParticipantsController extends BaseController
                     'name' => $name,
                     'user_id' => $user_id,
                     'tournament_id' => $tournament_id,
-                    'active' => 1
+                    'active' => 1,
+                    'sessionid' => $hash
                 ]);
 
                 $this->participantsModel->insert($participant);
@@ -49,7 +52,7 @@ class ParticipantsController extends BaseController
             }
         }
 
-        $participants = $this->participantsModel->where(['user_id' => $user_id, 'tournament_id' => $tournament_id])->findAll();
+        $participants = $this->participantsModel->where(['user_id' => $user_id, 'tournament_id' => $tournament_id, 'sessionid' => $hash])->findAll();
 
         return json_encode(array('result' => 'success', 'participants' => $participants, 'count' => $inserted_count));
     }
