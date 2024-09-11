@@ -343,10 +343,16 @@ $(document).ready(function() {
     $('[data-bs-toggle="tooltip"]').tooltip();
 
     const linkedPicker1Element = document.getElementById('startAvPicker');
-    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {'localization': {format: 'yyyy-MM-dd HH:mm'}});
+    const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {
+        'localization': {
+            format: 'yyyy-MM-dd HH:mm'
+        }
+    });
     const linked2 = new tempusDominus.TempusDominus(document.getElementById('endAvPicker'), {
         useCurrent: false,
-        'localization': {format: 'yyyy-MM-dd HH:mm:ss'}
+        'localization': {
+            format: 'yyyy-MM-dd HH:mm:ss'
+        }
     });
 
     //using event listeners
@@ -431,7 +437,7 @@ $(document).ready(function() {
         scrollX: true,
         "columnDefs": [{
             "orderable": false,
-            "targets": [0, 3, 4, 9]
+            "targets": [0, 3, 4, 8]
         }],
         // Add custom initComplete to initialize select all checkbox
         "initComplete": function(settings, json) {
@@ -612,7 +618,7 @@ $(document).ready(function() {
                             } else {
                                 $('#enableScoreOption').removeAttr('checked')
                             }
-                            
+
                             if (result.tournamentSettings.increment_score_enabled == 1) {
                                 $('#enableIncrementScore').attr('checked', true)
                                 $('#incrementScore').removeAttr('disabled')
@@ -623,7 +629,7 @@ $(document).ready(function() {
                                 $('#incrementScore').val(result.tournamentSettings.increment_score)
                             }
                             toggleIncrementScore(document.getElementById('enableIncrementScore'))
-                            
+
                             toggleScoreOption(document.getElementById('enableScoreOption'))
 
                             if (result.tournamentSettings.shuffle_enabled == 1) {
@@ -1018,6 +1024,7 @@ $(document).ready(function() {
             success: function(result) {
                 $('#shareModal').modal('hide');
                 $('#beforeProcessing').addClass('d-none');
+                window.location.reload()
             },
             error: function(e) {
                 $("#err").html(e).fadeIn();
@@ -1286,7 +1293,7 @@ function fetchShareSettings(tournament_id) {
                 });
 
                 $('table.share-settings tbody').html(tbody);
-                $('.copyUrl').click(function(){
+                $('.copyUrl').click(function() {
                     // Get the text field
                     var shareID = $(this).data('fid');
                     var copyText = document.getElementById(shareID);

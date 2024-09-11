@@ -104,7 +104,7 @@ class TournamentController extends BaseController
                 $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
 
                 $shareSettingModel = model('\App\Models\ShareSettingsModel');
-                $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
+                $sharedTournament = $shareSettingModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
                 $temp['public_url'] = '';
                 if($sharedTournament) $temp['public_url'] = base_url('/tournaments/shared/') . $sharedTournament['token'];
                 $tns[] = $temp;
