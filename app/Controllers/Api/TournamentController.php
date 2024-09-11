@@ -169,6 +169,9 @@ class TournamentController extends BaseController
         if ($this->request->getPost('status')) {
             $tournament['status'] = $this->request->getPost('status');
         }
+        if ($this->request->getPost('visibility')) {
+            $tournament['visibility'] = ($this->request->getPost('visibility') == 'on') ? 1 : 0;
+        }
         if ($this->request->getPost('shuffle_enabled')) {
             $tournament['shuffle_enabled'] = ($this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
         }

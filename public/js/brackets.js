@@ -773,6 +773,7 @@ function checkBig(el, element_id) {
             cache: false,
             processData: false,
             success: function (result) {
+                ws.send('marked!');
                 loadBrackets();
             },
             error: function (error) {
@@ -791,6 +792,7 @@ function removeImage(e, element_id){
         url: apiURL + '/participants/update/' + element_id,
         data: {'action': 'removeImage'},
         success: function (result) {
+            ws.send('marked!')
             loadBrackets();
         },
         error: function (error) {

@@ -924,7 +924,6 @@ $(document).ready(function() {
     $('#submit').on('click', function() {
         const form = document.getElementById('tournamentForm');
         if (!form.checkValidity()) {
-            console.log(form.reportValidity());
             event.preventDefault()
             event.stopPropagation()
             form.classList.add('was-validated');
@@ -956,6 +955,12 @@ $(document).ready(function() {
         }
 
         const values = $('#tournamentForm').serializeArray();
+        $('#tournamentForm input[type="checkbox"]:not(:checked)').each(function(i, e) {
+            values.push({
+                name: e.getAttribute("name"),
+                value: false
+            });
+        });
         const data = Object.fromEntries(values.map(({
             name,
             value

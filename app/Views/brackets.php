@@ -133,6 +133,10 @@ $(document).ready(function() {
     $(document).on('click', function(e) {
 
         if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
+            if (e.target.href.includes('login')) {
+                return true
+            }
+
             e.preventDefault()
 
             // Show Bootstrap modal
