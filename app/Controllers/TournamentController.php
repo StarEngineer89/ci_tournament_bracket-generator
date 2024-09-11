@@ -173,7 +173,7 @@ class TournamentController extends BaseController
                     'user_id' => 0,
                     'tournament_id' => $id,
                     'target' => 'p',
-                    'permission' => 'e',
+                    'permission' => SHARE_PERMISSION_VIEW,
                     'token' => $token
                 );
                 $shareSettingsModel->insert($data);
