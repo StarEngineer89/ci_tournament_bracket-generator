@@ -66,7 +66,8 @@ class TournamentController extends BaseController
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
 
         $db = \Config\Database::connect();
-        if (!auth()->user()) {
+        $dbDriver = $db->DBDriver;
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
             $db->query('SET FOREIGN_KEY_CHECKS = 0;');
         }
 
@@ -133,7 +134,7 @@ class TournamentController extends BaseController
             }
         }
         
-        if (!auth()->user()) {
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
             $db->query('SET FOREIGN_KEY_CHECKS = 1;');
         }
 
