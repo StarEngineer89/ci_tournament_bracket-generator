@@ -162,21 +162,32 @@ class TournamentController extends BaseController
     {
         $tournamentModel = model('\App\Models\TournamentModel');
         $tournament = $tournamentModel->find(intval($tournament_id));
-        // $tournament = new \App\Entities\Tournament($tournament);
-        // $tournament->fill($this->request->getPost());
         
-        $tournament['shuffle_enabled'] = ($this->request->getPost('shuffle_enabled') && $this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
-        $tournament['score_enabled'] = ($this->request->getPost('score_enabled') && $this->request->getPost('score_enabled') == 'on') ? 1 : 0;
-        $tournament['increment_score_enabled'] = ($this->request->getPost('increment_score_enabled') && $this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
-        $tournament['visibility'] = ($this->request->getPost('visibility') && $this->request->getPost('visibility') == 'on') ? 1 : 0;
+        if ($this->request->getPost('description')) {
+            $tournament['description'] = $this->request->getPost('description');
+        }
+        if ($this->request->getPost('status')) {
+            $tournament['status'] = $this->request->getPost('status');
+        }
+        if ($this->request->getPost('shuffle_enabled')) {
+            $tournament['shuffle_enabled'] = ($this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
+        }
+        if ($this->request->getPost('score_enabled')) {
+            $tournament['score_enabled'] = ($this->request->getPost('score_enabled') == 'on') ? 1 : 0;
+        }
+        if ($this->request->getPost('increment_score_enabled')) {
+            $tournament['increment_score_enabled'] = ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
+        }
         
-        $tournament['availability'] = ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0;
-        if($tournament['availability']){
-            $tournament['available_start'] = $this->request->getPost('startAvPicker');
-            $tournament['available_end'] = $this->request->getPost('endAvPicker');
-        } else {
-            $tournament['available_start'] = null;
-            $tournament['available_end'] = null;
+        if ($this->request->getPost('availability')) {
+            $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
+            if($tournament['availability']){
+                $tournament['available_start'] = $this->request->getPost('startAvPicker');
+                $tournament['available_end'] = $this->request->getPost('endAvPicker');
+            } else {
+                $tournament['available_start'] = null;
+                $tournament['available_end'] = null;
+            }
         }
         
         $tournamentModel->save($tournament);
