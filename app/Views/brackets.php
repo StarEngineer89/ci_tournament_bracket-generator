@@ -287,7 +287,7 @@ $(document).ready(function() {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary signin" id="leaveToSignin">Signup/Signin to preserve tournament</button>
-                <button type="button" class="btn btn-danger leave">Discard</button>
+                <button type="button" class="btn btn-danger leave">Disregard and leave anyways</button>
             </div>
         </div>
     </div>
