@@ -20,13 +20,14 @@ const unmarkWinnerActionCode = '<?= BRACKET_ACTIONCODE_UNMARK_WINNER ?>';
 const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?>';
 const addParticipantActionCode = '<?= BRACKET_ACTIONCODE_ADD_PARTICIPANT ?>';
 const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
-const hasEditPermission = '<?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') || (isset($settings['target']) && ($settings['target'] == 'p' || $settings['target'] == 'a') && $settings['permission'] == 'e') || (isset($settings['users']) && auth()->user() && in_array(auth()->user()->id, explode(",", $settings['users'])) && $settings['permission'] == 'e' ) ? true : false ?>';
+var hasEditPermission = '<?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') || (isset($settings['target']) && ($settings['target'] == 'p' || $settings['target'] == 'a') && $settings['permission'] == 'e') || (isset($settings['users']) && auth()->user() && in_array(auth()->user()->id, explode(",", $settings['users'])) && $settings['permission'] == 'e' ) ? true : false ?>';
 const isScoreEnabled = '<?= $tournament['score_enabled'] ?>';
 const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['score_bracket'] : 0 ?>)
 const incrementScore = parseInt(<?= ($tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>)
 </script>
 <script type="text/javascript">
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
+if(!location.href.includes('shared')){
 <?php if(!auth()->user()){ ?>
 var dc = new Date();
 dc.setTime(dc.getTime() + (24 * 60 * 60 * 1000));
@@ -34,6 +35,24 @@ document.cookie = 'tournament_id=<?= $tournament["id"] ?>;expires=' + dc.toUTCSt
 <?php }else{?>
 document.cookie = 'tournament_id=;Max-Age=0'
 <?php } ?>
+}else{
+    if(parseInt(getCookie('tournament_id')) == tournament_id) hasEditPermission = true;
+}
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
 $(document).ready(function() {
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
     const appendAlert = (message, type) => {
@@ -130,6 +149,7 @@ $(document).ready(function() {
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
     <?php if(!auth()->user() && !$tournament['user_id']) : ?>
+    var leaveUrl;
     $(document).on('click', function(e) {
 
         if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
@@ -137,7 +157,8 @@ $(document).ready(function() {
                 return true
             }
 
-            e.preventDefault()
+            e.preventDefault();
+            leaveUrl = e.target.href;
 
             // Show Bootstrap modal
             var modal = new bootstrap.Modal(document.getElementById('leaveConfirm'));
@@ -152,7 +173,8 @@ $(document).ready(function() {
     });
 
     $("#leaveConfirm .leave").on('click', function() {
-        $('#leaveConfirm').modal('hide')
+        $('#leaveConfirm').modal('hide');
+        location.href = leaveUrl;
     })
     <?php endif;?>
 })
