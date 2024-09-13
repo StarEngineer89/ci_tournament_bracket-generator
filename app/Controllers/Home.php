@@ -24,30 +24,44 @@ class Home extends BaseController
         $tournaments = $tournaments->findAll();
 
         $newTournaments = array();
+        $existingHistory = $this->request->getCookie('guest_tournaments');
+        $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
+        
         foreach($tournaments as $tournament){
             $temp = $tournament;
-            if(time() - strtotime($tournament['created_at']) > 86400 && $tournament['user_id'] > 0){
+            if(time() - strtotime($tournament['created_at']) > 86400 && $tournament['user_id'] == 0){
+                /** Remove expired temp tournaments from cookie value */
+                $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+                $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
+
+                $cookie_value = $tournament['id'] . "_" . $shareSetting['token'];
+                $tournamentHistory = array_values(array_diff($tournamentHistory, array($cookie_value)));
+                /** End removing expired temp tournaments from cookie value */
+
+                // Store updated history in cookies (expire in 1 days)
+                $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
+                
                 $tournamentsModel->where('id', $tournament['id'])->delete();
-            }else{
-                $temp['username'] = 'Guest';
-                $temp['email'] = '';
-                if($tournament['user_id'] > 0){
-                    $user = $userModel->find($tournament['user_id']);
-                    $userId = $userIdentityModel->find($tournament['user_id']);
-                    $temp['username'] = $user->username;
-                    $temp['email'] = $userId->secret;
-                }
-
-                $participantModel = model('\App\Models\ParticipantModel');
-                $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
-
-                $shareSettingModel = model('\App\Models\ShareSettingsModel');
-                $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
-                $temp['public_url'] = '';
-                if($sharedTournament) $temp['public_url'] = base_url('/tournaments/shared/') . $sharedTournament['token'];
-
-                $newTournaments[] = $temp;
             }
+            
+            $temp['username'] = 'Guest';
+            $temp['email'] = '';
+            if($tournament['user_id'] > 0){
+                $user = $userModel->find($tournament['user_id']);
+                $userId = $userIdentityModel->find($tournament['user_id']);
+                $temp['username'] = $user->username;
+                $temp['email'] = $userId->secret;
+            }
+
+            $participantModel = model('\App\Models\ParticipantModel');
+            $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
+
+            $shareSettingModel = model('\App\Models\ShareSettingsModel');
+            $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
+            $temp['public_url'] = '';
+            if($sharedTournament) $temp['public_url'] = base_url('/tournaments/shared/') . $sharedTournament['token'];
+
+            $newTournaments[] = $temp;
         }
 
         return view('gallery', ['tournaments' => $newTournaments, 'searchString' => $searchString]);
