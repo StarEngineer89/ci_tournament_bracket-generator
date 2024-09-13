@@ -164,21 +164,21 @@ class TournamentController extends BaseController
 
             return redirect()->to('/tournaments');
         }
+
+        /** Check if the tournament is associated with guest user */
+        $editable = false;
         if($tournament['user_id'] == 0){
+            $existingHistory = $this->request->getCookie('guest_tournaments');
+            $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
             $shareSetting = $shareSettingsModel->where(['tournament_id' => $id, 'user_id' => 0])->first();
-            if(!$shareSetting){
-                $config = new \Config\Encryption();
-                $token = hash_hmac('sha256', 'tournament_' . $id . '_created_by_0_' . time(), $config->key);
-                $data = array(
-                    'user_id' => 0,
-                    'tournament_id' => $id,
-                    'target' => 'p',
-                    'permission' => SHARE_PERMISSION_VIEW,
-                    'token' => $token
-                );
-                $shareSettingsModel->insert($data);
+
+            $cookie_value = $id . "_" . $shareSetting['token'];
+
+            if (in_array($cookie_value, $tournamentHistory)) {
+                $editable = true;
             }
         }
+        /** End check */
         
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
         
@@ -213,7 +213,7 @@ class TournamentController extends BaseController
 
         $musicSettings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings]);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings, 'editable' => $editable]);
     }
     
     public function viewShared($token)
