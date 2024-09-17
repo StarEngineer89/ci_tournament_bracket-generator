@@ -18,9 +18,13 @@ Set the baseURL in app/Config/App.php file and any database settings in app/Conf
 ## Server Requirements
 
 OS: Linux/Windows
+
 CPU: 1 vCore
+
 RAM: 1 GB
+
 Storage: 40 GB
+
 Bandwidth: 100 Mbps unmetered
 
 PHP version 8.1 or higher is required, with the following extensions installed:
