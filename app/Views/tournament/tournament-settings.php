@@ -22,7 +22,78 @@
         <label class="form-check-label" for="enableVisibility">
             <h6>Visibility</h6>
         </label>
-        <div class="visibility-hint form-text">If enabled, the tournament will be visible publicly on the Tournament Gallery. Tournaments listed on the Tournament Gallery may be viewed by spectators/guests as read-only mode.</div>
+        <div class="visibility-hint form-text">If enabled, the tournament will be visible publicly on the Tournament Gallery. Tournaments listed on the Tournament Gallery may be viewed by spectators/guests as read-only mode, except otherwise allowed through voting.</div>
+    </div>
+</div>
+
+<div class="border-bottom mb-3 ps-2 pb-3">
+    <div class="row g-3 align-items-center">
+        <div class="col-auto">
+            <label for="evaluationMethod" class="col-form-label">Evaluation Method</label>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="evaluationMethod" name="evaluation_method" aria-label="Evaluation Method" onchange="changeEvaluationMethod(this)" required>
+                <option value="<?= EVALUATION_METHOD_MANUAL ?>" selected>Manual</option>
+                <option value="<?= EVALUATION_METHOD_VOTING  ?>">Voting</option>
+            </select>
+        </div>
+        <div class="evaluation-method-hint form-text ps-3">Determine how tournament bracket participants advance through the rounds.</div>
+        <div class="evaluation-method-manual-hint form-text mb-1 ps-3">Tournament host elects the winning bracket participants of each round.</div>
+        <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none">Winning participants are determined through a consensus. The voting period remains open and concludes once the tournament availability window ends.
+            Voting is determined by the action "Vote this participant" available in the tournament.</div>
+    </div>
+
+    <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="votingAccessbility" class="col-form-label">Voting Accessbility</label>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" id="votingAccessbility" name="voting_accessibility" aria-label="voting Accessbility" onchange="changeVotingAccessbility(this)" required>
+                    <option value="<?= EVALUATION_VOTING_RESTRICTED ?>" selected>Restricted</option>
+                    <option value="<?= EVALUATION_VOTING_UNRESTRICTED  ?>">Unrestricted</option>
+                </select>
+            </div>
+            <div class="evaluation-vote-restricted form-text mb-1 ps-3">
+                Only users whom the tournament link is shared with (from Share setting) may vote. Tournament links may be shared publicly for nonregistered (guest) users who prefer to vote anonymously.
+                <br />
+                Note: All votes by registered and/or anonymous (guest) users are tracked in the "View Log" action available to the host on the Tournament Dashboard. This may be helpful for tracking purposes and monitoring potential spam.
+            </div>
+            <div class="evaluation-vote-unrestricted form-text mb-1 ps-3 d-none">
+                Tournament voting is open for all. Spectators (anonymous guests) may vote as well if tournament visibility on the Gallery is enabled.
+                <br />
+                Note: All votes by registered and/or anonymous (guest) users are tracked in the "View Log" action available to the host on the Tournament Dashboard. This may be helpful for tracking purposes and monitoring potential spam.
+            </div>
+        </div>
+
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="votingMechanism" class="col-form-label">Voting Mechanism</label>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" id="votingMechanism" name="voting_mechanism" aria-label="Voting Mechanism" onchange="changeVotingMechanism(this)" required>
+                    <option value="<?= EVALUATION_VOTING_MECHANISM_ROUND ?>" selected>Round Duration</option>
+                    <option value="<?= EVALUATION_VOTING_MECHANISM_MAXVOTE  ?>">Max Votes</option>
+                </select>
+            </div>
+            <div class="evaluation-vote-round form-text mb-1 ps-3">
+                Winning participants automatically advance when the duration is reached and the voting period ends each round. Duration is determined by dividing the tournament availability window equally amongst all the rounds.
+                <br />
+                Note: This option can only be activated if Availability setting is enabled.
+            </div>
+            <div class="evaluation-vote-max form-text mb-1 ps-3 d-none">
+                Winning participants automatically advance when the vote limit is reached each round. Specify the max votes limit per bracket participant below.
+            </div>
+
+            <div class="row mb-2 max-vote-setting d-none">
+                <div class="col-auto">
+                    <label for="maxVotes" class="col-form-label">Max Votes <span class="text-danger">*</span> :</label>
+                </div>
+                <div class="col-3">
+                    <input type="number" name="max_vote_value" id="maxVotes" class="form-control" min="0">
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

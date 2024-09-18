@@ -92,7 +92,11 @@ class TournamentController extends BaseController
             'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0,
             'availability' => ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0,
             'available_start' => $this->request->getPost('startAvPicker'),
-            'available_end' => $this->request->getPost('endAvPicker')
+            'available_end' => $this->request->getPost('endAvPicker'),
+            'evaluation_method' => $this->request->getPost('evaluation_method'),
+            'voting_accessibility' => $this->request->getPost('voting_accessibility'),
+            'voting_mechanism' => $this->request->getPost('voting_mechanism'),
+            'max_vote_value' => $this->request->getPost('max_vote_value'),
         ];
         
         $tournamentData = new \App\Entities\Tournament($data);
@@ -227,6 +231,23 @@ class TournamentController extends BaseController
             } else {
                 $tournament['available_start'] = null;
                 $tournament['available_end'] = null;
+            }
+        }
+        
+        if ($this->request->getPost('evaluation_method')) {
+            $tournament['evaluation_method'] = $this->request->getPost('evaluation_method');
+            if($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING){
+                $tournament['voting_accessibility'] = $this->request->getPost('voting_accessibility');
+                $tournament['voting_mechanism'] = $this->request->getPost('voting_mechanism');
+                if ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE) {
+                    $tournament['max_vote_value'] = $this->request->getPost('max_vote_value');
+                } else {
+                    $tournament['max_vote_value'] = null;
+                }
+            } else {
+                $tournament['voting_accessibility'] = null;
+                $tournament['voting_mechanism'] = null;
+                $tournament['max_vote_value'] = null;
             }
         }
         

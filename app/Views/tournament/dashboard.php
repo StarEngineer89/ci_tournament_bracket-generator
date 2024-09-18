@@ -638,6 +638,24 @@ $(document).ready(function() {
                                 $('#enableShuffle').prop('checked', false)
                             }
                             toggleShuffleParticipants(document.getElementById('enableShuffle'))
+
+                            /** Initialize the settings for Evaluation Method */
+                            if (!result.tournamentSettings.evaluation_method) {
+                                result.tournamentSettings.evaluation_method = '<?= EVALUATION_METHOD_MANUAL ?>'
+                            }
+                            $('#evaluationMethod').val(result.tournamentSettings.evaluation_method)
+                            changeEvaluationMethod(document.getElementById('evaluationMethod'))
+                            if (!result.tournamentSettings.voting_accessibility) {
+                                result.tournamentSettings.voting_accessibility = '<?= EVALUATION_VOTING_RESTRICTED ?>'
+                            }
+                            $('#votingAccessbility').val(result.tournamentSettings.voting_accessibility)
+                            changeVotingAccessbility(document.getElementById('votingAccessbility'))
+                            if (!result.tournamentSettings.voting_mechanism) {
+                                result.tournamentSettings.voting_mechanism = '<?= EVALUATION_VOTING_MECHANISM_ROUND ?>'
+                            }
+                            $('#votingMechanism').val(result.tournamentSettings.voting_mechanism)
+                            changeVotingMechanism(document.getElementById('votingMechanism'))
+                            $('#maxVotes').val(result.tournamentSettings.max_vote_value)
                         }
 
                         if (result.musicSettings.length > 0) {

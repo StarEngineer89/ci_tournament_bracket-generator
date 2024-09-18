@@ -385,3 +385,45 @@ let toggleAvailability = (checkbox) => {
         $('.endAv').attr('disabled', true);
     }
 }
+
+var changeEvaluationMethod = (element) => {
+    // EVALUATION_METHOD_MANUAL = m
+    // EVALUATION_METHOD_VOTING = v
+    if ($(element).val() == "m") {
+        $('.voting-settings-panel').addClass('d-none')
+        $('.evaluation-method-manual-hint').removeClass('d-none')
+        $('.evaluation-method-voting-hint').addClass('d-none')
+    } else {
+        $('.voting-settings-panel').removeClass('d-none')
+        $('.evaluation-method-manual-hint').addClass('d-none')
+        $('.evaluation-method-voting-hint').removeClass('d-none')
+    }
+}
+
+var changeVotingAccessbility = (element) => {
+    // EVALUATION_VOTING_RESTRICTED = 1
+    // EVALUATION_VOTING_UNRESTRICTED = 0
+    if (parseInt($(element).val()) == 1) {
+        $('.evaluation-vote-restricted').removeClass('d-none')
+        $('.evaluation-vote-unrestricted').addClass('d-none')
+    } else {
+        $('.evaluation-vote-restricted').addClass('d-none')
+        $('.evaluation-vote-unrestricted').removeClass('d-none')
+    }
+}
+
+var changeVotingMechanism = (element) => {
+    // EVALUATION_VOTING_MECHANISM_ROUND = 1
+    // EVALUATION_VOTING_MECHANISM_MAXVOTE = 0
+    if (parseInt($(element).val()) == 1) {
+        $('.max-vote-setting').addClass('d-none')
+        $('.evaluation-vote-round').removeClass('d-none')
+        $('.evaluation-vote-max').addClass('d-none')
+        $('#maxVotes').attr('required', false)
+    } else {
+        $('.max-vote-setting').removeClass('d-none')
+        $('.evaluation-vote-round').addClass('d-none')
+        $('.evaluation-vote-max').removeClass('d-none')
+        $('#maxVotes').attr('required', true)
+    }
+}
