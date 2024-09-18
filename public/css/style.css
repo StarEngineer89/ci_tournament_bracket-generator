@@ -163,10 +163,31 @@
   position: absolute;
   right: 0;
   font-size: 0.85em;
-  /* min-height: 42px; */
-  padding: 0 10px;
+  padding: 0 5px;
   background: #fad684;
-  line-height: 38px;
+  line-height: 26px;
+  text-align: center;
+}
+.brackets div.bracketbox span.score:after {
+  content: 'score';
+  display: table-caption;
+  line-height: 12px;
+  font-size: 0.8em;
+}
+.brackets div.bracketbox span.votes {
+  position: absolute;
+  right: 32px;
+  font-size: 0.85em;
+  padding: 0 5px;
+  background: #fdd9fd;
+  line-height: 26px;
+  text-align: center;
+}
+.brackets div.bracketbox span.votes:after {
+  content: 'votes';
+  display: table-caption;
+  line-height: 12px;
+  font-size: 0.8em;
 }
 .brackets div.bracketbox span.name {
   padding: 0 10px;
@@ -219,7 +240,7 @@
 }
 
 .brackets>.groups>div {
-  width: 190px;
+  width: 220px;
 }
 
 .brackets>div div.final {
@@ -258,7 +279,7 @@
 .brackets>div .final > span {
   border: 1px solid #000;
   background-color: #fff;
-  min-width: 150px;
+  min-width: 180px;
   line-height: 38px;
 }
 

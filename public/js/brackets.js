@@ -48,7 +48,7 @@ $(document).on('ready', function () {
     function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
-        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 190 * groupCount + "px" + '"></div>'),
+        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 220 * groupCount + "px" + '"></div>'),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
 
         // document.getElementById('brackets').style.width = 170 * (groupCount + 1) + 'px';
@@ -77,6 +77,9 @@ $(document).on('ready', function () {
                 var scoreBox = document.createElement('span')
                 scoreBox.classList.add('score')
 
+                var votesBox = document.createElement('span')
+                votesBox.classList.add('votes')
+
                 var pidBox = document.createElement('span')
                 pidBox.classList.add('p-id')
 
@@ -103,6 +106,10 @@ $(document).on('ready', function () {
                     nameSpan.setAttribute('data-bs-title', teams[0].name)
                     nameSpan.textContent = teams[0].name;
                     teama.appendChild(nameSpan)
+
+                    var votes = votesBox.cloneNode(true)
+                    votes.textContent = 0
+                    teama.appendChild(votes)
 
                     var score = scoreBox.cloneNode(true)
                     var scorePoint = scoreBracket * (g - 1)
@@ -144,6 +151,10 @@ $(document).on('ready', function () {
                     nameSpan.setAttribute('data-bs-title', teams[1].name)
                     nameSpan.textContent = teams[1].name
                     teamb.appendChild(nameSpan)
+
+                    var votes = votesBox.cloneNode(true)
+                    votes.textContent = 0
+                    teamb.appendChild(votes)
 
                     var score = scoreBox.cloneNode(true)
                     var scorePoint = scoreBracket * (g - 1)
@@ -569,6 +580,11 @@ $(document).on('ready', function () {
                 pidBox.classList.add('p-id')
                 pidBox.textContent = parseInt(ele.data('p_order')) + 1
                 $(next_bracketObj).prepend(pidBox)
+
+                votesBox = document.createElement('span')
+                votesBox.classList.add('votes')
+                votesBox.textContent = 0
+                $(next_bracketObj).append(votesBox)
 
                 if (isScoreEnabled) {
                     scoreBox = document.createElement('span')
