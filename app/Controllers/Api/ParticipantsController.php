@@ -61,9 +61,15 @@ class ParticipantsController extends BaseController
     public function updateParticipant($id)
     {
         $participant = $this->participantsModel->find($id);
+        
         if($this->request->getPost('name')) {
             $participant['name'] = $this->request->getPost('name');
         }
+
+        if($this->request->getPost('votes')) {
+            $participant['votes'] = intval($participant['votes']) + 1;
+        }
+
         $path = WRITEPATH . 'uploads/';
 		$file = $this->request->getFile('image');
         if($file){
@@ -76,7 +82,6 @@ class ParticipantsController extends BaseController
                 foreach($brackets as $bracket){
                     $teamnames = json_decode($bracket['teamnames'], true);
                     $temp = [];
-                    log_message('debug', print_r($teamnames, true));
                     foreach($teamnames as $teamname){
     
                         if($teamname && $teamname['id'] == $participant['id']){
@@ -90,13 +95,13 @@ class ParticipantsController extends BaseController
                 }
             }
         }
+        
         if($this->request->getPost('action') == 'removeImage'){
             $participant['image'] = '';
             $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id']])->findAll();
             foreach($brackets as $bracket){
                 $teamnames = json_decode($bracket['teamnames'], true);
                 $temp = [];
-                log_message('debug', print_r($teamnames, true));
                 foreach($teamnames as $teamname){
 
                     if($teamname && $teamname['id'] == $participant['id']){

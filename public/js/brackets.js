@@ -108,8 +108,21 @@ $(document).on('ready', function () {
                     teama.appendChild(nameSpan)
 
                     var votes = votesBox.cloneNode(true)
-                    votes.textContent = 0
+                    votes.dataset.id = teama.dataset.id
+                    votes.textContent = teams[0].votes ? teams[0].votes : 0
                     teama.appendChild(votes)
+
+                    // Set up the tooltip with HTML content (a button)
+                    
+                    votes.setAttribute('data-bs-toggle', 'tooltip');
+                    votes.setAttribute('title', 'Click to Vote a participant');
+
+                    // Initialize the tooltip using JavaScript
+                    const tooltip = new bootstrap.Tooltip(votes);
+
+                    votes.addEventListener('click', (event) => {
+                        submitVote(event)
+                    })
 
                     var score = scoreBox.cloneNode(true)
                     var scorePoint = scoreBracket * (g - 1)
@@ -153,8 +166,20 @@ $(document).on('ready', function () {
                     teamb.appendChild(nameSpan)
 
                     var votes = votesBox.cloneNode(true)
-                    votes.textContent = 0
+                    votes.dataset.id = teamb.dataset.id
+                    votes.textContent = teams[1].votes ? teams[1].votes : 0
                     teamb.appendChild(votes)
+
+                    // Set up the tooltip with HTML content (a button)
+                    votes.setAttribute('data-bs-toggle', 'tooltip');
+                    votes.setAttribute('title', 'Click to Vote a participant');
+
+                    // Initialize the tooltip using JavaScript
+                    const tooltip = new bootstrap.Tooltip(votes);
+
+                    votes.addEventListener('click', (event) => {
+                        submitVote(event)
+                    })
 
                     var score = scoreBox.cloneNode(true)
                     var scorePoint = scoreBracket * (g - 1)
@@ -810,6 +835,37 @@ function removeImage(e, element_id){
         success: function (result) {
             ws.send('marked!')
             loadBrackets();
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function () {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+}
+
+let submitVote = (event) => {
+    if (hasVote) {
+        return false
+    }
+
+    var element_id = $(event.target).data('id')
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/participants/update/' + element_id,
+        data: {
+            'votes': true,
+        },
+        dataType: "JSON",
+        success: function (result) {
+            $('span[data-id="' + result.data.id + '"] .votes').each((i, element) => {
+                $(element).text(result.data.votes)
+            })
+
+            // triggerElement.parent().parent().remove();
+            ws.send('Vote the participant!');
         },
         error: function (error) {
             console.log(error);

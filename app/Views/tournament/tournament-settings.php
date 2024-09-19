@@ -151,7 +151,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-6 form-check ps-2">
+            <div class="col-md-4 col-sm-6 form-check ps-2">
                 <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" name="increment_score_enabled" onChange="toggleIncrementScore(this)" checked>
                 <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
             </div>
