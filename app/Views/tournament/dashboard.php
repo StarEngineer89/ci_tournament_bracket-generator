@@ -628,6 +628,18 @@ $(document).ready(function() {
                                 $('#incrementScore').attr('disabled', true)
                                 $('#incrementScore').val(result.tournamentSettings.increment_score)
                             }
+
+                            if (result.tournamentSettings.increment_score_type == '<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>') {
+                                $('#scoreOptions #incrementPlus').prop('checked', true)
+                                $('#scoreOptions #incrementMultiply').prop('checked', false)
+                                $('.enable-increamentscoreoption-hint .plus').removeClass('d-none')
+                                $('.enable-increamentscoreoption-hint .multiply').addClass('d-none')
+                            } else {
+                                $('#scoreOptions #incrementPlus').prop('checked', false)
+                                $('#scoreOptions #incrementMultiply').prop('checked', true)
+                                $('.enable-increamentscoreoption-hint .plus').addClass('d-none')
+                                $('.enable-increamentscoreoption-hint .multiply').removeClass('d-none')
+                            }
                             toggleIncrementScore(document.getElementById('enableIncrementScore'))
 
                             toggleScoreOption(document.getElementById('enableScoreOption'))

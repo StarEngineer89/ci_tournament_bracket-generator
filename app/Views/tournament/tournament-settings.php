@@ -26,6 +26,42 @@
     </div>
 </div>
 
+<div class="form-check border-bottom mb-3 pb-3">
+    <div class="ps-2">
+        <input type="checkbox" class="form-check-input enable-availability" name="availability" id="enableAvailability" onChange="toggleAvailability(this)" checked>
+        <label class="form-check-label" for="enableAvailability">
+            <h6>Availability</h6>
+        </label>
+        <div class="availability-option">
+            <div class="availability-hint form-text">Specify tournament availability window.</div>
+
+            <div class="row mt-3">
+                <div class="col-6">
+                    <div class="input-group" id="startAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                        <div class="input-group-text">Start</div>
+                        <input type="text" name="startAvPicker" class="form-control datetime startAv" id="startAvPickerInput" required>
+                        <span class="input-group-text" data-td-target="#startAvPicker" data-td-toggle="datetimepicker">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="input-group" id="endAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                        <div class="input-group-text">End</div>
+                        <input type="text" name="endAvPicker" class="form-control datetime endAv" id="endAvPickerInput" required>
+                        <span class="input-group-text" data-td-target="#endAvPicker" data-td-toggle="datetimepicker">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                    </div>
+                    <div class="invalid-feedback d-none" id="stop-time-error-0">Stop time must be greater than start time.</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="border-bottom mb-3 ps-2 pb-3">
     <div class="row g-3 align-items-center">
         <div class="col-auto">
@@ -39,8 +75,10 @@
         </div>
         <div class="evaluation-method-hint form-text ps-3">Determine how tournament bracket participants advance through the rounds.</div>
         <div class="evaluation-method-manual-hint form-text mb-1 ps-3">Tournament host elects the winning bracket participants of each round.</div>
-        <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none">Winning participants are determined through a consensus. The voting period remains open and concludes once the tournament availability window ends.
-            Voting is determined by the action "Vote this participant" available in the tournament.</div>
+        <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none">
+            Winning participants are determined through a consensus. The voting period remains open and concludes once the tournament availability window ends.
+            Voting is determined by the action (+) available on each participant in the tournament.
+        </div>
     </div>
 
     <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
@@ -97,42 +135,6 @@
     </div>
 </div>
 
-<div class="form-check border-bottom mb-3 pb-3">
-    <div class="ps-2">
-        <input type="checkbox" class="form-check-input enable-availability" name="availability" id="enableAvailability" onChange="toggleAvailability(this)" checked>
-        <label class="form-check-label" for="enableAvailability">
-            <h6>Availability</h6>
-        </label>
-        <div class="availability-option">
-            <div class="availability-hint form-text">Specify tournament availability window.</div>
-
-            <div class="row mt-3">
-                <div class="col-6">
-                    <div class="input-group" id="startAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
-                        <div class="input-group-text">Start</div>
-                        <input type="text" name="startAvPicker" class="form-control datetime startAv" id="startAvPickerInput" required>
-                        <span class="input-group-text" data-td-target="#startAvPicker" data-td-toggle="datetimepicker">
-                            <i class="fas fa-calendar"></i>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="col-6">
-                    <div class="input-group" id="endAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
-                        <div class="input-group-text">End</div>
-                        <input type="text" name="endAvPicker" class="form-control datetime endAv" id="endAvPickerInput" required>
-                        <span class="input-group-text" data-td-target="#endAvPicker" data-td-toggle="datetimepicker">
-                            <i class="fas fa-calendar"></i>
-                        </span>
-                    </div>
-                    <div class="invalid-feedback d-none" id="stop-time-error-0">Stop time must be greater than start time.</div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="form-check mb-3">
     <div class="ps-2">
         <input type="checkbox" class="form-check-input" name="score_enabled" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
@@ -156,15 +158,32 @@
                 <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
             </div>
             <div class="col-3 ms-1">
-                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" required>
+                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" step=".01" required>
+            </div>
+            <div class="col-auto">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="increment_score_type" id="incrementPlus" value="<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>" onchange="changeIncrementScoreType(this)">
+                    <label class="form-check-label" for="incrementPlus">Plus</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="increment_score_type" id="incrementMultiply" value="<?= TOURNAMENT_SCORE_INCREMENT_MULTIPLY ?>" onchange="changeIncrementScoreType(this)">
+                    <label class="form-check-label" for="incrementMultiply">Multiply</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="col-form-label">&nbsp;</label>
+                </div>
             </div>
         </div>
         <div class="enable-increamentscoreoption-hint form-text">
             <p>Specify an increment the score should increase by for each round.</p>
-            <p>
+            <p class="plus">
                 For example, if winning participants attain 100 points in their bracket in round 1, and an increment of 200 is specified, then in round 2, winning participants will attain 300 points, and in round 3 winning participants will attain 500 points, etc.
                 In this case, the cumulative result would be accumulated each round as follows:
                 100 + 300 + ...
+            </p>
+            <p class="multiply d-none">
+                For example, if winning participants attain 100 points in their bracket in round 1, and a multiplier of 1.5 is specified, then in round 2, winning participants will attain 150 points (100 * 1.5 => 150), and in round 3 winning participants will attain 225 points (150 * 1.5 => 225), etc.
+                In this case, the cumulative result would be accumulated each round as follows: 100 (round1) + 250 (round1 + round2) + 475 (round1 + round2 + round3) + ...
             </p>
         </div>
     </div>

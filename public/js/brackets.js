@@ -124,19 +124,38 @@ $(document).on('ready', function () {
                         submitVote(event)
                     })
 
-                    var score = scoreBox.cloneNode(true)
-                    var scorePoint = scoreBracket * (g - 1)
-                    for (round_i = 0; round_i < g - 1; round_i++) {
-                        scorePoint += incrementScore * round_i
-                    }
-
                     if (teams[0].id == gg.winner) {
                         teama.classList.add('winner');
-                        scorePoint += scoreBracket
-                        scorePoint += incrementScore * (g - 1)
                     }
 
                     if (isScoreEnabled) {
+                        var score = scoreBox.cloneNode(true)
+                        var scorePoint = 0
+                        if (incrementScoreType == 'p') {
+                            for (round_i = 0; round_i < g - 1; round_i++) {
+                                scorePoint += scoreBracket
+                                scorePoint += incrementScore * round_i
+                            }
+
+                            if (teams[0].id == gg.winner) {
+                                scorePoint += scoreBracket
+                                scorePoint += incrementScore * (g - 1)
+                            }
+                        } else {
+                            scorePoint += scoreBracket
+                            if (g == 1 && teams[0].id !== gg.winner) {
+                                scorePoint = 0
+                            }
+
+                            for (round_i = 0; round_i < g - 2; round_i++) {
+                                scorePoint += scorePoint * incrementScore 
+                            }
+                            
+                            if (g > 1 && teams[0].id == gg.winner) {
+                                scorePoint += scorePoint * incrementScore
+                            }
+                        }
+                    
                         score.textContent = scorePoint
                         teama.appendChild(score)
                     }
@@ -181,19 +200,38 @@ $(document).on('ready', function () {
                         submitVote(event)
                     })
 
-                    var score = scoreBox.cloneNode(true)
-                    var scorePoint = scoreBracket * (g - 1)
-                    for (round_i = 0; round_i < g - 1; round_i++) {
-                        scorePoint += incrementScore * round_i
-                    }
-
                     if (teams[1].id == gg.winner) {
                         teamb.classList.add('winner');
-                        scorePoint += scoreBracket
-                        scorePoint += incrementScore * (g - 1)
                     }
 
                     if (isScoreEnabled) {
+                        var score = scoreBox.cloneNode(true)
+                        var scorePoint = 0
+                        if (incrementScoreType == 'p') {
+                            for (round_i = 0; round_i < g - 1; round_i++) {
+                                scorePoint += scoreBracket
+                                scorePoint += incrementScore * round_i
+                            }
+
+                            if (teams[1].id == gg.winner) {
+                                scorePoint += scoreBracket
+                                scorePoint += incrementScore * (g - 1)
+                            }
+                        } else {
+                            scorePoint += scoreBracket
+                            if (g == 1 && teams[1].id !== gg.winner) {
+                                scorePoint = 0
+                            }
+
+                            for (round_i = 0; round_i < g - 2; round_i++) {
+                                scorePoint += scorePoint * incrementScore
+                            }
+                            
+                            if (g > 1 && teams[1].id == gg.winner) {
+                                scorePoint += scorePoint * incrementScore
+                            }
+                        }
+                    
                         score.textContent = scorePoint
                         teamb.appendChild(score)
                     }
@@ -590,10 +628,18 @@ $(document).on('ready', function () {
                     var scoreBox = document.createElement('span')
                     scoreBox.classList.add('score')
                     var scorePoint = 0
-                    for (round_i = 0; round_i < parseInt(ele.data('round')); round_i++) {
+                    if (incrementScoreType == 'p') {
+                        for (round_i = 0; round_i < parseInt(ele.data('round')); round_i++) {
+                            scorePoint += scoreBracket
+                            scorePoint += incrementScore * round_i
+                        }
+                    } else {
                         scorePoint += scoreBracket
-                        scorePoint += incrementScore * round_i
+                        for (round_i = 1; round_i < parseInt(ele.data('round')); round_i++) {
+                            scorePoint += scorePoint * incrementScore
+                        }
                     }
+                    
                     scoreBox.textContent = scorePoint
                     ele.append(scoreBox)
                 }
@@ -670,7 +716,7 @@ $(document).on('ready', function () {
             type: "PUT",
             url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
             contentType: "application/json",
-            data: JSON.stringify({ winner: '' }),
+            data: JSON.stringify({ action_code: unmarkWinnerActionCode, participant: opt.$trigger.data('id')}),
             success: function (result) {
                 ws.send('unmarked!');
                 ele.find('.score').remove()
@@ -678,13 +724,23 @@ $(document).on('ready', function () {
                 if (isScoreEnabled) {
                     var scoreBox = document.createElement('span')
                     scoreBox.classList.add('score')
-                    var scorePoint = scoreBracket * (parseInt(ele.data('round')) - 1)
-                    for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
-                        scorePoint += incrementScore * round_i
+                    var scorePoint = 0
+                    if (incrementScoreType == 'p') {
+                        for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
+                            scorePoint += scoreBracket
+                            scorePoint += incrementScore * round_i
+                        }
+                    } else {
+                        scorePoint += scoreBracket
+                        for (round_i = 1; round_i < parseInt(ele.data('round')) - 1; round_i++) {
+                            scorePoint += scorePoint * incrementScore
+                        }
                     }
+                    
                     scoreBox.textContent = scorePoint
                     ele.append(scoreBox)
                 }
+
 
                 if (document.getElementById('stopMusicButton')) {
                     document.getElementById('stopMusicButton').classList.add('d-none');
@@ -704,7 +760,7 @@ $(document).on('ready', function () {
             type: "PUT",
             url: apiURL + '/brackets/update/' + next_bracket,
             contentType: "application/json",
-            data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: '', action_code: unmarkWinnerActionCode, is_final: is_final }),
+            data: JSON.stringify({ index: index, participant: opt.$trigger.data('id') }),
             success: function (result) {
                 ws.send('unmarked!');
                 ele.parent().contents().removeClass('winner')

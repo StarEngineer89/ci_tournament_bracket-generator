@@ -273,10 +273,24 @@ let toggleScoreOption = (checkbox) => {
 let toggleIncrementScore = (checkbox) => {
     if ($(checkbox).is(':checked')) {
         $('#incrementScore').prop('disabled', false)
+        $('#incrementPlus').prop('disabled', false)
+        $('#incrementMultiply').prop('disabled', false)
         $('.enable-increamentscoreoption-hint').removeClass('d-none')
     } else {
         $('#incrementScore').prop('disabled', true)
+        $('#incrementPlus').prop('disabled', true)
+        $('#incrementMultiply').prop('disabled', true)
         $('.enable-increamentscoreoption-hint').addClass('d-none')
+    }
+}
+
+let changeIncrementScoreType = (radio) => {
+    if ($('input:radio[name="increment_score_type"]:checked').val() == 'p') {
+        $('.enable-increamentscoreoption-hint .plus').removeClass('d-none')
+        $('.enable-increamentscoreoption-hint .multiply').addClass('d-none')
+    } else {
+        $('.enable-increamentscoreoption-hint .plus').addClass('d-none')
+        $('.enable-increamentscoreoption-hint .multiply').removeClass('d-none')
     }
 }
 

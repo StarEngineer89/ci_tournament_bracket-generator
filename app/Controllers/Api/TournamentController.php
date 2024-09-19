@@ -89,6 +89,7 @@ class TournamentController extends BaseController
             'score_bracket' => $this->request->getPost('score_bracket'),
             'increment_score' => $this->request->getPost('increment_score'),
             'increment_score_enabled' => ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0,
+            'increment_score_type' => $this->request->getPost('increment_score_type'),
             'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0,
             'availability' => ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0,
             'available_start' => $this->request->getPost('startAvPicker'),
@@ -219,8 +220,21 @@ class TournamentController extends BaseController
         if ($this->request->getPost('score_enabled')) {
             $tournament['score_enabled'] = ($this->request->getPost('score_enabled') == 'on') ? 1 : 0;
         }
+
+        if ($this->request->getPost('score_bracket')) {
+            $tournament['score_bracket'] = $this->request->getPost('score_bracket');
+        }
+        
         if ($this->request->getPost('increment_score_enabled')) {
             $tournament['increment_score_enabled'] = ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
+        }
+
+        if ($this->request->getPost('increment_score')) {
+            $tournament['increment_score'] = $this->request->getPost('increment_score');
+        }
+        
+        if ($this->request->getPost('increment_score_type')) {
+            $tournament['increment_score_type'] = $this->request->getPost('increment_score_type');
         }
         
         if ($this->request->getPost('availability')) {

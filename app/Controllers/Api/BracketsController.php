@@ -46,11 +46,11 @@ class BracketsController extends BaseController
         $bracket = $this->bracketsModel->find($id);
         $teamnames = json_decode($bracket['teamnames']);
         $original = $teamnames;
+        
         if(isset($req->name)){
             $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
             if (isset($req->index)) {
                 if (!isset($req->participant))  {
-                    
                     if ($participant) {
                         $participant_id = $participant['id'];
                     } else {
@@ -72,16 +72,28 @@ class BracketsController extends BaseController
 
                 $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'image'=> $participant['image'], 'order' => $req->order];
 
-                $insert_data = array('teamnames' => json_encode($teamnames));
+                $bracket['teamnames'] = json_encode($teamnames);
 
                 $result['participant'] = $participant;
             }
 
-            if (!isset($insert_data)) {
-                $insert_data = $req;
+            $this->bracketsModel->save($bracket);
+        } else {
+            if (isset($req->index)) {
+                $teamnames[$req->index] = null;
+                $bracket['teamnames'] = json_encode($teamnames);
+                $this->bracketsModel->save($bracket);
             }
+        }
 
-            $this->bracketsModel->update($id, $insert_data);
+        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
+            $bracket['winner'] = $req->winner;
+            $this->bracketsModel->save($bracket);
+        }
+
+        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
+            $bracket['winner'] = null;
+            $this->bracketsModel->save($bracket);
         }
         /** Change the tournament status
          *  If mark as winner in final, set status to completed
