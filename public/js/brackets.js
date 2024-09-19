@@ -847,10 +847,6 @@ function removeImage(e, element_id){
 }
 
 let submitVote = (event) => {
-    if (hasVote) {
-        return false
-    }
-
     var element_id = $(event.target).data('id')
     $.ajax({
         type: "POST",
