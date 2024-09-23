@@ -138,10 +138,15 @@ class ParticipantsController extends BaseController
     
     public function clearParticipants()
     {
-        if ($tournament_id = $this->request->getGet('t_id')) {
+        if ($tournament_id = $this->request->getPost('t_id')) {
             $this->participantsModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $tournament_id])->delete();
         } else {
-            $this->participantsModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->delete();
+            if (auth()->user()) {
+                $this->participantsModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->delete();
+            } else {
+                $hash = $this->request->getPost('hash');
+                $this->participantsModel->where(['sessionid' => $hash, 'tournament_id' => 0])->delete();
+            }
         }
         
 
