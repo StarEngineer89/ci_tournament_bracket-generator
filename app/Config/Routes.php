@@ -75,6 +75,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('get-list', 'Api\TournamentController::fetch');
         $routes->post('reuse-participants', 'Api\TournamentController::reuseParticipants');
         $routes->get('(:num)/get-participants', 'Api\TournamentController::getParticipants/$1');
+        $routes->post('vote', 'Api\TournamentController::saveVote');
     });
 
     $routes->group('notifications', static function ($routes) {

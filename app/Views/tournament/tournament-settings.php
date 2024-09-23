@@ -84,10 +84,10 @@
     <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
         <div class="row g-3 align-items-center">
             <div class="col-auto">
-                <label for="votingAccessbility" class="col-form-label">Voting Accessbility</label>
+                <label for="votingAccessbility" class="col-form-label">Voting Accessibility</label>
             </div>
             <div class="col-auto">
-                <select class="form-select" id="votingAccessbility" name="voting_accessibility" aria-label="voting Accessbility" onchange="changeVotingAccessbility(this)" required>
+                <select class="form-select" id="votingAccessbility" name="voting_accessibility" aria-label="voting Accessibility" onchange="changeVotingAccessbility(this)" required>
                     <option value="<?= EVALUATION_VOTING_RESTRICTED ?>" selected>Restricted</option>
                     <option value="<?= EVALUATION_VOTING_UNRESTRICTED  ?>">Unrestricted</option>
                 </select>
@@ -130,6 +130,15 @@
                 <div class="col-3">
                     <input type="number" name="max_vote_value" id="maxVotes" class="form-control" min="0">
                 </div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <input type="checkbox" class="form-check-input" name="voting_retain" id="retainVotesCheckbox">
+            <label class="form-check-label" for="retainVotesCheckbox">Retain vote count across rounds</label>
+            <div class="retain-votes-checkbox-hint form-text ps-3">
+                By default, the vote count will reset for each round.<br />
+                By enabling this option, the vote count is preserved and will instead accumulate each round.
             </div>
         </div>
     </div>

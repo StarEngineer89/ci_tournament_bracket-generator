@@ -98,6 +98,7 @@ class TournamentController extends BaseController
             'voting_accessibility' => $this->request->getPost('voting_accessibility'),
             'voting_mechanism' => $this->request->getPost('voting_mechanism'),
             'max_vote_value' => $this->request->getPost('max_vote_value'),
+            'voting_retain' => ($this->request->getPost('voting_retain') == 'on') ? 1 : 0
         ];
         
         $tournamentData = new \App\Entities\Tournament($data);
@@ -217,6 +218,7 @@ class TournamentController extends BaseController
         if ($this->request->getPost('shuffle_enabled')) {
             $tournament['shuffle_enabled'] = ($this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
         }
+
         if ($this->request->getPost('score_enabled')) {
             $tournament['score_enabled'] = ($this->request->getPost('score_enabled') == 'on') ? 1 : 0;
         }
@@ -262,6 +264,10 @@ class TournamentController extends BaseController
                 $tournament['voting_accessibility'] = null;
                 $tournament['voting_mechanism'] = null;
                 $tournament['max_vote_value'] = null;
+            }
+            
+            if ($this->request->getPost('voting_retain')) {
+                $tournament['voting_retain'] = ($this->request->getPost('voting_retain') == 'on') ? 1 : 0;
             }
         }
         
@@ -514,6 +520,7 @@ class TournamentController extends BaseController
         $history = $logActionsModel->getLogs()->where('tournament_id', $tournament_id)->findAll();
 
         $data = [];
+        $action = null;
         if ($history && count($history)) {
             foreach ($history as $row) {
                 $params = json_decode($row['params']);
@@ -547,6 +554,10 @@ class TournamentController extends BaseController
                     $tournament = $tournamentModel->find($tournament_id);
                     $tournamentName = $tournament['name'];
                     $action = "Tournament \"$tournamentName\" was reset.";
+                }
+
+                if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {
+                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no voted in round $params->round_no";
                 }
 
                 $data[] = [
@@ -705,5 +716,97 @@ class TournamentController extends BaseController
         }
 
         return json_encode($participants);
+    }
+
+    public function saveVote()
+    {
+        // Check if it's an AJAX request
+        if ($this->request->isAJAX()) {
+            $voteData = $this->request->getPost(); // Get the posted data
+
+            $voteModel = model('\App\Models\VotesModel');
+            $participantsModel = model('\App\Models\ParticipantModel');
+            
+            // Validation (optional, based on your form fields)
+            $validation = \Config\Services::validation();
+            $validation->setRules([
+                'user_id' => 'required|integer',
+                'tournament_id' => 'required|integer',
+                'participant_id' => 'required|integer',
+                'bracket_id' => 'required|integer',
+                'round_no' => 'required|integer'
+            ]);
+            if (auth()->user()) {
+                $voteData['user_id'] = auth()->user()->id;
+            } else {
+                $voteData['user_id'] = 0;
+            }
+
+            if (!$validation->run($voteData)) {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                                      ->setJSON(['status' => 'error', 'message' => $validation->getErrors()]);
+            }
+
+            //Check if there is the data saved before
+            if (auth()->user()) {
+                $prevVote = $voteModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $voteData['tournament_id'], 'bracket_id' => $voteData['bracket_id']])->first();
+                if ($prevVote && $prevVote['participant_id'] == $voteData['participant_id']) {
+                    return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                                      ->setJSON(['status' => 'error', 'message' => 'You have already voted for this participant.']);
+                }
+
+                if ($prevVote && $prevVote['participant_id'] !== $voteData['participant_id']) {
+                    $voteModel->delete($prevVote['id']);
+                }
+            }
+
+            $db = \Config\Database::connect();
+            $dbDriver = $db->DBDriver;
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+            }
+
+            // Save to database
+            if ($voteModel->save($voteData)) {
+                /** Save the record to actions log table */
+                $logActionsModel = model('\App\Models\LogActionsModel');
+                $insert_data = ['tournament_id' => $voteData['tournament_id'], 'action' => BRACKET_ACTIONCODE_VOTE];
+                if (auth()->user()) {
+                    $insert_data['user_id'] = auth()->user()->id;
+                } else {
+                    $insert_data['user_id'] = 0;
+                }
+
+                $data = [];
+                $data['bracket_no'] = $voteData['bracket_id'];
+                $data['round_no'] = $voteData['round_no'];
+                $participant = $participantsModel->find($voteData['participant_id']);
+                $data['participants'] = [$participant['name']];
+                $insert_data['params'] = json_encode($data);
+
+                $logActionsModel->insert($insert_data);
+
+                /** Get Votes count in a round */
+                $search_params = array_diff_key($voteData, array('bracket_id' => true, 'user_id' => true));
+                $votes = $voteModel->where($search_params)->findAll();
+
+                $voteData['votes'] = count($votes);
+                
+                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                      ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'data' => $voteData]);
+            } else {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                                      ->setJSON(['status' => 'error', 'message' => 'Failed to save vote']);
+            }
+            
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+            }
+
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 }

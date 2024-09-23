@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class TournamentModel extends Model
+class VotesModel extends Model
 {
-    protected $table            = 'tournaments';
+    protected $table            = 'votes';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_enabled', 'score_bracket', 'increment_score_enabled', 'increment_score', 'increment_score_type', 'visibility', 'availability', 'available_start', 'available_end', 'evaluation_method', 'voting_accessibility', 'voting_mechanism', 'max_vote_value', 'voting_retain'];
+    protected $allowedFields    = ['user_id', 'tournament_id', 'bracket_id', 'participant_id', 'round_no'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

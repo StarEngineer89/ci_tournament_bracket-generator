@@ -180,6 +180,29 @@ class TournamentController extends BaseController
         }
         /** End check */
         
+        /** 
+         * Check if vote is available 
+         */
+        $votingEnabled = false;
+        if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING) {
+            if ($tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED) {
+                if (auth()->user()) {
+                    $votingEnabled = true;
+                } else {
+                    $shareSettings = $shareSettingsModel->where(['tournament_id' => $id])->findAll();
+                    foreach ($shareSettings as $share) {
+                        if ($share['target'] == SHARE_TO_PUBLIC) {
+                            $votingEnabled = true;
+                        }
+                    }
+                }
+            }
+
+            if ($tournament['voting_accessibility'] == EVALUATION_VOTING_UNRESTRICTED) {
+                $votingEnabled = true;
+            }
+        }
+
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
         
         if (!$brackets) {
@@ -213,7 +236,7 @@ class TournamentController extends BaseController
 
         $musicSettings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings, 'editable' => $editable]);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled]);
     }
     
     public function viewShared($token)

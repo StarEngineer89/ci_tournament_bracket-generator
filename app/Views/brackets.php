@@ -25,6 +25,7 @@ const isScoreEnabled = '<?= $tournament['score_enabled'] ?>';
 const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['score_bracket'] : 0 ?>)
 const incrementScore = Number(<?= ($tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>)
 const incrementScoreType = '<?= $tournament['increment_score_type'] ?>'
+let votingEnabled = <?= $votingEnabled ? $votingEnabled : 0 ?>
 </script>
 <script type="text/javascript">
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
@@ -179,6 +180,20 @@ $(document).ready(function() {
         location.href = leaveUrl;
     })
     <?php endif;?>
+
+    if (hasEditPermission) {
+        $(document).on("click", function(e) {
+            if (!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
+        })
+        $(document).on("click", ".p-image img", function(e) {
+            var pid = $(this).data('pid');
+            if ($(this).hasClass('temp')) {
+                $("#image_" + pid).trigger('click');
+            } else {
+                $(this).parent().addClass('active');
+            }
+        })
+    }
 })
 </script>
 

@@ -668,6 +668,12 @@ $(document).ready(function() {
                             $('#votingMechanism').val(result.tournamentSettings.voting_mechanism)
                             changeVotingMechanism(document.getElementById('votingMechanism'))
                             $('#maxVotes').val(result.tournamentSettings.max_vote_value)
+
+                            if (result.tournamentSettings.voting_retain == 1) {
+                                $('#retainVotesCheckbox').prop('checked', true)
+                            } else {
+                                $('#retainVotesCheckbox').prop('checked', false)
+                            }
                         }
 
                         if (result.musicSettings.length > 0) {

@@ -66,10 +66,6 @@ class ParticipantsController extends BaseController
             $participant['name'] = $this->request->getPost('name');
         }
 
-        if($this->request->getPost('votes')) {
-            $participant['votes'] = intval($participant['votes']) + 1;
-        }
-
         $path = WRITEPATH . 'uploads/';
 		$file = $this->request->getFile('image');
         if($file){

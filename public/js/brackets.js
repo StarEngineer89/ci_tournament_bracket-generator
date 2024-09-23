@@ -48,7 +48,7 @@ $(document).on('ready', function () {
     function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
-        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 220 * groupCount + "px" + '"></div>'),
+        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 240 * groupCount + "px" + '"></div>'),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
 
         // document.getElementById('brackets').style.width = 170 * (groupCount + 1) + 'px';
@@ -80,6 +80,13 @@ $(document).on('ready', function () {
                 var votesBox = document.createElement('span')
                 votesBox.classList.add('votes')
 
+                var voteBtnTemplate = document.createElement('button')
+                voteBtnTemplate.classList.add('vote-btn')
+                var voteBtnIcon = document.createElement('span')
+                voteBtnIcon.classList.add('fa')
+                voteBtnIcon.classList.add('fa-plus')
+                voteBtnTemplate.appendChild(voteBtnIcon)
+
                 var pidBox = document.createElement('span')
                 pidBox.classList.add('p-id')
 
@@ -107,26 +114,13 @@ $(document).on('ready', function () {
                     nameSpan.textContent = teams[0].name;
                     teama.appendChild(nameSpan)
 
-                    var votes = votesBox.cloneNode(true)
-                    votes.dataset.id = teama.dataset.id
-                    votes.textContent = teams[0].votes ? teams[0].votes : 0
-                    teama.appendChild(votes)
-
-                    // Set up the tooltip with HTML content (a button)
-                    
-                    votes.setAttribute('data-bs-toggle', 'tooltip');
-                    votes.setAttribute('title', 'Click to Vote a participant');
-
-                    // Initialize the tooltip using JavaScript
-                    const tooltip = new bootstrap.Tooltip(votes);
-
-                    votes.addEventListener('click', (event) => {
-                        submitVote(event)
-                    })
-
                     if (teams[0].id == gg.winner) {
                         teama.classList.add('winner');
                     }
+
+                    var wrapper = document.createElement('span')
+                    wrapper.classList.add('score-wrapper')
+                    wrapper.classList.add('d-flex')
 
                     if (isScoreEnabled) {
                         var score = scoreBox.cloneNode(true)
@@ -157,8 +151,37 @@ $(document).on('ready', function () {
                         }
                     
                         score.textContent = scorePoint
-                        teama.appendChild(score)
+                        wrapper.appendChild(score)
                     }
+                    
+                    var votes = votesBox.cloneNode(true)
+                    votes.textContent = teams[0].votes ? teams[0].votes : 0
+                    // Set up the tooltip with HTML content (a button)
+                    votes.setAttribute('data-bs-toggle', 'tooltip');
+                    votes.setAttribute('title', 'Click to Vote a participant');
+                    wrapper.appendChild(votes)
+
+                    // Initialize the tooltip using JavaScript
+                    const tooltip = new bootstrap.Tooltip(votes);
+
+                    // Check if vote history is existing
+                    let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
+                    let vp_id = window.localStorage.getItem(storage_key)
+                    if (vp_id && vp_id == teams[0].id) {
+                        teams[0].voted = true
+                    }
+
+                    if (votingEnabled && !teams[0].voted) {
+                        var voteBtn = voteBtnTemplate.cloneNode(true)
+                        voteBtn.dataset.id = teama.dataset.id
+
+                        voteBtn.addEventListener('click', (event) => {
+                            submitVote(event)
+                        })
+                        wrapper.appendChild(voteBtn)
+                    }
+
+                    teama.appendChild(wrapper)
                 }
 
                 var teamb = obj.cloneNode(true);
@@ -184,25 +207,13 @@ $(document).on('ready', function () {
                     nameSpan.textContent = teams[1].name
                     teamb.appendChild(nameSpan)
 
-                    var votes = votesBox.cloneNode(true)
-                    votes.dataset.id = teamb.dataset.id
-                    votes.textContent = teams[1].votes ? teams[1].votes : 0
-                    teamb.appendChild(votes)
-
-                    // Set up the tooltip with HTML content (a button)
-                    votes.setAttribute('data-bs-toggle', 'tooltip');
-                    votes.setAttribute('title', 'Click to Vote a participant');
-
-                    // Initialize the tooltip using JavaScript
-                    const tooltip = new bootstrap.Tooltip(votes);
-
-                    votes.addEventListener('click', (event) => {
-                        submitVote(event)
-                    })
-
                     if (teams[1].id == gg.winner) {
                         teamb.classList.add('winner');
                     }
+
+                    var wrapper = document.createElement('span')
+                    wrapper.classList.add('score-wrapper')
+                    wrapper.classList.add('d-flex')
 
                     if (isScoreEnabled) {
                         var score = scoreBox.cloneNode(true)
@@ -233,8 +244,38 @@ $(document).on('ready', function () {
                         }
                     
                         score.textContent = scorePoint
-                        teamb.appendChild(score)
+                        wrapper.appendChild(score)
                     }
+
+                    var votes = votesBox.cloneNode(true)
+                    votes.textContent = teams[1].votes ? teams[1].votes : 0
+                    // Set up the tooltip with HTML content (a button)
+                    votes.setAttribute('data-bs-toggle', 'tooltip');
+                    votes.setAttribute('title', 'Click to Vote a participant');
+                    wrapper.appendChild(votes)
+
+                    // Initialize the tooltip using JavaScript
+                    const tooltip = new bootstrap.Tooltip(votes);
+
+                    // Check if vote history is existing
+                    let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
+                    let vp_id = window.localStorage.getItem(storage_key)
+                    if (vp_id && vp_id == teams[1].id) {
+                        teams[1].voted = true
+                    }
+
+                    // Add "Vote" button
+                    if (votingEnabled && !teams[1].voted) {
+                        var voteBtn = voteBtnTemplate.cloneNode(true)
+                        voteBtn.dataset.id = teamb.dataset.id
+                        wrapper.appendChild(voteBtn)
+
+                        voteBtn.addEventListener('click', (event) => {
+                            submitVote(event)
+                        })
+                    }
+
+                    teamb.appendChild(wrapper)
                 }
 
                 var bracket = document.createElement('div')
@@ -830,19 +871,7 @@ function adjustBracketsStyles() {
     })
   });
 }
-if(hasEditPermission){
-    $(document).on("click", function(e){
-        if(!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
-    })
-    $(document).on("click", ".p-image img", function(e){
-        var pid = $(this).data('pid');
-        if($(this).hasClass('temp')){
-            $("#image_" + pid).trigger('click');
-        }else{
-            $(this).parent().addClass('active');
-        }
-    })
-}
+
 function chooseImage(e, element_id){
     $("#image_" + element_id).trigger('click');
 }
@@ -903,18 +932,27 @@ function removeImage(e, element_id){
 }
 
 let submitVote = (event) => {
-    var element_id = $(event.target).data('id')
+    const participant_element = $(event.currentTarget).parents('.bracket-team')
     $.ajax({
         type: "POST",
-        url: apiURL + '/participants/update/' + element_id,
+        url: apiURL + '/tournaments/vote',
         data: {
-            'votes': true,
+            'tournament_id': tournament_id,
+            'participant_id': participant_element.data('id'),
+            'bracket_id': participant_element.data('bracket'),
+            'round_no': participant_element.data('round'),
         },
         dataType: "JSON",
         success: function (result) {
-            $('span[data-id="' + result.data.id + '"] .votes').each((i, element) => {
+            $('span[data-id="' + result.data.participant_id + '"] .votes').each((i, element) => {
                 $(element).text(result.data.votes)
             })
+
+            // Save vote history to local storage
+            const storage_key = 'vote_t' + tournament_id + '_n' + result.data.round_no + '_b' + result.data.bracket_id
+            window.localStorage.setItem(storage_key, result.data.participant_id)
+
+            loadBrackets()
 
             // triggerElement.parent().parent().remove();
             ws.send('Vote the participant!');
