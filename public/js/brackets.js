@@ -154,24 +154,25 @@ $(document).on('ready', function () {
                         wrapper.appendChild(score)
                     }
                     
-                    var votes = votesBox.cloneNode(true)
-                    votes.textContent = teams[0].votes ? teams[0].votes : 0
-                    // Set up the tooltip with HTML content (a button)
-                    votes.setAttribute('data-bs-toggle', 'tooltip');
-                    votes.setAttribute('title', 'Click to Vote a participant');
-                    wrapper.appendChild(votes)
-
-                    // Initialize the tooltip using JavaScript
-                    const tooltip = new bootstrap.Tooltip(votes);
-
-                    // Check if vote history is existing
-                    let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
-                    let vp_id = window.localStorage.getItem(storage_key)
-                    if (vp_id && vp_id == teams[0].id) {
-                        teams[0].voted = true
-                    }
-
                     if (votingEnabled && !teams[0].voted) {
+                        var votes = votesBox.cloneNode(true)
+                        votes.textContent = teams[0].votes ? teams[0].votes : 0
+                        // Set up the tooltip with HTML content (a button)
+                        votes.setAttribute('data-bs-toggle', 'tooltip');
+                        votes.setAttribute('title', 'Click to Vote a participant');
+                        wrapper.appendChild(votes)
+
+                        // Initialize the tooltip using JavaScript
+                        const tooltip = new bootstrap.Tooltip(votes);
+
+                        // Check if vote history is existing
+                        let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
+                        let vp_id = window.localStorage.getItem(storage_key)
+                        if (vp_id && vp_id == teams[0].id) {
+                            teams[0].voted = true
+                        }
+
+                    
                         var voteBtn = voteBtnTemplate.cloneNode(true)
                         voteBtn.dataset.id = teama.dataset.id
 
@@ -257,15 +258,15 @@ $(document).on('ready', function () {
                     // Initialize the tooltip using JavaScript
                     const tooltip = new bootstrap.Tooltip(votes);
 
-                    // Check if vote history is existing
-                    let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
-                    let vp_id = window.localStorage.getItem(storage_key)
-                    if (vp_id && vp_id == teams[1].id) {
-                        teams[1].voted = true
-                    }
-
-                    // Add "Vote" button
                     if (votingEnabled && !teams[1].voted) {
+                        // Check if vote history is existing
+                        let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
+                        let vp_id = window.localStorage.getItem(storage_key)
+                        if (vp_id && vp_id == teams[1].id) {
+                            teams[1].voted = true
+                        }
+
+                        // Add "Vote" button
                         var voteBtn = voteBtnTemplate.cloneNode(true)
                         voteBtn.dataset.id = teamb.dataset.id
                         wrapper.appendChild(voteBtn)

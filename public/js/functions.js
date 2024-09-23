@@ -393,6 +393,7 @@ let toggleAvailability = (checkbox) => {
         $('.availability-option').removeClass('d-none');
         $('.startAv').attr('disabled', false);
         $('.endAv').attr('disabled', false);
+        $('.evaluation-vote-round-availability-required').addClass('d-none')
     } else {
         $('.availability-option').addClass('d-none');
         $('.startAv').attr('disabled', true);
@@ -407,10 +408,14 @@ var changeEvaluationMethod = (element) => {
         $('.voting-settings-panel').addClass('d-none')
         $('.evaluation-method-manual-hint').removeClass('d-none')
         $('.evaluation-method-voting-hint').addClass('d-none')
+        $('#enableAvailability').prop('required', false)
     } else {
         $('.voting-settings-panel').removeClass('d-none')
         $('.evaluation-method-manual-hint').addClass('d-none')
         $('.evaluation-method-voting-hint').removeClass('d-none')
+        if ($('#votingMechanism').val() == 1) {
+            $('#enableAvailability').prop('required', true)
+        }
     }
 }
 
@@ -438,11 +443,14 @@ var changeVotingMechanism = (element) => {
         /** Check if availability is enabled */
         if ($('#enableAvailability').is(':checked') == false) {
             $('.evaluation-vote-round-availability-required').removeClass('d-none')
+            $('#enableAvailability').prop('required', true)
         }
     } else {
         $('.max-vote-setting').removeClass('d-none')
         $('.evaluation-vote-round').addClass('d-none')
         $('.evaluation-vote-max').removeClass('d-none')
         $('#maxVotes').attr('required', true)
+        $('#enableAvailability').prop('required', false)
+        $('.evaluation-vote-round-availability-required').addClass('d-none')
     }
 }
