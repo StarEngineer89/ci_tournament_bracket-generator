@@ -256,7 +256,6 @@ class TournamentController extends BaseController
             if(time() - strtotime($settings['created_at']) > 24*60*60){
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "This link has been expired!"]);
-                log_message('debug', "This page has been expired.");
                 $shareSettingModel->where(['token'=> $token])->delete();
 
                 return redirect()->to('/gallery');
@@ -281,6 +280,25 @@ class TournamentController extends BaseController
             //$shareAccessModel->insert(['share_id' => $settings['id'], 'user_id' => 0]);
         }
         
+        /** 
+         * Check if vote is available 
+         */
+        $votingEnabled = false;
+        if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING) {
+            if ($tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED) {
+                if (auth()->user()) {
+                    $votingEnabled = true;
+                } else {
+                    if ($settings['target'] == SHARE_TO_PUBLIC) {
+                        $votingEnabled = true;
+                    }
+                }
+            }
+
+            if ($tournament['voting_accessibility'] == EVALUATION_VOTING_UNRESTRICTED) {
+                $votingEnabled = true;
+            }
+        }
 
         if (!$brackets) {
             if (empty(auth()->user()) || $tournament['user_id'] != auth()->user()->id) {
@@ -301,7 +319,7 @@ class TournamentController extends BaseController
         }
 
         $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings]);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings, 'votingEnabled' => $votingEnabled]);
     }
 
     public function export()

@@ -171,7 +171,7 @@
             </div>
             <div class="col-auto">
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="increment_score_type" id="incrementPlus" value="<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>" onchange="changeIncrementScoreType(this)">
+                    <input class="form-check-input" type="radio" name="increment_score_type" id="incrementPlus" value="<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>" onchange="changeIncrementScoreType(this)" checked>
                     <label class="form-check-label" for="incrementPlus">Plus</label>
                 </div>
                 <div class="form-check form-check-inline">
