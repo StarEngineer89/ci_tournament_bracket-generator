@@ -248,17 +248,17 @@ $(document).on('ready', function () {
                         wrapper.appendChild(score)
                     }
 
-                    var votes = votesBox.cloneNode(true)
-                    votes.textContent = teams[1].votes ? teams[1].votes : 0
-                    // Set up the tooltip with HTML content (a button)
-                    votes.setAttribute('data-bs-toggle', 'tooltip');
-                    votes.setAttribute('title', 'Click to Vote a participant');
-                    wrapper.appendChild(votes)
-
-                    // Initialize the tooltip using JavaScript
-                    const tooltip = new bootstrap.Tooltip(votes);
-
                     if (votingEnabled && !teams[1].voted) {
+                        var votes = votesBox.cloneNode(true)
+                        votes.textContent = teams[1].votes ? teams[1].votes : 0
+                        // Set up the tooltip with HTML content (a button)
+                        votes.setAttribute('data-bs-toggle', 'tooltip');
+                        votes.setAttribute('title', 'Click to Vote a participant');
+                        wrapper.appendChild(votes)
+
+                        // Initialize the tooltip using JavaScript
+                        const tooltip = new bootstrap.Tooltip(votes);
+                    
                         // Check if vote history is existing
                         let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
                         let vp_id = window.localStorage.getItem(storage_key)
