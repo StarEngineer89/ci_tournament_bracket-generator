@@ -696,3 +696,6 @@
 .participant-list{
   overflow-y: auto;
 }
+.evaluation-vote-round-availability-required {
+  color: red;
+}

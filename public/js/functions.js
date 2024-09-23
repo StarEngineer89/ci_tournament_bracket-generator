@@ -434,6 +434,11 @@ var changeVotingMechanism = (element) => {
         $('.evaluation-vote-round').removeClass('d-none')
         $('.evaluation-vote-max').addClass('d-none')
         $('#maxVotes').attr('required', false)
+
+        /** Check if availability is enabled */
+        if ($('#enableAvailability').is(':checked') == false) {
+            $('.evaluation-vote-round-availability-required').removeClass('d-none')
+        }
     } else {
         $('.max-vote-setting').removeClass('d-none')
         $('.evaluation-vote-round').addClass('d-none')

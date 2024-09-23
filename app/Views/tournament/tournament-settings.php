@@ -114,6 +114,9 @@
                     <option value="<?= EVALUATION_VOTING_MECHANISM_MAXVOTE  ?>">Max Votes</option>
                 </select>
             </div>
+            <div class="evaluation-vote-round-availability-required form-text mb-1 ps-3 d-none">
+                * Availability must be enabled to use this setting!
+            </div>
             <div class="evaluation-vote-round form-text mb-1 ps-3">
                 Winning participants automatically advance when the duration is reached and the voting period ends each round. Duration is determined by dividing the tournament availability window equally amongst all the rounds.
                 <br />
