@@ -527,7 +527,8 @@ class TournamentController extends BaseController
         $history = $logActionsModel->getLogs()->where('tournament_id', $tournament_id)->findAll();
 
         $data = [];
-        $action = null;
+        $type = null;
+        $description = null;
         if ($history && count($history)) {
             foreach ($history as $row) {
                 $params = json_decode($row['params']);
@@ -537,39 +538,47 @@ class TournamentController extends BaseController
                 }
                 
                 if ($row['action'] == BRACKET_ACTIONCODE_MARK_WINNER) {
-                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no marked as a winner in round $params->round_no";
+                    $type = 'Mark Winner';
+                    $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no marked as a winner in round $params->round_no";
                 }
 
                 if ($row['action'] == BRACKET_ACTIONCODE_UNMARK_WINNER) {
-                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no unmarked winner in round $params->round_no";
+                    $type = 'Unmark Winner';
+                    $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no unmarked winner in round $params->round_no";
                 }
 
                 if ($row['action'] == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
-                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no changed to the following Participant: \"$participants[1]\" in round $params->round_no";
+                    $type = 'Change Participant';
+                    $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no changed to the following Participant: \"$participants[1]\" in round $params->round_no";
                 }
 
                 if ($row['action'] == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
-                    $action = "Participant \"$participants[0]\" added in bracket #$params->bracket_no in round $params->round_no";
+                    $type = 'Add Participant';
+                    $description = "Participant \"$participants[0]\" added in bracket #$params->bracket_no in round $params->round_no";
                 }
 
                 if ($row['action'] == BRACKET_ACTIONCODE_DELETE) {
-                    $action = "Bracket #$params->bracket_no containing participants [\"$participants[0]\", \"$participants[1]\"] in round $params->round_no deleted";
+                    $type = 'Delete Bracket';
+                    $description = "Bracket #$params->bracket_no containing participants [\"$participants[0]\", \"$participants[1]\"] in round $params->round_no deleted";
                 }
 
                 if ($row['action'] == BRACKET_ACTIONCODE_CLEAR) {
                     $tournamentModel = model('\App\Models\TournamentModel');
                     $tournament = $tournamentModel->find($tournament_id);
                     $tournamentName = $tournament['name'];
-                    $action = "Tournament \"$tournamentName\" was reset.";
+                    $type = 'Reset';
+                    $description = "Tournament \"$tournamentName\" was reset.";
                 }
 
                 if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {
-                    $action = "Participant \"$participants[0]\" in bracket #$params->bracket_no voted in round $params->round_no";
+                    $type = 'Voting';
+                    $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no voted in round $params->round_no";
                 }
 
                 $data[] = [
                     'name' => $row['username'],
-                    'action' => $action,
+                    'type' => $type,
+                    'description' => $description,
                     'time' => convert_to_user_timezone($row['updated_at'], user_timezone(auth()->user()->id))
                 ];
             }

@@ -242,17 +242,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <table class="action-history table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">User</th>
-                            <th scope="col">Action</th>
-                            <th scope="col">Time</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-responsive">
+                    <table id="logActionsTable" class="action-history table align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">User</th>
+                                <th scope="col">
+                                    <label for="actionTypeFilter">Action Type:</label>
+                                    <select id="actionTypeFilter" class="form-select form-select-sm">
+                                        <option value="">All Types</option>
+                                        <option value="Mark Winner">Mark Winner</option>
+                                        <option value="Unmark Winner">Unmark Winner</option>
+                                        <option value="Change Participant">Change Participant</option>
+                                        <option value="Add Participant">Add Participant</option>
+                                        <option value="Delete Bracket">Delete Bracket</option>
+                                        <option value="Reset">Reset</option>
+                                        <option value="Voting">Voting</option>
+                                    </select>
+                                </th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -303,6 +318,8 @@
 var users_json = '<?= json_encode($users) ?>';
 var table = null;
 var datatableRows;
+var actionLogsTable = null;
+var actionLogsTableRows;
 
 //get data pass to json
 var task = new Bloodhound({
@@ -479,6 +496,23 @@ $(document).ready(function() {
     datatableRows = table.rows({
         'search': 'applied'
     }).nodes();
+
+    actionLogsTable = $('.action-history').DataTable({
+        "order": [
+            [0, "asc"]
+        ], // Initial sorting by the first column ascending
+        "paging": true, // Enable pagination
+        "searching": true, // Enable search box
+        "columnDefs": [{
+            "orderable": false,
+            "targets": [2]
+        }],
+    });
+
+    $('#actionTypeFilter').on('change', function() {
+        var selectedType = $(this).val().toLowerCase();
+        actionLogsTable.columns(2).search(selectedType).draw();
+    });
 
     <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
     var nameColumns = $('td[data-label="name"] span', datatableRows)
@@ -1269,19 +1303,23 @@ function drawActionHistoryTable(tournament_id) {
             let rows = '<td colspan="4">History was not found.</td>';
 
             if (result.history) {
-                rows = '';
+                rows = [];
                 result.history.forEach((record, i) => {
                     if (!record.name) record.name = 'Guest'
-                    rows += '<tr>';
-                    rows += '<td>' + (i + 1) + '</td>';
-                    rows += '<td>' + record.name + '</td>';
-                    rows += '<td>' + record.action + '</td>';
-                    rows += '<td>' + record.time + '</td>';
-                    rows += '</tr>';
+                    // rows += '<tr>';
+                    // rows += '<td>' + (i + 1) + '</td>';
+                    // rows += '<td>' + record.name + '</td>';
+                    // rows += '<td>' + record.type + '</td>';
+                    // rows += '<td>' + record.description + '</td>';
+                    // rows += '<td>' + record.time + '</td>';
+                    // rows += '</tr>';
+                    rows.push([(i + 1), record.name, record.type, record.description, record.time])
                 })
             }
 
-            tbody.html(rows);
+            actionLogsTable.clear()
+            actionLogsTable.rows.add(rows).draw()
+            // tbody.html(rows);
         },
         error: function(error) {
             console.log(error);

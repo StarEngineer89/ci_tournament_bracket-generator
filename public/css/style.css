@@ -409,7 +409,8 @@
 }
 
 #tournamentTable_filter,
-#tournamentGalleryTable_filter {
+#tournamentGalleryTable_filter,
+#logActionsTable_filter {
   display: none;
 }
 #tournamentGalleryTable_info,
