@@ -15,6 +15,9 @@ class VoteLibrary
         $bracketsModel = model('\App\Models\BracketModel');
         $participantsModel = model('\App\Models\ParticipantModel');
         $currentBracket = $bracketsModel->find($voteData['bracket_id']);
+        $currentBracket['winner'] = $voteData['participant_id'];
+        $bracketsModel->save($currentBracket);
+        
         $brackets = $bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'nextGame' => $currentBracket['nextGame'], 'roundNo' => $voteData['round_no']])->findAll();
         $index = 0;
         if ($brackets) {
