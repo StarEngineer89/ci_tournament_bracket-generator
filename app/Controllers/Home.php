@@ -14,7 +14,7 @@ class Home extends BaseController
         $tournamentsModel = model('\App\Models\TournamentModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
-        $tournaments = $tournamentsModel->where(['visibility' => 1]);
+        $tournaments = $tournamentsModel->where(['visibility' => 1, 'user_id' => 0]);
         $searchString = '';
         if ($this->request->getGet('query')) {
             $searchString = $this->request->getGet('query');
@@ -34,12 +34,14 @@ class Home extends BaseController
                 $shareSettingsModel = model('\App\Models\ShareSettingsModel');
                 $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
 
-                $cookie_value = $tournament['id'] . "_" . $shareSetting['token'];
-                $tournamentHistory = array_values(array_diff($tournamentHistory, array($cookie_value)));
-                /** End removing expired temp tournaments from cookie value */
+                if ($shareSetting) {
+                    $cookie_value = $tournament['id'] . "_" . $shareSetting['token'];
+                    $tournamentHistory = array_values(array_diff($tournamentHistory, array($cookie_value)));
+                    /** End removing expired temp tournaments from cookie value */
 
-                // Store updated history in cookies (expire in 1 days)
-                $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
+                    // Store updated history in cookies (expire in 1 days)
+                    $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
+                }
                 
                 $tournamentsModel->where('id', $tournament['id'])->delete();
             }
