@@ -708,6 +708,12 @@ $(document).ready(function() {
                             } else {
                                 $('#retainVotesCheckbox').prop('checked', false)
                             }
+
+                            if (result.tournamentSettings.allow_host_override == 1) {
+                                $('#retainVotesCheckbox').prop('checked', true)
+                            } else {
+                                $('#retainVotesCheckbox').prop('checked', false)
+                            }
                         }
 
                         if (result.musicSettings.length > 0) {
