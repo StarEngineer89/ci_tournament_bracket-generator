@@ -696,7 +696,7 @@ $(document).ready(function() {
                             }
                             $('#votingAccessbility').val(result.tournamentSettings.voting_accessibility)
                             changeVotingAccessbility(document.getElementById('votingAccessbility'))
-                            if (!result.tournamentSettings.voting_mechanism) {
+                            if (result.tournamentSettings.voting_mechanism == undefined) {
                                 result.tournamentSettings.voting_mechanism = '<?= EVALUATION_VOTING_MECHANISM_ROUND ?>'
                             }
                             $('#votingMechanism').val(result.tournamentSettings.voting_mechanism)
