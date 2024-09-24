@@ -710,9 +710,9 @@ $(document).ready(function() {
                             }
 
                             if (result.tournamentSettings.allow_host_override == 1) {
-                                $('#retainVotesCheckbox').prop('checked', true)
+                                $('#allowHostOverride').prop('checked', true)
                             } else {
-                                $('#retainVotesCheckbox').prop('checked', false)
+                                $('#allowHostOverride').prop('checked', false)
                             }
                         }
 
