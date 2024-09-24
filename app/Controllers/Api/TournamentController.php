@@ -8,14 +8,17 @@ use CodeIgniter\Files\File;
 use YoutubeDl\YoutubeDl;
 use YoutubeDl\Options;
 use App\Services\NotificationService;
+use App\Libraries\VoteLibrary;
 
 class TournamentController extends BaseController
 {
     protected $notificationService;
+    protected $tournamentModel;
 
     public function __construct()
     {
         $this->notificationService = new NotificationService();
+        $this->tournamentModel = model('\App\Models\TournamentModel');
     }
     
     public function index()
@@ -795,6 +798,16 @@ class TournamentController extends BaseController
                 $votes = $voteModel->where($search_params)->findAll();
 
                 $voteData['votes'] = count($votes);
+
+                $tournament_settings = $this->tournamentModel->find($voteData['tournament_id']);
+                $vote_max_limit = $tournament_settings['max_vote_value'];
+                if ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_retain']) {
+                    $vote_max_limit = $vote_max_limit * $voteData['round_no'];
+                }
+                if ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE && $voteData['votes'] >= $vote_max_limit) {
+                    $voteLibrary = new VoteLibrary();
+                    $result = $voteLibrary->markWinParticipant($voteData);
+                }
                 
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                                       ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'data' => $voteData]);

@@ -154,7 +154,7 @@ $(document).on('ready', function () {
                         wrapper.appendChild(score)
                     }
                     
-                    if (votingEnabled && !teams[0].voted) {
+                    if (votingEnabled) {
                         var votes = votesBox.cloneNode(true)
                         votes.textContent = teams[0].votes ? teams[0].votes : 0
                         // Set up the tooltip with HTML content (a button)
@@ -172,14 +172,15 @@ $(document).on('ready', function () {
                             teams[0].voted = true
                         }
 
-                    
-                        var voteBtn = voteBtnTemplate.cloneNode(true)
-                        voteBtn.dataset.id = teama.dataset.id
+                        if (!teams[0].voted) {
+                            var voteBtn = voteBtnTemplate.cloneNode(true)
+                            voteBtn.dataset.id = teama.dataset.id
 
-                        voteBtn.addEventListener('click', (event) => {
-                            submitVote(event)
-                        })
-                        wrapper.appendChild(voteBtn)
+                            voteBtn.addEventListener('click', (event) => {
+                                submitVote(event)
+                            })
+                            wrapper.appendChild(voteBtn)
+                        }
                     }
 
                     teama.appendChild(wrapper)
@@ -248,7 +249,7 @@ $(document).on('ready', function () {
                         wrapper.appendChild(score)
                     }
 
-                    if (votingEnabled && !teams[1].voted) {
+                    if (votingEnabled) {
                         var votes = votesBox.cloneNode(true)
                         votes.textContent = teams[1].votes ? teams[1].votes : 0
                         // Set up the tooltip with HTML content (a button)
@@ -266,14 +267,16 @@ $(document).on('ready', function () {
                             teams[1].voted = true
                         }
 
-                        // Add "Vote" button
-                        var voteBtn = voteBtnTemplate.cloneNode(true)
-                        voteBtn.dataset.id = teamb.dataset.id
-                        wrapper.appendChild(voteBtn)
+                        if (!teams[1].voted) {
+                            // Add "Vote" button
+                            var voteBtn = voteBtnTemplate.cloneNode(true)
+                            voteBtn.dataset.id = teamb.dataset.id
 
-                        voteBtn.addEventListener('click', (event) => {
-                            submitVote(event)
-                        })
+                            voteBtn.addEventListener('click', (event) => {
+                                submitVote(event)
+                            })
+                            wrapper.appendChild(voteBtn)
+                        }
                     }
 
                     teamb.appendChild(wrapper)
@@ -941,7 +944,7 @@ let submitVote = (event) => {
             'tournament_id': tournament_id,
             'participant_id': participant_element.data('id'),
             'bracket_id': participant_element.data('bracket'),
-            'round_no': participant_element.data('round'),
+            'round_no': participant_element.data('round')
         },
         dataType: "JSON",
         success: function (result) {
