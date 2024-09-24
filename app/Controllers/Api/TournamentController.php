@@ -98,7 +98,8 @@ class TournamentController extends BaseController
             'voting_accessibility' => $this->request->getPost('voting_accessibility'),
             'voting_mechanism' => $this->request->getPost('voting_mechanism'),
             'max_vote_value' => $this->request->getPost('max_vote_value'),
-            'voting_retain' => ($this->request->getPost('voting_retain') == 'on') ? 1 : 0
+            'voting_retain' => ($this->request->getPost('voting_retain') == 'on') ? 1 : 0,
+            'allow_host_override' => ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0
         ];
         
         $tournamentData = new \App\Entities\Tournament($data);
@@ -268,6 +269,9 @@ class TournamentController extends BaseController
             
             if ($this->request->getPost('voting_retain')) {
                 $tournament['voting_retain'] = ($this->request->getPost('voting_retain') == 'on') ? 1 : 0;
+            }
+            if ($this->request->getPost('allow_host_override')) {
+                $tournament['allow_host_override'] = ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0;
             }
         }
         

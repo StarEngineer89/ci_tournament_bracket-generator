@@ -112,6 +112,7 @@
                 <select class="form-select" id="votingMechanism" name="voting_mechanism" aria-label="Voting Mechanism" onchange="changeVotingMechanism(this)" required>
                     <option value="<?= EVALUATION_VOTING_MECHANISM_ROUND ?>" selected>Round Duration</option>
                     <option value="<?= EVALUATION_VOTING_MECHANISM_MAXVOTE  ?>">Max Votes</option>
+                    <option value="<?= EVALUATION_VOTING_MECHANISM_OPENEND  ?>">Open-Ended</option>
                 </select>
             </div>
             <div class="evaluation-vote-round-availability-required form-text mb-1 ps-3 d-none">
@@ -119,11 +120,18 @@
             </div>
             <div class="evaluation-vote-round form-text mb-1 ps-3">
                 Winning participants automatically advance when the duration is reached and the voting period ends each round. Duration is determined by dividing the tournament availability window equally amongst all the rounds.
+                In case of a tie in votes (for example, suppose both participants in the same bracket in the same round attain 100 votes) then the system will automatically mark a participant amongst the two as winner of the bracket randomly.
+
                 <br />
                 Note: This option can only be activated if Availability setting is enabled.
             </div>
             <div class="evaluation-vote-max form-text mb-1 ps-3 d-none">
                 Winning participants automatically advance when the vote limit is reached each round. Specify the max votes limit per bracket participant below.
+            </div>
+            <div class="evaluation-vote-max form-text mb-1 ps-3 d-none">
+                Winning participants advance through a combination of votes and manual intervention by tournament host to mark the winner.
+                This is ideal if the tournament availability duration is not set/unknown.
+                For example, if participant1 attains 100 votes and participant2 attains 30 votes in bracket 1 in round 1 but the tournament is slowly advancing, then the host could determine that's enough votes to mark the winners for the next stage.
             </div>
 
             <div class="row mb-2 max-vote-setting d-none">
@@ -142,6 +150,13 @@
             <div class="retain-votes-checkbox-hint form-text ps-3">
                 By default, the vote count will reset for each round.<br />
                 By enabling this option, the vote count is preserved and will instead accumulate each round.
+            </div>
+        </div>
+        <div class="mt-2">
+            <input type="checkbox" class="form-check-input" name="allow_host_override" id="allowHostOverride">
+            <label class="form-check-label" for="allowHostOverride">Allow Host override</label>
+            <div class="retain-votes-checkbox-hint form-text ps-3">
+                If this setting is enabled, the tournament host can intervene and manually mark the winners of each bracket in each round, regardless of the vote count
             </div>
         </div>
     </div>

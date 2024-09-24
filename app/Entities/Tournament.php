@@ -19,9 +19,20 @@ class Tournament extends Entity
         'shuffle_enabled' => null,
         'description' => null,
         'score_bracket' => null,
-        'increment_score' => null,
-        'increment_score_enabled' => null,
-        'score_enabled' => null,
-        'visibility' => null
+        'score_enabled' => null, 
+        'score_bracket', 
+        'increment_score_enabled' => null, 
+        'increment_score' => null, 
+        'increment_score_type', 
+        'visibility', 
+        'availability', 
+        'available_start', 
+        'available_end', 
+        'evaluation_method', 
+        'voting_accessibility', 
+        'voting_mechanism', 
+        'max_vote_value', 
+        'voting_retain', 
+        'allow_host_override'
     ];
 }
