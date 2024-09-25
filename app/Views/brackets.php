@@ -21,7 +21,7 @@ const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?
 const addParticipantActionCode = '<?= BRACKET_ACTIONCODE_ADD_PARTICIPANT ?>';
 const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
 var hasEditPermission = <?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') || (isset($editable) && $editable) || (isset($settings['target']) && ($settings['target'] == 'p' || $settings['target'] == 'a') && $settings['permission'] == 'e') || (isset($settings['users']) && auth()->user() && in_array(auth()->user()->id, explode(",", $settings['users'])) && $settings['permission'] == 'e' ) ? true : false ?>;
-const isScoreEnabled = <?= $tournament['score_enabled'] ? $tournament['score_enabled'] : 0 ?>;
+const isScoreEnabled = <?= $tournament['score_enabled'] ? true : false ?>;
 const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['score_bracket'] : 0 ?>)
 const incrementScore = Number(<?= ($tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>)
 const incrementScoreType = '<?= $tournament['increment_score_type'] ?>'
