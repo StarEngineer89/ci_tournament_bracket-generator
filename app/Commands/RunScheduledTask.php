@@ -33,7 +33,7 @@ class RunScheduledTask extends BaseCommand
      *
      * @var string
      */
-    protected $usage = 'command:name [arguments] [options]';
+    protected $usage = 'task:run [arguments] [options]';
 
     /**
      * The Command's Arguments
