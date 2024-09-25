@@ -357,7 +357,7 @@ class BracketsController extends BaseController
 
         /** Add a schedule to update rounds */
         if ($this->request->getPost('tournament_id')) {
-            if ($tournament['availability'] && $tournamentModel['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournamentModel['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
+            if ($tournament['availability'] && $tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
                 $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
                 $scheduleLibrary->scheduleRoundUpdate($tournament['id']);
             }

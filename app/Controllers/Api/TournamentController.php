@@ -285,7 +285,7 @@ class TournamentController extends BaseController
         $tournamentModel->save($tournament);
 
         /** Schedule to update the rounds by cron */
-        if ($tournament['availability'] && $tournamentModel['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournamentModel['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
+        if ($tournament['availability'] && $tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
             $scheduleLibrary->scheduleRoundUpdate($tournament_id);
         }
         
