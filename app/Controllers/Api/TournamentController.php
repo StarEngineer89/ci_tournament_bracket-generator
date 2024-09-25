@@ -243,15 +243,13 @@ class TournamentController extends BaseController
             $tournament['increment_score_type'] = $this->request->getPost('increment_score_type');
         }
         
+        $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
         if ($this->request->getPost('availability')) {
             $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
 
-            $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
             if($tournament['availability']){
                 $tournament['available_start'] = $this->request->getPost('startAvPicker');
                 $tournament['available_end'] = $this->request->getPost('endAvPicker');
-
-                $scheduleLibrary->scheduleRoundUpdate($tournament_id);
             } else {
                 $tournament['available_start'] = null;
                 $tournament['available_end'] = null;
@@ -283,9 +281,14 @@ class TournamentController extends BaseController
                 $tournament['allow_host_override'] = ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0;
             }
         }
-        
+
         $tournamentModel->save($tournament);
 
+        /** Schedule to update the rounds by cron */
+        if ($tournament['availability'] && $tournamentModel['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournamentModel['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
+            $scheduleLibrary->scheduleRoundUpdate($tournament_id);
+        }
+        
         /**
          * Update Music Settings
          */
