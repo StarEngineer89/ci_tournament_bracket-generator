@@ -131,3 +131,63 @@ On the final prompt `Run `spark migrate --all`now? [y, n]:`, select `'y'`.
   On Linux
 
   > `ln -s /path/to/your/codeigniter/writable/uploads /path/to/your/codeigniter/public/uploads`
+
+## Set Up Windows Task Scheduler
+
+On Windows
+
+1. Open Task Scheduler:
+
+   Press `Windows Key + R` and type `taskschd.msc` to open Task Scheduler.
+
+2. Create a New Task:
+
+   In Task Scheduler, click `Create Task` on the right.
+
+3. General Tab:
+
+   - Name the task something like "Tournaments Scheduled Task".
+
+   - Select "Run whether user is logged on or not" (optional).
+
+   - Check the box for "Run with highest privileges" (optional, but useful for permission issues).
+
+4. Triggers Tab:
+
+   - Add a trigger by clicking `New`.
+
+   - Set the trigger to run daily, weekly, or as per your scheduling needs.
+
+5. Actions Tab:
+
+   - Add a new action by clicking `New`.
+
+   - Choose `Start a program`.
+
+   - In the `Program/script` field, point to your PHP executable, typically located at `C:\path\to\php\php.exe`.
+
+   - In the `Add arguments` field, specify the CodeIgniter controller or CLI command:
+
+     > `C:\path\to\your\project\spark task:run`
+
+6. Conditions and Settings:
+
+   - In the `Conditions` tab, uncheck the option "Start the task only if the computer is on AC power" if needed.
+
+   - In the `Settings` tab, configure how the task behaves (e.g., whether to stop it after a certain time, etc.).
+
+7. Save the Task:
+
+> Save the task and enter your system password if prompted.
+
+On Linux
+
+1. Open the Crontab Editor:
+
+> `crontab -e`
+
+2. Add a New Cron Job:
+
+> `* * * * * /usr/bin/php /path/to/your/project/spark task:run`
+
+3. Save the Crontab File: After adding the cron job, save and close the crontab file. The task is now scheduled to run at the specified interval.
