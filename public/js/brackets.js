@@ -315,9 +315,9 @@ $(document).on('ready', function () {
                 selector: '.bracket-team',
                 build: function ($triggerElement, e) {
                     let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
-                    return {
-                        items: {
-                            mark: {
+                    let items = {}
+                    if (![votingMechanismRoundDurationCode, votingMechanismMaxVoteCode].includes(votingMechanism)) {
+                        items.mark = {
                                 name: (!isWinner) ? "Mark as Winner" : "Unmark as winner",
                                 callback: (key, opt, e) => {
                                     if (!isWinner)
@@ -325,8 +325,10 @@ $(document).on('ready', function () {
                                     else
                                         unmarkWinner(key, opt, e)
                                 },
-                            },
-                            change: {
+                        }
+                    }
+
+                    items.change = {
                                 name: "Change a participant",
                                 callback: (key, opt, e) => {
                                     const element = opt.$trigger;
@@ -370,8 +372,9 @@ $(document).on('ready', function () {
                                         }, 500);
                                     });
                                 }
-                            },
-                            create: {
+                    }
+                            
+                    items.create = {
                                 name: "Add a participant",
                                 callback: (key, opt, e) => {
                                     var opts = prompt('Participant Name:', 'Guild');
@@ -394,8 +397,9 @@ $(document).on('ready', function () {
                                     } else
                                         alert('Please input the name of the participant.');
                                 }
-                            },
-                            delete: {
+                    }
+
+                    items.delete = {
                                 name: "Delete Bracket",
                                 callback: (key, opt, e) => {
                                     var element_id = opt.$trigger.data('bracket');
@@ -428,7 +432,8 @@ $(document).on('ready', function () {
                                     });
                                 }
                             }
-                        }
+                    return {
+                        items: items
                     }
                 }
             });

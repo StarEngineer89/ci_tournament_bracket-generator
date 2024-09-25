@@ -188,11 +188,42 @@
 .brackets div.bracketbox .vote-btn {
   font-size: 0.6em;
   padding: 0 5px;
-  background: #fdd9fd;
+  background: #fcb5fc;
   line-height: 38px;
   text-align: center;
-  border: 0;
+  border: 0;cursor: pointer;
+  transition-duration: 0.4s;
 }
+.brackets div.bracketbox .vote-btn:hover {
+  transition-duration: 1s;
+  background-color: #b995b9;
+}
+.brackets div.bracketbox .vote-btn:after {
+  content: "";
+  display: block;
+  position: absolute;
+  border-radius: 1em;
+  right: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  opacity: 0;
+  transition: all 1s;
+  box-shadow: 0 0 10px 40px white;
+}
+.brackets div.bracketbox .vote-btn:active:after {
+  box-shadow: 0 0 0 0 white;
+  position: absolute;
+  border-radius: 4em;
+  left: 0;
+  top: 0;
+  opacity: 1;
+  transition: 0s;
+}
+.brackets div.bracketbox .vote-btn:active {
+  top: 1px;
+}
+
 .brackets div.bracketbox span.score-wrapper {
   position: absolute;
   right: 0;

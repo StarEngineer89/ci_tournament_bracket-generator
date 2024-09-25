@@ -152,7 +152,7 @@
                 By enabling this option, the vote count is preserved and will instead accumulate each round.
             </div>
         </div>
-        <div class="mt-2">
+        <div class="mt-2 allow-host-override-setting">
             <input type="checkbox" class="form-check-input" name="allow_host_override" id="allowHostOverride">
             <label class="form-check-label" for="allowHostOverride">Allow Host override</label>
             <div class="retain-votes-checkbox-hint form-text ps-3">

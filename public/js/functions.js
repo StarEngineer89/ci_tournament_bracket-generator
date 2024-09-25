@@ -398,6 +398,9 @@ let toggleAvailability = (checkbox) => {
         $('.availability-option').addClass('d-none');
         $('.startAv').attr('disabled', true);
         $('.endAv').attr('disabled', true);
+        if ($('#votingMechanism').val() == 1) {
+            $('.evaluation-vote-round-availability-required').removeClass('d-none')
+        }
     }
 }
 
@@ -433,7 +436,8 @@ var changeVotingAccessbility = (element) => {
 
 var changeVotingMechanism = (element) => {
     // EVALUATION_VOTING_MECHANISM_ROUND = 1
-    // EVALUATION_VOTING_MECHANISM_MAXVOTE = 0
+    // EVALUATION_VOTING_MECHANISM_MAXVOTE = 2
+    // EVALUATION_VOTING_MECHANISM_OPENEND = 3
     if (parseInt($(element).val()) == 1) {
         $('.max-vote-setting').addClass('d-none')
         $('.evaluation-vote-round').removeClass('d-none')
@@ -452,5 +456,9 @@ var changeVotingMechanism = (element) => {
         $('#maxVotes').attr('required', true)
         $('#enableAvailability').prop('required', false)
         $('.evaluation-vote-round-availability-required').addClass('d-none')
+    }
+
+    if (parseInt($(element).val()) == 3) {
+        $('.allow-host-override-setting').addClass('d-none')
     }
 }
