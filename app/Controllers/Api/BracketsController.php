@@ -355,6 +355,14 @@ class BracketsController extends BaseController
             $tournamentModel->save($tournament);
         }
 
+        /** Add a schedule to update rounds */
+        if ($this->request->getPost('tournament_id')) {
+            if ($tournament['availability']) {
+                $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
+                $scheduleLibrary->scheduleRoundUpdate($tournament['id']);
+            }
+        }
+
         return json_encode(array('result' => 'success', 'brackets' => $brackets, 'request' => $this->request->getPost()));
     }
 

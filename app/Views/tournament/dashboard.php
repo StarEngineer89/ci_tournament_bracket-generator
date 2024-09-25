@@ -637,7 +637,7 @@ $(document).ready(function() {
                             if (result.tournamentSettings.availability == 1) {
                                 $('#enableAvailability').attr('checked', true);
                                 $('#startAvPickerInput').val(result.tournamentSettings.available_start);
-                                $('#endAvPickerInput').val(result.tournamentSettings.available_start);
+                                $('#endAvPickerInput').val(result.tournamentSettings.available_end);
                             } else {
                                 $('#enableAvailability').attr('checked', false);
                                 $('#startAvPickerInput').val('');

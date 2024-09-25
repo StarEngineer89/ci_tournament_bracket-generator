@@ -75,7 +75,6 @@ class VoteLibrary
                     $this->markWinParticipant(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $teams[0]['id'], 'round_no' => $round_no]);
                 }
             }
-            log_message('debug', 'finalize + ' . $bracket['id']);
         }
         
         return true;

@@ -245,12 +245,18 @@ class TournamentController extends BaseController
         
         if ($this->request->getPost('availability')) {
             $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
+
+            $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
             if($tournament['availability']){
                 $tournament['available_start'] = $this->request->getPost('startAvPicker');
                 $tournament['available_end'] = $this->request->getPost('endAvPicker');
+
+                $scheduleLibrary->scheduleRoundUpdate($tournament_id);
             } else {
                 $tournament['available_start'] = null;
                 $tournament['available_end'] = null;
+
+                $scheduleLibrary->unregisterSchedule($tournament_id);
             }
         }
         
