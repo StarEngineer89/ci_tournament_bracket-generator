@@ -247,7 +247,12 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">User</th>
+                                <th scope="col">
+                                    <label for="logUserFilter">User:</label>
+                                    <select id="logUserFilter" class="form-select form-select-sm">
+                                        <option value="">All Users</option>
+                                    </select>
+                                </th>
                                 <th scope="col">
                                     <label for="actionTypeFilter">Action Type:</label>
                                     <select id="actionTypeFilter" class="form-select form-select-sm">
@@ -497,21 +502,28 @@ $(document).ready(function() {
         'search': 'applied'
     }).nodes();
 
+
     actionLogsTable = $('.action-history').DataTable({
         "order": [
             [0, "asc"]
         ], // Initial sorting by the first column ascending
         "paging": true, // Enable pagination
         "searching": true, // Enable search box
+        scrollX: true,
         "columnDefs": [{
             "orderable": false,
-            "targets": [2]
+            "targets": [1, 2, 3]
         }],
     });
 
     $('#actionTypeFilter').on('change', function() {
         var selectedType = $(this).val().toLowerCase();
         actionLogsTable.columns(2).search(selectedType).draw();
+    });
+
+    $('#logUserFilter').on('change', function() {
+        var selectedType = $(this).val().toLowerCase();
+        actionLogsTable.columns(1).search(selectedType).draw();
     });
 
     <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
@@ -1307,6 +1319,7 @@ function drawActionHistoryTable(tournament_id) {
             result = JSON.parse(result);
             let tbody = $('.action-history tbody');
             let rows = '<td colspan="4">History was not found.</td>';
+            let names = []
 
             if (result.history) {
                 rows = [];
@@ -1320,6 +1333,14 @@ function drawActionHistoryTable(tournament_id) {
                     // rows += '<td>' + record.time + '</td>';
                     // rows += '</tr>';
                     rows.push([(i + 1), record.name, record.type, record.description, record.time])
+
+                    if (!names.includes(record.name)) {
+                        let option = document.createElement('option')
+                        option.textContent = record.name
+                        option.value = record.name
+                        $('#logUserFilter').append(option)
+                        names.push(record.name)
+                    }
                 })
             }
 
