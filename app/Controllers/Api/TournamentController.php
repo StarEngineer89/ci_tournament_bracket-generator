@@ -792,7 +792,7 @@ class TournamentController extends BaseController
                 } else {
                     $insert_data['user_id'] = 0;
                 }
-
+                
                 $data = [];
                 $data['bracket_no'] = $voteData['bracket_id'];
                 $data['round_no'] = $voteData['round_no'];
