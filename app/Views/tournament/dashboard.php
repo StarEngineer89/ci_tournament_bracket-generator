@@ -503,7 +503,7 @@ $(document).ready(function() {
     }).nodes();
 
 
-    actionLogsTable = $('.action-history').DataTable({
+    actionLogsTable = $('#logActionsTable').DataTable({
         "order": [
             [0, "asc"]
         ], // Initial sorting by the first column ascending

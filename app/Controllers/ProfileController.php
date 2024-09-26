@@ -87,7 +87,7 @@ class ProfileController extends BaseController
 
             $auth = service('auth');
             $user = $auth->user();
-            log_message('debug', json_encode($auth->check(['email' => $user->email, 'password' => $currentPassword])));
+            
             // Verify the current password
             if (!$auth->check(['email' => $user->email, 'password' => $currentPassword])->isOK()) {
                 return $this->response->setJSON([

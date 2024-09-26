@@ -96,6 +96,7 @@ $routes->group('api/shared', static function ($routes) {
         $routes->post('(:num)/update', 'Api\TournamentController::update/$1');
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
         $routes->get('(:num)/get-participants', 'Api\TournamentController::getParticipants/$1');
+        $routes->post('vote', 'Api\TournamentController::saveVote');
     });
 
     $routes->group('brackets', static function ($routes) {

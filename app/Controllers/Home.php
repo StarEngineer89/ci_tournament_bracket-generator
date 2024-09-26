@@ -14,7 +14,7 @@ class Home extends BaseController
         $tournamentsModel = model('\App\Models\TournamentModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
-        $tournaments = $tournamentsModel->where(['visibility' => 1, 'user_id' => 0]);
+        $tournaments = $tournamentsModel->where(['visibility' => 1]);
         $searchString = '';
         if ($this->request->getGet('query')) {
             $searchString = $this->request->getGet('query');

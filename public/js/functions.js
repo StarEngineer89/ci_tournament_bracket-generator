@@ -394,12 +394,14 @@ let toggleAvailability = (checkbox) => {
         $('.startAv').attr('disabled', false);
         $('.endAv').attr('disabled', false);
         $('.evaluation-vote-round-availability-required').addClass('d-none')
+        $('#votingMechanism').removeClass('is-invalid')
     } else {
         $('.availability-option').addClass('d-none');
         $('.startAv').attr('disabled', true);
         $('.endAv').attr('disabled', true);
         if ($('#votingMechanism').val() == 1) {
             $('.evaluation-vote-round-availability-required').removeClass('d-none')
+            $('#votingMechanism').addClass('is-invalid')
         }
     }
 }
@@ -442,23 +444,35 @@ var changeVotingMechanism = (element) => {
         $('.max-vote-setting').addClass('d-none')
         $('.evaluation-vote-round').removeClass('d-none')
         $('.evaluation-vote-max').addClass('d-none')
+        $('.evaluation-open-ended').addClass('d-none')
         $('#maxVotes').attr('required', false)
+        $('#votingMechanism').removeClass('is-invalid')
 
         /** Check if availability is enabled */
         if ($('#enableAvailability').is(':checked') == false) {
+            $('#votingMechanism').addClass('is-invalid')
             $('.evaluation-vote-round-availability-required').removeClass('d-none')
             $('#enableAvailability').prop('required', true)
         }
-    } else {
+    }
+    if (parseInt($(element).val()) == 2) {
         $('.max-vote-setting').removeClass('d-none')
         $('.evaluation-vote-round').addClass('d-none')
         $('.evaluation-vote-max').removeClass('d-none')
+        $('.evaluation-open-ended').addClass('d-none')
         $('#maxVotes').attr('required', true)
         $('#enableAvailability').prop('required', false)
         $('.evaluation-vote-round-availability-required').addClass('d-none')
+        $('#votingMechanism').removeClass('is-invalid')
     }
 
     if (parseInt($(element).val()) == 3) {
+        $('#maxVotes').attr('required', false)
+        $('.max-vote-setting').addClass('d-none')
+        $('.evaluation-vote-round').addClass('d-none')
+        $('.evaluation-vote-max').addClass('d-none')
+        $('.evaluation-open-ended').removeClass('d-none')
         $('.allow-host-override-setting').addClass('d-none')
+        $('#votingMechanism').removeClass('is-invalid')
     }
 }

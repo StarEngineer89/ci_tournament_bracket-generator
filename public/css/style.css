@@ -449,7 +449,8 @@
   text-align: left;
 }
 #tournamentGalleryTable,
-#tournamentTable{
+#tournamentTable,
+#logActionsTable {
   width: 100%!important;
 }
 #tournamentTable_wrapper{

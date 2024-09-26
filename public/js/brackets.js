@@ -948,7 +948,7 @@ let submitVote = (event) => {
         data: {
             'tournament_id': tournament_id,
             'participant_id': participant_element.data('id'),
-            'bracket_id': participant_element.data('bracket'),
+            'bracket_id': participant_element.data('order'),
             'round_no': participant_element.data('round')
         },
         dataType: "JSON",

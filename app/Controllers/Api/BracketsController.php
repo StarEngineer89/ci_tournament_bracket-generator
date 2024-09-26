@@ -41,7 +41,7 @@ class BracketsController extends BaseController
                 $teams = json_decode($bracket['teamnames'], true);
                 // Check if user voted for the bracket
                 if (auth()->user()) {
-                    $vote_in_bracket = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['id'], 'user_id' => auth()->user()->id])->first();
+                    $vote_in_bracket = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'user_id' => auth()->user()->id])->first();
                 }
                 if ($teams[0]) {
                     if ($tournament_settings['voting_retain']) {

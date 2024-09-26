@@ -65,7 +65,7 @@
 <div class="border-bottom mb-3 ps-2 pb-3">
     <div class="row g-3 align-items-center">
         <div class="col-auto">
-            <label for="evaluationMethod" class="col-form-label">Evaluation Method</label>
+            <label for="evaluationMethod" class="col-form-label"><strong>Evaluation Method</strong></label>
         </div>
         <div class="col-auto">
             <select class="form-select" id="evaluationMethod" name="evaluation_method" aria-label="Evaluation Method" onchange="changeEvaluationMethod(this)" required>
@@ -84,7 +84,7 @@
     <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
         <div class="row g-3 align-items-center">
             <div class="col-auto">
-                <label for="votingAccessbility" class="col-form-label">Voting Accessibility</label>
+                <label for="votingAccessbility" class="col-form-label"><strong>Voting Accessibility</strong></label>
             </div>
             <div class="col-auto">
                 <select class="form-select" id="votingAccessbility" name="voting_accessibility" aria-label="voting Accessibility" onchange="changeVotingAccessbility(this)" required>
@@ -106,7 +106,7 @@
 
         <div class="row g-3 align-items-center">
             <div class="col-auto">
-                <label for="votingMechanism" class="col-form-label">Voting Mechanism</label>
+                <label for="votingMechanism" class="col-form-label"><strong>Voting Mechanism</strong></label>
             </div>
             <div class="col-auto">
                 <select class="form-select" id="votingMechanism" name="voting_mechanism" aria-label="Voting Mechanism" onchange="changeVotingMechanism(this)" required>
@@ -128,7 +128,7 @@
             <div class="evaluation-vote-max form-text mb-1 ps-3 d-none">
                 Winning participants automatically advance when the vote limit is reached each round. Specify the max votes limit per bracket participant below.
             </div>
-            <div class="evaluation-vote-max form-text mb-1 ps-3 d-none">
+            <div class="evaluation-open-ended form-text mb-1 ps-3 d-none">
                 Winning participants advance through a combination of votes and manual intervention by tournament host to mark the winner.
                 This is ideal if the tournament availability duration is not set/unknown.
                 For example, if participant1 attains 100 votes and participant2 attains 30 votes in bracket 1 in round 1 but the tournament is slowly advancing, then the host could determine that's enough votes to mark the winners for the next stage.

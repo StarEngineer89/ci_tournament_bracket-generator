@@ -147,15 +147,15 @@ class TournamentController extends BaseController
         /**
          * Add the tournament created by guest users to share table
          */
-        if(!$user_id){
+        if(!$user_id || $tournamentData->visibility){
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
 
-            $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament_id, 'user_id' => 0])->first();
+            $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->first();
             if(!$shareSetting){
                 $config = new \Config\Encryption();
-                $token = hash_hmac('sha256', 'tournament_' . $tournament_id . '_created_by_0_' . time(), $config->key);
+                $token = hash_hmac('sha256', 'tournament_' . $tournament_id . "_created_by_" . $user_id . "_" . time(), $config->key);
                 $data = array(
-                    'user_id' => 0,
+                    'user_id' => $user_id,
                     'tournament_id' => $tournament_id,
                     'target' => 'p',
                     'permission' => SHARE_PERMISSION_VIEW,
