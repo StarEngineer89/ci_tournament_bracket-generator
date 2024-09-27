@@ -703,6 +703,7 @@ class TournamentController extends BaseController
 
         // Fetch the participants
         $participants = $participantsModel->where('tournament_id', $tournamentId)->findAll();
+
         /** Clear existing participants */
         if (auth()->user()) {
             $user_id = auth()->user()->id;
@@ -710,7 +711,11 @@ class TournamentController extends BaseController
             $user_id = 0;
         }
 
-        $participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->delete();
+        if ($user_id) {
+            $participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->delete();
+        } else {
+            $participantsModel->where(['tournament_id' => 0, 'sessionid' => $this->request->getPost('hash')])->delete();
+        }
 
         /** Create new participants list from previous tournaments */
         foreach ($participants as $participant) {
@@ -720,7 +725,8 @@ class TournamentController extends BaseController
                     'user_id' => $user_id,
                     'tournament_id' => 0,
                     'order' => $participant['order'],
-                    'active' => 1
+                    'active' => 1,
+                    'sessionid' => $this->request->getPost('hash')
                 ]);
 
                 $participantsModel->save($newParticipant);

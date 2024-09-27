@@ -692,7 +692,8 @@ var performReuseParticipants = (tournament_id = null) => {
         type: "POST",
         url: apiURL + '/tournaments/reuse-participants',
         data: {
-            id: tournament_id
+            id: tournament_id,
+            hash: hash
         },
         beforeSend: function() {
             //$("#preview").fadeOut();

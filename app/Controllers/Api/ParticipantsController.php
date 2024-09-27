@@ -135,7 +135,7 @@ class ParticipantsController extends BaseController
         if ($user_id) {
             $participants = $this->participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->findAll();
         } else {
-            $participants = $this->participantsModel->where(['tournament_id' => 0, 'sessionId' => $this->request->getPost('hash')])->findAll();
+            $participants = $this->participantsModel->where(['tournament_id' => 0, 'sessionid' => $this->request->getPost('hash')])->findAll();
         }
 
         return json_encode(array('result' => 'success', 'count' => count($participants), 'participants' => $participants));
