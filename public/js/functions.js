@@ -474,5 +474,6 @@ var changeVotingMechanism = (element) => {
         $('.evaluation-open-ended').removeClass('d-none')
         $('.allow-host-override-setting').addClass('d-none')
         $('#votingMechanism').removeClass('is-invalid')
+        $('.evaluation-vote-round-availability-required').addClass('d-none')
     }
 }

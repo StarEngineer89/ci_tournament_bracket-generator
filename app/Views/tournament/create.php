@@ -316,7 +316,7 @@ $(document).ready(function() {
         <?php endif ?>
 
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: ajax_url,
             data: {
                 'hash': hash
@@ -403,7 +403,8 @@ $(document).ready(function() {
             url: apiURL + '/participants/deletes',
             data: {
                 'p_ids': duplicates,
-                'tournament_id': 0
+                'tournament_id': 0,
+                'hash': hash
             },
             dataType: "JSON",
             beforeSend: function() {
@@ -595,7 +596,6 @@ var drawTournamentsTable = () => {
     if ($.fn.DataTable.isDataTable('#tournamentTable')) {
         // Destroy the existing DataTable before reinitializing it
         tournamentsTable.destroy();
-        $('#tournamentTable').empty(); // Clear the table
     }
 
     tournamentsTable = $('#tournamentTable').DataTable({

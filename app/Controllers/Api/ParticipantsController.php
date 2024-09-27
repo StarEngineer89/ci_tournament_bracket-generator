@@ -131,7 +131,12 @@ class ParticipantsController extends BaseController
             return json_encode(array('result' => 'failed', 'msg' => 'There is not participant selected'));
         }
 
-        $participants = $this->participantsModel->where(['tournament_id' => 0, 'user_id' => auth()->user()->id])->findAll();
+        $user_id = auth()->user() ? auth()->user()->id : 0;
+        if ($user_id) {
+            $participants = $this->participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->findAll();
+        } else {
+            $participants = $this->participantsModel->where(['tournament_id' => 0, 'sessionId' => $this->request->getPost('hash')])->findAll();
+        }
 
         return json_encode(array('result' => 'success', 'count' => count($participants), 'participants' => $participants));
     }

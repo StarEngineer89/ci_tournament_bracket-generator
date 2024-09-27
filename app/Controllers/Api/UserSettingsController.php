@@ -31,22 +31,33 @@ class UserSettingsController extends BaseController
     {
         $data = $this->request->getRawInput();
         
+        $db = \Config\Database::connect();
+        $dbDriver = $db->DBDriver;
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
+            $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+        }
+
+        $user_id = auth()->user() ? auth()->user()->id : 0;
+
         foreach ($data as $key => $value) {
-            if ($setting = $this->userSettingsModel->where(['user_id' => auth()->user()->id, 'setting_name' => $key])->first()) {
+            if ($setting = $this->userSettingsModel->where(['user_id' => $user_id, 'setting_name' => $key])->first()) {
                 $setting['setting_value'] = $value;
             } else {
                 $setting = new \App\Entities\UserSetting($data);
-                $setting->user_id = auth()->user()->id;
+                $setting->user_id = $user_id;
                 $setting->setting_name = $key;
                 $setting->setting_value = $value;
             }
             
             if (!$this->userSettingsModel->save($setting)) {
                 return $this->response->setJson(['status' => 'error', 'msg' => 'Failed to save the setting']);
-                
             }
         }
         
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
+            $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+        }
+
         return $this->response->setJson(['status' => 'success', 'setting' => $setting]);
     }
 
