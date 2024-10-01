@@ -25,7 +25,7 @@
             <div class="header p-2 border-bottom sticky-top bg-light">
                 <div class="container-fluid">
                     <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative">
-                        <a class="navbar-brand" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo"/></a>
+                        <a class="navbar-brand" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo" /></a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>
                         <div class="notification-box me-3 order-md-3">
@@ -82,7 +82,7 @@
                                     <a class="nav-link  <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">Home</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>">Tournament Gallery</a>
+                                    <a class="nav-link <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a>
@@ -119,7 +119,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="footer-copy border-top p-3">
                 <div class="container text-center">
                     copyright ©️ 2024

@@ -9,39 +9,149 @@
 <?= $this->section('pageScripts') ?>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script type="text/javascript">
-var table = null;
+var tournamentsTable = null;
 var datatableRows;
 
-table = $('#tournamentGalleryTable').DataTable({
+tournamentsTable = $('#tournamentGalleryTable').DataTable({
+    "searching": true,
+    "processing": true,
+    "ajax": {
+        "url": apiURL + '/tournaments/get-gallery' + window.location.search,
+        "type": "POST",
+        "dataSrc": "",
+        "data": function(d) {
+            d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
+            d.search_tournament = $('#tournamentSearchInputBox').val();
+        }
+    },
     "order": [
         [0, "asc"]
     ], // Initial sorting by the first column ascending
     "paging": true, // Enable pagination
-    "searching": true, // Enable search box
     scrollX: true,
     "columnDefs": [{
         "orderable": false,
         "targets": [2, 3, 7, 8]
     }],
+    // Add custom initComplete to initialize select all checkbox
+    "initComplete": function(settings, json) {
+        datatableRows = tournamentsTable.rows({
+            'search': 'applied'
+        }).nodes();
+
+        var nameColumns = $('td[data-label="name"] span', datatableRows)
+        var names = []
+        nameColumns.each((i, element) => {
+            if (!names.includes(element.textContent.trim())) {
+                var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+                $('#userByFilter').append(option)
+
+                names.push(element.textContent.trim())
+            }
+        })
+    },
+    "columns": [{
+            "data": null,
+            "render": function(data, type, row, meta) {
+                return meta.row + 1; // Display index number
+            }
+        },
+        {
+            "data": "name",
+            "render": function(data, type, row, meta) {
+                return `<a href="${window.location.pathname}/${row.id}/view">${row.name}</a>`
+            },
+            "createdCell": function(td, cellData, rowData, row, col) {
+                $(td).attr('data-label', 'name');
+            }
+        },
+        {
+            "data": "type",
+            "render": function(data, type, row, meta) {
+                var type = 'Single'
+                if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
+                    type = "Double"
+                }
+
+                return type;
+            }
+        },
+        {
+            "data": "status",
+            "render": function(data, type, row, meta) {
+                var status = 'In progress'
+                if (row.status == <?= TOURNAMENT_STATUS_COMPLETED ?>) {
+                    status = 'Completed'
+                }
+
+                if (row.status == <?= TOURNAMENT_STATUS_ABANDONED ?>) {
+                    status = 'Abandoned'
+                }
+
+                return status;
+            },
+            "createdCell": function(td, cellData, rowData, row, col) {
+                $(td).attr('data-label', 'status');
+            }
+        },
+        {
+            "data": "participants_count"
+        },
+        {
+            "data": "available_start"
+        },
+        {
+            "data": "available_end"
+        },
+        {
+            "data": "public_url",
+            "render": function(data, type, row, meta) {
+                return `
+                    <div class="col-auto input-group">
+                        <input type="text" class="form-control" id="tournamentURL_${row.id}" value="${row.public_url}" aria-label="Tournament URL" aria-describedby="urlCopy" readonly="">
+                        <button class="btn btn-outline-secondary input-group-text btnCopy" data-copyid="tournamentURL_${row.id}" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!">Copy</button>
+                    </div>
+                    `
+            }
+        },
+        {
+            "data": null,
+            "render": function(data, type, row, meta) {
+                let html = `<a href="javascript:;" class="archive" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>`
+                if (row.archive == 1)
+                    html = `<a href="javascript:;" class="restore" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>`
+                return `<span data-toggle="tooltip" data-placement="top" title="${row.email}">${row.username}</span>`;
+            },
+            "createdCell": function(td, cellData, rowData, row, col) {
+                $(td).attr('data-label', 'name');
+            }
+        },
+        {
+            "data": "created_at"
+        },
+    ],
+    "createdRow": function(row, data, dataIndex) {
+        // Add a custom attribute to the row
+        $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
+    }
 });
 
 $('#typeFilter').on('change', function() {
     var selectedType = $(this).val().toLowerCase();
-    table.columns(2).search(selectedType).draw();
+    tournamentsTable.columns(2).search(selectedType).draw();
 });
 
 $('#stautsFilter').on('change', function() {
     var selectedStatus = $(this).val().toLowerCase();
-    table.columns(3).search(selectedStatus).draw();
+    tournamentsTable.columns(3).search(selectedStatus).draw();
 });
 
 $('#userByFilter').on('change', function() {
     var selectedUser = $(this).val().toLowerCase().trim();
-    table.columns(8).search(selectedUser).draw();
+    tournamentsTable.columns(8).search(selectedUser).draw();
 });
 
 $(document).on('click', '.btnCopy', function(e) {
-    console.log(e);
     var copyId = $(this).data("copyid");
     copyClipboard(copyId);
 });
@@ -62,44 +172,8 @@ function copyClipboard(url_id) {
     }
 }
 
-var nameColumns = $('td[data-label="name"] span', datatableRows)
-var names = []
-nameColumns.each((i, element) => {
-    if (!names.includes(element.textContent.trim())) {
-        var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
-        $('#userByFilter').append(option)
-
-        names.push(element.textContent.trim())
-    }
-})
-
 function handleKeyPress(event) {
-    if (event.keyCode === 13) {
-        event.preventDefault(); // Prevent form submission
-        fetchDataAndUpdateTable();
-    }
-}
-
-function fetchDataAndUpdateTable() {
-    let data = {
-        query: $('#tournamentSearchInputBox').val()
-    }
-
-    let url = new URL(window.location.href);
-
-    // Get search params from URL
-    let searchParams = new URLSearchParams(url.search);
-
-    // Add new parameter
-    searchParams.set('query', $('#tournamentSearchInputBox').val());
-
-    // Update search property of URL object
-    url.search = searchParams.toString();
-
-    // Replace current history state with new URL
-    history.replaceState(null, '', url.href);
-
-    window.location.href = url.href
+    tournamentsTable.ajax.reload()
 }
 </script>
 <?= $this->endSection() ?>
@@ -116,7 +190,7 @@ function fetchDataAndUpdateTable() {
         </div>
         <div class="container justify-content-center mb-3">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>" placeholder="Search for a tournament name or find out which tournaments a participant is competing in" onkeydown="handleKeyPress(event)">
+                <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>" placeholder="Search for a tournament name or find out which tournaments a participant is competing in" onkeyup="handleKeyPress(event)">
                 <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()"><i class="fa fa-search"></i> Search</button>
             </div>
         </div>
@@ -160,32 +234,7 @@ function fetchDataAndUpdateTable() {
                         <th scope="col">Created Time<br />&nbsp;</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php $order = 1; ?>
-                    <?php foreach ($tournaments as $index => $tournament) : ?>
-                    <?php if (isset($tournament['status'])): ?>
-                    <tr data-id="<?= $tournament['id'] ?>">
-                        <td scope="row"><?= $order++ ?></td>
-                        <td data-label="name">
-                            <a href="<?= base_url('gallery/' . $tournament['id'] . '/view') ?>"><?= $tournament['name'] ?></a>
-                        </td>
-                        <td><?= ($tournament['type'] == 1) ? "Single" : "Double" ?></td>
-                        <td data-label="status"><?= TOURNAMENT_STATUS_LABELS[$tournament['status']] ?></td>
-                        <td><?= $tournament['participants'] ?></td>
-                        <td><?= (auth()->user() && $tournament['available_start']) ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?></td>
-                        <td><?= (auth()->user() && $tournament['available_end']) ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?></td>
-                        <td><?php if($tournament['public_url'] != '') :?>
-                            <div class="col-auto input-group">
-                                <input type="text" class="form-control" id="tournamentURL_<?= $tournament['id'] ?>" value="<?= $tournament['public_url'] ?>" aria-label="Tournament URL" aria-describedby="urlCopy" readonly="">
-                                <button class="btn btn-outline-secondary input-group-text btnCopy" data-copyid="tournamentURL_<?= $tournament['id'] ?>" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!">Copy</button>
-                            </div><?php endif;?>
-                        </td>
-                        <td data-label="name"><span data-toggle="tooltip" data-placement="top" title="<?= $tournament['email'] ?>"><?= $tournament['username'] ?></span></td>
-                        <td><?= (auth()->user()) ? convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) : $tournament['created_at'] ?></td>
-                    </tr>
-                    <?php endif ?>
-                    <?php endforeach; ?>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>

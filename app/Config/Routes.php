@@ -6,7 +6,6 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
-$routes->get('/gallery', 'Home::gallery');
 $routes->get('/participants', 'Home::participants');
 $routes->get('/brackets', 'Home::brackets');
 // $routes->match(['get', 'post'], '/player/(:any)', 'RenderAudioController::index/$1');
@@ -22,6 +21,7 @@ $routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
 $routes->get('auth/google', 'GoogleAuthController::login');
 $routes->get('auth/google/callback', 'GoogleAuthController::callback');
 
+$routes->get('/gallery', 'TournamentController::index');
 $routes->get('gallery/(:num)/view', 'TournamentController::view/$1');
 $routes->get('gallery/export', 'Home::export');
 $routes->group('tournaments', static function ($routes) {
@@ -73,6 +73,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('bulkReset', 'Api\TournamentController::bulkReset');
         $routes->post('bulkUpdate', 'Api\TournamentController::bulkUpdate');
         $routes->post('get-list', 'Api\TournamentController::fetch');
+        $routes->post('get-gallery', 'Api\TournamentController::fetch_gallery');
         $routes->post('reuse-participants', 'Api\TournamentController::reuseParticipants');
         $routes->get('(:num)/get-participants', 'Api\TournamentController::getParticipants/$1');
         $routes->post('vote', 'Api\TournamentController::saveVote');

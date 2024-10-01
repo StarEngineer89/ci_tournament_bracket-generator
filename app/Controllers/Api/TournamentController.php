@@ -131,6 +131,70 @@ class TournamentController extends BaseController
         return $this->response->setJSON($result_tournaments);
     }
 
+    
+    public function fetch_gallery()
+    {
+        $tournamentsModel = model('\App\Models\TournamentModel');
+        $userModel = model('CodeIgniter\Shield\Models\UserModel');
+        $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
+        $tournaments = $tournamentsModel->where(['visibility' => 1]);
+        $searchString = '';
+        if ($searchString = $this->request->getPost('search_tournament')) {
+            $tournaments->like(['tournaments.searchable' => $searchString]);
+        }
+        
+        $tournaments = $tournaments->findAll();
+
+        $newTournaments = array();
+        $existingHistory = $this->request->getCookie('guest_tournaments');
+        $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
+        
+        foreach($tournaments as $tournament){
+            $temp = $tournament;
+            if(time() - strtotime($tournament['created_at']) > 86400 && $tournament['user_id'] == 0){
+                /** Remove expired temp tournaments from cookie value */
+                $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+                $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
+
+                if ($shareSetting) {
+                    $cookie_value = $tournament['id'] . "_" . $shareSetting['token'];
+                    $tournamentHistory = array_values(array_diff($tournamentHistory, array($cookie_value)));
+                    /** End removing expired temp tournaments from cookie value */
+
+                    // Store updated history in cookies (expire in 1 days)
+                    $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
+                }
+                
+                $tournamentsModel->where('id', $tournament['id'])->delete();
+            }
+            
+            $temp['username'] = 'Guest';
+            $temp['email'] = '';
+            if($tournament['user_id'] > 0){
+                $user = $userModel->find($tournament['user_id']);
+                $userId = $userIdentityModel->find($tournament['user_id']);
+                $temp['username'] = $user->username;
+                $temp['email'] = $userId->secret;
+            }
+
+            $participantModel = model('\App\Models\ParticipantModel');
+            $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
+
+            $shareSettingModel = model('\App\Models\ShareSettingsModel');
+            $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
+            $temp['public_url'] = '';
+            if($sharedTournament) $temp['public_url'] = base_url('/tournaments/shared/') . $sharedTournament['token'];
+
+            $participants = $this->participantModel->where('tournament_id', $tournament['id'])->findAll();
+            if ($participants) {
+                $temp['participants_count'] = count($participants);
+            }
+            $newTournaments[] = $temp;
+        }
+
+        return $this->response->setJSON($newTournaments);
+    }
+
     public function save()
     {
         $tournamentModel = model('\App\Models\TournamentModel');

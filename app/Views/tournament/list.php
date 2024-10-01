@@ -35,7 +35,12 @@
         </ul>
     </div>
     <?php endif ?>
+
+    <?php if ($shareType && $shareType == 'wh'): ?>
+    <a href="<?= base_url('tournaments/export?filter=' . $navActive) ?>&type=wh" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
+    <?php else: ?>
     <a href="<?= base_url('tournaments/export?filter=' . $navActive) ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
+    <?php endif; ?>
 </div>
 <div class="table-responsive">
     <?php if ($navActive == 'shared'): ?>

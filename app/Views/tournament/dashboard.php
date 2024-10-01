@@ -452,6 +452,19 @@ $(document).ready(function() {
             }).nodes();
 
             initCollapseActions(datatableRows)
+
+            <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
+            var nameColumns = $('td[data-label="name"] span', datatableRows)
+            var names = []
+            nameColumns.each((i, element) => {
+                if (!names.includes(element.textContent.trim())) {
+                    var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+                    $('#userByFilter').append(option)
+
+                    names.push(element.textContent.trim())
+                }
+            })
+            <?php endif ?>
         },
         "columns": [{
                 "data": null,
@@ -522,6 +535,9 @@ $(document).ready(function() {
                         <button class="btn" type="button" disabled>${row.username}</button>
                     </span>
                     `
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'name');
                 }
             },
             {
@@ -554,9 +570,6 @@ $(document).ready(function() {
                     <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="saveChange(event)">Save</a>
                     <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="cancelUpdateTorunament(this)">Cancel</a>
                     `;
-                },
-                "createdCell": function(td, cellData, rowData, row, col) {
-                    $(td).attr('data-label', 'status');
                 }
             }
             <?php endif; ?>
@@ -778,19 +791,6 @@ $(document).ready(function() {
         var selectedType = $(this).val().toLowerCase();
         actionLogsTable.columns(1).search(selectedType).draw();
     });
-
-    <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
-    var nameColumns = $('td[data-label="name"] span', datatableRows)
-    var names = []
-    nameColumns.each((i, element) => {
-        if (!names.includes(element.textContent.trim())) {
-            var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
-            $('#userByFilter').append(option)
-
-            names.push(element.textContent.trim())
-        }
-    })
-    <?php endif ?>
 
     // Individual checkbox functionality
     $('.item-checkbox').change(function() {

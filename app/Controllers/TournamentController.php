@@ -20,6 +20,10 @@ class TournamentController extends BaseController
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $users = $userModel->select(['id', 'username'])->findAll();
 
+        if ($navActive == 'glr') {
+            return view('gallery', ['searchString' => $searchString]);
+        }
+
         return view('tournament/dashboard', ['table' => $table, 'musicSettingsBlock' => $musicSettingsBlock, 'settingsBlock' => $settingsBlock, 'users' => $users, 'navActive' => $navActive]);
     }
 
