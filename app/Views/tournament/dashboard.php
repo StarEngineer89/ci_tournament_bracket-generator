@@ -321,7 +321,7 @@
 
 <script type="text/javascript">
 var users_json = '<?= json_encode($users) ?>';
-var table = null;
+var tournamentsTable = null;
 var datatableRows;
 var actionLogsTable = null;
 var actionLogsTableRows;
@@ -417,74 +417,328 @@ $(document).ready(function() {
     });
 
     <?php if ($navActive == 'shared'): ?>
+
     <?php if ($shareType == 'wh'): ?>
     var orderFalseColumns = [2, 3, 4, 5]
     <?php else: ?>
     var orderFalseColumns = [2, 3, 5]
     <?php endif ?>
-    table = $('#tournamentTable').DataTable({
+
+    tournamentsTable = $('#tournamentTable').DataTable({
+        "searching": true,
+        "processing": true,
+        "ajax": {
+            "url": apiURL + '/tournaments/get-list' + window.location.search,
+            "type": "POST",
+            "dataSrc": "",
+            "data": function(d) {
+                d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
+                d.search_tournament = $('#tournamentSearchInputBox').val();
+            }
+        },
         "order": [
             [0, "asc"]
         ], // Initial sorting by the first column ascending
         "paging": true, // Enable pagination
-        "searching": true, // Enable search box
         scrollX: true,
         "columnDefs": [{
             "orderable": false,
             "targets": orderFalseColumns
         }],
-    });
-
-    $('#typeFilter').on('change', function() {
-        var selectedType = $(this).val().toLowerCase();
-        table.columns(2).search(selectedType).draw();
-    });
-
-    $('#stautsFilter').on('change', function() {
-        var selectedStatus = $(this).val().toLowerCase();
-        table.columns(3).search(selectedStatus).draw();
-    });
-    $('#accessibilityFilter').on('change', function() {
-        var selectedPermission = $(this).val().toLowerCase();
-        table.columns(4).search(selectedPermission).draw();
-    });
-
-    <?php else: ?>
-    table = $('#tournamentTable').DataTable({
-        "order": [
-            [1, "asc"]
-        ], // Initial sorting by the first column ascending
-        "paging": true, // Enable pagination
-        "searching": true, // Enable search box
-        scrollX: true,
-        "columnDefs": [{
-            "orderable": false,
-            "targets": [0, 3, 4, 8]
-        }],
         // Add custom initComplete to initialize select all checkbox
         "initComplete": function(settings, json) {
-            // Add a select all checkbox to the header
-            $('#selectAllCheckbox').on('click', function() {
-                var rows = table.rows({
-                    'search': 'applied'
-                }).nodes();
-                $('input[type="checkbox"]', rows).prop('checked', this.checked);
-            });
+            datatableRows = tournamentsTable.rows({
+                'search': 'applied'
+            }).nodes();
+
+            initCollapseActions(datatableRows)
+        },
+        "columns": [{
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    return meta.row + 1; // Display index number
+                }
+            },
+            {
+                "data": "name",
+                "render": function(data, type, row, meta) {
+                    <?php if ($shareType == 'wh'): ?>
+                    return `<a href="${window.location.pathname}/shared/${row.token}">${row.name}</a>`
+                    <?php else: ?>
+                    return `<a href="${window.location.pathname}/${row.id}/view">${row.name}</a>`
+                    <?php endif; ?>
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'name');
+                }
+            },
+            {
+                "data": "type",
+                "render": function(data, type, row, meta) {
+                    var type = 'Single'
+                    if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
+                        type = "Double"
+                    }
+
+                    return type;
+                }
+            },
+            {
+                "data": "status",
+                "render": function(data, type, row, meta) {
+                    var status = 'In progress'
+                    if (row.status == <?= TOURNAMENT_STATUS_COMPLETED ?>) {
+                        status = 'Completed'
+                    }
+
+                    if (row.status == <?= TOURNAMENT_STATUS_ABANDONED ?>) {
+                        status = 'Abandoned'
+                    }
+
+                    return status;
+                }
+            },
+            <?php if ($shareType == 'wh'): ?> {
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    let bsTitle = 'You can view the tournament brackets.'
+                    let btnText = 'Can View'
+                    if (row.permission == '<?= SHARE_PERMISSION_EDIT ?>') {
+                        bsTitle = 'You can view and execute actions on the tournament brackets. Note that actions are logged for tracking purposes.'
+                        btnText = 'Can Edit'
+                    }
+
+                    return `
+                    <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="${bsTitle}">
+                        <button class="btn" type="button" disabled>${btnText}</button>
+                    </span>
+                    `
+                }
+            }, {
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    return `
+                    <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="${row.email}">
+                        <button class="btn" type="button" disabled>${row.username}</button>
+                    </span>
+                    `
+                }
+            },
+            {
+                "data": "access_time"
+            }
+            <?php else: ?> {
+                "data": "created_at"
+            },
+            {
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    return `
+                        <div class="btn-groups list-group">
+                        <button class="btn text-start collapse-actions-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActions-${row.id}" aria-expanded="false" aria-controls="collapseActions-${row.id}">
+                            <i class="fa-solid fa-plus"></i> View Actions
+                        </button>
+                        <div class="collapse" id="collapseActions-${row.id}">
+                            <div class="card card-body p-3">
+                                <a href="javascript:;" class="rename" data-id="${row.id}" onclick="renameTournament(this)">Rename</a>
+                                <a href="javascript:;" class="reset" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                                <a href="javascript:;" class="delete" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
+                                <a href="javascript:;" class="change-status" data-id="${row.id}" data-status="${row.status}" onclick="changeStatus(event)">Change Status</a>
+                                <a href="javascript:;" class="change-settings" data-id="${row.id}" onclick="changeSettings(event)">Settings</a>
+                                <a href="javascript:;" class="share" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
+                                <a href="javascript:;" class="view-log" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="saveChange(event)">Save</a>
+                    <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="cancelUpdateTorunament(this)">Cancel</a>
+                    `;
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'status');
+                }
+            }
+            <?php endif; ?>
+
+        ],
+        "createdRow": function(row, data, dataIndex) {
+            // Add a custom attribute to the row
+            $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
         }
     });
 
     $('#typeFilter').on('change', function() {
         var selectedType = $(this).val().toLowerCase();
-        table.columns(3).search(selectedType).draw();
+        tournamentsTable.columns(2).search(selectedType).draw();
     });
 
     $('#stautsFilter').on('change', function() {
         var selectedStatus = $(this).val().toLowerCase();
-        table.columns(4).search(selectedStatus).draw();
+        tournamentsTable.columns(3).search(selectedStatus).draw();
+    });
+    $('#accessibilityFilter').on('change', function() {
+        var selectedPermission = $(this).val().toLowerCase();
+        tournamentsTable.columns(4).search(selectedPermission).draw();
+    });
+
+    <?php else: ?>
+    tournamentsTable = $('#tournamentTable').DataTable({
+        "searching": true,
+        "processing": true,
+        "ajax": {
+            "url": apiURL + '/tournaments/get-list' + window.location.search,
+            "type": "POST",
+            "dataSrc": "",
+            "data": function(d) {
+                d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
+                d.search_tournament = $('#tournamentSearchInputBox').val();
+            }
+        },
+        "order": [
+            [1, "asc"]
+        ], // Initial sorting by the first column ascending
+        "paging": true, // Enable pagination
+        scrollX: true,
+        "columnDefs": [{
+            "orderable": false,
+            "targets": [0, 3, 4, 8, 10]
+        }],
+        // Add custom initComplete to initialize select all checkbox
+        "initComplete": function(settings, json) {
+            datatableRows = tournamentsTable.rows({
+                'search': 'applied'
+            }).nodes();
+            // Add a select all checkbox to the header
+            $('#selectAllCheckbox').on('click', function() {
+                $('input[type="checkbox"]', datatableRows).prop('checked', this.checked);
+            });
+
+            initCollapseActions(datatableRows)
+        },
+        "columns": [{
+                "data": null, // The 'null' data property is used because this column doesn't have a specific data field
+                "render": function(data, type, row) {
+                    // Render a checkbox with a value equal to the ID of the row
+                    return '<input type="checkbox" class="row-checkbox" value="' + row.id + '">';
+                },
+                "orderable": false // Disable ordering for the checkbox column
+            },
+            {
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    return meta.row + 1; // Display index number
+                }
+            },
+            {
+                "data": "name",
+                "render": function(data, type, row, meta) {
+                    return `<a href="${window.location.pathname}/${row.id}/view">${row.name}</a>`
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'name');
+                }
+            },
+            {
+                "data": "type",
+                "render": function(data, type, row, meta) {
+                    var type = 'Single'
+                    if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
+                        type = "Double"
+                    }
+
+                    return type;
+                }
+            },
+            {
+                "data": "status",
+                "render": function(data, type, row, meta) {
+                    var status = 'In progress'
+                    if (row.status == <?= TOURNAMENT_STATUS_COMPLETED ?>) {
+                        status = 'Completed'
+                    }
+
+                    if (row.status == <?= TOURNAMENT_STATUS_ABANDONED ?>) {
+                        status = 'Abandoned'
+                    }
+
+                    return status;
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'status');
+                }
+            },
+            {
+                "data": "participants_count"
+            },
+            {
+                "data": "available_start"
+            },
+            {
+                "data": "available_end"
+            },
+            {
+                "data": "public_url",
+                "render": function(data, type, row, meta) {
+                    return `
+                    <div class="col-auto input-group">
+                        <input type="text" class="form-control" id="tournamentURL_${row.id}" value="${row.public_url}" aria-label="Tournament URL" aria-describedby="urlCopy" readonly="">
+                        <button class="btn btn-outline-secondary input-group-text btnCopy" data-copyid="tournamentURL_${row.id}" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!">Copy</button>
+                    </div>
+                    `
+                }
+            },
+            {
+                "data": "created_at"
+            },
+            {
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    let html = `<a href="javascript:;" class="archive" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>`
+                    if (row.archive == 1)
+                        html = `<a href="javascript:;" class="restore" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>`
+                    return `
+                        <div class="btn-groups list-group">
+                        <button class="btn text-start collapse-actions-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActions-${row.id}" aria-expanded="false" aria-controls="collapseActions-${row.id}">
+                            <i class="fa-solid fa-plus"></i> View Actions
+                        </button>
+                        <div class="collapse" id="collapseActions-${row.id}">
+                            <div class="card card-body p-3">
+                                <a href="javascript:;" class="rename" data-id="${row.id}" onclick="renameTournament(this)">Rename</a>
+                                <a href="javascript:;" class="reset" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                                ${html}
+                                <a href="javascript:;" class="delete" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
+                                <a href="javascript:;" class="change-status" data-id="${row.id}" data-status="${row.status}" onclick="changeStatus(event)">Change Status</a>
+                                <a href="javascript:;" class="change-settings" data-id="${row.id}" onclick="changeSettings(event)">Settings</a>
+                                <a href="javascript:;" class="share" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
+                                <a href="javascript:;" class="view-log" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="saveChange(event)">Save</a>
+                    <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="cancelUpdateTorunament(this)">Cancel</a>
+                    `;
+                }
+            }
+        ],
+        "createdRow": function(row, data, dataIndex) {
+            // Add a custom attribute to the row
+            $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
+        }
+    });
+
+    $('#typeFilter').on('change', function() {
+        var selectedType = $(this).val().toLowerCase();
+        tournamentsTable.columns(3).search(selectedType).draw();
+    });
+
+    $('#stautsFilter').on('change', function() {
+        var selectedStatus = $(this).val().toLowerCase();
+        tournamentsTable.columns(4).search(selectedStatus).draw();
     });
     $('#userByFilter').on('change', function() {
         var selectedUser = $(this).val().toLowerCase().trim();
-        table.columns(9).search(selectedUser).draw();
+        tournamentsTable.columns(9).search(selectedUser).draw();
     });
     var nameColumns = $('td[data-label="name"] span', datatableRows)
     var names = []
@@ -498,10 +752,9 @@ $(document).ready(function() {
     })
     <?php endif ?>
 
-    datatableRows = table.rows({
+    datatableRows = tournamentsTable.rows({
         'search': 'applied'
     }).nodes();
-
 
     actionLogsTable = $('#logActionsTable').DataTable({
         "order": [
@@ -560,232 +813,6 @@ $(document).ready(function() {
             deleteModal.setAttribute('data-id', event.relatedTarget.getAttribute('data-id'));
             const modalTitle = deleteModal.querySelector('.modal-body .tournament-name');
             modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
-        })
-    }
-
-    const statusChange = $('.change-status', datatableRows);
-    if (statusChange) {
-        statusChange.each((i, element) => {
-            element.addEventListener('click', event => {
-                const statusBox = document.createElement('select');
-                statusBox.classList.add('status', 'form-control');
-                const currentStatus = event.target.getAttribute('data-status');
-                const currentStatusLabel = $(event.target).parents('tr').find('td[data-label="status"]').text()
-                statusBox.setAttribute('data-status-label', currentStatusLabel)
-
-                const statusOptions = {
-                    '<?= TOURNAMENT_STATUS_INPROGRESS ?>': 'In progress',
-                    '<?= TOURNAMENT_STATUS_COMPLETED ?>': 'Completed',
-                    '<?= TOURNAMENT_STATUS_ABANDONED ?>': 'Abandoned'
-                }
-                for (const [key, value] of Object.entries(statusOptions)) {
-                    let el = document.createElement("option");
-                    el.textContent = value;
-                    el.value = key;
-                    if (key == currentStatus) {
-                        el.selected = true;
-                    }
-                    statusBox.appendChild(el);
-                }
-
-                $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find(
-                    'td[data-label="status"]').html(statusBox);
-                $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.btn-groups')
-                    .addClass('visually-hidden');
-                $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.save')
-                    .removeClass('visually-hidden');
-            })
-        })
-    }
-
-    const musicSettings = $('.music-setting-link', datatableRows);
-    if (musicSettings) {
-        musicSettings.each((i, element) => {
-            element.addEventListener('click', () => {
-                const tournament_id = event.target.dataset.id
-
-                $.ajax({
-                    type: "GET",
-                    url: apiURL + '/tournaments/' + tournament_id + '/fetch-settings',
-                    success: function(result) {
-                        result = JSON.parse(result);
-                        $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
-                        $('#music-settings-panel').html(result.html);
-                        $('#tournamentForm').data('id', tournament_id);
-
-                        if (result.tournamentSettings) {
-                            $('#eliminationType').val(result.tournamentSettings.type)
-                            if (result.tournamentSettings.type == '<?= TOURNAMENT_TYPE_SINGLE ?>') {
-                                $('.single-type-hint').removeClass('d-none')
-                                $('.double-type-hint').addClass('d-none')
-                            } else {
-                                $('.double-type-hint').removeClass('d-none')
-                                $('.single-type-hint').addClass('d-none')
-                            }
-
-                            $('#description').summernote('destroy');
-                            $('#description').text(result.tournamentSettings.description)
-
-                            $("textarea#description").summernote({
-                                callbacks: {
-                                    onMediaDelete: function(target) {
-                                        // Handle media deletion if needed
-                                    },
-                                    onVideoInsert: function(target) {
-                                        $(target).wrap('<div class="responsive-video"></div>');
-                                    },
-                                    onVideoUpload: function(files) {
-                                        uploadVideo(files[0]);
-                                    }
-
-                                }
-                            });
-
-                            if (result.tournamentSettings.visibility == 1) {
-                                $('#enableVisibility').attr('checked', true)
-                            } else {
-                                $('#enableVisibility').attr('checked', false)
-                            }
-                            if (result.tournamentSettings.availability == 1) {
-                                $('#enableAvailability').attr('checked', true);
-                                $('#startAvPickerInput').val(result.tournamentSettings.available_start);
-                                $('#endAvPickerInput').val(result.tournamentSettings.available_end);
-                            } else {
-                                $('#enableAvailability').attr('checked', false);
-                                $('#startAvPickerInput').val('');
-                                $('#endAvPickerInput').val('');
-                            }
-                            toggleVisibility(document.getElementById('enableVisibility'))
-                            toggleAvailability(document.getElementById('enableAvailability'))
-
-                            if (result.tournamentSettings.score_enabled == 1) {
-                                $('#enableScoreOption').attr('checked', true)
-                                $('#scorePerBracket').val(result.tournamentSettings.score_bracket)
-                            } else {
-                                $('#enableScoreOption').removeAttr('checked')
-                            }
-
-                            if (result.tournamentSettings.increment_score_enabled == 1) {
-                                $('#enableIncrementScore').attr('checked', true)
-                                $('#incrementScore').removeAttr('disabled')
-                                $('#incrementScore').val(result.tournamentSettings.increment_score)
-                            } else {
-                                $('#enableIncrementScore').removeAttr('checked')
-                                $('#incrementScore').attr('disabled', true)
-                                $('#incrementScore').val(result.tournamentSettings.increment_score)
-                            }
-
-                            if (result.tournamentSettings.increment_score_type == '<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>') {
-                                $('#scoreOptions #incrementPlus').prop('checked', true)
-                                $('#scoreOptions #incrementMultiply').prop('checked', false)
-                                $('.enable-increamentscoreoption-hint .plus').removeClass('d-none')
-                                $('.enable-increamentscoreoption-hint .multiply').addClass('d-none')
-                            } else {
-                                $('#scoreOptions #incrementPlus').prop('checked', false)
-                                $('#scoreOptions #incrementMultiply').prop('checked', true)
-                                $('.enable-increamentscoreoption-hint .plus').addClass('d-none')
-                                $('.enable-increamentscoreoption-hint .multiply').removeClass('d-none')
-                            }
-                            toggleIncrementScore(document.getElementById('enableIncrementScore'))
-
-                            toggleScoreOption(document.getElementById('enableScoreOption'))
-
-                            if (result.tournamentSettings.shuffle_enabled == 1) {
-                                $('#enableShuffle').prop('checked', true)
-                            } else {
-                                $('#enableShuffle').prop('checked', false)
-                            }
-                            toggleShuffleParticipants(document.getElementById('enableShuffle'))
-
-                            /** Initialize the settings for Evaluation Method */
-                            if (!result.tournamentSettings.evaluation_method) {
-                                result.tournamentSettings.evaluation_method = '<?= EVALUATION_METHOD_MANUAL ?>'
-                            }
-                            $('#evaluationMethod').val(result.tournamentSettings.evaluation_method)
-                            changeEvaluationMethod(document.getElementById('evaluationMethod'))
-                            if (!result.tournamentSettings.voting_accessibility) {
-                                result.tournamentSettings.voting_accessibility = '<?= EVALUATION_VOTING_RESTRICTED ?>'
-                            }
-                            $('#votingAccessbility').val(result.tournamentSettings.voting_accessibility)
-                            changeVotingAccessbility(document.getElementById('votingAccessbility'))
-                            if (result.tournamentSettings.voting_mechanism == undefined) {
-                                result.tournamentSettings.voting_mechanism = '<?= EVALUATION_VOTING_MECHANISM_ROUND ?>'
-                            }
-                            $('#votingMechanism').val(result.tournamentSettings.voting_mechanism)
-                            changeVotingMechanism(document.getElementById('votingMechanism'))
-                            $('#maxVotes').val(result.tournamentSettings.max_vote_value)
-
-                            if (result.tournamentSettings.voting_retain == 1) {
-                                $('#retainVotesCheckbox').prop('checked', true)
-                            } else {
-                                $('#retainVotesCheckbox').prop('checked', false)
-                            }
-
-                            if (result.tournamentSettings.allow_host_override == 1) {
-                                $('#allowHostOverride').prop('checked', true)
-                            } else {
-                                $('#allowHostOverride').prop('checked', false)
-                            }
-                        }
-
-                        if (result.musicSettings.length > 0) {
-                            result.musicSettings.forEach((item, i) => {
-                                let panel = $('.music-setting').eq(item.type);
-                                panel.find("#toggle-music-settings-" + item.type).prop(
-                                    'checked', true);
-                                panel.find('.setting').removeClass('visually-hidden');
-                                panel.find('input[type="radio"][value="' + item.source +
-                                    '"]').prop('checked', true);
-
-                                if (item.source == 'f') {
-                                    panel.find('input[data-source="file"]').attr('disabled', false);
-
-                                    if (item.path != '') {
-                                        panel.find('input[data-source="file"]').attr('required', false);
-                                    }
-
-                                    panel.find('input[name="file-path[' + item.type + ']"]').val(item.path);
-                                    panel.find('.playerSource').attr('src', '/uploads/' + item.path);
-                                    panel.find('.fileupload-hint').removeClass('d-none');
-                                    panel.find('.urlupload-hint').addClass('d-none');
-
-                                }
-                                if (item.source == 'y') {
-                                    panel.find('input[data-source="url"]').val(item.url).attr('disabled', false);
-                                    panel.find('.playerSource').attr('src', '/uploads/' + item.path);
-                                    panel.find('.fileupload-hint').addClass('d-none');
-                                    panel.find('.urlupload-hint').removeClass('d-none');
-                                }
-
-                                panel.find('.player').load();
-
-                                panel.find('.preview input').attr('disabled', false);
-
-                                let date = new Date(null);
-                                date.setSeconds(item.start); // specify value for SECONDS here
-                                panel.find('input.startAt[type="text"]').val(date.toISOString().slice(11, 19));
-                                panel.find('input.startAt[type="hidden"]').val(item.start);
-
-                                date = new Date(null);
-                                date.setSeconds(item.end);
-                                panel.find('input.stopAt').val(date.toISOString().slice(11, 19));
-                                panel.find('input.stopAt[type="hidden"]').val(item.end);
-
-                                panel.find('input.duration').val(item.duration);
-                            });
-                        }
-
-                        $('#tournamentSettings').modal('show');
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                }).done(() => {
-                    setTimeout(function() {
-                        $("#overlay").fadeOut(300);
-                    }, 500);
-                });
-            })
         })
     }
 
@@ -900,23 +927,6 @@ $(document).ready(function() {
             drawActionHistoryTable(event.relatedTarget.getAttribute('data-id'));
         })
     }
-
-    const myCollapsible = $('.collapse', datatableRows)
-    myCollapsible.each((i, item) => {
-        item.addEventListener('hide.bs.collapse', event => {
-            item.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
-        })
-        item.addEventListener('show.bs.collapse', event => {
-            myCollapsible.each((ii, e) => {
-                if (ii != i) {
-                    e.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
-                }
-                $(e).collapse('hide')
-            })
-
-            item.previousElementSibling.innerHTML = `<i class="fa-solid fa-minus"></i> Hide Actions`
-        })
-    })
 
     const bulkActionConfirmModal = document.getElementById('bulkActionConfirmModal');
     if (bulkActionConfirmModal) {
@@ -1218,7 +1228,26 @@ $(document).ready(function() {
     });
 });
 
-const renameTorunament = (element) => {
+const initCollapseActions = (rows) => {
+    let myCollapsible = $('.collapse', rows)
+    myCollapsible.each((i, item) => {
+        item.addEventListener('hide.bs.collapse', event => {
+            item.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
+        })
+        item.addEventListener('show.bs.collapse', event => {
+            myCollapsible.each((ii, e) => {
+                if (ii != i) {
+                    e.previousElementSibling.innerHTML = `<i class="fa-solid fa-plus"></i> View Actions`
+                }
+                $(e).collapse('hide')
+            })
+
+            item.previousElementSibling.innerHTML = `<i class="fa-solid fa-minus"></i> Hide Actions`
+        })
+    })
+}
+
+const renameTournament = (element) => {
     const nameBox = document.createElement('input');
     const name = $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('td a').eq(0).html();
     nameBox.classList.add('name', 'form-control');
@@ -1228,6 +1257,222 @@ const renameTorunament = (element) => {
     $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('td[data-label="name"]').html(nameBox);
     $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('.btn-groups').addClass('visually-hidden');
     $(`tr[data-id="${element.getAttribute('data-id')}"]`).find('.save').removeClass('visually-hidden');
+}
+
+const changeStatus = (event) => {
+    const statusBox = document.createElement('select');
+    statusBox.classList.add('status', 'form-control');
+    const currentStatus = event.target.getAttribute('data-status');
+    const currentStatusLabel = $(event.target).parents('tr').find('td[data-label="status"]').text()
+    statusBox.setAttribute('data-status-label', currentStatusLabel)
+
+    const statusOptions = {
+        '<?= TOURNAMENT_STATUS_INPROGRESS ?>': 'In progress',
+        '<?= TOURNAMENT_STATUS_COMPLETED ?>': 'Completed',
+        '<?= TOURNAMENT_STATUS_ABANDONED ?>': 'Abandoned'
+    }
+    for (const [key, value] of Object.entries(statusOptions)) {
+        let el = document.createElement("option");
+        el.textContent = value;
+        el.value = key;
+        if (key == currentStatus) {
+            el.selected = true;
+        }
+        statusBox.appendChild(el);
+    }
+
+    $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find(
+        'td[data-label="status"]').html(statusBox);
+    $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.btn-groups')
+        .addClass('visually-hidden');
+    $(`tr[data-id="${event.target.getAttribute('data-id')}"]`).find('.save')
+        .removeClass('visually-hidden');
+}
+
+const changeSettings = (event) => {
+    const tournament_id = event.target.dataset.id
+
+    $.ajax({
+        type: "GET",
+        url: apiURL + '/tournaments/' + tournament_id + '/fetch-settings',
+        success: function(result) {
+            result = JSON.parse(result);
+            $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
+            $('#music-settings-panel').html(result.html);
+            $('#tournamentForm').data('id', tournament_id);
+
+            if (result.tournamentSettings) {
+                $('#eliminationType').val(result.tournamentSettings.type)
+                if (result.tournamentSettings.type == '<?= TOURNAMENT_TYPE_SINGLE ?>') {
+                    $('.single-type-hint').removeClass('d-none')
+                    $('.double-type-hint').addClass('d-none')
+                } else {
+                    $('.double-type-hint').removeClass('d-none')
+                    $('.single-type-hint').addClass('d-none')
+                }
+
+                $('#description').summernote('destroy');
+                $('#description').text(result.tournamentSettings.description)
+
+                $("textarea#description").summernote({
+                    callbacks: {
+                        onMediaDelete: function(target) {
+                            // Handle media deletion if needed
+                        },
+                        onVideoInsert: function(target) {
+                            $(target).wrap('<div class="responsive-video"></div>');
+                        },
+                        onVideoUpload: function(files) {
+                            uploadVideo(files[0]);
+                        }
+
+                    }
+                });
+
+                if (result.tournamentSettings.visibility == 1) {
+                    $('#enableVisibility').attr('checked', true)
+                } else {
+                    $('#enableVisibility').attr('checked', false)
+                }
+                if (result.tournamentSettings.availability == 1) {
+                    $('#enableAvailability').attr('checked', true);
+                    $('#startAvPickerInput').val(result.tournamentSettings.available_start);
+                    $('#endAvPickerInput').val(result.tournamentSettings.available_end);
+                } else {
+                    $('#enableAvailability').attr('checked', false);
+                    $('#startAvPickerInput').val('');
+                    $('#endAvPickerInput').val('');
+                }
+                toggleVisibility(document.getElementById('enableVisibility'))
+                toggleAvailability(document.getElementById('enableAvailability'))
+
+                if (result.tournamentSettings.score_enabled == 1) {
+                    $('#enableScoreOption').attr('checked', true)
+                    $('#scorePerBracket').val(result.tournamentSettings.score_bracket)
+                } else {
+                    $('#enableScoreOption').removeAttr('checked')
+                }
+
+                if (result.tournamentSettings.increment_score_enabled == 1) {
+                    $('#enableIncrementScore').attr('checked', true)
+                    $('#incrementScore').removeAttr('disabled')
+                    $('#incrementScore').val(result.tournamentSettings.increment_score)
+                } else {
+                    $('#enableIncrementScore').removeAttr('checked')
+                    $('#incrementScore').attr('disabled', true)
+                    $('#incrementScore').val(result.tournamentSettings.increment_score)
+                }
+
+                if (result.tournamentSettings.increment_score_type == '<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>') {
+                    $('#scoreOptions #incrementPlus').prop('checked', true)
+                    $('#scoreOptions #incrementMultiply').prop('checked', false)
+                    $('.enable-increamentscoreoption-hint .plus').removeClass('d-none')
+                    $('.enable-increamentscoreoption-hint .multiply').addClass('d-none')
+                } else {
+                    $('#scoreOptions #incrementPlus').prop('checked', false)
+                    $('#scoreOptions #incrementMultiply').prop('checked', true)
+                    $('.enable-increamentscoreoption-hint .plus').addClass('d-none')
+                    $('.enable-increamentscoreoption-hint .multiply').removeClass('d-none')
+                }
+                toggleIncrementScore(document.getElementById('enableIncrementScore'))
+
+                toggleScoreOption(document.getElementById('enableScoreOption'))
+
+                if (result.tournamentSettings.shuffle_enabled == 1) {
+                    $('#enableShuffle').prop('checked', true)
+                } else {
+                    $('#enableShuffle').prop('checked', false)
+                }
+                toggleShuffleParticipants(document.getElementById('enableShuffle'))
+
+                /** Initialize the settings for Evaluation Method */
+                if (!result.tournamentSettings.evaluation_method) {
+                    result.tournamentSettings.evaluation_method = '<?= EVALUATION_METHOD_MANUAL ?>'
+                }
+                $('#evaluationMethod').val(result.tournamentSettings.evaluation_method)
+                changeEvaluationMethod(document.getElementById('evaluationMethod'))
+                if (!result.tournamentSettings.voting_accessibility) {
+                    result.tournamentSettings.voting_accessibility = '<?= EVALUATION_VOTING_RESTRICTED ?>'
+                }
+                $('#votingAccessbility').val(result.tournamentSettings.voting_accessibility)
+                changeVotingAccessbility(document.getElementById('votingAccessbility'))
+                if (result.tournamentSettings.voting_mechanism == undefined) {
+                    result.tournamentSettings.voting_mechanism = '<?= EVALUATION_VOTING_MECHANISM_ROUND ?>'
+                }
+                $('#votingMechanism').val(result.tournamentSettings.voting_mechanism)
+                changeVotingMechanism(document.getElementById('votingMechanism'))
+                $('#maxVotes').val(result.tournamentSettings.max_vote_value)
+
+                if (result.tournamentSettings.voting_retain == 1) {
+                    $('#retainVotesCheckbox').prop('checked', true)
+                } else {
+                    $('#retainVotesCheckbox').prop('checked', false)
+                }
+
+                if (result.tournamentSettings.allow_host_override == 1) {
+                    $('#allowHostOverride').prop('checked', true)
+                } else {
+                    $('#allowHostOverride').prop('checked', false)
+                }
+            }
+
+            if (result.musicSettings.length > 0) {
+                result.musicSettings.forEach((item, i) => {
+                    let panel = $('.music-setting').eq(item.type);
+                    panel.find("#toggle-music-settings-" + item.type).prop(
+                        'checked', true);
+                    panel.find('.setting').removeClass('visually-hidden');
+                    panel.find('input[type="radio"][value="' + item.source +
+                        '"]').prop('checked', true);
+
+                    if (item.source == 'f') {
+                        panel.find('input[data-source="file"]').attr('disabled', false);
+
+                        if (item.path != '') {
+                            panel.find('input[data-source="file"]').attr('required', false);
+                        }
+
+                        panel.find('input[name="file-path[' + item.type + ']"]').val(item.path);
+                        panel.find('.playerSource').attr('src', '/uploads/' + item.path);
+                        panel.find('.fileupload-hint').removeClass('d-none');
+                        panel.find('.urlupload-hint').addClass('d-none');
+
+                    }
+                    if (item.source == 'y') {
+                        panel.find('input[data-source="url"]').val(item.url).attr('disabled', false);
+                        panel.find('.playerSource').attr('src', '/uploads/' + item.path);
+                        panel.find('.fileupload-hint').addClass('d-none');
+                        panel.find('.urlupload-hint').removeClass('d-none');
+                    }
+
+                    panel.find('.player').load();
+
+                    panel.find('.preview input').attr('disabled', false);
+
+                    let date = new Date(null);
+                    date.setSeconds(item.start); // specify value for SECONDS here
+                    panel.find('input.startAt[type="text"]').val(date.toISOString().slice(11, 19));
+                    panel.find('input.startAt[type="hidden"]').val(item.start);
+
+                    date = new Date(null);
+                    date.setSeconds(item.end);
+                    panel.find('input.stopAt').val(date.toISOString().slice(11, 19));
+                    panel.find('input.stopAt[type="hidden"]').val(item.end);
+
+                    panel.find('input.duration').val(item.duration);
+                });
+            }
+
+            $('#tournamentSettings').modal('show');
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
 }
 
 const cancelUpdateTorunament = (element) => {
@@ -1653,32 +1898,7 @@ function generateURL() {
 }
 
 function handleKeyPress(event) {
-    if (event.keyCode === 13) {
-        event.preventDefault(); // Prevent form submission
-        fetchDataAndUpdateTable();
-    }
-}
-
-function fetchDataAndUpdateTable() {
-    let data = {
-        query: $('#tournamentSearchInputBox').val()
-    }
-
-    let url = new URL(window.location.href);
-
-    // Get search params from URL
-    let searchParams = new URLSearchParams(url.search);
-
-    // Add new parameter
-    searchParams.set('query', $('#tournamentSearchInputBox').val());
-
-    // Update search property of URL object
-    url.search = searchParams.toString();
-
-    // Replace current history state with new URL
-    history.replaceState(null, '', url.href);
-
-    window.location.href = url.href
+    tournamentsTable.ajax.reload()
 }
 
 function confirmBulkAction() {

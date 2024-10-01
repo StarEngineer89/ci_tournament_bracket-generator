@@ -14,11 +14,15 @@ class TournamentController extends BaseController
 {
     protected $notificationService;
     protected $tournamentModel;
+    protected $participantModel;
+    protected $shareSettingModel;
 
     public function __construct()
     {
         $this->notificationService = new NotificationService();
         $this->tournamentModel = model('\App\Models\TournamentModel');
+        $this->participantModel = model('\App\Models\ParticipantModel');
+        $this->shareSettingModel = model('\App\Models\ShareSettingsModel');
     }
     
     public function index()
@@ -28,33 +32,97 @@ class TournamentController extends BaseController
 
     public function fetch()
     {
-        $model = model('\App\Models\TournamentModel');
-
-        // Get the user_id parameter from the request
-        $userBy = $this->request->getPost('user_id');
-
-        // Apply the filter if the user_id parameter is provided
-        if ($userBy) {
-            $model->where('user_id', $userBy);
-        } else {
-            $model->where(['visibility' => 1]);
-        }
-
+        $tournaments = $this->tournamentModel;
         $searchable = $this->request->getPost('search_tournament');
-        // Apply the filter if the searchable parameter is provided
-        if ($searchable) {
-            $model->like('searchable', $searchable);
+        
+        /** Filter the tournaments by my tournament, archived, shared, gallery */
+        if ($this->request->getGet('filter') == 'shared') {
+            $tournaments = $this->shareSettingModel->tournamentDetails();
+
+            if ($searchable) {
+                $tournaments->like(['tournaments.searchable' => $searchable]);
+            }
+
+            if ($this->request->getGet('type') == 'wh') {
+                $tempRows = $tournaments->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
+                
+                $tournaments = [];
+                $access_tokens = [];
+                if ($tempRows) {
+                    foreach ($tempRows as $tempRow) {
+                        $user_ids = explode(',', $tempRow['users']);
+                        
+                        $add_in_list = false;
+                        if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
+                            $add_in_list = true;
+                        }
+
+                        if (($tempRow['target'] == SHARE_TO_EVERYONE || $tempRow['target'] == SHARE_TO_PUBLIC) && $tempRow['access_time']) {
+                            $add_in_list = true;
+                        }
+
+                        /** Omit the record from Shared with me if the share was created by himself */
+                        if ($tempRow['user_id'] == auth()->user()->id || $tempRow['deleted_at']) {
+                            $add_in_list = false;
+                        }
+
+                        if ($add_in_list && !in_array($tempRow['token'], $access_tokens)) {
+                            $tempRow['access_time'] = convert_to_user_timezone($tempRow['access_time'], user_timezone(auth()->user()->id));
+                            $tournaments[] = $tempRow;
+                            $access_tokens[] = $tempRow['token'];
+                        }
+                    }
+                }
+            } else {
+                $tempRows = $tournaments->where('share_settings.user_id', auth()->user()->id)->findAll();
+
+                $tournaments = [];
+                if ($tempRows) {
+                    foreach ($tempRows as $tempRow) {
+                        $tournaments[$tempRow['tournament_id']] = $tempRow;
+                    }
+                }
+            }
+        } else {
+            // Get the user_id parameter from the request
+            $userBy = $this->request->getPost('user_id');
+
+            // Apply the filter if the user_id parameter is provided
+            if ($userBy) {
+                $tournaments->where('user_id', $userBy);
+            } else {
+                $tournaments->where(['visibility' => 1]);
+            }
+        
+            if ($this->request->getGet('filter') == 'archived') {
+                $tournaments->where(['archive' => 1]);
+            } else {
+                $tournaments->where('archive', 0);
+            }
+
+            // Apply the filter if the searchable parameter is provided
+            if ($searchable) {
+                $tournaments->like('searchable', $searchable);
+            }
+            
+            // Fetch the tournaments
+            $tournaments = $tournaments->findAll();
         }
 
-        // Fetch the tournaments
-        $tournaments = $model->findAll();
-
-        // Fetch participants for each tournament
+        // Fetch participants and public URL for each tournament
         $result_tournaments = [];
-        $participantsModel = model('\App\Models\ParticipantModel');
         foreach ($tournaments as &$tournament) {
-            $participants = $participantsModel->where('tournament_id', $tournament['id'])->findAll();
+            $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
+            $tournament['public_url'] = '';
+            if($shareSetting) {
+                $tournament['public_url'] = base_url('/tournaments/shared/') . $shareSetting['token'];
+            }
+
+            $tournament['created_at'] = (auth()->user()) ? convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) : $tournament['created_at'];
+                
+            $participants = $this->participantModel->where('tournament_id', $tournament['id'])->findAll();
             if ($participants) {
+                $tournament['participants_count'] = count($participants);
                 $result_tournaments[] = $tournament;
             }
         }
@@ -209,6 +277,10 @@ class TournamentController extends BaseController
     {
         $tournamentModel = model('\App\Models\TournamentModel');
         $tournament = $tournamentModel->find(intval($tournament_id));
+        
+        if ($this->request->getPost('name')) {
+            $tournament['name'] = $this->request->getPost('name');
+        }
         
         if ($this->request->getPost('description')) {
             $tournament['description'] = $this->request->getPost('description');

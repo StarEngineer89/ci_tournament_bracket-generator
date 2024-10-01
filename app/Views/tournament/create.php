@@ -676,6 +676,11 @@ var drawTournamentsTable = () => {
     });
 
 }
+
+var handleKeyPress = (event) => {
+    tournamentsTable.ajax.reload()
+}
+
 var reuseParticipant = (element) => {
     if ($('.participant-list .list-group-item').length) {
         const selectTournamentConfirmModal = document.getElementById('selectTournamentConfirmModal');
@@ -937,7 +942,7 @@ var performReuseParticipants = (tournament_id = null) => {
             <div class="modal-body">
                 <div class="">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="searchTournament">
+                        <input type="text" class="form-control" id="searchTournament" onkeydown="handleKeyPress(event)">
                         <button id="searchTournamentBtn" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
                     </div>
                 </div>
