@@ -56,11 +56,18 @@ $(document).on('ready', function () {
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="r' + g + '"></div>');
             
-            var roundName = $('<div class="text-center p-2 m-1 border" style="height: auto"></div>')
+            var roundName = $(`<div class="text-center p-2 m-1 border" style="height: auto" data-round-no="${g}"></div>`)
             if (grouped[g][0].final_match && grouped[g][0].final_match !== "0") {
                 roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
             } else {
-                roundName.html("Round " + grouped[g][0].roundNo) 
+                let editIcon = ''
+                if (hasEditPermission) {
+                    editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
+                }
+
+                const round_ame = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}`
+
+                roundName.html(`<span class="round-name">${round_ame}</span> ${editIcon}`) 
             }
             round.append(roundName)
 
@@ -961,6 +968,69 @@ let submitVote = (event) => {
             const storage_key = 'vote_t' + tournament_id + '_n' + result.data.round_no + '_b' + result.data.bracket_id
             window.localStorage.setItem(storage_key, result.data.participant_id)
 
+            loadBrackets()
+
+            // triggerElement.parent().parent().remove();
+            ws.send('Vote the participant!');
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function () {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+}
+
+let enableChangeRoundName = (event) => {
+    const container = document.createElement('div')
+    container.classList.add("input-group")
+
+    const nameBox = document.createElement('input');
+    const name = $(event.currentTarget.parentElement).find('.round-name').eq(0).html();
+    nameBox.classList.add('name', 'form-control');
+    nameBox.value = name;
+    nameBox.setAttribute('data-name-label', name)
+
+    const confirmBtn = document.createElement('button')
+    confirmBtn.classList.add('btn', 'btn-outline-secondary')
+    confirmBtn.innerHTML = '<span class="fa fa-check">'
+    confirmBtn.addEventListener('click', (event) => {
+        saveRoundName(event)
+    })
+
+    const cancelBtn = document.createElement('button')
+    cancelBtn.classList.add('btn', 'btn-outline-secondary')
+    cancelBtn.innerHTML = `<span class="fa fa-close">`
+    cancelBtn.addEventListener('click', (event) => {
+        cancelChangeRoundName(event, `${name}`)
+    })
+
+    container.append(nameBox)
+    container.append(confirmBtn)
+    container.append(cancelBtn)
+
+    $(event.currentTarget.parentElement).html(container)
+}
+
+let cancelChangeRoundName = (event, name) => {
+    let html = `<span class="round-name">${name}</span> <span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
+    event.currentTarget.parentElement.parentElement.innerHTML = html
+}
+
+let saveRoundName = (event) => {
+    const name = event.currentTarget.value
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/brackets/save-round',
+        data: {
+            'tournament_id': tournament_id,
+            'round_no': event.currentTarget.parentElement.parentElement.dataset.roundNo,
+            'round_name': event.currentTarget.parentElement.firstChild.value
+        },
+        dataType: "JSON",
+        success: function (result) {
             loadBrackets()
 
             // triggerElement.parent().parent().remove();

@@ -72,6 +72,10 @@ class TournamentController extends BaseController
 
         /** Check if the tournament is associated with guest user */
         $editable = false;
+        if (auth()->user() && $tournament['user_id'] == auth()->user()->id) {
+            $editable = true;
+        }
+        
         if($tournament['user_id'] == 0){
             $existingHistory = $this->request->getCookie('guest_tournaments');
             $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];

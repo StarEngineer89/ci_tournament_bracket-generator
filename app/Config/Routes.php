@@ -43,6 +43,7 @@ $routes->group('api', static function ($routes) {
         $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');
         $routes->post('generate', 'Api\BracketsController::generateBrackets');
         $routes->post('switch', 'Api\BracketsController::switchBrackets');
+        $routes->post('save-round', 'Api\BracketsController::saveRoundSettings');
     });
 
     $routes->group('participants', static function ($routes) {

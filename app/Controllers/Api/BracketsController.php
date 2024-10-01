@@ -13,6 +13,7 @@ class BracketsController extends BaseController
     protected $participantsModel;
     protected $tournamentsModel;
     protected $votesModel;
+    protected $tournamentRoundSettingsModel;
     protected $_base;
     protected $_bracketNo;
 
@@ -27,6 +28,7 @@ class BracketsController extends BaseController
         $this->participantsModel = model('\App\Models\ParticipantModel');
         $this->tournamentsModel = model('\App\Models\TournamentModel');
         $this->votesModel = model('\App\Models\VotesModel');
+        $this->tournamentRoundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
     }
 
     public function getBrackets($id)
@@ -73,7 +75,12 @@ class BracketsController extends BaseController
                 }
                 $bracket['teamnames'] = json_encode($teams);
 
-                // $rounds[$bracket['roundNo']][] = $bracket;
+                /** Get round name */
+                $roundSetting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
+                if ($roundSetting) {
+                    $bracket['round_name'] = $roundSetting['round_name'];
+                }
+                
                 $rounds[] = $bracket;
             }
         }
@@ -498,5 +505,50 @@ class BracketsController extends BaseController
         $bracket_id = $this->bracketsModel->insert($bracketEntity);
 
         return $brackets;
+    }
+
+    public function saveRoundSettings() {
+        if ($this->request->isAJAX()) {
+            $tournament_id = $this->request->getPost('tournament_id');
+            $round_no = $this->request->getPost('round_no');
+
+            $setting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->first();
+
+            if ($setting) {
+                if ($this->request->getPost('round_name')) {
+                    $setting['round_name'] = $this->request->getPost('round_name');
+                }
+
+                $setting['user_id'] = (auth()->user()) ? auth()->user()->id : 0;
+            } else {
+                $setting = new \App\Entities\TournamentRoundSetting();
+                $setting->user_id = (auth()->user()) ? auth()->user()->id : 0;
+                $setting->tournament_id = $tournament_id;
+                $setting->round_no = $round_no;
+                $setting->round_name = $this->request->getPost('round_name');
+            }
+
+            $db = \Config\Database::connect();
+            $dbDriver = $db->DBDriver;
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+            }
+
+            if ($this->tournamentRoundSettingsModel->save($setting)) {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                      ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'setting' => $setting]);
+            } else {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                                      ->setJSON(['status' => 'error', 'message' => 'Failed to save vote']);
+            }
+
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+            }
+        }
+        
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 }
