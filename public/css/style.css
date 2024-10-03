@@ -450,7 +450,8 @@
 }
 #tournamentGalleryTable,
 #tournamentTable,
-#logActionsTable {
+#logActionsTable,
+#participantLeaderboardTable {
   width: 100% !important;
 }
 #tournamentTable_wrapper{

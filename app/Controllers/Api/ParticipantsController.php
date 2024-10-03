@@ -12,6 +12,8 @@ class ParticipantsController extends BaseController
 {
     protected $participantsModel;
     protected $bracketsModel;
+    protected $tournamentsModel;
+    protected $votesModel;
 
     public function initController(
         RequestInterface $request,
@@ -22,6 +24,54 @@ class ParticipantsController extends BaseController
 
         $this->participantsModel = model('\App\Models\ParticipantModel');
         $this->bracketsModel = model('\App\Models\BracketModel');
+        $this->tournamentsModel = model('\App\Models\TournamentModel');
+        $this->votesModel = model('\App\Models\VotesModel');
+    }
+
+    public function getParticipants() {
+        // Check if it's an AJAX request
+        if ($this->request->isAJAX()) {
+            $params = $this->request->getPost(); // Get the posted data
+            $participants = $this->participantsModel->findAll();
+            
+            if ($participants) {
+                $newList = [];
+                foreach ($participants as $participant) {
+                    $brackets = $this->bracketsModel->where(['winner' => $participant['id']])->findAll();
+                    $participant['brackets_won'] = ($brackets) ? count($brackets) : 0;
+
+                    $finalBrackets = $this->bracketsModel->where(['winner' => $participant['id'], 'final_match' => 1])->findAll();
+                    $participant['tournaments_won'] = ($finalBrackets) ? count($finalBrackets) : 0;
+                    
+                    $tournament_list = [];
+                    if ($finalBrackets) {
+                        foreach ($finalBrackets as $f_bracket) {
+                            $tournament = $this->tournamentsModel->find($f_bracket['tournament_id']);
+                            if ($tournament) {
+                                $tournament_list[] = $tournament['name'];
+                            }
+                        }
+                    }
+
+                    $participant['tournaments_list'] = (count($tournament_list)) ? implode(', ', $tournament_list) : '';
+                    $participant['top_score'] = '';
+
+                    $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
+                    $participant['votes'] = ($votes) ? count($votes) : 0;
+
+                    $newList[] = $participant;
+                }
+
+                $participants = $newList;
+            }
+            
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON($participants);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 
     public function addParticipant($names = null)

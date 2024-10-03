@@ -9,6 +9,13 @@ class Home extends BaseController
         return view('home');
     }
 
+    public function participants() {
+        $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';
+        $searchString = $this->request->getGet('query');
+
+        return view('participants-list', ['navActive' => $navActive]);
+    }
+
     public function export(){
         $tournamentModel = model('\App\Models\TournamentModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');

@@ -87,6 +87,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link  <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                                </li>
                             </ul>
                         </div>
 

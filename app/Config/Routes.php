@@ -33,6 +33,9 @@ $routes->group('tournaments', static function ($routes) {
     $routes->get('apply', 'TournamentController::apply');
     $routes->post('save-apply', 'TournamentController::saveApply');
 });
+$routes->group('participants', static function ($routes) {
+    $routes->get('/', 'Home::participants');
+});
 
 $routes->post('consent', 'CookieConsent::consent');
 
@@ -47,7 +50,7 @@ $routes->group('api', static function ($routes) {
     });
 
     $routes->group('participants', static function ($routes) {
-        $routes->get('/', 'Api\ParticipantsController::getParticipants');
+        $routes->post('get-leaderboard', 'Api\ParticipantsController::getParticipants');
         $routes->post('new', 'Api\ParticipantsController::addParticipant');
         $routes->post('update/(:num)', 'Api\ParticipantsController::updateParticipant/$1');
         $routes->delete('delete/(:num)', 'Api\ParticipantsController::deleteParticipant/$1');

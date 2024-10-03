@@ -2,46 +2,103 @@
 
 <?= $this->section('title') ?>Tournament Participants<?= $this->endSection() ?>
 
+<?= $this->section('pageStyles') ?>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<?= $this->endSection() ?>
+
 <?= $this->section('pageScripts') ?>
-<script src="/js/participants.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+<script type="text/javascript">
+var participantsTable = null;
+var participantsTableRows;
+
+participantsTable = $('#participantLeaderboardTable').DataTable({
+    "searching": true,
+    "processing": true,
+    "ajax": {
+        "url": apiURL + '/participants/get-leaderboard' + window.location.search,
+        "type": "POST",
+        "dataSrc": "",
+        "data": function(d) {
+            d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
+            d.search_participant = $('#tournamentSearchInputBox').val();
+        }
+    },
+    "order": [
+        [0, "asc"]
+    ], // Initial sorting by the first column ascending
+    "paging": true, // Enable pagination
+    scrollX: true,
+    "columnDefs": [{
+        "orderable": false,
+        "targets": [4]
+    }],
+    // Add custom initComplete to initialize select all checkbox
+    "initComplete": function(settings, json) {
+        console.log('table')
+    },
+    "columns": [{
+            "data": null,
+            "render": function(data, type, row, meta) {
+                return meta.row + 1; // Display index number
+            }
+        },
+        {
+            "data": "name",
+            "createdCell": function(td, cellData, rowData, row, col) {
+                $(td).attr('data-label', 'name');
+            }
+        },
+        {
+            "data": "brackets_won",
+            "className": "text-center"
+        },
+        {
+            "data": "tournaments_won",
+            "className": "text-center"
+        },
+        {
+            "data": "tournaments_list"
+        },
+        {
+            "data": "top_score",
+            "className": "text-center"
+        },
+        {
+            "data": "votes",
+            "className": "text-center"
+        },
+    ],
+    "createdRow": function(row, data, dataIndex) {
+        // Add a custom attribute to the row
+        $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
+    }
+});
+</script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
-
-        <div class="card col-12 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title d-flex justify-content-center"><?//= lang('Auth.login') ?>Tournament Participants</h5>
-                <div class="buttons d-flex justify-content-center">
-                    <button id="add-participant" class="btn btn-default">Add Participant</button>
-                    <button id="button" class="btn btn-default">Generate Elimination</button>
-                    <button id="clear" class="btn btn-default">Reset (Clear)</button>
-                </div>
-
-                <?php if (session('error') !== null) : ?>
-                    <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
-                <?php elseif (session('errors') !== null) : ?>
-                    <div class="alert alert-danger" role="alert">
-                        <?php if (is_array(session('errors'))) : ?>
-                            <?php foreach (session('errors') as $error) : ?>
-                                <?= $error ?>
-                                <br>
-                            <?php endforeach ?>
-                        <?php else : ?>
-                            <?= session('errors') ?>
-                        <?php endif ?>
-                    </div>
-                <?php endif ?>
-
-                <?php if (session('message') !== null) : ?>
-                <div class="alert alert-success" role="alert"><?= session('message') ?></div>
-                <?php endif ?>
-
-                <div id="newList" class="list-group"></div>
-            </div>
+<div class="card shadow-sm">
+    <div class="card- p-3">
+        <div class="text-center mb-5">
+            <h3>Participant Leaderboard</h3>
         </div>
-
-    <audio id="myAudio" style="display:none">
-        <source src="<?php echo base_url('UEFA Champions League Anthem.mp3') ?>" type="audio/mpeg">
-    </audio>
-
+        <div class="table-responsive">
+            <table id="participantLeaderboardTable" class="table align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Participant Name</th>
+                        <th scope="col" class="text-center">Brackets Won</th>
+                        <th scope="col" class="text-center">Tournaments Won</th>
+                        <th scope="col">Tournaments List</th>
+                        <th scope="col" class="text-center">Top Score</th>
+                        <th scope="col" class="text-center">Votes</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
