@@ -82,6 +82,10 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
     <div class="card- p-3">
         <div class="text-center mb-5">
             <h3>Participant Leaderboard</h3>
+            <div class="d-flex  flex-column justify-content-center">
+                <p>Discover the top-performing participants across all tournaments. See who’s dominating the competition and climbing to the top with every victory!</p>
+                <p>Note: By default, the top 100 participants are ranked by the number of tournaments they’ve won.</p>
+            </div>
         </div>
         <div class="table-responsive">
             <table id="participantLeaderboardTable" class="table align-middle">

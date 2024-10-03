@@ -59,6 +59,9 @@
                             <li><a href="/">About</a></li>
                             <li><a href="<?= base_url('gallery') ?>">Tournament Gallery</a></li>
                             <li><a href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a></li>
+                            <li>
+                                <a href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="col-md-4">

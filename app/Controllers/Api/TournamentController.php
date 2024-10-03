@@ -44,7 +44,11 @@ class TournamentController extends BaseController
             }
 
             if ($this->request->getGet('type') == 'wh') {
-                $tempRows = $tournaments->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
+                $tournaments->groupStart();
+                $tournaments->whereIn('share_settings.target', [SHARE_TO_EVERYONE, SHARE_TO_PUBLIC]);
+                $tournaments->orLike('share_settings.users', strval(auth()->user()->id));
+                $tournaments->groupEnd();
+                $tempRows = $tournaments->findAll();
                 
                 $tournaments = [];
                 $access_tokens = [];
@@ -62,7 +66,7 @@ class TournamentController extends BaseController
                         }
 
                         /** Omit the record from Shared with me if the share was created by himself */
-                        if ($tempRow['user_id'] == auth()->user()->id || $tempRow['deleted_at']) {
+                        if ($tempRow['deleted_at']) {
                             $add_in_list = false;
                         }
 
