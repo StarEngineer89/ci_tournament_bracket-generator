@@ -31,7 +31,7 @@
                                 <a class="nav-link <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>">Tournament Gallery</a>
+                                <a class="nav-link <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a>
@@ -57,7 +57,7 @@
                         <ul class="link-group">
                             <li><a href="/">Home</a></li>
                             <li><a href="/">About</a></li>
-                            <li><a href="<?= base_url('gallery') ?>">Tournament Gallery</a></li>
+                            <li><a href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a></li>
                             <li><a href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a></li>
                             <li>
                                 <a href="<?= base_url('participants') ?>">Participant Leaderboard</a>
