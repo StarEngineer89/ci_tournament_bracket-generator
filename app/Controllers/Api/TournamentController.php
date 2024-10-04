@@ -138,12 +138,10 @@ class TournamentController extends BaseController
     
     public function fetch_gallery()
     {
-        $tournamentsModel = model('\App\Models\TournamentModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
-        $shareSettingModel = model('\App\Models\ShareSettingsModel');
 
-        $tournaments = $tournamentsModel->where(['visibility' => 1]);
+        $tournaments = $this->tournamentModel->where(['visibility' => 1]);
         $searchString = '';
         if ($searchString = $this->request->getPost('search_tournament')) {
             $tournaments->like(['tournaments.searchable' => $searchString]);
@@ -159,7 +157,7 @@ class TournamentController extends BaseController
             $temp = $tournament;
             if(time() - strtotime($tournament['created_at']) > 86400 && $tournament['user_id'] == 0){
                 /** Remove expired temp tournaments from cookie value */
-                $shareSetting = $shareSettingModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
+                $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
 
                 if ($shareSetting) {
                     $cookie_value = $tournament['id'] . "_" . $shareSetting['token'];
@@ -170,7 +168,7 @@ class TournamentController extends BaseController
                     $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
                 }
                 
-                $tournamentsModel->where('id', $tournament['id'])->delete();
+                $this->tournamentModel->where('id', $tournament['id'])->delete();
             }
             
             $temp['username'] = 'Guest';
@@ -185,7 +183,7 @@ class TournamentController extends BaseController
             $participantModel = model('\App\Models\ParticipantModel');
             $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
 
-            $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
+            $sharedTournament = $this->shareSettingModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
             $temp['public_url'] = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
             
             $participants = $this->participantModel->where('tournament_id', $tournament['id'])->findAll();

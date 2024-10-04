@@ -49,6 +49,12 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                 names.push(element.textContent.trim())
             }
         })
+
+        $('.btnCopy').on('click', function() {
+            var copyId = $(this).data("copyid");
+            copyClipboard(copyId);
+        });
+
     },
     "columns": [{
             "data": null,
@@ -154,11 +160,6 @@ $('#stautsFilter').on('change', function() {
 $('#userByFilter').on('change', function() {
     var selectedUser = $(this).val().toLowerCase().trim();
     tournamentsTable.columns(8).search(selectedUser).draw();
-});
-
-$(document).on('click', '.btnCopy', function(e) {
-    var copyId = $(this).data("copyid");
-    copyClipboard(copyId);
 });
 
 function copyClipboard(url_id) {
