@@ -54,8 +54,10 @@ class ParticipantsController extends BaseController
                     }
 
                     $participant['tournaments_list'] = (count($tournament_list)) ? implode(', ', $tournament_list) : '';
-                    $participant['top_score'] = '';
-                    $participant['accumulated_score'] = '';
+
+                    $scores = $this->calculateScores($participant['id'], $brackets);
+                    $participant['top_score'] = $scores['top_score'];
+                    $participant['accumulated_score'] = $scores['total_score'];
 
                     $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
                     $participant['votes'] = ($votes) ? count($votes) : 0;
@@ -255,5 +257,45 @@ class ParticipantsController extends BaseController
 		}
         
         return $this->response->setJSON(['result' => 'success', 'names' => $data]);
+    }
+
+    public function calculateScores($participant_id, $brackets) {
+        $totalScore = 0;
+        $topScore = 0;
+        $tournamentSettings = [];
+        $scores_by_tournaments = [];
+
+        if ($brackets) {
+            foreach ($brackets as $bracket) {
+                if (!isset($tournamentSettings[$bracket['tournament_id']])) {
+                    $tournamentSettings[$bracket['tournament_id']] = $this->tournamentsModel->find($bracket['tournament_id']);
+                }
+
+                $bracket_score = ($tournamentSettings[$bracket['tournament_id']]['score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['score_bracket'] : 0;
+                $increment_score = ($tournamentSettings[$bracket['tournament_id']]['increment_score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['increment_score'] : 0;
+                $increment_score_type = $tournamentSettings[$bracket['tournament_id']]['increment_score_type'];
+
+                if (!isset($scores_by_tournaments[$bracket['tournament_id']])) {
+                    $scores_by_tournaments[$bracket['tournament_id']] = 0;
+                }
+
+                if ($increment_score_type == TOURNAMENT_SCORE_INCREMENT_PLUS) {
+                    $scores_by_tournaments[$bracket['tournament_id']] += $bracket_score + $increment_score * ($bracket['roundNo'] - 1);
+                }
+
+                if ($increment_score_type == TOURNAMENT_SCORE_INCREMENT_MULTIPLY) {
+                    if ($bracket['roundNo'] == 1) {
+                        $scores_by_tournaments[$bracket['tournament_id']] = $bracket_score;
+                    } else {
+                        $scores_by_tournaments[$bracket['tournament_id']] += $scores_by_tournaments[$bracket['tournament_id']] * $increment_score;
+                    }
+                }
+            }
+        }
+
+        $totalScore = array_sum($scores_by_tournaments);
+        $topScore = ($scores_by_tournaments) ? max($scores_by_tournaments) : 0;
+
+        return ['total_score' => $totalScore, 'top_score' => $topScore];
     }
 }
