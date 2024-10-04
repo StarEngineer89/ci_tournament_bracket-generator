@@ -55,6 +55,7 @@ class ParticipantsController extends BaseController
 
                     $participant['tournaments_list'] = (count($tournament_list)) ? implode(', ', $tournament_list) : '';
                     $participant['top_score'] = '';
+                    $participant['accumulated_score'] = '';
 
                     $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
                     $participant['votes'] = ($votes) ? count($votes) : 0;

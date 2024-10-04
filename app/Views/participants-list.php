@@ -65,6 +65,10 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             "className": "text-center"
         },
         {
+            "data": 'accumulated_score',
+            "className": "text-center"
+        },
+        {
             "data": "votes",
             "className": "text-center"
         },
@@ -97,6 +101,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                         <th scope="col" class="text-center">Tournaments Won</th>
                         <th scope="col">Tournaments List</th>
                         <th scope="col" class="text-center">Top Score</th>
+                        <th scope="col" class="text-center">Accumulated Score</th>
                         <th scope="col" class="text-center">Votes</th>
                     </tr>
                 </thead>

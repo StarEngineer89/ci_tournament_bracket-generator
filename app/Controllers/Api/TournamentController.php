@@ -141,6 +141,8 @@ class TournamentController extends BaseController
         $tournamentsModel = model('\App\Models\TournamentModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
+        $shareSettingModel = model('\App\Models\ShareSettingsModel');
+
         $tournaments = $tournamentsModel->where(['visibility' => 1]);
         $searchString = '';
         if ($searchString = $this->request->getPost('search_tournament')) {
@@ -157,8 +159,7 @@ class TournamentController extends BaseController
             $temp = $tournament;
             if(time() - strtotime($tournament['created_at']) > 86400 && $tournament['user_id'] == 0){
                 /** Remove expired temp tournaments from cookie value */
-                $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-                $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
+                $shareSetting = $shareSettingModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
 
                 if ($shareSetting) {
                     $cookie_value = $tournament['id'] . "_" . $shareSetting['token'];
@@ -184,11 +185,9 @@ class TournamentController extends BaseController
             $participantModel = model('\App\Models\ParticipantModel');
             $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
 
-            $shareSettingModel = model('\App\Models\ShareSettingsModel');
             $sharedTournament = $shareSettingModel->where('tournament_id', $tournament['id'])->first();
-            $temp['public_url'] = '';
-            if($sharedTournament) $temp['public_url'] = base_url('/tournaments/shared/') . $sharedTournament['token'];
-
+            $temp['public_url'] = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
+            
             $participants = $this->participantModel->where('tournament_id', $tournament['id'])->findAll();
             if ($participants) {
                 $temp['participants_count'] = count($participants);
