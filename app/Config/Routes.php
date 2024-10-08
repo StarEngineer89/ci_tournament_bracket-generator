@@ -6,9 +6,6 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
-$routes->get('/participants', 'Home::participants');
-$routes->get('/brackets', 'Home::brackets');
-// $routes->match(['get', 'post'], '/player/(:any)', 'RenderAudioController::index/$1');
 
 $routes->get('profile', 'ProfileController::index');
 $routes->get('profile/change-email', 'ProfileController::changeEmail', ['as' => 'profile.change-email']);
@@ -16,14 +13,14 @@ $routes->post('profile/update-email', 'ProfileController::updateEmail');
 $routes->get('profile/change-password', 'ProfileController::changePassword', ['as' => 'profile.change-password']);
 $routes->post('profile/update-password', 'ProfileController::updatePassword');
 
-
 $routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
 $routes->get('auth/google', 'GoogleAuthController::login');
 $routes->get('auth/google/callback', 'GoogleAuthController::callback');
 
 $routes->get('/gallery', 'TournamentController::index');
 $routes->get('gallery/(:num)/view', 'TournamentController::view/$1');
-$routes->get('gallery/export', 'Home::export');
+$routes->get('gallery/export', 'TournamentController::exportGallery');
+
 $routes->group('tournaments', static function ($routes) {
     $routes->get('/', 'TournamentController::index');
     $routes->get('create', 'TournamentController::create');
@@ -34,7 +31,8 @@ $routes->group('tournaments', static function ($routes) {
     $routes->post('save-apply', 'TournamentController::saveApply');
 });
 $routes->group('participants', static function ($routes) {
-    $routes->get('/', 'Home::participants');
+    $routes->get('/', 'ParticipantsController::index');
+    $routes->get('export', 'Api\ParticipantsController::export');
 });
 
 $routes->post('consent', 'CookieConsent::consent');

@@ -31,11 +31,25 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
     scrollX: true,
     "columnDefs": [{
         "orderable": false,
-        "targets": [4]
+        "targets": [1, 4]
     }],
     // Add custom initComplete to initialize select all checkbox
     "initComplete": function(settings, json) {
-        console.log('table')
+        participantsTableRows = participantsTable.rows({
+            'search': 'applied'
+        }).nodes();
+
+        var nameColumns = $('td[data-label="name"]', participantsTableRows)
+        var names = []
+        nameColumns.each((i, element) => {
+            if (!names.includes(element.textContent.trim())) {
+                var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+                $('#participantNameFilter').append(option)
+
+                names.push(element.textContent.trim())
+            }
+        })
+
     },
     "columns": [{
             "data": null,
@@ -78,6 +92,11 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
     }
 });
+
+$('#participantNameFilter').on('change', function() {
+    var selectedUser = $(this).val().toLowerCase().trim();
+    participantsTable.columns(1).search(selectedUser).draw();
+});
 </script>
 <?= $this->endSection() ?>
 
@@ -91,12 +110,20 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                 <p>Note: By default, the top 100 participants are ranked by the number of tournaments they’ve won.</p>
             </div>
         </div>
+        <div class="buttons d-flex justify-content-end">
+            <a href="<?= base_url('participants/export') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
+        </div>
         <div class="table-responsive">
             <table id="participantLeaderboardTable" class="table align-middle">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Participant Name</th>
+                        <th scope="col">
+                            <label for="participantNameFilter">Participant Name</label>
+                            <select id="participantNameFilter" class="form-select form-select-sm">
+                                <option value="">All Users</option>
+                            </select>
+                        </th>
                         <th scope="col" class="text-center">Brackets Won</th>
                         <th scope="col" class="text-center">Tournaments Won</th>
                         <th scope="col">Tournaments List</th>

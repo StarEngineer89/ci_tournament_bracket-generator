@@ -298,4 +298,62 @@ class ParticipantsController extends BaseController
 
         return ['total_score' => $totalScore, 'top_score' => $topScore];
     }
+    
+    public function export(){
+        $participants = $this->participantsModel->findAll();
+        
+        $filename = 'participants' . date('Ymd') . '.csv';
+
+        header("Content-Type: text/csv");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+
+        $output = fopen('php://output', 'w');
+
+        // Add the CSV column headers
+        fputcsv($output, ['ID', 'Participant Name', 'Brackets Won', 'Tournaments Won', 'Tournaments List', 'Top Score', 'Accumulated Score', 'Votes']);
+
+        // Fetch the data and write it to the CSV
+        if ($participants) {
+            foreach ($participants as $participant) {
+                $brackets = $this->bracketsModel->where(['winner' => $participant['id']])->findAll();
+                $participant['brackets_won'] = ($brackets) ? count($brackets) : 0;
+
+                $finalBrackets = $this->bracketsModel->where(['winner' => $participant['id'], 'final_match' => 1])->findAll();
+                $participant['tournaments_won'] = ($finalBrackets) ? count($finalBrackets) : 0;
+                
+                $tournament_list = [];
+                if ($finalBrackets) {
+                    foreach ($finalBrackets as $f_bracket) {
+                        $tournament = $this->tournamentsModel->find($f_bracket['tournament_id']);
+                        if ($tournament) {
+                            $tournament_list[] = $tournament['name'];
+                        }
+                    }
+                }
+
+                $participant['tournaments_list'] = (count($tournament_list)) ? implode(', ', $tournament_list) : '';
+
+                $scores = $this->calculateScores($participant['id'], $brackets);
+                $participant['top_score'] = $scores['top_score'];
+                $participant['accumulated_score'] = $scores['total_score'];
+
+                $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
+                $participant['votes'] = ($votes) ? count($votes) : 0;
+                
+                fputcsv($output, [
+                    $participant['id'],
+                    $participant['name'],
+                    $participant['brackets_won'],
+                    $participant['tournaments_won'],
+                    $participant['tournaments_list'],
+                    $participant['top_score'],
+                    $participant['accumulated_score'],
+                    $participant['votes']
+                ]);
+            }
+        }
+
+        fclose($output);
+        exit;
+    }
 }
