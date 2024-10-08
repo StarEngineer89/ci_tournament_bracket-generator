@@ -287,14 +287,14 @@ class TournamentController extends BaseController
             if(!$shareSetting){
                 $config = new \Config\Encryption();
                 $token = hash_hmac('sha256', 'tournament_' . $tournament_id . "_created_by_" . $user_id . "_" . time(), $config->key);
-                $data = array(
+                $shareData = array(
                     'user_id' => $user_id,
                     'tournament_id' => $tournament_id,
                     'target' => 'p',
                     'permission' => SHARE_PERMISSION_VIEW,
                     'token' => $token
                 );
-                $shareSettingsModel->insert($data);
+                $shareSettingsModel->insert($shareData);
             }
         }
         /** End adding the tournament created by guest users to share table */
