@@ -164,12 +164,7 @@ $(document).on('ready', function () {
                         var votes = votesBox.cloneNode(true)
                         votes.textContent = teams[0].votes ? teams[0].votes : 0
                         // Set up the tooltip with HTML content (a button)
-                        votes.setAttribute('data-bs-toggle', 'tooltip');
-                        votes.setAttribute('title', 'Click to Vote a participant');
                         wrapper.appendChild(votes)
-
-                        // Initialize the tooltip using JavaScript
-                        const tooltip = new bootstrap.Tooltip(votes);
 
                         // Check if vote history is existing
                         let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
@@ -181,6 +176,11 @@ $(document).on('ready', function () {
                         if (!teams[0].voted) {
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teama.dataset.id
+                            voteBtn.setAttribute('data-bs-toggle', 'tooltip');
+                            voteBtn.setAttribute('title', 'Click here to vote');
+
+                            // Initialize the tooltip using JavaScript
+                            const tooltip = new bootstrap.Tooltip(voteBtn);
 
                             voteBtn.addEventListener('click', (event) => {
                                 submitVote(event)
@@ -259,13 +259,8 @@ $(document).on('ready', function () {
                         var votes = votesBox.cloneNode(true)
                         votes.textContent = teams[1].votes ? teams[1].votes : 0
                         // Set up the tooltip with HTML content (a button)
-                        votes.setAttribute('data-bs-toggle', 'tooltip');
-                        votes.setAttribute('title', 'Click to Vote a participant');
                         wrapper.appendChild(votes)
 
-                        // Initialize the tooltip using JavaScript
-                        const tooltip = new bootstrap.Tooltip(votes);
-                    
                         // Check if vote history is existing
                         let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
                         let vp_id = window.localStorage.getItem(storage_key)
@@ -277,6 +272,11 @@ $(document).on('ready', function () {
                             // Add "Vote" button
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teamb.dataset.id
+                            voteBtn.setAttribute('data-bs-toggle', 'tooltip');
+                            voteBtn.setAttribute('title', 'Click here to vote');
+
+                            // Initialize the tooltip using JavaScript
+                            const tooltip = new bootstrap.Tooltip(voteBtn);
 
                             voteBtn.addEventListener('click', (event) => {
                                 submitVote(event)
