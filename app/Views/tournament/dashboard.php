@@ -638,7 +638,7 @@ $(document).ready(function() {
                 "data": null, // The 'null' data property is used because this column doesn't have a specific data field
                 "render": function(data, type, row) {
                     // Render a checkbox with a value equal to the ID of the row
-                    return '<input type="checkbox" class="row-checkbox" value="' + row.id + '">';
+                    return '<input type="checkbox" class="item-checkbox row-checkbox" value="' + row.id + '">';
                 },
                 "orderable": false // Disable ordering for the checkbox column
             },
@@ -1937,7 +1937,7 @@ function confirmBulkAction() {
 // handling bulk action (e.g., delete)
 function bulkDelete() {
     var selectedIds = [];
-    var rows = table.rows({
+    var rows = tournamentsTable.rows({
         'search': 'applied'
     }).nodes();
     $('.item-checkbox:checked', rows).each(function() {
@@ -1973,7 +1973,7 @@ function bulkDelete() {
 
 function bulkReset() {
     var selectedIds = [];
-    var rows = table.rows({
+    var rows = tournamentsTable.rows({
         'search': 'applied'
     }).nodes();
     $('.item-checkbox:checked', rows).each(function() {
@@ -2004,7 +2004,7 @@ function bulkReset() {
 
 function bulkStatusUpdate() {
     var selectedIds = [];
-    var rows = table.rows({
+    var rows = tournamentsTable.rows({
         'search': 'applied'
     }).nodes();
     $('.item-checkbox:checked', rows).each(function() {
@@ -2041,7 +2041,7 @@ function bulkStatusUpdate() {
 
 function bulkArchive() {
     var selectedIds = [];
-    var rows = table.rows({
+    var rows = tournamentsTable.rows({
         'search': 'applied'
     }).nodes();
     $('.item-checkbox:checked', rows).each(function() {
@@ -2073,7 +2073,7 @@ function bulkArchive() {
 
 function bulkRestore() {
     var selectedIds = [];
-    var rows = table.rows({
+    var rows = tournamentsTable.rows({
         'search': 'applied'
     }).nodes();
     $('.item-checkbox:checked', rows).each(function() {
