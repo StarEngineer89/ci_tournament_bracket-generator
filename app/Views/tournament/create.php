@@ -356,13 +356,13 @@ $(document).ready(function() {
             return false;
         }
 
-        let duplications = _.chain(names).groupBy('lowercase').filter(function(v) {
+        let groupedNames = _.chain(names).groupBy('lowercase').filter(function(v) {
             return v.length > 1
         }).flatten().uniq().value()
 
-        if (duplications.length) {
+        if (groupedNames.length) {
             const groupedByLowercase = Object.values(
-                duplications.reduce((acc, name) => {
+                groupedNames.reduce((acc, name) => {
                     if (!acc[name.lowercase]) {
                         acc[name.lowercase] = [];
                     }
@@ -372,17 +372,20 @@ $(document).ready(function() {
             );
 
             let elements = []
+            let duplicatedParticipants = []
+            duplicates = []
             groupedByLowercase.forEach(group => {
                 group.forEach(ele => {
                     if (elements[ele.lowercase]) {
                         duplicates.push(ele.id)
+                        duplicatedParticipants.push(ele)
                     } else {
                         elements[ele.lowercase] = ele
                     }
                 })
             })
 
-            duplications = _.map(_.uniq(duplications, function(item) {
+            duplications = _.map(_.uniq(duplicatedParticipants, function(item) {
                 return item.name;
             }), function(item) {
                 return item.name

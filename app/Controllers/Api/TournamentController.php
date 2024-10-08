@@ -873,8 +873,14 @@ class TournamentController extends BaseController
             }
         }
 
+        if ($user_id) {
+            $participants = $participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->findAll();
+        } else {
+            $participants = $participantsModel->where(['tournament_id' => 0, 'sessionid' => $this->request->getPost('hash')])->findAll();
+        }
+
         // Return the tournaments as a JSON response
-        return $this->response->setJSON($participantsModel->where('tournament_id', 0)->findAll());
+        return $this->response->setJSON($participants);
     }
 
     public function getParticipants($tournament_id)
