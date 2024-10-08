@@ -56,19 +56,18 @@ $(document).on('ready', function () {
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="r' + g + '"></div>');
             
-            var roundName = $(`<div class="text-center p-2 m-1 border" style="height: auto" data-round-no="${g}"></div>`)
-            if (grouped[g][0].final_match && grouped[g][0].final_match !== "0") {
-                roundName.html("Round " + grouped[g][0].roundNo + ': Grand Final') 
-            } else {
-                let editIcon = ''
-                if (hasEditPermission) {
-                    editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
-                }
-
-                const round_ame = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}`
-
-                roundName.html(`<span class="round-name">${round_ame}</span> ${editIcon}`) 
+            let editIcon = ''
+            if (hasEditPermission) {
+                editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
             }
+            
+            let roundName = $(`<div class="text-center p-2 m-1 border" style="height: auto" data-round-no="${g}"></div>`)
+            let round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}`
+            if (grouped[g][0].final_match && grouped[g][0].final_match !== "0") {
+                round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}: Grand Final`
+            }
+
+            roundName.html(`<span class="round-name">${round_name}</span> ${editIcon}`)
             round.append(roundName)
 
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
@@ -323,7 +322,7 @@ $(document).on('ready', function () {
                 build: function ($triggerElement, e) {
                     let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
                     let items = {}
-                    if (!votingEnabled || ![votingMechanismRoundDurationCode, votingMechanismMaxVoteCode].includes(votingMechanism)) {
+                    if (!votingEnabled || ![votingMechanismRoundDurationCode, votingMechanismMaxVoteCode].includes(votingMechanism) || allowHostOverride) {
                         items.mark = {
                                 name: (!isWinner) ? "Mark as Winner" : "Unmark as winner",
                                 callback: (key, opt, e) => {

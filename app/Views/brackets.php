@@ -27,6 +27,7 @@ const incrementScore = Number(<?= ($tournament['increment_score']) ? $tournament
 const incrementScoreType = '<?= $tournament['increment_score_type'] ?>';
 let votingEnabled = <?= $votingEnabled ? $votingEnabled : 0 ?>;
 let votingMechanism = <?= $tournament['voting_mechanism'] ? $tournament['voting_mechanism'] : 1 ?>;
+let allowHostOverride = <?= $tournament['allow_host_override'] ? $tournament['allow_host_override'] : 0 ?>;
 const votingMechanismRoundDurationCode = <?= EVALUATION_VOTING_MECHANISM_ROUND?>;
 const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE?>;
 const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
