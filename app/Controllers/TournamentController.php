@@ -162,7 +162,7 @@ class TournamentController extends BaseController
 
             return redirect()->to('/gallery');
         }else{
-            if(time() - strtotime($settings['created_at']) > 24*60*60){
+            if($settings['user_id'] == 0 && (time() - strtotime($settings['created_at'])) > 24*60*60){
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "This link has been expired!"]);
                 $shareSettingModel->where(['token'=> $token])->delete();
