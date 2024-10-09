@@ -175,7 +175,7 @@ class TournamentController extends BaseController
             $temp['email'] = '';
             if($tournament['user_id'] > 0){
                 $user = $userModel->find($tournament['user_id']);
-                $userId = $userIdentityModel->find($tournament['user_id']);
+                $userId = $userIdentityModel->where(['user_id' => $tournament['user_id']])->first();
                 $temp['username'] = $user->username;
                 $temp['email'] = $userId->secret;
             }
