@@ -534,6 +534,10 @@ class BracketsController extends BaseController
                 $db->query('SET FOREIGN_KEY_CHECKS = 0;');
             }
 
+            if (!auth()->user() && $dbDriver === 'SQLite3') {
+                $db->query('PRAGMA foreign_keys = OFF');
+            }
+
             if ($this->tournamentRoundSettingsModel->save($setting)) {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                                       ->setJSON(['status' => 'success', 'message' => 'Round settings was saved successfully', 'setting' => $setting]);
@@ -544,6 +548,10 @@ class BracketsController extends BaseController
 
             if (!auth()->user() && $dbDriver === 'MySQLi') {
                 $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+            }
+
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('PRAGMA foreign_keys = ON');
             }
         }
         
