@@ -1395,7 +1395,7 @@ const changeSettings = (event) => {
                 $('#evaluationMethod').val(result.tournamentSettings.evaluation_method)
                 changeEvaluationMethod(document.getElementById('evaluationMethod'))
                 if (!result.tournamentSettings.voting_accessibility) {
-                    result.tournamentSettings.voting_accessibility = '<?= EVALUATION_VOTING_RESTRICTED ?>'
+                    result.tournamentSettings.voting_accessibility = '<?= EVALUATION_VOTING_UNRESTRICTED ?>'
                 }
                 $('#votingAccessbility').val(result.tournamentSettings.voting_accessibility)
                 changeVotingAccessbility(document.getElementById('votingAccessbility'))
