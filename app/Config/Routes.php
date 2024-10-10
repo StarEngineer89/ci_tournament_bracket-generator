@@ -106,6 +106,7 @@ $routes->group('api/shared', static function ($routes) {
         $routes->post('save-list', 'Api\BracketsController::createBrackets');
         $routes->put('update/(:num)', 'Api\BracketsController::updateBracket/$1');
         $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');
+        $routes->post('save-round', 'Api\BracketsController::saveRoundSettings');
     });
     
     $routes->group('participants', static function ($routes) {
