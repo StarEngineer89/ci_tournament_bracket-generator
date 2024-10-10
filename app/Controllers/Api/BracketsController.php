@@ -536,10 +536,10 @@ class BracketsController extends BaseController
 
             if ($this->tournamentRoundSettingsModel->save($setting)) {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                      ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'setting' => $setting]);
+                                      ->setJSON(['status' => 'success', 'message' => 'Round settings was saved successfully', 'setting' => $setting]);
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
-                                      ->setJSON(['status' => 'error', 'message' => 'Failed to save vote']);
+                                      ->setJSON(['status' => 'error', 'message' => 'Failed to save settings']);
             }
 
             if (!auth()->user() && $dbDriver === 'MySQLi') {
