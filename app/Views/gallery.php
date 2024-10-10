@@ -49,12 +49,6 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                 names.push(element.textContent.trim())
             }
         })
-
-        $('.btnCopy').on('click', function() {
-            var copyId = $(this).data("copyid");
-            copyClipboard(copyId);
-        });
-
     },
     "columns": [{
             "data": null,
@@ -116,7 +110,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                     return `
                         <div class="col-auto input-group">
                             <input type="text" class="form-control" id="tournamentURL_${row.id}" value="${row.public_url}" aria-label="Tournament URL" aria-describedby="urlCopy" readonly="">
-                            <button class="btn btn-outline-secondary input-group-text btnCopy" data-copyid="tournamentURL_${row.id}" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!">Copy</button>
+                            <button class="btn btn-outline-secondary input-group-text btnCopy" data-copyid="tournamentURL_${row.id}" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!" onclick="copyClipboard(tournamentURL_${row.id})">Copy</button>
                         </div>
                         `
                 } else {

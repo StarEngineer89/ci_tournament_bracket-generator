@@ -187,6 +187,7 @@ class TournamentController extends BaseController
             $temp['public_url'] = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
             
             $participants = $this->participantModel->where('tournament_id', $tournament['id'])->findAll();
+            $temp['participants_count'] = 0;
             if ($participants) {
                 $temp['participants_count'] = count($participants);
             }

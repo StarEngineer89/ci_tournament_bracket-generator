@@ -530,7 +530,7 @@ class BracketsController extends BaseController
 
             $db = \Config\Database::connect();
             $dbDriver = $db->DBDriver;
-            if (!auth()->user() && $dbDriver === 'MySQLi') {
+            if (!auth()->user()) {
                 $db->query('SET FOREIGN_KEY_CHECKS = 0;');
             }
 
@@ -542,7 +542,7 @@ class BracketsController extends BaseController
                                       ->setJSON(['status' => 'error', 'message' => 'Failed to save vote']);
             }
 
-            if (!auth()->user() && $dbDriver === 'MySQLi') {
+            if (!auth()->user()) {
                 $db->query('SET FOREIGN_KEY_CHECKS = 1;');
             }
         }
