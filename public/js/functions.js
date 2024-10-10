@@ -447,6 +447,7 @@ var changeVotingMechanism = (element) => {
         $('.evaluation-open-ended').addClass('d-none')
         $('#maxVotes').attr('required', false)
         $('#votingMechanism').removeClass('is-invalid')
+        $('.allow-host-override-setting').removeClass('d-none')
 
         /** Check if availability is enabled */
         if ($('#enableAvailability').is(':checked') == false) {
@@ -464,6 +465,7 @@ var changeVotingMechanism = (element) => {
         $('#enableAvailability').prop('required', false)
         $('.evaluation-vote-round-availability-required').addClass('d-none')
         $('#votingMechanism').removeClass('is-invalid')
+        $('.allow-host-override-setting').removeClass('d-none')
     }
 
     if (parseInt($(element).val()) == 3) {
