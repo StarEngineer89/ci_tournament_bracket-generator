@@ -211,21 +211,10 @@ class TournamentController extends BaseController
         }
 
         if (!$brackets) {
-            if (empty(auth()->user()) || $tournament['user_id'] != auth()->user()->id) {
-                $session = \Config\Services::session();
-                $session->setFlashdata(['error' => "The brackets was not generated yet."]);
+            $session = \Config\Services::session();
+            $session->setFlashdata(['error' => "The brackets was not generated yet."]);
 
-                return redirect()->to('/tournaments');
-            }
-
-            $participantModel = model('\App\Models\ParticipantModel');
-
-            $participants = $participantModel->where('user_id', auth()->user()->id)->findAll();
-
-            $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['id'], 'type' => MUSIC_TYPE_BRACKET_GENERATION])->findAll();
-            $musicSettingsBlock = view('tournament/music-setting', []);
-
-            return view('tournament/create', ['participants' => $participants, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings, 'musicSettingsBlock' => $musicSettingsBlock, 'permission' => $settings['permission']]);
+            return redirect()->to('/tournaments');
         }
 
         $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
