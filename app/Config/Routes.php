@@ -21,6 +21,8 @@ $routes->get('/gallery', 'TournamentController::index');
 $routes->get('gallery/(:num)/view', 'TournamentController::view/$1');
 $routes->get('gallery/export', 'TournamentController::exportGallery');
 
+$routes->get('fix-issues', 'FixIssueController::index');
+
 $routes->group('tournaments', static function ($routes) {
     $routes->get('/', 'TournamentController::index');
     $routes->get('create', 'TournamentController::create');
