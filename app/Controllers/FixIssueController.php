@@ -19,9 +19,13 @@ class FixIssueController extends BaseController
             foreach ($shareSettings as $setting) {
                 $tournament = $tournamentModel->find($setting['tournament_id']);
 
-                if ($setting['user_id'] != $tournament['user_id']) {
-                    $setting['user_id'] = $tournament['user_id'];
-                    $shareSettingModel->save($setting);
+                if ($tournament) {
+                    if ($setting['user_id'] != $tournament['user_id']) {
+                        $setting['user_id'] = $tournament['user_id'];
+                        $shareSettingModel->save($setting);
+                    }
+                } else {
+                    $shareSettingModel->delete($setting['id']);
                 }
             }
         }
