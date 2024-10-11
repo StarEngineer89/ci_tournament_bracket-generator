@@ -386,6 +386,7 @@ class TournamentController extends BaseController
             $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
 
             $user = $userModel->find($tournament['user_id']);
+            $username = ($user) ? $user->username : '';
 
             $createdTime = $tournament['created_at'];
             fputcsv($output, [
@@ -393,7 +394,7 @@ class TournamentController extends BaseController
                 $tournament['name'],
                 $type,
                 $statusLabel,
-                $user->username,
+                $username,
                 $createdTime,
                 base_url('gallery/' . $tournamentId . '/view')
             ]);
