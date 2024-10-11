@@ -386,7 +386,7 @@ class TournamentController extends BaseController
             $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
 
             $user = $userModel->find($tournament['user_id']);
-            $username = ($user) ? $user->username : '';
+            $username = ($user) ? $user->username : 'Guest';
 
             $createdTime = $tournament['created_at'];
             fputcsv($output, [
