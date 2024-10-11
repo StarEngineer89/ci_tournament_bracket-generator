@@ -438,7 +438,10 @@
   background-color: #0056b3;
   /* Darker shade of blue on hover */
 }
-
+.dataTables_scrollHeadInner,
+.dataTables_scrollHeadInner .table {
+  min-width: 100%;
+}
 #tournamentTable_filter,
 #tournamentGalleryTable_filter,
 #logActionsTable_filter,

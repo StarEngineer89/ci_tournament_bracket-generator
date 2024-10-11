@@ -1005,4 +1005,38 @@ class TournamentController extends BaseController
         return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
                               ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
+    public function exportLogs()
+    {
+        $tournament_id = $this->request->getGet('tid');
+        $actionHistory = $this->getActionHistory($tournament_id);
+        $data = json_decode($actionHistory, true);
+        $actionHistory = $data['history'];
+
+        $filename = 'tournaments_' . date('Ymd') . '.csv';
+
+        header("Content-Type: text/csv");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+
+        $output = fopen('php://output', 'w');
+
+        // Add the CSV column headers
+        fputcsv($output, ['No', 'User', 'Action Type', 'Description', 'Time']);
+
+        // Fetch the data and write it to the CSV
+        foreach ($actionHistory as $index => $action) {
+            $username = ($action['name']) ? $action['name'] : 'Guest';
+
+            fputcsv($output, [
+                $index + 1,
+                $username,
+                $action['type'],
+                $action['description'],
+                $action['time']
+            ]);
+        }
+
+        fclose($output);
+        exit;
+    }
+
 }

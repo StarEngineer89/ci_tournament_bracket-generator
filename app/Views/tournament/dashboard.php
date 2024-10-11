@@ -242,6 +242,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="buttons d-flex justify-content-end">
+                    <a href="<?= base_url('tournaments/export-logs') ?>" class="btn btn-export-logs btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
+                </div>
                 <div class="table-responsive">
                     <table id="logActionsTable" class="action-history table align-middle">
                         <thead>
@@ -1595,6 +1598,7 @@ function drawActionHistoryTable(tournament_id) {
             actionLogsTable.clear()
             actionLogsTable.rows.add(rows).draw()
             // tbody.html(rows);
+            $('#viewLogModal .btn-export-logs').attr('href', '<?= base_url("tournaments/export-logs?tid=") ?>' + result.tournament_id)
         },
         error: function(error) {
             console.log(error);
