@@ -166,6 +166,7 @@ class TournamentController extends BaseController
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "This link has been expired!"]);
                 $shareSettingModel->where(['token'=> $token])->delete();
+                $tournamentModel->where(['tournament_id' => $settings['tournament_id']])->delete();
 
                 return redirect()->to('/gallery');
             }
