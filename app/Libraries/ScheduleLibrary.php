@@ -31,7 +31,8 @@ class ScheduleLibrary
             $endDate = new \DateTime($tournamentSettings['available_end']);
 
             $tournamentDuration = $endDate->diff($startDate);
-            $roundDuration = floor(intval($tournamentDuration->days) / $maxRounds->roundNo);
+            
+            $roundDuration = ($maxRounds && $maxRounds->roundNo) ? floor(intval($tournamentDuration->days) / $maxRounds->roundNo) : intval($tournamentDuration->days);
 
             for ($i = 1; $i < $maxRounds->roundNo; $i++) {
                 $scheduleTime = $startDate->modify("+$roundDuration days")->format('Y-m-d 00:00:00');
