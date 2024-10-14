@@ -77,7 +77,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                 if (row.tournaments_list) {
                     let listHtml = ''
                     row.tournaments_list.forEach((tournament, i) => {
-                        listHtml += `<a href="<?= base_url('tournaments') ?>${tournament.id}/view">${tournament.name}</a>`
+                        listHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
                         if (i < row.tournaments_list.length - 1) {
                             listHtml += ', '
                         }

@@ -690,9 +690,9 @@ $(document).on('ready', function () {
                 pidBox.textContent = parseInt(ele.data('p_order')) + 1
                 $(next_bracketObj).prepend(pidBox)
 
-                    var wrapper = document.createElement('span')
-                    wrapper.classList.add('score-wrapper')
-                    wrapper.classList.add('d-flex')
+                var wrapper = document.createElement('span')
+                wrapper.classList.add('score-wrapper')
+                wrapper.classList.add('d-flex')
 
                 if (isScoreEnabled) {
                     var scoreBox = document.createElement('span')
@@ -803,7 +803,7 @@ $(document).on('ready', function () {
             data: JSON.stringify({ action_code: unmarkWinnerActionCode, participant: opt.$trigger.data('id')}),
             success: function (result) {
                 ws.send('unmarked!');
-                ele.find('.score').remove()
+                // ele.find('.score').remove()
 
                 if (isScoreEnabled) {
                     var scoreBox = document.createElement('span')
@@ -821,8 +821,7 @@ $(document).on('ready', function () {
                         }
                     }
                     
-                    scoreBox.textContent = scorePoint
-                    ele.append(scoreBox)
+                    ele.find('.score').textContent = scorePoint
                 }
 
 
