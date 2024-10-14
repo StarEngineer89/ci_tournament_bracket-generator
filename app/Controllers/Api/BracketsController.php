@@ -140,7 +140,7 @@ class BracketsController extends BaseController
             $this->bracketsModel->save($bracket);
 
             if (isset($req->is_final) && $req->is_final) {
-                $nextBracket = $this->bracketsModel->find(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
+                $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
                 $nextBracket['winner'] = $req->winner;
                 $this->bracketsModel->save($nextBracket);
             }
@@ -151,7 +151,7 @@ class BracketsController extends BaseController
             $this->bracketsModel->save($bracket);
 
             if (isset($req->is_final) && $req->is_final) {
-                $nextBracket = $this->bracketsModel->find(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
+                $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
                 $nextBracket['winner'] = null;
                 $this->bracketsModel->save($nextBracket);
             }
