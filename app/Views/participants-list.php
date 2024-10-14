@@ -72,7 +72,19 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             "className": "text-center"
         },
         {
-            "data": "tournaments_list"
+            "data": null,
+            "render": function(data, type, row, meta) {
+                if (row.tournaments_list) {
+                    let listHtml = ''
+                    row.tournaments_list.forEach((tournament, i) => {
+                        listHtml += `<a href=<?= base_url('tournaments/view') ?>/${tournament.id}>${tournament.name}</a>`
+                        if (i < row.tournaments_list.length - 1) {
+                            listHtml += ', '
+                        }
+                    })
+                }
+                return ``; // Display index number
+            }
         },
         {
             "data": "top_score",

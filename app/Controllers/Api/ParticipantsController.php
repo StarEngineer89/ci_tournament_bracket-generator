@@ -48,12 +48,12 @@ class ParticipantsController extends BaseController
                         foreach ($finalBrackets as $f_bracket) {
                             $tournament = $this->tournamentsModel->find($f_bracket['tournament_id']);
                             if ($tournament) {
-                                $tournament_list[] = $tournament['name'];
+                                $tournament_list[] = ['name' => $tournament['name'], 'id' => $tournament['id']];
                             }
                         }
                     }
 
-                    $participant['tournaments_list'] = (count($tournament_list)) ? implode(', ', $tournament_list) : '';
+                    $participant['tournaments_list'] = $tournament_list;
 
                     $scores = $this->calculateScores($participant['id'], $brackets);
                     $participant['top_score'] = $scores['top_score'];
