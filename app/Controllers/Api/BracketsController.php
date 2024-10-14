@@ -138,21 +138,32 @@ class BracketsController extends BaseController
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
             $bracket['winner'] = $req->winner;
             $this->bracketsModel->save($bracket);
+
+            if (isset($req->is_final) && $req->is_final) {
+                $nextBracket = $this->bracketsModel->find(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
+                $nextBracket['winner'] = $req->winner;
+                $this->bracketsModel->save($nextBracket);
+            }
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
             $bracket['winner'] = null;
             $this->bracketsModel->save($bracket);
+
+            if (isset($req->is_final) && $req->is_final) {
+                $nextBracket = $this->bracketsModel->find(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
+                $nextBracket['winner'] = null;
+                $this->bracketsModel->save($nextBracket);
+            }
         }
         /** Change the tournament status
          *  If mark as winner in final, set status to completed
          *  If unmark a winner, set status to progress
          */
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER && isset($req->is_final) && $req->is_final) {
-            $tournamentModel = model('\App\Models\TournamentModel');
-            $tournament = $tournamentModel->find($bracket['tournament_id']);
+            $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
             $tournament['status'] = TOURNAMENT_STATUS_COMPLETED;
-            $tournamentModel->save($tournament);
+            $this->tournamentsModel->save($tournament);
         }
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER && isset($req->is_final) && $req->is_final) {
             $tournamentModel = model('\App\Models\TournamentModel');
@@ -162,8 +173,7 @@ class BracketsController extends BaseController
         }
 
         /** Update tournament searchable data  */
-        $tournament_model = model('\App\Models\TournamentModel');
-        $tournament = $tournament_model->find($bracket['tournament_id']);
+        $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
         
         $participant_names_string = '';
@@ -178,7 +188,7 @@ class BracketsController extends BaseController
             }
         }
         $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
-        $tournament_model->save($tournament);
+        $this->tournamentsModel->save($tournament);
 
         /**
          * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
