@@ -82,7 +82,10 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                             listHtml += ', '
                         }
                     })
+
+                    return listHtml
                 }
+
                 return ``; // Display index number
             }
         },
