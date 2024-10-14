@@ -47,9 +47,9 @@ class BracketsController extends BaseController
                 }
                 if ($teams[0]) {
                     if ($tournament_settings['voting_retain']) {
-                        $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'round_no' => $bracket['roundNo']])->findAll();
-                    } else {
                         $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id']])->findAll();
+                    } else {
+                        $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'round_no' => $bracket['roundNo']])->findAll();
                     }
                     $teams[0]['votes'] = count($votes_0);
 
@@ -61,9 +61,9 @@ class BracketsController extends BaseController
                 }
                 if ($teams[1]) {
                     if ($tournament_settings['voting_retain']) {
-                        $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'round_no' => $bracket['roundNo']])->findAll();
-                    } else {
                         $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id']])->findAll();
+                    } else {
+                        $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'round_no' => $bracket['roundNo']])->findAll();
                     }
                     $teams[1]['votes'] = count($votes_1);
                     

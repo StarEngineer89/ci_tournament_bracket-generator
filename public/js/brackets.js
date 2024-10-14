@@ -173,7 +173,7 @@ $(document).on('ready', function () {
                             teams[0].voted = true
                         }
 
-                        if (!teams[0].voted) {
+                        if (!teams[0].voted && teams[0].votes < maxVoteCount) {
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teama.dataset.id
                             voteBtn.setAttribute('data-bs-toggle', 'tooltip');
@@ -268,7 +268,7 @@ $(document).on('ready', function () {
                             teams[1].voted = true
                         }
 
-                        if (!teams[1].voted) {
+                        if (!teams[1].voted && teams[1].votes < maxVoteCount) {
                             // Add "Vote" button
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teamb.dataset.id
