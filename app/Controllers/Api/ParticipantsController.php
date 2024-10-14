@@ -65,6 +65,9 @@ class ParticipantsController extends BaseController
                     $newList[] = $participant;
                 }
 
+                $keys = array_column($newList, 'top_score');
+                array_multisort($keys, SORT_DESC, $newList);
+
                 $participants = $newList;
             }
             
