@@ -26,22 +26,26 @@ class VoteLibrary
         $currentBracket['winner'] = $voteData['participant_id'];
         $this->bracketsModel->save($currentBracket);
         
-        $brackets = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'nextGame' => $currentBracket['nextGame'], 'roundNo' => $voteData['round_no']])->findAll();
-        $index = 0;
-        if ($brackets) {
-            foreach ($brackets as $key => $bracket) {
-                if ($bracket['id'] == $voteData['bracket_id']) {
+        $brackets = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'nextGame' => $currentBracket['nextGame'], 'roundNo' => $voteData['round_no']])->first();
+        
+        $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame']])->first();
+        $participant = $this->participantsModel->find($voteData['participant_id']);
+        
+        if ($nextBracket) {
+            $index = 0;
+            $lastGames = json_decode($nextBracket['lastGames']);
+            
+            foreach ($lastGames as $key => $value) {
+                if ($value == $voteData['bracket_id']) {
                     $index = $key;
                 }
             }
-        }
 
-        $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame']])->first();
-        $participant = $this->participantsModel->find($voteData['participant_id']);
-        $teams = json_decode($nextBracket['teamnames']);
-        $teams[$index] = ['id' => $participant['id'], 'name' => $participant['name'], 'image' => $participant['image']];
-        $nextBracket['teamnames'] = json_encode($teams);
-        $this->bracketsModel->save($nextBracket);
+            $teams = json_decode($nextBracket['teamnames']);
+            $teams[$index] = ['id' => $participant['id'], 'name' => $participant['name'], 'image' => $participant['image']];
+            $nextBracket['teamnames'] = json_encode($teams);
+            $this->bracketsModel->save($nextBracket);
+        }
         
         return true;
     }

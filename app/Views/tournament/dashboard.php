@@ -1303,7 +1303,6 @@ const changeSettings = (event) => {
             $('#music-settings-panel').html(result.html).promise().done(function() {
                 // Once the HTML is loaded, apply the inputmask
                 $('#music-settings-panel').find('input.startAt[type="text"], input.stopAt[type="text"]').each((i, element) => {
-                    console.log("MASK: ", element);
                     $(element).inputmask(
                         "99:59:59", {
                             placeholder: "00:00:00",

@@ -356,6 +356,22 @@ class TournamentController extends BaseController
         }
         if ($this->request->getPost('visibility')) {
             $tournament['visibility'] = ($this->request->getPost('visibility') == 'on') ? 1 : 0;
+
+            if ($this->request->getPost('visibility') == 'on') {
+                $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'user_id' => $tournament['user_id']])->first();
+                if(!$shareSetting){
+                    $config = new \Config\Encryption();
+                    $token = hash_hmac('sha256', 'tournament_' . $tournament_id . "_created_by_" . $tournament['user_id'] . "_" . time(), $config->key);
+                    $shareData = array(
+                        'user_id' => $tournament['user_id'],
+                        'tournament_id' => $tournament_id,
+                        'target' => 'p',
+                        'permission' => SHARE_PERMISSION_VIEW,
+                        'token' => $token
+                    );
+                    $this->shareSettingModel->insert($shareData);
+                }
+            }
         }
         if ($this->request->getPost('shuffle_enabled')) {
             $tournament['shuffle_enabled'] = ($this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
@@ -968,17 +984,20 @@ class TournamentController extends BaseController
 
                 $logActionsModel->insert($insert_data);
 
-                /** Get Votes count in a round */
+                /** Mark Participant win if max vote count reaches */
+                $tournament_settings = $this->tournamentModel->find($voteData['tournament_id']);
                 $search_params = array_diff_key($voteData, array('bracket_id' => true, 'user_id' => true));
+                $vote_max_limit = $tournament_settings['max_vote_value'];
+                if ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_retain']) {
+                    $vote_max_limit = $vote_max_limit * $voteData['round_no'];
+                    $search_params = array_diff_key($voteData, array('bracket_id' => true, 'user_id' => true, 'round_no' => true));
+                }
+                
+                /** Get Votes count in a round */
                 $votes = $voteModel->where($search_params)->findAll();
 
                 $voteData['votes'] = count($votes);
 
-                $tournament_settings = $this->tournamentModel->find($voteData['tournament_id']);
-                $vote_max_limit = $tournament_settings['max_vote_value'];
-                if ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_retain']) {
-                    $vote_max_limit = $vote_max_limit * $voteData['round_no'];
-                }
                 if ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE && $voteData['votes'] >= $vote_max_limit) {
                     $voteLibrary = new VoteLibrary();
                     $result = $voteLibrary->markWinParticipant($voteData);

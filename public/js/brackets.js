@@ -36,16 +36,13 @@ $(document).on('ready', function () {
 
         document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
             var tooltip = new bootstrap.Tooltip(element)
-            $(element).on('click', function () {
-                console.log('click')
-            })
         })
     }
 
     /*
      * Inject our brackets
      */
-    function renderBrackets(struct) {
+function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
         var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 240 * groupCount + "px" + '"></div>'),
@@ -173,15 +170,9 @@ $(document).on('ready', function () {
                             teams[0].voted = true
                         }
 
-                        if (!teams[0].voted && (maxVoteCount > 0 && teams[0].votes < maxVoteCount)) {
+                        if (!teams[0].voted && (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount)) {
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teama.dataset.id
-                            voteBtn.setAttribute('data-bs-toggle', 'tooltip');
-                            voteBtn.setAttribute('title', 'Click here to vote');
-
-                            // Initialize the tooltip using JavaScript
-                            const tooltip = new bootstrap.Tooltip(voteBtn);
-
                             voteBtn.addEventListener('click', (event) => {
                                 submitVote(event)
                             })
@@ -268,16 +259,10 @@ $(document).on('ready', function () {
                             teams[1].voted = true
                         }
 
-                        if (!teams[1].voted && (maxVoteCount > 0 && teams[1].votes < maxVoteCount)) {
+                        if (!teams[1].voted && (maxVoteCount > 0 && teams[1].votes_in_round < maxVoteCount)) {
                             // Add "Vote" button
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teamb.dataset.id
-                            voteBtn.setAttribute('data-bs-toggle', 'tooltip');
-                            voteBtn.setAttribute('title', 'Click here to vote');
-
-                            // Initialize the tooltip using JavaScript
-                            const tooltip = new bootstrap.Tooltip(voteBtn);
-
                             voteBtn.addEventListener('click', (event) => {
                                 submitVote(event)
                             })

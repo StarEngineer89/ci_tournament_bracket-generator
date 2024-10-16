@@ -42,39 +42,44 @@ class BracketsController extends BaseController
                 /** Get the counts of votes and assign to the teamnames */
                 $teams = json_decode($bracket['teamnames'], true);
                 // Check if user voted for the bracket
-                if (auth()->user()) {
-                    $vote_in_bracket = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'user_id' => auth()->user()->id])->first();
-                }
+                $vote_in_bracket = auth()->user() ? $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'user_id' => auth()->user()->id])->first() : null;
+                
                 if ($teams[0]) {
+                    $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'round_no' => $bracket['roundNo']])->findAll();
                     if ($tournament_settings['voting_retain']) {
                         $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id']])->findAll();
                     } else {
-                        $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'round_no' => $bracket['roundNo']])->findAll();
+                        $votes_0 = $votes_in_round;
                     }
                     $teams[0]['votes'] = count($votes_0);
+                    $teams[0]['votes_in_round'] = count($votes_in_round);
+                    $teams[0]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[0]['id']) ? true : false;
 
-                    if (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[0]['id']) {
-                        $teams[0]['voted'] = true;
-                    } else {
-                        $teams[0]['voted'] = false;
+                    if (!isset($teams[0]['order'])) {
+                        $participant = $this->participantsModel->find($teams[0]['id']);
+                        $teams[0]['order'] = $participant['order'];
                     }
                 }
+
                 if ($teams[1]) {
+                    $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'round_no' => $bracket['roundNo']])->findAll();
                     if ($tournament_settings['voting_retain']) {
                         $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id']])->findAll();
                     } else {
-                        $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'round_no' => $bracket['roundNo']])->findAll();
+                        $votes_1 = $votes_in_round;
                     }
                     $teams[1]['votes'] = count($votes_1);
-                    
-                    if (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[1]['id']) {
-                        $teams[1]['voted'] = true;
-                    } else {
-                        $teams[1]['voted'] = false;
+                    $teams[1]['votes_in_round'] = count($votes_in_round);
+                    $teams[1]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[1]['id']) ? true : false;
+
+                    if (!isset($teams[1]['order'])) {
+                        $participant = $this->participantsModel->find($teams[1]['id']);
+                        $teams[1]['order'] = $participant['order'];
                     }
                 }
+                
                 $bracket['teamnames'] = json_encode($teams);
-
+                
                 /** Get round name */
                 $roundSetting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
                 if ($roundSetting) {
