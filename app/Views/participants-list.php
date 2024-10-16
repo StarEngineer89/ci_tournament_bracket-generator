@@ -3,14 +3,38 @@
 <?= $this->section('title') ?>Tournament Participants<?= $this->endSection() ?>
 
 <?= $this->section('pageStyles') ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.0/themes/base/jquery-ui.min.css" integrity="sha512-F8mgNaoH6SSws+tuDTveIu+hx6JkVcuLqTQ/S/KJaHJjGc8eUxIrBawMnasq2FDlfo7FYsD8buQXVwD+0upbcA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+<style>
+* {
+    font-family: Corbel;
+}
+
+p,
+div,
+input {
+    font-size: 18px;
+}
+
+.ui-autocomplete {
+    cursor: pointer;
+    height: 120px;
+    overflow-y: scroll;
+}
+
+a {
+    color: blue;
+}
+</style>
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.0/jquery-ui.min.js" integrity="sha512-MlEyuwT6VkRXExjj8CdBKNgd+e2H+aYZOCUaCrt9KRk6MlZDOs91V1yK22rwm8aCIsb5Ec1euL8f0g58RKT/Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script type="text/javascript">
 var participantsTable = null;
 var participantsTableRows;
+var participantNames = [];
 
 participantsTable = $('#participantLeaderboardTable').DataTable({
     "searching": true,
@@ -40,16 +64,26 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         }).nodes();
 
         var nameColumns = $('td[data-label="name"]', participantsTableRows)
-        var names = []
         nameColumns.each((i, element) => {
-            if (!names.includes(element.textContent.trim())) {
-                var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
-                $('#participantNameFilter').append(option)
-
-                names.push(element.textContent.trim())
+            if (!participantNames.includes(element.textContent.trim())) {
+                participantNames.push(element.textContent.trim())
             }
         })
-
+        $('#pt-names').autocomplete({
+            source: participantNames,
+            minLength: 0,
+            scroll: true,
+            change: function(event, ui) {
+                var selectedUser = $(this).val().toLowerCase().trim();
+                participantsTable.columns(1).search(selectedUser).draw();
+            },
+            close: function(event, ui) {
+                var selectedUser = $(this).val().toLowerCase().trim();
+                participantsTable.columns(1).search(selectedUser).draw();
+            }
+        }).focus(function() {
+            $(this).autocomplete("search", "");
+        })
     },
     "columns": [{
             "data": null,
@@ -107,11 +141,6 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
     }
 });
-
-$('#participantNameFilter').on('change', function() {
-    var selectedUser = $(this).val().toLowerCase().trim();
-    participantsTable.columns(1).search(selectedUser).draw();
-});
 </script>
 <?= $this->endSection() ?>
 
@@ -135,9 +164,7 @@ $('#participantNameFilter').on('change', function() {
                         <th scope="col">#</th>
                         <th scope="col">
                             <label for="participantNameFilter">Participant Name</label>
-                            <select id="participantNameFilter" class="form-select form-select-sm">
-                                <option value="">All Users</option>
-                            </select>
+                            <input type="text" id="pt-names" class="form-control form-control-sm" />
                         </th>
                         <th scope="col" class="text-center">Brackets Won</th>
                         <th scope="col" class="text-center">Tournaments Won</th>
