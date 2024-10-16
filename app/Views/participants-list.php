@@ -18,7 +18,7 @@ input {
 
 .ui-autocomplete {
     cursor: pointer;
-    height: 120px;
+    height: 300px;
     overflow-y: scroll;
 }
 
