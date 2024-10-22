@@ -49,12 +49,15 @@ $(document).ready(function() {
     const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {
         'localization': {
             format: 'yyyy-MM-dd HH:mm'
-        }
+        },
+        restrictions: {
+            minDate: new Date(),
+        },
     });
     const linked2 = new tempusDominus.TempusDominus(document.getElementById('endAvPicker'), {
         useCurrent: false,
         'localization': {
-            format: 'yyyy-MM-dd HH:mm:ss'
+            format: 'yyyy-MM-dd HH:mm'
         }
     });
 
@@ -97,14 +100,39 @@ $(document).ready(function() {
 
     $('#submit').on('click', function(event) {
         const form = document.getElementById('tournamentForm');
-        if (!form.checkValidity()) {
-            event.preventDefault()
-            event.stopPropagation()
-            form.classList.add('was-validated');
-            return false;
-        }
 
         let isValid = true;
+
+        if (document.getElementById('enableAvailability').checked) {
+            const currentDate = new Date()
+            const startDate = new Date(document.getElementById('startAvPickerInput').value)
+            const endDate = new Date(document.getElementById('endAvPickerInput').value)
+
+            if (startDate > endDate) {
+                isValid = false
+                document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('availability-end-date-error').textContent = "Stop date must be greater than start date."
+                document.getElementById('availability-end-date-error').classList.remove('d-none')
+            }
+
+            if (startDate < currentDate) {
+                isValid = false
+                document.getElementById('availability-start-date-error').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('availability-start-date-error').textContent = "You cannot select a past date/time!"
+                document.getElementById('availability-start-date-error').classList.remove('d-none')
+            } else {
+                document.getElementById('availability-start-date-error').classList.add('d-none')
+            }
+
+            if (endDate < currentDate) {
+                isValid = false
+                document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('availability-end-date-error').textContent = "You cannot select a past date/time!"
+                document.getElementById('availability-end-date-error').classList.remove('d-none')
+            } else {
+                document.getElementById('availability-end-date-error').classList.add('d-none')
+            }
+        }
 
         $('.music-setting').each((i, settingBox) => {
             const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
@@ -124,7 +152,10 @@ $(document).ready(function() {
             }
         })
 
-        if (!isValid) {
+        if (!isValid || !form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            form.classList.add('was-validated');
             return false;
         }
 

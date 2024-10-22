@@ -44,7 +44,9 @@
 #tournamentSettings input.form-control-sm {
   max-width: 60px;
 }
-
+.note-editor {
+  max-width: 100%;
+}
 .participants-box {
   max-width: 500px;
 }

@@ -371,17 +371,27 @@ $(document).ready(function() {
     const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {
         'localization': {
             format: 'yyyy-MM-dd HH:mm'
-        }
+        },
+        restrictions: {
+            minDate: new Date(),
+        },
     });
     const linked2 = new tempusDominus.TempusDominus(document.getElementById('endAvPicker'), {
         useCurrent: false,
         'localization': {
-            format: 'yyyy-MM-dd HH:mm:ss'
+            format: 'yyyy-MM-dd HH:mm'
         }
     });
 
     //using event listeners
     linkedPicker1Element.addEventListener('change.td', (e) => {
+        let startDate = e.detail.date
+        let endDate = new Date(document.getElementById('endAvPickerInput').value)
+
+        if (startDate > endDate) {
+            console.log("end date invalid")
+        }
+
         linked2.updateOptions({
             restrictions: {
                 minDate: e.detail.date,
@@ -1027,14 +1037,39 @@ $(document).ready(function() {
 
     $('#submit').on('click', function() {
         const form = document.getElementById('tournamentForm');
-        if (!form.checkValidity()) {
-            event.preventDefault()
-            event.stopPropagation()
-            form.classList.add('was-validated');
-            return false;
-        }
 
         let isValid = true;
+
+        if (document.getElementById('enableAvailability').checked) {
+            const currentDate = new Date()
+            const startDate = new Date(document.getElementById('startAvPickerInput').value)
+            const endDate = new Date(document.getElementById('endAvPickerInput').value)
+
+            if (startDate > endDate) {
+                isValid = false
+                document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('availability-end-date-error').textContent = "Stop date must be greater than start date."
+                document.getElementById('availability-end-date-error').classList.remove('d-none')
+            }
+
+            if (startDate < currentDate) {
+                isValid = false
+                document.getElementById('availability-start-date-error').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('availability-start-date-error').textContent = "You cannot select a past date/time!"
+                document.getElementById('availability-start-date-error').classList.remove('d-none')
+            } else {
+                document.getElementById('availability-start-date-error').classList.add('d-none')
+            }
+
+            if (endDate < currentDate) {
+                isValid = false
+                document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('availability-end-date-error').textContent = "You cannot select a past date/time!"
+                document.getElementById('availability-end-date-error').classList.remove('d-none')
+            } else {
+                document.getElementById('availability-end-date-error').classList.add('d-none')
+            }
+        }
 
         $('.music-setting').each((i, settingBox) => {
             const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
@@ -1054,7 +1089,10 @@ $(document).ready(function() {
             }
         })
 
-        if (!isValid) {
+        if (!isValid || !form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+            form.classList.add('was-validated');
             return false;
         }
 
@@ -1354,8 +1392,15 @@ const changeSettings = (event) => {
                 }
                 if (result.tournamentSettings.availability == 1) {
                     $('#enableAvailability').attr('checked', true);
-                    $('#startAvPickerInput').val(result.tournamentSettings.available_start);
-                    $('#endAvPickerInput').val(result.tournamentSettings.available_end);
+
+                    const [startDate, startTime] = result.tournamentSettings.available_start.split(' ');
+                    const [startHour, startMinute] = startTime.split(':');
+
+                    const [endDate, endTime] = result.tournamentSettings.available_end.split(' ');
+                    const [endHour, endMinute] = endTime.split(':');
+
+                    $('#startAvPickerInput').val(`${startDate} ${startHour}:${startMinute}`);
+                    $('#endAvPickerInput').val(`${endDate} ${endHour}:${endMinute}`);
                 } else {
                     $('#enableAvailability').attr('checked', false);
                     $('#startAvPickerInput').val('');

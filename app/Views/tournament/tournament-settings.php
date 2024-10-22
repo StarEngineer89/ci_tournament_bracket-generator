@@ -39,22 +39,23 @@
                 <div class="col-6">
                     <div class="input-group" id="startAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
                         <div class="input-group-text">Start</div>
-                        <input type="text" name="startAvPicker" class="form-control datetime startAv" id="startAvPickerInput" required>
+                        <input type="text" name="startAvPicker" class="form-control datetime startAv" id="startAvPickerInput" pattern="^(19[0-9]{2}|20[0-9]{2})-\d{2}-\d{2} \d{2}:\d{2}$" required readonly>
                         <span class="input-group-text" data-td-target="#startAvPicker" data-td-toggle="datetimepicker">
                             <i class="fas fa-calendar"></i>
                         </span>
                     </div>
+                    <div class="invalid-feedback d-none" id="availability-start-date-error"></div>
                 </div>
 
                 <div class="col-6">
                     <div class="input-group" id="endAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
                         <div class="input-group-text">End</div>
-                        <input type="text" name="endAvPicker" class="form-control datetime endAv" id="endAvPickerInput" required>
+                        <input type="text" name="endAvPicker" class="form-control datetime endAv" id="endAvPickerInput" pattern="^(19[0-9]{2}|20[0-9]{2})-\d{2}-\d{2} \d{2}:\d{2}$" required readonly>
                         <span class="input-group-text" data-td-target="#endAvPicker" data-td-toggle="datetimepicker">
                             <i class="fas fa-calendar"></i>
                         </span>
                     </div>
-                    <div class="invalid-feedback d-none" id="stop-time-error-0">Stop time must be greater than start time.</div>
+                    <div class="invalid-feedback d-none" id="availability-end-date-error">Stop date must be equal or greater than current date.</div>
                 </div>
 
             </div>
