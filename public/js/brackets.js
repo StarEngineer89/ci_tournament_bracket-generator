@@ -5,6 +5,40 @@ let eleminationType = "Single";
 let editing_mode = false;
 var ws;
 
+function generateUUIDByDevice() {
+    const navigatorInfo = window.navigator.userAgent;  // User agent info
+    const screenInfo = `${screen.height}x${screen.width}x${screen.colorDepth}`;  // Screen resolution and color depth
+
+    // Combine device information into a single string
+    const deviceInfo = navigatorInfo + screenInfo;
+
+    // Generate a hash (simple hash) from the device info
+    function hashString(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = (hash << 5) - hash + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
+    // Convert the hash to a UUID-like format
+    function formatToUUID(hash) {
+        const hexString = (hash >>> 0).toString(16);
+        return `${hexString.substring(0, 8)}-${hexString.substring(8, 12)}-${hexString.substring(12, 16)}-${hexString.substring(16, 20)}-${hexString.substring(20, 32)}`;
+    }
+
+    const hashedDeviceInfo = hashString(deviceInfo);
+    const uuid = formatToUUID(hashedDeviceInfo);
+
+    return uuid;
+}
+
+const UUID = generateUUIDByDevice()
+
+console.log(generateUUIDByDevice());
+
 $(document).on('ready', function () {
     
     $("#overlay").fadeIn(300);
@@ -42,7 +76,7 @@ $(document).on('ready', function () {
     /*
      * Inject our brackets
      */
-function renderBrackets(struct) {
+    function renderBrackets(struct) {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
 
         var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 240 * groupCount + "px" + '"></div>'),
@@ -157,7 +191,7 @@ function renderBrackets(struct) {
                         wrapper.appendChild(score)
                     }
                     
-                    if (votingEnabled) {
+                    if (votingEnabled && gg.final_match == 0) {
                         var votes = votesBox.cloneNode(true)
                         votes.textContent = teams[0].votes ? teams[0].votes : 0
                         // Set up the tooltip with HTML content (a button)
@@ -170,7 +204,7 @@ function renderBrackets(struct) {
                             teams[0].voted = true
                         }
 
-                        if (!teams[0].voted && (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount)) {
+                        if (!parseInt(gg.win_by_host) && !teams[0].voted && (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount)) {
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teama.dataset.id
                             voteBtn.addEventListener('click', (event) => {
@@ -259,7 +293,7 @@ function renderBrackets(struct) {
                             teams[1].voted = true
                         }
 
-                        if (!teams[1].voted && (maxVoteCount > 0 && teams[1].votes_in_round < maxVoteCount)) {
+                        if (!parseInt(gg.win_by_host) && !teams[1].voted && (maxVoteCount > 0 && teams[1].votes_in_round < maxVoteCount)) {
                             // Add "Vote" button
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teamb.dataset.id
@@ -467,7 +501,7 @@ function renderBrackets(struct) {
 
         $.ajax({
             type: "get",
-            url: apiURL + '/tournaments/' + tournament_id + '/brackets',
+            url: apiURL + '/tournaments/' + tournament_id + '/brackets?uuid=' + UUID,
             success: function (result) {
                 result = JSON.parse(result);
                 if (result.length > 0) {
@@ -640,7 +674,7 @@ function renderBrackets(struct) {
             data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final }),
             success: function (result) {
                 ws.send('marked!');
-                console.log(result)
+                loadBrackets()
             },
             error: function (error) {
                 console.log(error);
@@ -967,7 +1001,8 @@ let submitVote = (event) => {
             'tournament_id': tournament_id,
             'participant_id': participant_element.data('id'),
             'bracket_id': participant_element.data('order'),
-            'round_no': participant_element.data('round')
+            'round_no': participant_element.data('round'),
+            'uuid': UUID
         },
         dataType: "JSON",
         success: function (result) {

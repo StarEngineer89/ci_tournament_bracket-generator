@@ -36,13 +36,19 @@ class BracketsController extends BaseController
         $brackets = $this->bracketsModel->where('tournament_id', $id)->orderBy('bracketNo')->findAll();
         $tournament_settings = $this->tournamentsModel->find($id);
 
+        $uuid = $this->request->getGet('uuid');
+
         $rounds = array();
         if (count($brackets) > 0) {
             foreach ($brackets as $bracket) {
                 /** Get the counts of votes and assign to the teamnames */
                 $teams = json_decode($bracket['teamnames'], true);
                 // Check if user voted for the bracket
-                $vote_in_bracket = auth()->user() ? $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'user_id' => auth()->user()->id])->first() : null;
+                if (auth()->user()) {
+                    $vote_in_bracket = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'user_id' => auth()->user()->id])->first();
+                } else {
+                    $vote_in_bracket = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'uuid' => $uuid])->first();
+                }
                 
                 if ($teams[0]) {
                     $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'round_no' => $bracket['roundNo']])->findAll();
@@ -142,6 +148,7 @@ class BracketsController extends BaseController
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
             $bracket['winner'] = $req->winner;
+            $bracket['win_by_host'] = 1;
             $this->bracketsModel->save($bracket);
 
             if (isset($req->is_final) && $req->is_final) {
@@ -153,6 +160,7 @@ class BracketsController extends BaseController
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
             $bracket['winner'] = null;
+            $bracket['win_by_host'] = 0;
             $this->bracketsModel->save($bracket);
 
             if (isset($req->is_final) && $req->is_final) {

@@ -34,6 +34,10 @@ class VoteLibrary
         if ($nextBracket) {
             $index = 0;
             $lastGames = json_decode($nextBracket['lastGames']);
+
+            if (is_int($lastGames)) {
+                $lastGames = [$lastGames, null];
+            }
             
             foreach ($lastGames as $key => $value) {
                 if ($value == $voteData['bracket_id']) {

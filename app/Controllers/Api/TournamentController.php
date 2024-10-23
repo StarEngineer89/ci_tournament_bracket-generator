@@ -944,13 +944,17 @@ class TournamentController extends BaseController
             //Check if there is the data saved before
             if (auth()->user()) {
                 $prevVote = $voteModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $voteData['tournament_id'], 'bracket_id' => $voteData['bracket_id']])->first();
-                if ($prevVote && $prevVote['participant_id'] == $voteData['participant_id']) {
+            } else {
+                $prevVote = $voteModel->where(['uuid' => $voteData['uuid'], 'tournament_id' => $voteData['tournament_id'], 'bracket_id' => $voteData['bracket_id']])->first();
+            }
+
+            if ($prevVote) {
+                if ($prevVote['participant_id'] == $voteData['participant_id']) {
                     return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                       ->setJSON(['status' => 'error', 'message' => 'You have already voted for this participant.']);
-                }
-
-                if ($prevVote && $prevVote['participant_id'] !== $voteData['participant_id']) {
-                    $voteModel->delete($prevVote['id']);
+                } else {
+                    $prevVote['participant_id'] = $voteData['participant_id'];
+                    $voteData = $prevVote;
                 }
             }
 
