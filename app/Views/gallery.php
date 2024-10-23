@@ -191,7 +191,7 @@ function handleKeyPress(event) {
         <div class="container justify-content-center mb-3">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" id="tournamentSearchInputBox" value="<?= $searchString ?>" placeholder="Search for a tournament name or find out which tournaments a participant is competing in" onkeyup="handleKeyPress(event)">
-                <button class="btn btn-primary" onclick="fetchDataAndUpdateTable()"><i class="fa fa-search"></i> Search</button>
+                <button class="btn btn-primary" onclick="javascript:;"><i class="fa fa-search"></i> Search</button>
             </div>
         </div>
         <div class="buttons d-flex justify-content-end">
