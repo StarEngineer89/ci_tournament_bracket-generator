@@ -1001,14 +1001,12 @@ class TournamentController extends BaseController
                     $vote_max_limit = $vote_max_limit * $voteData['round_no'];
                     $search_params = array_diff_key($search_params, array('round_no' => true));
                 }
-                log_message('debug', json_encode($search_params));
+                
                 /** Get Votes count in a round */
                 $votes = $voteModel->where($search_params)->findAll();
-                log_message('debug', 'votes: ' . count($votes));
                 $voteData['votes'] = count($votes);
-                log_message('debug', $vote_max_limit);
+                
                 if ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE && $voteData['votes'] >= $vote_max_limit) {
-                    log_message('debug', 'mark win');
                     $voteLibrary = new VoteLibrary();
                     $result = $voteLibrary->markWinParticipant($voteData);
                 }
