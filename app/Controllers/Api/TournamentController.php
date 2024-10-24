@@ -347,7 +347,9 @@ class TournamentController extends BaseController
         if ($this->request->getPost('name')) {
             $tournament['name'] = $this->request->getPost('name');
         }
-        
+        if ($this->request->getPost('type')) {
+            $tournament['type'] = $this->request->getPost('type');
+        }
         if ($this->request->getPost('description')) {
             $tournament['description'] = $this->request->getPost('description');
         }
@@ -512,8 +514,11 @@ class TournamentController extends BaseController
 
         $yt = new YoutubeDl();
         $yt->setBinPath('C:\ffmpeg\bin\yt-dlp.exe');
+        $youtubeUsername = env('youtube_auth_username');
+        $youtubePassword = env('youtube_auth_password');
         $collection = $yt->download(
             Options::create()
+                ->authenticate($youtubeUsername, $youtubePassword)
                 ->downloadPath(WRITEPATH . 'uploads/youtube')
                 ->extractAudio(true)
                 ->audioFormat('mp3')

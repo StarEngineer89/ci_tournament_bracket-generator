@@ -191,7 +191,7 @@ $(document).on('ready', function () {
                         wrapper.appendChild(score)
                     }
                     
-                    if (votingEnabled && gg.final_match == 0) {
+                    if (votingEnabled && parseInt(gg.final_match) == 0) {
                         var votes = votesBox.cloneNode(true)
                         votes.textContent = teams[0].votes ? teams[0].votes : 0
                         // Set up the tooltip with HTML content (a button)
@@ -204,7 +204,7 @@ $(document).on('ready', function () {
                             teams[0].voted = true
                         }
 
-                        if (!parseInt(gg.win_by_host) && !teams[0].voted && (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount)) {
+                        if (!parseInt(gg.win_by_host) && !teams[0].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount))) {
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teama.dataset.id
                             voteBtn.addEventListener('click', (event) => {
@@ -293,7 +293,7 @@ $(document).on('ready', function () {
                             teams[1].voted = true
                         }
 
-                        if (!parseInt(gg.win_by_host) && !teams[1].voted && (maxVoteCount > 0 && teams[1].votes_in_round < maxVoteCount)) {
+                        if (!parseInt(gg.win_by_host) && !teams[1].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount))) {
                             // Add "Vote" button
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teamb.dataset.id
@@ -309,7 +309,7 @@ $(document).on('ready', function () {
 
                 var bracket = document.createElement('div')
 
-                if (gg.final_match && gg.final_match !== "0") {
+                if (gg.final_match && parseInt(gg.final_match) !== 0) {
                     bracket.className = "bracketbox final";
                     teama.className = (teams[0]) ? "bracket-team teama winner" : 'bracket-team teama';
                 } else {
@@ -322,7 +322,7 @@ $(document).on('ready', function () {
 
                 bracket.append(teama);
 
-                if (!gg.final_match || gg.final_match === undefined || gg.final_match === '0')
+                if (!gg.final_match || gg.final_match === undefined || parseInt(gg.final_match) !== 0)
                     bracket.append(teamb);
 
                 bracketBoxList.append(bracket);
