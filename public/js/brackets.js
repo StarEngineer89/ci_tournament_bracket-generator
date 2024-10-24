@@ -293,7 +293,7 @@ $(document).on('ready', function () {
                             teams[1].voted = true
                         }
 
-                        if (!parseInt(gg.win_by_host) && !teams[1].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount))) {
+                        if (!parseInt(gg.win_by_host) && !teams[1].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[1].votes_in_round < maxVoteCount))) {
                             // Add "Vote" button
                             var voteBtn = voteBtnTemplate.cloneNode(true)
                             voteBtn.dataset.id = teamb.dataset.id
@@ -309,7 +309,7 @@ $(document).on('ready', function () {
 
                 var bracket = document.createElement('div')
 
-                if (gg.final_match && parseInt(gg.final_match) !== 0) {
+                if (parseInt(gg.final_match)) {
                     bracket.className = "bracketbox final";
                     teama.className = (teams[0]) ? "bracket-team teama winner" : 'bracket-team teama';
                 } else {
@@ -322,12 +322,10 @@ $(document).on('ready', function () {
 
                 bracket.append(teama);
 
-                if (!gg.final_match || gg.final_match === undefined || parseInt(gg.final_match) !== 0)
+                if (!parseInt(gg.final_match))
                     bracket.append(teamb);
 
                 bracketBoxList.append(bracket);
-                // }
-
             });
 
             round.append(bracketBoxList)
