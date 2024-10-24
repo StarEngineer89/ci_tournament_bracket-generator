@@ -149,8 +149,10 @@
             <input type="checkbox" class="form-check-input" name="voting_retain" id="retainVotesCheckbox">
             <label class="form-check-label" for="retainVotesCheckbox">Retain vote count across rounds</label>
             <div class="retain-votes-checkbox-hint form-text ps-3">
-                By default, the vote count will reset for each round.<br />
+                By default, the vote count will reset for each round.
                 By enabling this option, the vote count is preserved and will instead accumulate each round.
+
+                Note: For double tournaments, the vote is retained cumulatively from both brackets in a round the participant is in. For example, if participant1 was in bracket1 and bracket 3 in a double tournament, and participant1 gained 3 votes in bracket1 and 5 votes in bracket2 and advanced to the next round, the vote will be aggregated as 3 + 5 = 8 in next round.
             </div>
         </div>
         <div class="mt-2 allow-host-override-setting">
