@@ -365,15 +365,15 @@ $(document).on('ready', function () {
 
                                             select.setAttribute('onChange', "changeParticipant($(this), '" + element.data('bracket') + "', " + index + ")");
 
-                                            var option = document.createElement('option');
-                                            select.appendChild(option);
-
                                             result = JSON.parse(result);
                                             if (result.length > 0) {
                                                 result.forEach((participant, i) => {
                                                     var option = document.createElement('option');
                                                     option.setAttribute('value', participant.id);
                                                     option.textContent = participant.name;
+                                                    if (participant.id == element.data('id')) {
+                                                        option.setAttribute('selected', true)
+                                                    }
 
                                                     select.appendChild(option);
                                                 });
