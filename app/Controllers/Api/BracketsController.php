@@ -348,6 +348,9 @@ class BracketsController extends BaseController
         $tournament['searchable'] = $tournament['name'];
         $tournament_model->save($tournament);
 
+        /** Remove vote history */
+        $this->votesModel->where(['tournament_id' => $tournament_id])->delete();
+
         /**
          * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
          */
