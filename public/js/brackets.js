@@ -647,11 +647,6 @@ $(document).on('ready', function () {
     }
 
     function markWinner(key, opt, e) {
-        if (editing_mode) {
-            alert('You should change the participant first');
-            return;
-        }
-
         let orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + opt.$trigger.data('next') + "']"), function (ele) { return ele.dataset.order }));
         let index = orders.findIndex((value) => { return value == opt.$trigger.data('order') });
         const next_id = opt.$trigger.data('next');
@@ -669,102 +664,11 @@ $(document).on('ready', function () {
             type: "PUT",
             url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
             contentType: "application/json",
-            data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final }),
+            data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final, index: index }),
             success: function (result) {
                 ws.send('marked!');
                 loadBrackets()
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function () {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-
-        const ele = opt.$trigger;
-        $.ajax({
-            type: "PUT",
-            url: apiURL + '/brackets/update/' + next_bracket,
-            contentType: "application/json",
-            data: JSON.stringify({ index: index, participant: opt.$trigger.data('id'), name: opt.$trigger.find('.name').text(), order: opt.$trigger.data('p_order') }),
-            success: function (result) {
-                ws.send('marked!');
-                result = JSON.parse(result)
-                $(next_bracketObj).contents().remove()
-                ele.parent().contents().removeClass('winner')
-                ele.addClass('winner');
-
-                $(next_bracketObj).append(pimageDiv);
                 
-
-                next_bracketObj.dataset.id = ele.data('id');
-                next_bracketObj.dataset.p_order = ele.data('p_order');
-                $(next_bracketObj).append(nameSpan);
-                var pidBox = document.createElement('span')
-                pidBox.classList.add('p-id')
-                pidBox.textContent = parseInt(ele.data('p_order')) + 1
-                $(next_bracketObj).prepend(pidBox)
-
-                var wrapper = document.createElement('span')
-                wrapper.classList.add('score-wrapper')
-                wrapper.classList.add('d-flex')
-
-                if (isScoreEnabled) {
-                    var scoreBox = document.createElement('span')
-                    scoreBox.classList.add('score')
-                    var scorePoint = 0
-                    if (incrementScoreType == 'p') {
-                        for (round_i = 0; round_i < parseInt(ele.data('round')); round_i++) {
-                            scorePoint += scoreBracket
-                            scorePoint += incrementScore * round_i
-                        }
-                    } else {
-                        scorePoint += scoreBracket
-                        for (round_i = 1; round_i < parseInt(ele.data('round')); round_i++) {
-                            scorePoint += scorePoint * incrementScore
-                        }
-                    }
-                    
-                    scoreBox.textContent = scorePoint
-                    wrapper.append(scoreBox)
-                }
-
-                if (votingEnabled) {
-                    votesBox = document.createElement('span')
-                    votesBox.classList.add('votes')
-                    votesBox.textContent = 0
-                    // Set up the tooltip with HTML content (a button)
-                    votesBox.setAttribute('data-bs-toggle', 'tooltip');
-                    votesBox.setAttribute('title', 'Click to Vote a participant');
-                    wrapper.append(votesBox)
-                    
-                    // Check if vote history is existing
-                    let storage_key = 'vote_t' + result.data.participant.tournament_id + '_n' + next_bracketObj.dataset.roundNo + '_b' + next_bracketObj.dataset.p_order
-                    let vp_id = window.localStorage.getItem(storage_key)
-                    if (vp_id && vp_id == result.data.participant.id) {
-                        result.data.participant.voted = true
-                    }
-
-                    if (!result.data.participant.voted) {
-                        var voteBtn = document.createElement('button')
-                        voteBtn.classList.add('vote-btn')
-                        voteBtn.dataset.id = result.data.participant.id
-                        var voteBtnIcon = document.createElement('span')
-                        voteBtnIcon.classList.add('fa')
-                        voteBtnIcon.classList.add('fa-plus')
-                        voteBtn.appendChild(voteBtnIcon)
-                        
-                        voteBtn.addEventListener('click', (event) => {
-                            submitVote(event)
-                        })
-                        wrapper.appendChild(voteBtn)
-                    }
-                }
-                
-                $(next_bracketObj).append(wrapper)
-
                 if (next_bracketObj.parentElement.classList.contains('final')) {
                     next_bracketObj.classList.add('winner');
 
@@ -817,56 +721,17 @@ $(document).on('ready', function () {
             type: "PUT",
             url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
             contentType: "application/json",
-            data: JSON.stringify({ action_code: unmarkWinnerActionCode, participant: opt.$trigger.data('id')}),
+            data: JSON.stringify({ action_code: unmarkWinnerActionCode, participant: opt.$trigger.data('id'), index: index, is_final: is_final}),
             success: function (result) {
                 ws.send('unmarked!');
                 // ele.find('.score').remove()
 
-                if (isScoreEnabled) {
-                    var scoreBox = document.createElement('span')
-                    scoreBox.classList.add('score')
-                    var scorePoint = 0
-                    if (incrementScoreType == 'p') {
-                        for (round_i = 0; round_i < parseInt(ele.data('round')) - 1; round_i++) {
-                            scorePoint += scoreBracket
-                            scorePoint += incrementScore * round_i
-                        }
-                    } else {
-                        scorePoint += scoreBracket
-                        for (round_i = 1; round_i < parseInt(ele.data('round')) - 1; round_i++) {
-                            scorePoint += scorePoint * incrementScore
-                        }
-                    }
-                    
-                    ele.find('.score').textContent = scorePoint
-                }
-
+                loadBrackets()
 
                 if (document.getElementById('stopMusicButton')) {
                     document.getElementById('stopMusicButton').classList.add('d-none');
                     document.getElementById('stopMusicButton').textContent = "Pause Music"
                 }
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function () {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-
-        $.ajax({
-            type: "PUT",
-            url: apiURL + '/brackets/update/' + next_bracket,
-            contentType: "application/json",
-            data: JSON.stringify({ index: index, participant: opt.$trigger.data('id') }),
-            success: function (result) {
-                ws.send('unmarked!');
-                ele.parent().contents().removeClass('winner')
-                next_bracketObj.classList.remove('winner')
-                next_bracketObj.dataset.id = '';
-                next_bracketObj.innerHTML = '';
             },
             error: function (error) {
                 console.log(error);

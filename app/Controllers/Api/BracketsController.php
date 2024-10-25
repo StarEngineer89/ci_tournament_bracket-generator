@@ -107,7 +107,7 @@ class BracketsController extends BaseController
         $teamnames = json_decode($bracket['teamnames']);
         $original = $teamnames;
         
-        if(isset($req->name)){
+        if(isset($req->name) && $req->name){
             $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
             if (isset($req->index)) {
                 if (!isset($req->participant))  {
@@ -138,12 +138,6 @@ class BracketsController extends BaseController
             }
 
             $this->bracketsModel->save($bracket);
-        } else {
-            if (isset($req->index)) {
-                $teamnames[$req->index] = null;
-                $bracket['teamnames'] = json_encode($teamnames);
-                $this->bracketsModel->save($bracket);
-            }
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
@@ -151,11 +145,16 @@ class BracketsController extends BaseController
             $bracket['win_by_host'] = 1;
             $this->bracketsModel->save($bracket);
 
+            /** Update next bracket */
+            $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
+            $participant = $this->participantsModel->find($req->winner);
+            $teamnames = json_decode($nextBracket['teamnames']);
+            $teamnames[$req->index] = ['id' => $req->winner, 'name' => $participant['name'], 'image'=> $participant['image'], 'order' => $req->order];
+            $nextBracket['teamnames'] = json_encode($teamnames);
             if (isset($req->is_final) && $req->is_final) {
-                $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
                 $nextBracket['winner'] = $req->winner;
-                $this->bracketsModel->save($nextBracket);
             }
+            $this->bracketsModel->save($nextBracket);
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
@@ -163,11 +162,15 @@ class BracketsController extends BaseController
             $bracket['win_by_host'] = 0;
             $this->bracketsModel->save($bracket);
 
+            $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
+            $participant = $this->participantsModel->find($req->participant);
+            $teamnames = json_decode($nextBracket['teamnames']);
+            $teamnames[$req->index] = null;
+            $nextBracket['teamnames'] = json_encode($teamnames);
             if (isset($req->is_final) && $req->is_final) {
-                $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
                 $nextBracket['winner'] = null;
-                $this->bracketsModel->save($nextBracket);
             }
+            $this->bracketsModel->save($nextBracket);
         }
         /** Change the tournament status
          *  If mark as winner in final, set status to completed
@@ -240,7 +243,25 @@ class BracketsController extends BaseController
 
             $insert_data['params'] = json_encode($data);
 
+            $db = \Config\Database::connect();
+            $dbDriver = $db->DBDriver;
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+            }
+            
+            if (!auth()->user() && $dbDriver === 'SQLite3') {
+                $db->query('PRAGMA foreign_keys = OFF');
+            }
+
             $logActionsModel->insert($insert_data);
+            
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+            }
+            
+            if (!auth()->user() && $dbDriver === 'SQLite3') {
+                $db->query('PRAGMA foreign_keys = ON');
+            }
         }
 
         return json_encode(array('result' => 'success', 'data' => $result));
