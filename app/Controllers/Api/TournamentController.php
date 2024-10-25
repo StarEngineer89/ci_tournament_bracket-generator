@@ -968,6 +968,8 @@ class TournamentController extends BaseController
             $bracket = $bracketModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $voteData['bracket_id']])->first();
             if ($bracket && $bracket['is_double']) {
                 $voteData['is_double'] = 1;
+            } else {
+                $voteData['is_double'] = 0;
             }
             // End check if bracket is double
 
