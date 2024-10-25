@@ -68,9 +68,9 @@ class BracketsController extends BaseController
                 }
 
                 if ($teams[1]) {
-                    $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'round_no' => $bracket['roundNo']])->findAll();
+                    $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $bracket['is_double'], 'round_no' => $bracket['roundNo']])->findAll();
                     if ($tournament_settings['voting_retain']) {
-                        $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id']])->findAll();
+                        $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $bracket['is_double']])->findAll();
                     } else {
                         $votes_1 = $votes_in_round;
                     }
