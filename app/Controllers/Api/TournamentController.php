@@ -963,6 +963,14 @@ class TournamentController extends BaseController
                 }
             }
 
+            // Check if bracket is double
+            $bracketModel = model('\App\Models\BracketModel');
+            $bracket = $bracketModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $voteData['bracket_id']])->first();
+            if ($bracket && $bracket['is_double']) {
+                $voteData['is_double'] = 1;
+            }
+            // End check if bracket is double
+
             $db = \Config\Database::connect();
             $dbDriver = $db->DBDriver;
             if (!auth()->user() && $dbDriver === 'MySQLi') {

@@ -12,7 +12,7 @@ class VotesModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_id', 'tournament_id', 'bracket_id', 'participant_id', 'round_no', 'uuid'];
+    protected $allowedFields    = ['user_id', 'tournament_id', 'bracket_id', 'participant_id', 'round_no', 'uuid', 'is_double'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

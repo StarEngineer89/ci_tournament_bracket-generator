@@ -17,6 +17,7 @@ class Vote extends Entity
         'bracket_id' => null,
         'participant_id' => null,
         'round_no' => null,
-        'uuid' => null
+        'uuid' => null,
+        'is_double' => null
     ];
 }

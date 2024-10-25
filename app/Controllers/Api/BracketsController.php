@@ -51,9 +51,9 @@ class BracketsController extends BaseController
                 }
                 
                 if ($teams[0]) {
-                    $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'round_no' => $bracket['roundNo']])->findAll();
+                    $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $bracket['is_double'], 'round_no' => $bracket['roundNo']])->findAll();
                     if ($tournament_settings['voting_retain']) {
-                        $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id']])->findAll();
+                        $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $bracket['is_double']])->findAll();
                     } else {
                         $votes_0 = $votes_in_round;
                     }
@@ -464,6 +464,8 @@ class BracketsController extends BaseController
             $participants[] = null;
         }
 
+        $participants_count = count($participants);
+
         if ($type == 'd') {
             $participants = array_merge($participants, $participants);
             $this->_base = count($participants);
@@ -501,6 +503,15 @@ class BracketsController extends BaseController
                 $participants[$teamMark + 1] = null;
             }
 
+            // Check if bracket is double
+            $is_double = 0;
+            if ($type == 'd') {
+                if ($i > ($baseT - $baseC / 2) && $i <= $baseT) {
+                    $is_double = 1;
+                }
+            }
+            // End check if bracket is double
+
             $bracket = array(
                 'lastGames' => ($round == 1) ? null : json_encode([$last[0]['game'], $last[1]['game']]),
                 'nextGame' => ($nextInc + $i) > $this->_base ? null : $nextInc + $i,
@@ -509,7 +520,8 @@ class BracketsController extends BaseController
                 'roundNo' => $round,
                 'bye' => $isBye,
                 'user_id' => $user_id,
-                'tournament_id' => $this->request->getPost('tournament_id')
+                'tournament_id' => $this->request->getPost('tournament_id'),
+                'is_double' => $is_double
             );
 
             $bracketEntity = new \App\Entities\Bracket($bracket);
