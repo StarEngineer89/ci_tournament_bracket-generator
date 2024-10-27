@@ -270,13 +270,19 @@ class ParticipantsController extends BaseController
 
         if ($brackets) {
             foreach ($brackets as $bracket) {
+                $bracket_score = 0;
+                $increment_score = 0;
+                $increment_score_type = 0;
+
                 if (!isset($tournamentSettings[$bracket['tournament_id']])) {
                     $tournamentSettings[$bracket['tournament_id']] = $this->tournamentsModel->find($bracket['tournament_id']);
                 }
 
-                $bracket_score = ($tournamentSettings[$bracket['tournament_id']]['score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['score_bracket'] : 0;
-                $increment_score = ($tournamentSettings[$bracket['tournament_id']]['increment_score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['increment_score'] : 0;
-                $increment_score_type = $tournamentSettings[$bracket['tournament_id']]['increment_score_type'];
+                if (isset($tournamentSettings[$bracket['tournament_id']])) {
+                    $bracket_score = ($tournamentSettings[$bracket['tournament_id']]['score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['score_bracket'] : 0;
+                    $increment_score = ($tournamentSettings[$bracket['tournament_id']]['increment_score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['increment_score'] : 0;
+                    $increment_score_type = $tournamentSettings[$bracket['tournament_id']]['increment_score_type'];
+                }
 
                 if (!isset($scores_by_tournaments[$bracket['tournament_id']])) {
                     $scores_by_tournaments[$bracket['tournament_id']] = 0;
