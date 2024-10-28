@@ -132,6 +132,12 @@ On the final prompt `Run `spark migrate --all`now? [y, n]:`, select `'y'`.
 
   > `ln -s /path/to/your/codeigniter/writable/uploads /path/to/your/codeigniter/public/uploads`
 
+## Run Websocket server
+
+To run websocket server, run the following command.
+
+`php spark socket:start`
+
 ## Set Up Windows Task Scheduler
 
 On Windows
