@@ -71,6 +71,18 @@ class RunScheduledTask extends BaseCommand
             }
         }
 
+        /** Remove expired tournaments */
+        $tournamentsModel = model('\App\Models\TournamentModel');
+        $tournamentLibrary = new \App\Libraries\TournamentLibrary();
+
+        $tournaments = $tournamentsModel->where(['user_id' => 0]);
+        foreach ($tournaments as $tournament) {
+            if(time() - strtotime($tournament['created_at']) > 86400){
+                /** Remove expired temp tournaments from cookie value */
+                $tournamentLibrary->deleteTournament($tournament['id']);
+            }
+        }
+
         return true;
     }
 }

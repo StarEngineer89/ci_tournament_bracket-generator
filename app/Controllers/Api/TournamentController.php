@@ -9,6 +9,7 @@ use YoutubeDl\YoutubeDl;
 use YoutubeDl\Options;
 use App\Services\NotificationService;
 use App\Libraries\VoteLibrary;
+use App\Libraries\TournamentLibrary;
 
 class TournamentController extends BaseController
 {
@@ -155,21 +156,6 @@ class TournamentController extends BaseController
         
         foreach($tournaments as $tournament){
             $temp = $tournament;
-            if(time() - strtotime($tournament['created_at']) > 86400 && $tournament['user_id'] == 0){
-                /** Remove expired temp tournaments from cookie value */
-                $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament['id'], 'user_id' => 0])->first();
-
-                if ($shareSetting) {
-                    $cookie_value = $tournament['id'] . "_" . $shareSetting['token'];
-                    $tournamentHistory = array_values(array_diff($tournamentHistory, array($cookie_value)));
-                    /** End removing expired temp tournaments from cookie value */
-
-                    // Store updated history in cookies (expire in 1 days)
-                    $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
-                }
-                
-                $this->tournamentModel->where('id', $tournament['id'])->delete();
-            }
             
             $temp['username'] = 'Guest';
             $temp['email'] = '';
@@ -538,15 +524,8 @@ class TournamentController extends BaseController
 
     public function delete($id)
     {
-        $tournamentModel = model('\App\Models\TournamentModel');
-        $bracketModel = model('\App\Models\BracketModel');
-        $musicSettingModel = model('\App\Models\MusicSettingModel');
-
-        $musicSettingModel->where('tournament_id', $id)->delete();
-        $bracketModel->where('tournament_id', $id)->delete();
-        $tournamentModel->delete($id);
-        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-        $shareSettingsModel->where('tournament_id', $id)->delete();
+        $tournamentLibrary = new TournamentLibrary();
+        $tournamentLibrary->deleteTournament($id);
 
         return json_encode(['msg' => "Tournament was deleted successfully."]);
     }
