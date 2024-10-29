@@ -132,11 +132,15 @@ On the final prompt `Run `spark migrate --all`now? [y, n]:`, select `'y'`.
 
   > `ln -s /path/to/your/codeigniter/writable/uploads /path/to/your/codeigniter/public/uploads`
 
-## Run Websocket server
+## Start Websocket server
+
+Start a websocket server to update tournament progress on the bracket page in real time.
 
 To run websocket server, run the following command.
 
 `php spark socket:start`
+
+If you want to change the port to custom one, update the `ws.php` file in project rood directory.
 
 ## Set Up Windows Task Scheduler
 
