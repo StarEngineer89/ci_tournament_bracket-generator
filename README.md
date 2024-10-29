@@ -140,7 +140,7 @@ To run websocket server, run the following command.
 
 `php spark socket:start`
 
-If you want to change the port to custom one, update the `ws.php` file in project rood directory.
+If you want to change the port to custom one, update the `ws.php` file in project root directory.
 
 ## Set Up Windows Task Scheduler
 
