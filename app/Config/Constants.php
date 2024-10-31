@@ -102,7 +102,8 @@ define('TOURNAMENT_STATUS_ABANDONED', 3);
 define('TOURNAMENT_STATUS_LABELS', ['', 'In progress', 'Completed', 'Abandoned']);
 
 define('TOURNAMENT_TYPE_SINGLE', 1);
-define('TOURNAMENT_TYPE_DOUBLE', 2);
+define( 'TOURNAMENT_TYPE_DOUBLE', 2);
+define('TOURNAMENT_TYPE_THIRD', 3);
 
 define('TOURNAMENT_SCORE_INCREMENT_PLUS', 'p');
 define('TOURNAMENT_SCORE_INCREMENT_MULTIPLY', 'm');

@@ -608,32 +608,6 @@ $(document).on('ready', function () {
             dataType: "JSON",
             success: function (result) {
                 ws.send('updated!');
-                // let box = element;
-                // box.data('id', result.data.participant.id);
-                // box.contents().remove();
-
-                // box.html('<span class="p-id">'+ data.order +'</span>');
-                // if(result.data.participant.image){
-                //     box.append(`<div class="p-image"><img src="${result.data.participant.image}" height="30px" width="30px" class="object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
-                // }else{
-                //     box.append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${result.data.participant.id}" data-pid="${result.data.participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.participant.id})" name="image_${result.data.participant.id}" id="image_${result.data.participant.id}"/><button class="btn col-auto btn-danger" onClick="removeImage(event, ${result.data.participant.id})"><i class="fa fa-trash-alt"></i></button></div>`)
-                // }
-
-                // var nameSpan = document.createElement('span')
-                // nameSpan.classList.add('name')
-                // nameSpan.textContent = data.name
-                
-                // box.append(nameSpan);
-
-                // if (isScoreEnabled) {
-                //     var scoreBox = document.createElement('span')
-                //     scoreBox.classList.add('score')
-                //     var scorePoint = 0
-                //     scoreBox.textContent = scorePoint
-                //     box.append(scoreBox)
-                // }
-
-                // editing_mode = false;
                 loadBrackets();
             },
             error: function (error) {

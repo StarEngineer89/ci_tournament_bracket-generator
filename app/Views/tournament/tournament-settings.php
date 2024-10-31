@@ -1,11 +1,13 @@
 <div class="input-group mb-3">
     <span class="input-group-text" id="type">Elimination Type</span>
     <select class="form-select" id="eliminationType" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
-        <option value="1" selected>Single</option>
-        <option value="2">Double</option>
+        <option value="<?= TOURNAMENT_TYPE_SINGLE ?>" selected>Single</option>
+        <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
+        <option value="<?= TOURNAMENT_TYPE_THIRD ?>">Knockout</option>
     </select>
     <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
     <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
+    <div class="double-type-hint form-text d-none">A Knockout Bracket/Stage is a typical single-elimination bracket. It showcases a mirrored tree of participants converging to the final stage, in the center, in which the winner is determined.</div>
     <div class="elimination-type-hint form-text mt-2">
         Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
     </div>
@@ -227,5 +229,19 @@
         </label>
         <div class="enable-shuffling-hint form-text">If enabled, the contestant brackets will be generated with the participants shuffled.</div>
         <div class="disable-shuffling-hint form-text d-none">If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.</div>
+    </div>
+</div>
+
+<div class="form-check mb-3">
+    <div class="ps-2">
+        <input type="checkbox" class="form-check-input enable-shuffling" name="pt_image_update_enabled" id="ptImageUpdatePermission">
+        <label class="form-check-label" for="ptImageUpdatePermission">
+            <h6>Participant Image Customization Access</h6>
+        </label>
+        <div class="form-text">
+            Enabling this setting allows all users, including guests/visitors with access to the tournament, to update participant images without requiring general edit permissions on the tournament link.<br />
+            This feature provides flexibility in customizing participant images while maintaining control over other aspects of the tournament bracket.<br />
+            Note: Edit permissions on a shared url override this setting; so in other words, if this setting is disabled but you shared a link with users that is configured with edit permissions on the tournament brackets, they will be able to update the participant images regardless of this setting.
+        </div>
     </div>
 </div>

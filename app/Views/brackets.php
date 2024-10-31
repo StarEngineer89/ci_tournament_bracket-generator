@@ -21,6 +21,7 @@ const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?
 const addParticipantActionCode = '<?= BRACKET_ACTIONCODE_ADD_PARTICIPANT ?>';
 const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
 var hasEditPermission = <?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') || (isset($editable) && $editable) || (isset($settings['target']) && ($settings['target'] == SHARE_TO_PUBLIC || $settings['target'] == SHARE_TO_EVERYONE) && $settings['permission'] == SHARE_PERMISSION_EDIT) || (isset($settings['users']) && auth()->user() && in_array(auth()->user()->id, explode(",", $settings['users'])) && $settings['permission'] == SHARE_PERMISSION_EDIT ) ? 1 : 0 ?>;
+var hasParticipantImageUpdatePermission = <?= $tournament['pt_image_update_enabled'] ? intval($tournament['pt_image_update_enabled']) : 0 ?>;
 const isScoreEnabled = <?= $tournament['score_enabled'] ? 1 : 0 ?>;
 const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['score_bracket'] : 0 ?>);
 const incrementScore = Number(<?= ($tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>);
@@ -191,6 +192,10 @@ $(document).ready(function() {
         $(document).on("click", function(e) {
             if (!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
         })
+
+    }
+
+    if (hasEditPermission || hasParticipantImageUpdatePermission) {
         $(document).on("click", ".p-image img", function(e) {
             var pid = $(this).data('pid');
             if ($(this).hasClass('temp')) {

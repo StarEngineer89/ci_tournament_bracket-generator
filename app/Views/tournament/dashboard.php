@@ -1477,6 +1477,12 @@ const changeSettings = (event) => {
                 } else {
                     $('#allowHostOverride').prop('checked', false)
                 }
+
+                if (result.tournamentSettings.pt_image_update_enabled == 1) {
+                    $('#ptImageUpdatePermission').prop('checked', true)
+                } else {
+                    $('#ptImageUpdatePermission').prop('checked', false)
+                }
             }
 
             if (result.musicSettings.length > 0) {
