@@ -990,9 +990,9 @@ class TournamentController extends BaseController
                 /** Mark Participant win if max vote count reaches */
                 $tournament_settings = $this->tournamentModel->find($voteData['tournament_id']);
                 $search_params = array_diff_key($voteData, array('bracket_id' => true, 'user_id' => true, 'uuid' => true));
-                $vote_max_limit = $tournament_settings['max_vote_value'];
+                $vote_max_limit = intval($tournament_settings['max_vote_value']);
                 if ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_retain']) {
-                    $vote_max_limit = $vote_max_limit * $voteData['round_no'];
+                    $vote_max_limit = $vote_max_limit * intval($voteData['round_no']);
                     $search_params = array_diff_key($search_params, array('round_no' => true));
                 }
                 
