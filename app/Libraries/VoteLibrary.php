@@ -22,7 +22,7 @@ class VoteLibrary
 
     public function markWinParticipant($voteData)
     {
-        $currentBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $voteData['bracket_id'], 'roundNo' => $voteData['round_no']])->first();
+        $currentBracket = $this->bracketsModel->find($voteData['bracket_id']);
         $currentBracket['winner'] = $voteData['participant_id'];
         $this->bracketsModel->save($currentBracket);
         

@@ -52,8 +52,12 @@ class BracketsController extends BaseController
                 
                 if ($teams[0]) {
                     $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $bracket['is_double'], 'round_no' => $bracket['roundNo']])->findAll();
+                    
                     if ($tournament_settings['voting_retain']) {
                         $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $bracket['is_double']])->findAll();
+                        if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['knockout_final']) {
+                            $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id']])->findAll();
+                        }
                     } else {
                         $votes_0 = $votes_in_round;
                     }
@@ -69,8 +73,12 @@ class BracketsController extends BaseController
 
                 if ($teams[1]) {
                     $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $bracket['is_double'], 'round_no' => $bracket['roundNo']])->findAll();
+                    
                     if ($tournament_settings['voting_retain']) {
                         $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $bracket['is_double']])->findAll();
+                        if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['knockout_final']) {
+                            $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id']])->findAll();
+                        }
                     } else {
                         $votes_1 = $votes_in_round;
                     }
@@ -154,6 +162,7 @@ class BracketsController extends BaseController
             /** Update next bracket */
             $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame'], 'is_double' => $bracket['is_double']])->first();
             if (!$nextBracket && $tournament && $tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
+                log_message('debug', 'next bracket');
                 $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
                 $nextBracket['winner'] = $req->winner;
             }
@@ -161,7 +170,7 @@ class BracketsController extends BaseController
             $teamnames = json_decode($nextBracket['teamnames']);
             $teamnames[$req->index] = ['id' => $req->winner, 'name' => $participant['name'], 'image'=> $participant['image'], 'order' => $req->order];
             $nextBracket['teamnames'] = json_encode($teamnames);
-            if (isset($req->is_final) && $req->is_final) {
+            if (($tournament && $tournament['type'] != TOURNAMENT_TYPE_KNOCKOUT) && isset($req->is_final) && $req->is_final) {
                 $nextBracket['winner'] = $req->winner;
             }
             if ($nextBracket['knockout_final'] == 1) {

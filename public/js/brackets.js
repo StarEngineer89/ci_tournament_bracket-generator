@@ -95,8 +95,8 @@ $(document).on('ready', function () {
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
 
             _.each(grouped[g], function (gg) {
-                var teama = drawParticipant(gg, g, 0);
-                var teamb = drawParticipant(gg, g, 1);
+                var teama = drawParticipant(gg, 0);
+                var teamb = drawParticipant(gg, 1);
                 var teams = JSON.parse(gg.teamnames);
 
                 var bracket = document.createElement('div')
@@ -257,7 +257,8 @@ $(document).on('ready', function () {
         return group
     }
     
-    function drawParticipant(bracket, round_no = 0, team_index = 0) {
+function drawParticipant(bracket, team_index = 0) {
+        let round_no = bracket.roundNo
         var participant = document.createElement('span');
         participant.dataset.order = bracket.bracketNo;
         participant.dataset.bracket = bracket.id;
@@ -308,6 +309,7 @@ $(document).on('ready', function () {
                 var score = document.createElement('span')
                 score.classList.add('score')
                 var scorePoint = 0
+                
                 if (incrementScoreType == 'p') {
                     for (round_i = 0; round_i < round_no - 1; round_i++) {
                         scorePoint += scoreBracket
@@ -337,10 +339,12 @@ $(document).on('ready', function () {
                 wrapper.appendChild(score)
             }
             
-            if (votingEnabled && parseInt(bracket.final_match) == 0) {
+            if (votingEnabled && (parseInt(bracket.final_match) == 0 || (tournament_type == 3 && bracket.knockout_final !== 1) )) {
                 var votes = document.createElement('span')
                 votes.classList.add('votes')
-
+                if (bracket.id == 370) {
+                    console.log('debug')
+                }
                 votes.textContent = teams[team_index].votes ? teams[team_index].votes : 0
                 // Set up the tooltip with HTML content (a button)
                 wrapper.appendChild(votes)
@@ -352,6 +356,10 @@ $(document).on('ready', function () {
                     teams[team_index].voted = true
                 }
 
+                if (tournament_type == 3 && bracket.knockout_final) {
+                    teams[team_index].voted = true
+                }
+                
                 if (!parseInt(bracket.win_by_host) && !teams[team_index].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount))) {
                     var voteBtn = document.createElement('button')
                     voteBtn.classList.add('vote-btn')
