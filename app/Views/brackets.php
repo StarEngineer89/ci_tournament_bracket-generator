@@ -15,6 +15,7 @@ apiURL = "<?= base_url('api/shared') ?>";
 apiURL = "<?= base_url('api') ?>";
 <?php endif; ?>
 const tournament_id = <?= $tournament['id'] ?>;
+const tournament_type = <?= intval($tournament['type']) ?>;
 const markWinnerActionCode = '<?= BRACKET_ACTIONCODE_MARK_WINNER ?>';
 const unmarkWinnerActionCode = '<?= BRACKET_ACTIONCODE_UNMARK_WINNER ?>';
 const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?>';
@@ -297,7 +298,7 @@ $(document).ready(function() {
             <?= $tournament['description'] ?>
         </div>
 
-        <div id="brackets" class="brackets p-5"></div>
+        <div id="brackets" class="brackets d-flex p-5"></div>
     </div>
 </div>
 

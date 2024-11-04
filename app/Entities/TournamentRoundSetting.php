@@ -14,6 +14,7 @@ class TournamentRoundSetting extends Entity
         'user_id'  => null,
         'tournament_id' => null,
         'round_no' => null,
-        'round_name' => null
+        'round_name' => null,
+        'knockout_second' => null
     ];
 }

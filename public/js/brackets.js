@@ -1,5 +1,4 @@
-let bracketCount = 0,
-    brackets = [];
+let brackets = [];
 
 let eleminationType = "Single";
 let editing_mode = false;
@@ -37,8 +36,6 @@ function generateUUIDByDevice() {
 
 const UUID = generateUUIDByDevice()
 
-console.log(generateUUIDByDevice());
-
 $(document).on('ready', function () {
     
     $("#overlay").fadeIn(300);
@@ -62,37 +59,31 @@ $(document).on('ready', function () {
 });
 
     /*
-     * Build our bracket "model"
-     */
-    function drawBrackets() {
-        if (brackets.length > 0)
-            renderBrackets(brackets);
-
-        document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
-            var tooltip = new bootstrap.Tooltip(element)
-        })
-    }
-
-    /*
      * Inject our brackets
      */
-    function renderBrackets(struct) {
+    function renderBrackets(struct, direction = 'ltr') {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
-
-        var group = $('<div class="groups group' + (groupCount + 1) + '" id="b' + bracketCount + '" style="min-width:' + 240 * groupCount + "px" + '"></div>'),
+        
+        var html = ''
+        if (direction == 'rtl') {
+            html = `<div class="groups group${groupCount} d-flex flex-row-reverse rtl" style="min-width:${240 * groupCount}px"></div>`
+        } else {
+            html = `<div class="groups group${groupCount} d-flex" style="min-width:${240 * groupCount}px"></div>`
+        }
+        var group = $(html),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
 
         // document.getElementById('brackets').style.width = 170 * (groupCount + 1) + 'px';
 
         for (g = 1; g <= groupCount; g++) {
-            var round = $('<div class="r' + g + '"></div>');
+            var round = $('<div class="round r' + g + '"></div>');
             
             let editIcon = ''
             if (hasEditPermission) {
                 editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
             }
             
-            let roundName = $(`<div class="text-center p-2 m-1 border" style="height: auto" data-round-no="${g}"></div>`)
+            let roundName = $(`<div class="text-center p-2 m-1 border" style="height: auto" data-round-no="${g}" ${parseInt(grouped[g][0].is_double) ? 'data-knockout-second="true"' : ''}></div>`)
             let round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}`
             if (grouped[g][0].final_match && grouped[g][0].final_match !== "0") {
                 round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}: Grand Final`
@@ -104,214 +95,15 @@ $(document).on('ready', function () {
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
 
             _.each(grouped[g], function (gg) {
-                var obj = document.createElement('span');
-                obj.dataset.order = gg.bracketNo;
-                obj.dataset.bracket = gg.id;
-                obj.dataset.next = gg.nextGame;
-                obj.dataset.round = gg.roundNo;
-                obj.textContent = ' ';
-
-                var scoreBox = document.createElement('span')
-                scoreBox.classList.add('score')
-
-                var votesBox = document.createElement('span')
-                votesBox.classList.add('votes')
-
-                var voteBtnTemplate = document.createElement('button')
-                voteBtnTemplate.classList.add('vote-btn')
-                var voteBtnIcon = document.createElement('span')
-                voteBtnIcon.classList.add('fa')
-                voteBtnIcon.classList.add('fa-plus')
-                voteBtnTemplate.appendChild(voteBtnIcon)
-
-                var pidBox = document.createElement('span')
-                pidBox.classList.add('p-id')
-
+                var teama = drawParticipant(gg, g, 0);
+                var teamb = drawParticipant(gg, g, 1);
                 var teams = JSON.parse(gg.teamnames);
-                var teama = obj.cloneNode(true);
-                teama.className = 'bracket-team teama';
-                if (teams[0] != undefined) {
-                    var pid = pidBox.cloneNode(true)
-                    pid.textContent = parseInt(teams[0].order) + 1
-                    teama.appendChild(pid)
-                    
-                    if(teams[0].image){
-                        $(teama).append(`<div class="p-image"><img src="${teams[0].image}" height="30px" width="30px" class="object-cover" id="pimage_${teams[0].id}" data-pid="${teams[0].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[0].id})" name="image_${teams[0].id}" id="image_${teams[0].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[0].id})"><i class="fa fa-trash-alt"></i></button></div>`);
-                    }else{
-                        $(teama).append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[0].id}" data-pid="${teams[0].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[0].id})" name="image_${teams[0].id}" id="image_${teams[0].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[0].id})"><i class="fa fa-trash-alt"></i></button></div>`)
-                    }
-
-                    teama.dataset.id = teams[0].id;
-                    teama.dataset.p_order = teams[0].order;
-                    var nameSpan = document.createElement('span')
-                    nameSpan.classList.add('name')
-                    nameSpan.classList.add('tooltip-span')
-                    nameSpan.setAttribute('data-bs-toggle', "tooltip")
-                    nameSpan.setAttribute('data-bs-title', teams[0].name)
-                    nameSpan.textContent = teams[0].name;
-                    teama.appendChild(nameSpan)
-
-                    if (teams[0].id == gg.winner) {
-                        teama.classList.add('winner');
-                    }
-
-                    var wrapper = document.createElement('span')
-                    wrapper.classList.add('score-wrapper')
-                    wrapper.classList.add('d-flex')
-
-                    if (isScoreEnabled) {
-                        var score = scoreBox.cloneNode(true)
-                        var scorePoint = 0
-                        if (incrementScoreType == 'p') {
-                            for (round_i = 0; round_i < g - 1; round_i++) {
-                                scorePoint += scoreBracket
-                                scorePoint += incrementScore * round_i
-                            }
-
-                            if (teams[0].id == gg.winner) {
-                                scorePoint += scoreBracket
-                                scorePoint += incrementScore * (g - 1)
-                            }
-                        } else {
-                            scorePoint += scoreBracket
-                            if (g == 1 && teams[0].id !== gg.winner) {
-                                scorePoint = 0
-                            }
-
-                            for (round_i = 0; round_i < g - 2; round_i++) {
-                                scorePoint += scorePoint * incrementScore 
-                            }
-                            
-                            if (g > 1 && teams[0].id == gg.winner) {
-                                scorePoint += scorePoint * incrementScore
-                            }
-                        }
-                    
-                        score.textContent = scorePoint
-                        wrapper.appendChild(score)
-                    }
-                    
-                    if (votingEnabled && parseInt(gg.final_match) == 0) {
-                        var votes = votesBox.cloneNode(true)
-                        votes.textContent = teams[0].votes ? teams[0].votes : 0
-                        // Set up the tooltip with HTML content (a button)
-                        wrapper.appendChild(votes)
-
-                        // Check if vote history is existing
-                        let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
-                        let vp_id = window.localStorage.getItem(storage_key)
-                        if (vp_id && vp_id == teams[0].id) {
-                            teams[0].voted = true
-                        }
-
-                        if (!parseInt(gg.win_by_host) && !teams[0].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[0].votes_in_round < maxVoteCount))) {
-                            var voteBtn = voteBtnTemplate.cloneNode(true)
-                            voteBtn.dataset.id = teama.dataset.id
-                            voteBtn.addEventListener('click', (event) => {
-                                submitVote(event)
-                            })
-                            wrapper.appendChild(voteBtn)
-                        }
-                    }
-
-                    teama.appendChild(wrapper)
-                }
-
-                var teamb = obj.cloneNode(true);
-                teamb.className = 'bracket-team teamb';
-                if (teams[1] != undefined) {
-                    var pid = pidBox.cloneNode(true)
-                    pid.textContent = parseInt(teams[1].order) + 1
-                    teamb.appendChild(pid)
-
-                    if(teams[1].image){
-                        $(teamb).append(`<div class="p-image"><img src="${teams[1].image}" height="30px" width="30px" class="object-cover" id="pimage_${teams[1].id}" data-pid="${teams[1].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[1].id})" name="image_${teams[1].id}" id="image_${teams[1].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[1].id})"><i class="fa fa-trash-alt"></i></button></div>`);
-                    }else{
-                        $(teamb).append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[1].id}" data-pid="${teams[1].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[1].id})" name="image_${teams[1].id}" id="image_${teams[1].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[1].id})"><i class="fa fa-trash-alt"></i></button></div>`)
-                    }
-
-                    teamb.dataset.id = teams[1].id;
-                    teamb.dataset.p_order = teams[1].order;
-                    var nameSpan = document.createElement('span')
-                    nameSpan.classList.add('name')
-                    nameSpan.classList.add('tooltip-span')
-                    nameSpan.setAttribute('data-bs-toggle', "tooltip")
-                    nameSpan.setAttribute('data-bs-title', teams[1].name)
-                    nameSpan.textContent = teams[1].name
-                    teamb.appendChild(nameSpan)
-
-                    if (teams[1].id == gg.winner) {
-                        teamb.classList.add('winner');
-                    }
-
-                    var wrapper = document.createElement('span')
-                    wrapper.classList.add('score-wrapper')
-                    wrapper.classList.add('d-flex')
-
-                    if (isScoreEnabled) {
-                        var score = scoreBox.cloneNode(true)
-                        var scorePoint = 0
-                        if (incrementScoreType == 'p') {
-                            for (round_i = 0; round_i < g - 1; round_i++) {
-                                scorePoint += scoreBracket
-                                scorePoint += incrementScore * round_i
-                            }
-
-                            if (teams[1].id == gg.winner) {
-                                scorePoint += scoreBracket
-                                scorePoint += incrementScore * (g - 1)
-                            }
-                        } else {
-                            scorePoint += scoreBracket
-                            if (g == 1 && teams[1].id !== gg.winner) {
-                                scorePoint = 0
-                            }
-
-                            for (round_i = 0; round_i < g - 2; round_i++) {
-                                scorePoint += scorePoint * incrementScore
-                            }
-                            
-                            if (g > 1 && teams[1].id == gg.winner) {
-                                scorePoint += scorePoint * incrementScore
-                            }
-                        }
-                    
-                        score.textContent = scorePoint
-                        wrapper.appendChild(score)
-                    }
-
-                    if (votingEnabled) {
-                        var votes = votesBox.cloneNode(true)
-                        votes.textContent = teams[1].votes ? teams[1].votes : 0
-                        // Set up the tooltip with HTML content (a button)
-                        wrapper.appendChild(votes)
-
-                        // Check if vote history is existing
-                        let storage_key = 'vote_t' + tournament_id + '_n' + gg.roundNo + '_b' + gg.bracketNo
-                        let vp_id = window.localStorage.getItem(storage_key)
-                        if (vp_id && vp_id == teams[1].id) {
-                            teams[1].voted = true
-                        }
-
-                        if (!parseInt(gg.win_by_host) && !teams[1].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[1].votes_in_round < maxVoteCount))) {
-                            // Add "Vote" button
-                            var voteBtn = voteBtnTemplate.cloneNode(true)
-                            voteBtn.dataset.id = teamb.dataset.id
-                            voteBtn.addEventListener('click', (event) => {
-                                submitVote(event)
-                            })
-                            wrapper.appendChild(voteBtn)
-                        }
-                    }
-
-                    teamb.appendChild(wrapper)
-                }
 
                 var bracket = document.createElement('div')
 
                 if (parseInt(gg.final_match)) {
                     bracket.className = "bracketbox final";
-                    teama.className = (teams[0]) ? "bracket-team teama winner" : 'bracket-team teama';
+                    teama.className = (teams[0] && tournament_type !== 3) ? "bracket-team teama winner" : teama.className;
                 } else {
                     var bracketNo = document.createElement('span')
                     bracketNo.classList.add('bracketNo')
@@ -461,18 +253,126 @@ $(document).on('ready', function () {
                 }
             });
         }
-        // group.append('<div class="r'+(groupCount+1)+'"><div class="final"><div class="bracketbox"><span class="bracket-team teamc">&nbsp;</span></div></div></div>');
+        
+        return group
+    }
+    
+    function drawParticipant(bracket, round_no = 0, team_index = 0) {
+        var participant = document.createElement('span');
+        participant.dataset.order = bracket.bracketNo;
+        participant.dataset.bracket = bracket.id;
+        participant.dataset.next = bracket.nextGame;
+        participant.dataset.round = bracket.roundNo;
+        participant.textContent = ' ';
 
-        // $('#brackets').append(group);
-        $('#brackets').html(group);
-        initialize();
+        var pidBox = document.createElement('span')
+        pidBox.classList.add('p-id')
 
-        adjustBracketsStyles()
+        var teams = JSON.parse(bracket.teamnames);
+        participant.className = 'bracket-team teama';
+        if (team_index == 0) {
+            participant.className = 'bracket-team teama';
+        } else {
+            participant.className = 'bracket-team teamb';
+        }
+        if (teams[team_index] != undefined) {
+            var pid = pidBox.cloneNode(true)
+            pid.textContent = parseInt(teams[team_index].order) + 1
+            participant.appendChild(pid)
+            
+            if(teams[team_index].image){
+                $(participant).append(`<div class="p-image"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
+            }else{
+                $(participant).append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
+            }
 
-        bracketCount++;
-        $('html,body').animate({
-            scrollTop: $("#b" + (bracketCount - 1)).offset().top
-        });
+            participant.dataset.id = teams[team_index].id;
+            participant.dataset.p_order = teams[team_index].order;
+            var nameSpan = document.createElement('span')
+            nameSpan.classList.add('name')
+            nameSpan.classList.add('tooltip-span')
+            nameSpan.setAttribute('data-bs-toggle', "tooltip")
+            nameSpan.setAttribute('data-bs-title', teams[team_index].name)
+            nameSpan.textContent = teams[team_index].name;
+            participant.appendChild(nameSpan)
+
+            if (teams[team_index].id == bracket.winner) {
+                participant.classList.add('winner');
+            }
+
+            var wrapper = document.createElement('span')
+            wrapper.classList.add('score-wrapper')
+            wrapper.classList.add('d-flex')
+
+            if (isScoreEnabled) {
+                var score = document.createElement('span')
+                score.classList.add('score')
+                var scorePoint = 0
+                if (incrementScoreType == 'p') {
+                    for (round_i = 0; round_i < round_no - 1; round_i++) {
+                        scorePoint += scoreBracket
+                        scorePoint += incrementScore * round_i
+                    }
+
+                    if (teams[team_index].id == bracket.winner) {
+                        scorePoint += scoreBracket
+                        scorePoint += incrementScore * (round_no - 1)
+                    }
+                } else {
+                    scorePoint += scoreBracket
+                    if (round_no == 1 && teams[team_index].id !== bracket.winner) {
+                        scorePoint = 0
+                    }
+
+                    for (round_i = 0; round_i < round_no - 2; round_i++) {
+                        scorePoint += scorePoint * incrementScore 
+                    }
+                    
+                    if (round_no > 1 && teams[team_index].id == bracket.winner) {
+                        scorePoint += scorePoint * incrementScore
+                    }
+                }
+            
+                score.textContent = scorePoint
+                wrapper.appendChild(score)
+            }
+            
+            if (votingEnabled && parseInt(bracket.final_match) == 0) {
+                var votes = document.createElement('span')
+                votes.classList.add('votes')
+
+                votes.textContent = teams[team_index].votes ? teams[team_index].votes : 0
+                // Set up the tooltip with HTML content (a button)
+                wrapper.appendChild(votes)
+
+                // Check if vote history is existing
+                let storage_key = 'vote_t' + tournament_id + '_n' + bracket.roundNo + '_b' + bracket.id
+                let vp_id = window.localStorage.getItem(storage_key)
+                if (vp_id && vp_id == teams[team_index].id) {
+                    teams[team_index].voted = true
+                }
+
+                if (!parseInt(bracket.win_by_host) && !teams[team_index].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount))) {
+                    var voteBtn = document.createElement('button')
+                    voteBtn.classList.add('vote-btn')
+                    voteBtn.dataset.id = participant.dataset.bracket
+                    voteBtn.addEventListener('click', (event) => {
+                        submitVote(event)
+                    })
+                    
+                    var voteBtnIcon = document.createElement('span')
+                    voteBtnIcon.classList.add('fa')
+                    voteBtnIcon.classList.add('fa-plus')
+                    voteBtn.appendChild(voteBtnIcon)
+
+                    wrapper.appendChild(voteBtn)
+                }
+            }
+
+            participant.appendChild(wrapper)
+        }
+
+        return participant
     }
 
     function saveBrackets(brackets) {
@@ -496,18 +396,68 @@ $(document).on('ready', function () {
     }
 
     function loadBrackets() {
-
         $.ajax({
             type: "get",
             url: apiURL + '/tournaments/' + tournament_id + '/brackets?uuid=' + UUID,
             success: function (result) {
                 result = JSON.parse(result);
                 if (result.length > 0) {
-                    bracketCount = result.length;
-                    brackets = result;
+                    if (tournament_type == 3) {
+                        let list_1 = []
+                        let list_2 = []
+                        let knockout_final
+                        result.forEach((e, i) => {
+                            if (parseInt(e.is_double) == 1) {
+                                if (parseInt(e.knockout_final) == 1) {
+                                    knockout_final = e
+                                } else {
+                                    list_2.push(e)
+                                }
+                            } else {
+                                list_1.push(e)
+                            }
+                        })
 
-                    drawBrackets();
+                        let left_brackets = renderBrackets(list_1)
+                        let left_wrapper = document.createElement('div')
+                        left_wrapper.id = "left_wrapper"
+                        left_wrapper.appendChild(left_brackets[0])
+
+                        let right_brackets = renderBrackets(list_2, 'rtl')
+                        let right_wrapper = document.createElement('div')
+                        right_wrapper.id = "right_wrapper"
+                        right_wrapper.appendChild(right_brackets[0])
+
+                        let center_wrapper = document.createElement('div')
+                        center_wrapper.classList.add('center-wrapper', 'align-self-center')
+                        center_wrapper.style.minWidth = '300px'
+                        let bracketDiv = document.createElement('div')
+                        bracketDiv.classList.add('knockout-final', 'd-flex', 'align-items-end', 'justify-content-center')
+                        let final_bracket = drawParticipant(knockout_final)
+                        bracketDiv.append(final_bracket)
+                        center_wrapper.append(bracketDiv)
+
+                        $('#brackets').html('')
+                        $('#brackets').append(left_wrapper, center_wrapper, right_wrapper)
+                        adjustBracketsStyles(document.getElementById('left_wrapper'))
+                        adjustBracketsStyles(document.getElementById('right_wrapper'))
+                    } else {
+                        let brackets = renderBrackets(result);
+                        $('#brackets').html(brackets);
+                        
+                        adjustBracketsStyles(document.getElementById('brackets'))
+                    }
+
+                    initialize();
+
+                    $('html,body').animate({
+                        // scrollTop: $("#b" + (result.length - 1)).offset().top
+                    });
                 }
+
+                document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+                    var tooltip = new bootstrap.Tooltip(element)
+                })
             },
             error: function (error) {
                 console.log(error);
@@ -518,6 +468,7 @@ $(document).on('ready', function () {
             }, 500);
         });
     }
+    
     function initialize(){
         $('#reset-single').on('click', function () {
             $.ajax({
@@ -529,7 +480,6 @@ $(document).on('ready', function () {
 
                     eleminationType = "Single";
                     brackets = [];
-                    bracketCount = 0;
                     $('#brackets').html('');
                     ws.send('reset!');
                     loadBrackets()
@@ -554,7 +504,6 @@ $(document).on('ready', function () {
 
                     eleminationType = "Double";
                     brackets = [];
-                    bracketCount = 0;
                     $('#brackets').html('');
                     ws.send('reset!');
                     loadBrackets()
@@ -742,8 +691,8 @@ function changeParticipant(ele, bracket_id, index) {
     }
 }
 
-function adjustBracketsStyles() {
-  const rows = document.querySelectorAll(".brackets div.groups div.bracketbox-list");
+function adjustBracketsStyles(obj) {
+  const rows = obj.querySelectorAll(".brackets div.groups div.bracketbox-list");
   const baseHeight = 30;
   const baseMargin = 40;
   
@@ -773,6 +722,7 @@ function adjustBracketsStyles() {
 function chooseImage(e, element_id){
     $("#image_" + element_id).trigger('click');
 }
+
 function checkBig(el, element_id) {
     var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -810,6 +760,7 @@ function checkBig(el, element_id) {
         });
     }
 }
+
 function removeImage(e, element_id){
     $.ajax({
         type: "POST",
@@ -837,7 +788,7 @@ let submitVote = (event) => {
         data: {
             'tournament_id': tournament_id,
             'participant_id': participant_element.data('id'),
-            'bracket_id': participant_element.data('order'),
+            'bracket_id': participant_element.data('bracket'),
             'round_no': participant_element.data('round'),
             'uuid': UUID
         },
@@ -904,13 +855,15 @@ let cancelChangeRoundName = (event, name) => {
 
 let saveRoundName = (event) => {
     const name = event.currentTarget.value
+    const knockout_second = event.currentTarget.parentElement.parentElement.dataset.knockoutSecond
     $.ajax({
         type: "POST",
         url: apiURL + '/brackets/save-round',
         data: {
             'tournament_id': tournament_id,
             'round_no': event.currentTarget.parentElement.parentElement.dataset.roundNo,
-            'round_name': event.currentTarget.parentElement.firstChild.value
+            'round_name': event.currentTarget.parentElement.firstChild.value,
+            'knockout_second': knockout_second
         },
         dataType: "JSON",
         success: function (result) {

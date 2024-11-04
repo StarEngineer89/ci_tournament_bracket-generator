@@ -187,7 +187,8 @@ $(document).ready(function() {
                     $("#err").html("Invalid File !").fadeIn();
                 } else {
                     tournament_id = result.data.tournament_id;
-                    eleminationType = (result.data.type == 1) ? "Single" : "Double";
+                    eleminationType = parseInt(result.data.type);
+
                     if (result.data.music !== undefined && result.data.music[0] !== undefined) {
                         if (result.data.music[0].type == '<?= MUSIC_TYPE_BRACKET_GENERATION ?>') {
                             shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
@@ -241,7 +242,7 @@ $(document).ready(function() {
         audio.play()
         <?php if (isset($tournament) && count($tournament)) : ?>
         tournament_id = "<?= $tournament['id'] ?>";
-        eleminationType = "<?= ($tournament['type'] == 1) ? "Single" : "Double" ?>";
+        eleminationType = <?= intval($tournament['type']) ?>;
 
         <?php if (isset($settings) && count($settings)) : ?>
         audio.currentTime = parseInt(<?= $settings[0]['start'] ? $settings[0]['start'] : 0 ?>);

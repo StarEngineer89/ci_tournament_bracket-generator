@@ -12,7 +12,7 @@ class TournamentRoundSettingsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['tournament_id', 'round_no', 'round_name', 'user_id'];
+    protected $allowedFields    = ['tournament_id', 'round_no', 'round_name', 'user_id', 'knockout_second'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

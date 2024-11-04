@@ -3,7 +3,7 @@
     <select class="form-select" id="eliminationType" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>" selected>Single</option>
         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
-        <option value="<?= TOURNAMENT_TYPE_THIRD ?>">Knockout</option>
+        <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
     </select>
     <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
     <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>

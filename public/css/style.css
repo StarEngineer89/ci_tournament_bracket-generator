@@ -125,11 +125,7 @@
   clear: both;
 }
 
-.brackets>div>div {
-  float: left;
-}
-
-.brackets>div>div>div {
+.brackets .round > div {
   margin: 40px 0;
 }
 
@@ -141,6 +137,10 @@
   border-right: 1px solid #555;
   border-bottom: 1px solid #555;
 }
+.brackets .rtl div.bracketbox {
+  border-right: none;
+  border-left: 1px solid #555;
+}
 
 .brackets div.bracketbox>span.info {
   position: absolute;
@@ -150,44 +150,49 @@
   color: #BBB;
 }
 
-.brackets div.bracketbox>span {
+.brackets div.bracketbox > span {
   position: absolute;
   left: 20px;
   font-size: 0.85em;
   min-height: 40px;
 }
-.brackets div.bracketbox span.p-id {
+.brackets .rtl div.bracketbox>span {
+  left: auto;
+  right: 20px
+}
+
+.brackets span.p-id {
     font-size: 0.85em;
     padding: 0px 10px;
     background: #ace8f4;
 }
-.brackets div.bracketbox span.score {
+.brackets span.score {
   font-size: 0.85em;
   padding: 0 5px;
   background: #fad684;
   line-height: 26px;
   text-align: center;
 }
-.brackets div.bracketbox span.score:after {
+.brackets span.score:after {
   content: 'score';
   display: table-caption;
   line-height: 12px;
   font-size: 0.8em;
 }
-.brackets div.bracketbox span.votes {
+.brackets span.votes {
   font-size: 0.85em;
   padding: 0 5px;
   background: #fdd9fd;
   line-height: 26px;
   text-align: center;
 }
-.brackets div.bracketbox span.votes:after {
+.brackets span.votes:after {
   content: 'votes';
   display: table-caption;
   line-height: 12px;
   font-size: 0.8em;
 }
-.brackets div.bracketbox .vote-btn {
+.brackets .vote-btn {
   font-size: 0.6em;
   padding: 0 5px;
   background: #fcb5fc;
@@ -196,11 +201,11 @@
   border: 0;cursor: pointer;
   transition-duration: 0.4s;
 }
-.brackets div.bracketbox .vote-btn:hover {
+.brackets .vote-btn:hover {
   transition-duration: 1s;
   background-color: #b995b9;
 }
-.brackets div.bracketbox .vote-btn:after {
+.brackets .vote-btn:after {
   content: "";
   display: block;
   position: absolute;
@@ -213,7 +218,7 @@
   transition: all 1s;
   box-shadow: 0 0 10px 40px white;
 }
-.brackets div.bracketbox .vote-btn:active:after {
+.brackets .vote-btn:active:after {
   box-shadow: 0 0 0 0 white;
   position: absolute;
   border-radius: 4em;
@@ -222,19 +227,19 @@
   opacity: 1;
   transition: 0s;
 }
-.brackets div.bracketbox .vote-btn:active {
+.brackets .vote-btn:active {
   top: 1px;
 }
 
-.brackets div.bracketbox span.score-wrapper {
+.brackets span.score-wrapper {
   position: absolute;
   right: 0;
 }
-.brackets div.bracketbox span.name {
+.brackets span.name {
   padding: 0 10px;
 }
-.brackets div.bracketbox>span.bracketNo {
-  left: 70px !important;
+.brackets div.bracketbox span.bracketNo {
+  left: 70px;
   top: calc(50% - 15px);
   border-radius: 100%;
   border: solid 1px;
@@ -245,17 +250,24 @@
   text-align: center;
 }
 .brackets .r1 div.bracketbox>span.bracketNo {
-  left: -30px !important;
+  left: -30px;
   border-radius: 0;
   top: -20px;
   padding-top: 38px;
   padding-bottom: 38px;
   height: auto;
 }
+.brackets .rtl .r1 div.bracketbox>span.bracketNo {
+  right: -30px;
+  left: auto;
+}
 .brackets .r1 div.bracketbox>span {
   left: 0;
 }
-
+.brackets .rtl .r1 div.bracketbox>span {
+  right: 0;
+  left: auto;
+}
 .brackets div.bracketbox>span.teama {
   top: -20px;
 }
@@ -268,23 +280,23 @@
   bottom: -20px;
 }
 
-.brackets>.group2 {
+.brackets .group2 {
   height: 260px;
 }
 
-.brackets>.group2>div {
+.brackets .group2>div {
   width: 49%;
 }
 
-.brackets>.group3 {
+.brackets .group3 {
   height: 320px;
 }
 
-.brackets>.groups>div {
+.brackets .groups>div {
   width: 240px;
 }
 
-.brackets>div div.final {
+.brackets div div.final {
   height: 100px;
   border-bottom: 0;
   border-right: 0;
@@ -327,13 +339,37 @@
 .brackets>div .final > span {
   margin-left: 20px;
 }
+.brackets>div .rtl .final>span {
+  left: 0;
+  right: auto;
+  margin-left: 0;
+}
 .brackets>div .final span.p-id{
   margin-left: 0;
 }
 
-.brackets .bracketbox .winner {
+.brackets .bracketbox .winner,
+.brackets .knockout-final .winner {
   color: red;
   background-color: #caf6cb;
+}
+
+.brackets .center-wrapper {
+  margin-left: -100px;
+  margin-right: -100px;
+}
+.brackets .knockout-final {
+  margin-top: 50px;
+  margin-bottom: -100px;
+  border: 1px solid #555;
+  border-top: none;
+  height: 100px;
+}
+.brackets .knockout-final > span {
+  position: relative;
+}
+.brackets .knockout-final .bracket-team {
+  margin-bottom: -20px;
 }
 #shareHistoryModal .share-settings .input-group{
   flex-wrap: nowrap;

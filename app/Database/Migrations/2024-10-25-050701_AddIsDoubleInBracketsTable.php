@@ -9,7 +9,7 @@ class AddIsDoubleInBracketsTable extends Migration
     public function up()
     {
         $this->forge->addColumn('brackets', [
-            'is_double' => ['type' => 'tinyint', 'constraint' => 1, 'default' => 0],
+            'is_double' => ['type' => 'tinyint', 'constraint' => 1, 'null' => true],
         ]);
     }
 
