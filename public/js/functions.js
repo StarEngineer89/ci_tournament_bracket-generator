@@ -375,8 +375,12 @@ var changeEliminationType = (element) => {
 
     if ($(element).val() == 1) {
         parent.find('.single-type-hint').removeClass('d-none');
-    } else {
+    }
+    if ($(element).val() == 2) {
         parent.find('.double-type-hint').removeClass('d-none');
+    }
+    if ($(element).val() == 3) {
+        parent.find('.knockout-type-hint').removeClass('d-none');
     }
 }
 

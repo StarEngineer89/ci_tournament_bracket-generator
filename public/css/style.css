@@ -235,6 +235,10 @@
   position: absolute;
   right: 0;
 }
+.brackets .rtl span.score-wrapper {
+  right: auto;
+  left: 0;
+}
 .brackets span.name {
   padding: 0 10px;
 }
@@ -710,9 +714,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-}
-.elimination-type-hint {
-  display: none;
 }
 .settings-update .elimination-type-hint {
   display: block;

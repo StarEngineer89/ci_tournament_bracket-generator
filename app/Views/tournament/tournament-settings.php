@@ -7,7 +7,7 @@
     </select>
     <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
     <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
-    <div class="double-type-hint form-text d-none">A Knockout Bracket/Stage is a typical single-elimination bracket. It showcases a mirrored tree of participants converging to the final stage, in the center, in which the winner is determined.</div>
+    <div class="knockout-type-hint form-text d-none">A Knockout Bracket/Stage is a typical single-elimination bracket. It showcases a mirrored tree of participants converging to the final stage, in the center, in which the winner is determined.</div>
     <div class="elimination-type-hint form-text mt-2">
         Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
     </div>

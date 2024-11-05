@@ -95,8 +95,8 @@ $(document).on('ready', function () {
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
 
             _.each(grouped[g], function (gg) {
-                var teama = drawParticipant(gg, 0);
-                var teamb = drawParticipant(gg, 1);
+                var teama = drawParticipant(gg, 0, direction);
+                var teamb = drawParticipant(gg, 1, direction);
                 var teams = JSON.parse(gg.teamnames);
 
                 var bracket = document.createElement('div')
@@ -257,7 +257,7 @@ $(document).on('ready', function () {
         return group
     }
     
-function drawParticipant(bracket, team_index = 0) {
+    function drawParticipant(bracket, team_index = 0, direction = 'ltr') {
         let round_no = bracket.roundNo
         var participant = document.createElement('span');
         participant.dataset.order = bracket.bracketNo;
@@ -276,6 +276,11 @@ function drawParticipant(bracket, team_index = 0) {
         } else {
             participant.className = 'bracket-team teamb';
         }
+        participant.classList.add('d-flex')
+        if (direction == 'rtl') {
+            participant.classList.add('flex-row-reverse')
+        }
+        
         if (teams[team_index] != undefined) {
             var pid = pidBox.cloneNode(true)
             pid.textContent = parseInt(teams[team_index].order) + 1
@@ -304,6 +309,9 @@ function drawParticipant(bracket, team_index = 0) {
             var wrapper = document.createElement('span')
             wrapper.classList.add('score-wrapper')
             wrapper.classList.add('d-flex')
+            if (direction == 'rtl') {
+                wrapper.classList.add('flex-row-reverse')
+            }
 
             if (isScoreEnabled) {
                 var score = document.createElement('span')
