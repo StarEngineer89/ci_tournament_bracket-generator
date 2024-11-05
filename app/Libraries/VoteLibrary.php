@@ -40,7 +40,7 @@ class VoteLibrary
             }
             
             foreach ($lastGames as $key => $value) {
-                if ($value == $voteData['bracket_id']) {
+                if ($value == $currentBracket['bracketNo']) {
                     $index = $key;
                 }
             }
