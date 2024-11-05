@@ -162,7 +162,6 @@ class BracketsController extends BaseController
             /** Update next bracket */
             $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame'], 'is_double' => $bracket['is_double']])->first();
             if (!$nextBracket && $tournament && $tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
-                log_message('debug', 'next bracket');
                 $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->first();
                 $nextBracket['winner'] = $req->winner;
             }

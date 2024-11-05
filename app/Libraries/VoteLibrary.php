@@ -26,9 +26,7 @@ class VoteLibrary
         $currentBracket['winner'] = $voteData['participant_id'];
         $this->bracketsModel->save($currentBracket);
         
-        $brackets = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'nextGame' => $currentBracket['nextGame'], 'roundNo' => $voteData['round_no']])->first();
-        
-        $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame']])->first();
+        $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame'], 'is_double' => $currentBracket['is_double']])->first();
         $participant = $this->participantsModel->find($voteData['participant_id']);
         
         if ($nextBracket) {
