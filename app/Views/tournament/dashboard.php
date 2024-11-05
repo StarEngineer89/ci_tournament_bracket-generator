@@ -506,6 +506,10 @@ $(document).ready(function() {
                         type = "Double"
                     }
 
+                    if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
+                        type = "Knockout"
+                    }
+
                     return type;
                 }
             },
@@ -671,6 +675,10 @@ $(document).ready(function() {
                     var type = 'Single'
                     if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
                         type = "Double"
+                    }
+
+                    if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
+                        type = "Knockout"
                     }
 
                     return type;

@@ -56,6 +56,7 @@
                         <option value="">All Types</option>
                         <option value="Single">Single</option>
                         <option value="Double">Double</option>
+                        <option value="Knockout">Knockout</option>
                     </select>
                 </th>
                 <th scope="col">
@@ -98,6 +99,7 @@
                         <option value="">All Types</option>
                         <option value="Single">Single</option>
                         <option value="Double">Double</option>
+                        <option value="Knockout">Knockout</option>
                     </select>
                 </th>
                 <th scope="col">
@@ -131,6 +133,7 @@
                         <option value="">All Types</option>
                         <option value="Single">Single</option>
                         <option value="Double">Double</option>
+                        <option value="Knockout">Knockout</option>
                     </select>
                 </th>
                 <th scope="col">

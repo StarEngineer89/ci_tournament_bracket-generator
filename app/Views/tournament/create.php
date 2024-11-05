@@ -663,6 +663,10 @@ var drawTournamentsTable = () => {
                         type = "Double"
                     }
 
+                    if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
+                        type = "Knockout"
+                    }
+
                     return type;
                 }
             },
@@ -993,6 +997,7 @@ var performReuseParticipants = (tournament_id = null) => {
                                         <option value="">All Types</option>
                                         <option value="Single">Single</option>
                                         <option value="Double">Double</option>
+                                        <option value="Knockout">Knockout</option>
                                     </select>
                                 </th>
                                 <th>
