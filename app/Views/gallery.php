@@ -73,6 +73,10 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                     type = "Double"
                 }
 
+                if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
+                    type = "Knockout"
+                }
+
                 return type;
             }
         },
@@ -210,6 +214,7 @@ function handleKeyPress(event) {
                                 <option value="">All Types</option>
                                 <option value="Single">Single</option>
                                 <option value="Double">Double</option>
+                                <option value="Knockout">Knockout</option>
                             </select>
                         </th>
                         <th scope="col">
