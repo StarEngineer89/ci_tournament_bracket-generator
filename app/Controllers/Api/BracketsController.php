@@ -53,12 +53,18 @@ class BracketsController extends BaseController
                 if ($bracket['is_double'] == 0) {
                     $bracket['is_double'] = null;
                 }
+
+                $round_no = $bracket['roundNo'];
+                $r_list = [];
+                for ($r = 1; $r <= $round_no; $r++) {
+                    $r_list[] = $r;
+                }
                 
                 if ($teams[0]) {
                     $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $bracket['is_double'], 'round_no' => $bracket['roundNo']])->findAll();
                     
                     if ($tournament_settings['voting_retain']) {
-                        $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $bracket['is_double']])->findAll();
+                        $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $bracket['is_double']])->whereIn('round_no', $r_list)->findAll();
                         if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['knockout_final']) {
                             $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id']])->findAll();
                         }
@@ -79,7 +85,7 @@ class BracketsController extends BaseController
                     $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $bracket['is_double'], 'round_no' => $bracket['roundNo']])->findAll();
                     
                     if ($tournament_settings['voting_retain']) {
-                        $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $bracket['is_double']])->findAll();
+                        $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $bracket['is_double']])->whereIn('round_no', $r_list)->findAll();
                         if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['knockout_final']) {
                             $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id']])->findAll();
                         }
