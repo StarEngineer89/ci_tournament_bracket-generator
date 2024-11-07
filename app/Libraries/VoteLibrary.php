@@ -21,16 +21,34 @@ class VoteLibrary
     }
 
     public function markWinParticipant($voteData)
-    {
+    {   
         $currentBracket = $this->bracketsModel->find($voteData['bracket_id']);
+
+        $tournament = $this->tournamentsModel->find($currentBracket['tournament_id']);
+        if ($currentBracket['final_match'] == 1 && $tournament && $tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
+            $final_bracket_ids = $this->bracketsModel->where(['tournament_id' => $currentBracket['tournament_id'], 'final_match' => 1])->findColumn('id');
+            $this->bracketsModel->update($final_bracket_ids, ['winner' => null]);
+        }
+
         $currentBracket['winner'] = $voteData['participant_id'];
         $this->bracketsModel->save($currentBracket);
         
-        $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame'], 'is_double' => $currentBracket['is_double']])->first();
+        $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame']])->findAll();
+        if (count($nextBracket) == 1) {
+            $nextBracket = $nextBracket[0];
+        } else {
+            $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame'], 'is_double' => $currentBracket['is_double']])->first();
+        }
+
         $participant = $this->participantsModel->find($voteData['participant_id']);
         
         if ($nextBracket) {
             $index = 0;
+            
+            if ($nextBracket['knockout_final']) {
+                $nextBracket['lastGames'] = json_encode([$currentBracket['bracketNo'], null]);
+            }
+
             $lastGames = json_decode($nextBracket['lastGames']);
 
             if (is_int($lastGames)) {
@@ -46,6 +64,11 @@ class VoteLibrary
             $teams = json_decode($nextBracket['teamnames']);
             $teams[$index] = ['id' => $participant['id'], 'name' => $participant['name'], 'image' => $participant['image']];
             $nextBracket['teamnames'] = json_encode($teams);
+
+            if ($tournament && $tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT && $nextBracket['knockout_final'] == 1) {
+                $nextBracket['winner'] = $voteData['participant_id'];
+            }
+            
             $this->bracketsModel->save($nextBracket);
         }
         

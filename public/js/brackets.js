@@ -317,6 +317,13 @@ $(document).on('ready', function () {
                 var score = document.createElement('span')
                 score.classList.add('score')
                 var scorePoint = 0
+
+                let is_final_match = false
+                if (tournament_type == 3) {
+                    is_final_match = (parseInt(bracket.knockout_final)) ? true : false;
+                } else {
+                    is_final_match = (parseInt(bracket.final_match)) ? true : false;
+                }
                 
                 if (incrementScoreType == 'p') {
                     for (round_i = 0; round_i < round_no - 1; round_i++) {
@@ -324,7 +331,7 @@ $(document).on('ready', function () {
                         scorePoint += incrementScore * round_i
                     }
 
-                    if (teams[team_index].id == bracket.winner) {
+                    if (!is_final_match && teams[team_index].id == bracket.winner) {
                         scorePoint += scoreBracket
                         scorePoint += incrementScore * (round_no - 1)
                     }
@@ -338,7 +345,7 @@ $(document).on('ready', function () {
                         scorePoint += scorePoint * incrementScore 
                     }
                     
-                    if (round_no > 1 && teams[team_index].id == bracket.winner) {
+                    if (!is_final_match && round_no > 1 && teams[team_index].id == bracket.winner) {
                         scorePoint += scorePoint * incrementScore
                     }
                 }
@@ -350,15 +357,16 @@ $(document).on('ready', function () {
             if (votingEnabled && (parseInt(bracket.final_match) == 0 || (tournament_type == 3 && bracket.knockout_final !== 1) )) {
                 var votes = document.createElement('span')
                 votes.classList.add('votes')
-                if (bracket.id == 370) {
-                    console.log('debug')
-                }
                 votes.textContent = teams[team_index].votes ? teams[team_index].votes : 0
                 // Set up the tooltip with HTML content (a button)
                 wrapper.appendChild(votes)
 
                 // Check if vote history is existing
                 let storage_key = 'vote_t' + tournament_id + '_n' + bracket.roundNo + '_b' + bracket.id
+                if (tournament_type == 3 && parseInt(bracket.final_match)) {
+                    storage_key = 'vote_t' + tournament_id + '_n' + bracket.roundNo + '_b' + bracket.next_id
+                }
+
                 let vp_id = window.localStorage.getItem(storage_key)
                 if (vp_id && vp_id == teams[team_index].id) {
                     teams[team_index].voted = true

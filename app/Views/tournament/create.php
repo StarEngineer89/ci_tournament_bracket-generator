@@ -905,7 +905,7 @@ var performReuseParticipants = (tournament_id = null) => {
             </div>
             <div class="modal-body">
 
-                <form id="tournamentForm" class="needs-validation" method="POST" endtype="multipart/form-data">
+                <form id="tournamentForm" class="create-settings needs-validation" method="POST" endtype="multipart/form-data">
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="title">Title</span>
                         <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="title" name="title" required>

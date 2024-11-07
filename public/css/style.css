@@ -44,6 +44,9 @@
 #tournamentSettings input.form-control-sm {
   max-width: 60px;
 }
+#tournamentSettings .create-settings .elimination-type-hint {
+  display: none;
+}
 .note-editor {
   max-width: 100%;
 }

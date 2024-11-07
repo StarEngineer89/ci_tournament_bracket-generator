@@ -25,8 +25,8 @@ var hasEditPermission = <?= (isset($_GET['mode']) && $_GET['mode'] == 'edit') ||
 var hasParticipantImageUpdatePermission = <?= $tournament['pt_image_update_enabled'] ? intval($tournament['pt_image_update_enabled']) : 0 ?>;
 const isScoreEnabled = <?= $tournament['score_enabled'] ? 1 : 0 ?>;
 const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['score_bracket'] : 0 ?>);
-const incrementScore = Number(<?= ($tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>);
-const incrementScoreType = '<?= $tournament['increment_score_type'] ?>';
+const incrementScore = Number(<?= (intval($tournament['increment_score_enabled']) && $tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>);
+const incrementScoreType = '<?= (intval($tournament['increment_score_enabled']) && $tournament['increment_score_type']) ? $tournament['increment_score_type'] : TOURNAMENT_SCORE_INCREMENT_PLUS ?>';
 let votingEnabled = <?= $votingEnabled ? $votingEnabled : 0 ?>;
 let votingMechanism = <?= $tournament['voting_mechanism'] ? $tournament['voting_mechanism'] : 1 ?>;
 let allowHostOverride = <?= $tournament['allow_host_override'] ? $tournament['allow_host_override'] : 0 ?>;

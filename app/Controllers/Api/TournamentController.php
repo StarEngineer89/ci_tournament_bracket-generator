@@ -910,6 +910,15 @@ class TournamentController extends BaseController
             $voteModel = model('\App\Models\VotesModel');
             $participantsModel = model('\App\Models\ParticipantModel');
             
+            $bracketModel = model('\App\Models\BracketModel');
+            $bracket = $bracketModel->find($voteData['bracket_id']);
+            $nextBracket = $bracketModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->findAll();
+            if (count($nextBracket) == 1) {
+                $nextBracket = $nextBracket[0];
+            } else {
+                $nextBracket = $bracketModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame'], 'is_double' => $bracket['is_double']])->first();
+            }
+
             // Validation (optional, based on your form fields)
             $validation = \Config\Services::validation();
             $validation->setRules([
@@ -930,11 +939,19 @@ class TournamentController extends BaseController
                                       ->setJSON(['status' => 'error', 'message' => $validation->getErrors()]);
             }
 
+            $saveData = $voteData;
+            // Update the bracket ID on knockout final
+            $tournament_settings = $this->tournamentModel->find($voteData['tournament_id']);
+            if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['final_match'] == 1 && $nextBracket) {
+                $saveData['bracket_id'] = $nextBracket['id'];
+            }
+            // End update the bracket ID on knockout final
+
             //Check if there is the data saved before
             if (auth()->user()) {
-                $prevVote = $voteModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $voteData['tournament_id'], 'bracket_id' => $voteData['bracket_id']])->first();
+                $prevVote = $voteModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $saveData['tournament_id'], 'bracket_id' => $saveData['bracket_id']])->first();
             } else {
-                $prevVote = $voteModel->where(['uuid' => $voteData['uuid'], 'tournament_id' => $voteData['tournament_id'], 'bracket_id' => $voteData['bracket_id']])->first();
+                $prevVote = $voteModel->where(['uuid' => $saveData['uuid'], 'tournament_id' => $saveData['tournament_id'], 'bracket_id' => $saveData['bracket_id']])->first();
             }
 
             if ($prevVote) {
@@ -943,17 +960,16 @@ class TournamentController extends BaseController
                                       ->setJSON(['status' => 'error', 'message' => 'You have already voted for this participant.']);
                 } else {
                     $prevVote['participant_id'] = $voteData['participant_id'];
-                    $voteData = $prevVote;
                 }
+
+                $saveData = $prevVote;
             }
 
             // Check if bracket is double
-            $bracketModel = model('\App\Models\BracketModel');
-            $bracket = $bracketModel->find($voteData['bracket_id']);
             if ($bracket && $bracket['is_double']) {
-                $voteData['is_double'] = 1;
+                $saveData['is_double'] = 1;
             } else {
-                $voteData['is_double'] = null;
+                $saveData['is_double'] = null;
             }
             // End check if bracket is double
 
@@ -968,10 +984,10 @@ class TournamentController extends BaseController
             }
 
             // Save to database
-            if ($voteModel->save($voteData)) {
+            if ($voteModel->save($saveData)) {
                 /** Save the record to actions log table */
                 $logActionsModel = model('\App\Models\LogActionsModel');
-                $insert_data = ['tournament_id' => $voteData['tournament_id'], 'action' => BRACKET_ACTIONCODE_VOTE];
+                $insert_data = ['tournament_id' => $saveData['tournament_id'], 'action' => BRACKET_ACTIONCODE_VOTE];
                 if (auth()->user()) {
                     $insert_data['user_id'] = auth()->user()->id;
                 } else {
@@ -979,33 +995,36 @@ class TournamentController extends BaseController
                 }
                 
                 $data = [];
-                $data['bracket_no'] = $voteData['bracket_id'];
-                $data['round_no'] = $voteData['round_no'];
-                $participant = $participantsModel->find($voteData['participant_id']);
+                $data['bracket_no'] = $saveData['bracket_id'];
+                $data['round_no'] = $saveData['round_no'];
+                $participant = $participantsModel->find($saveData['participant_id']);
                 $data['participants'] = [$participant['name']];
                 $insert_data['params'] = json_encode($data);
 
                 $logActionsModel->insert($insert_data);
-
+                
                 /** Mark Participant win if max vote count reaches */
-                $tournament_settings = $this->tournamentModel->find($voteData['tournament_id']);
-                $search_params = array_diff_key($voteData, array('id'=> true, 'bracket_id' => true, 'user_id' => true, 'uuid' => true, 'created_at' => true, 'updated_at' => true, 'deleted_at' => true));
                 $vote_max_limit = intval($tournament_settings['max_vote_value']);
+                $search_params = array_diff_key($voteData, array('bracket_id' => true, 'user_id' => true, 'uuid' => true));
+                $votes_in_round = $voteModel->where($search_params)->findAll();
                 if ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_retain']) {
-                    $vote_max_limit = $vote_max_limit * intval($voteData['round_no']);
                     $search_params = array_diff_key($search_params, array('round_no' => true));
+                }
+
+                if ($nextBracket && is_null($nextBracket['nextGame'])) {
+                    $search_params = array_diff_key($search_params, array('is_double' => true));
                 }
                 
                 /** Get Votes count in a round */
                 $votes = $voteModel->where($search_params)->findAll();
-                $voteData['votes'] = count($votes);
-                if ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE && $voteData['votes'] >= $vote_max_limit) {
+                $saveData['votes'] = count($votes);
+                if ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE && count($votes_in_round) >= $vote_max_limit) {
                     $voteLibrary = new VoteLibrary();
                     $result = $voteLibrary->markWinParticipant($voteData);
                 }
                 
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                      ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'data' => $voteData]);
+                                      ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'data' => $saveData]);
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                       ->setJSON(['status' => 'error', 'message' => 'Failed to save vote']);

@@ -92,7 +92,7 @@
             </div>
             <div class="modal-body">
 
-                <form id="tournamentForm" method="POST" endtype="multipart/form-data">
+                <form id="tournamentForm" class="dashboard-settings needs-validation" method="POST" endtype="multipart/form-data">
                     <div class="settings-update">
                         <?= $settingsBlock ?>
                     </div>
