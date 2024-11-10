@@ -600,6 +600,7 @@ class TournamentController extends BaseController
         
         $config = new \Config\Encryption();
         $token = hash_hmac('sha256', 'tournament_' . $tournament_id . '_created_by_' . auth()->user()->id . '_' . time(), $config->key);
+        $token = substr($token, 0, 12);
 
         return json_encode(['status' => 'success','settings'=> $settings_with_users, 'token' => $token]);
     }
