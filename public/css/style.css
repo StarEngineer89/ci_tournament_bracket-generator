@@ -114,7 +114,7 @@
   cursor: pointer;
 }
 
-.descriptionPlaceholder img {
+#descriptionPlaceholder img {
   max-width: 100%;
 }
 
