@@ -114,6 +114,10 @@
   cursor: pointer;
 }
 
+.descriptionPlaceholder img {
+  max-width: 100%;
+}
+
 .brackets {
   max-width: 100%;
   overflow-x: scroll;
