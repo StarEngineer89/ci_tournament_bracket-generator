@@ -16,7 +16,7 @@
 
     <body class="bg-light">
 
-        <div class="header p-2 border-bottom sticky-top bg-light">
+        <div class="header p-2 border-bottom sticky-top">
             <div class="container-fluid">
                 <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary">
                     <a class="navbar-brand" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo" /></a>
