@@ -1,0 +1,118 @@
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Use your image */
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    /* Puts it behind other content */
+}
+
+/** Theme for Classic */
+.bg-cl .background {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+}
+
+/** Theme for Championship Gold */
+.bg-cs .background {
+    --bs-bg-opacity: 1;
+    background-color: rgba(37, 35, 35, 0.9);
+}
+
+.bg-cs .background .corner-top-left,
+.bg-cs .background .corner-bottom-right {
+    width: 300px;
+    height: 300px;
+    background-image: url('../images/hexagon.svg');
+    background-size: contain;
+}
+
+.bg-cs .background .corner-top-left {
+    position: fixed;
+    top: 100px;
+}
+
+.bg-cs .background .corner-top-left::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-left: 150px solid transparent;
+    border-top: 160px solid transparent;
+    border-right: 150px solid rgb(58 58 58);
+    border-bottom: 160px solid rgb(58 58 58);
+}
+
+.bg-cs .background .corner-bottom-right {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+}
+
+.bg-cs .background .corner-bottom-right::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-right: 150px solid transparent;
+    border-bottom: 160px solid transparent;
+    border-left: 150px solid rgb(58 58 58);
+    border-top: 160px solid rgb(58 58 58);
+}
+
+.bg-cs .header {
+    background-color: rgba(37, 35, 35, 0.9);
+}
+
+.bg-cs .card {
+    background: none;
+}
+
+.bg-cs .nav-link,
+.bg-cs .breadcrumb-item.active,
+.bg-cs .card-title {
+    color: rgba(255, 255, 255, 1);
+}
+
+.bg-cs .brackets .round-name-wrapper,
+.bg-cs .brackets div.bracketbox span.bracketNo,
+.bg-cs .brackets>div .bracket-team,
+.bg-cs .brackets>div .final>span {
+    background-color: rgb(131 131 131);
+}
+
+.bg-cs .alert-btn-container .btn {
+    background-color: rgb(107, 107, 107);
+    border: solid 1px;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.bg-dr .background {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-blue-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.bg-gr .background {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-green-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.bg-mm .background {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-pink-rgb), var(--bs-bg-opacity)) !important;
+}

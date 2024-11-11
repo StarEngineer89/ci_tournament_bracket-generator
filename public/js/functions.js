@@ -483,3 +483,23 @@ var changeVotingMechanism = (element) => {
         $('.evaluation-vote-round-availability-required').addClass('d-none')
     }
 }
+
+var changeTournamentTheme = (element) => {
+    $('.tournament-theme-settings-hints > div').addClass('d-none')
+
+    if ($(element).val() == "cl") {
+        $('.theme-classic-hint').removeClass('d-none')
+    }
+    if ($(element).val() == "cs") {
+        $('.theme-champion-hint').removeClass('d-none')
+    }
+    if ($(element).val() == "dr") {
+        $('.theme-darkroyale-hint').removeClass('d-none')
+    }
+    if ($(element).val() == "gr") {
+        $('.theme-gridiron-hint').removeClass('d-none')
+    }
+    if ($(element).val() == "mm") {
+        $('.theme-modernmetal-hint').removeClass('d-none')
+    }
+}

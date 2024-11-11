@@ -223,7 +223,8 @@ class TournamentController extends BaseController
             'max_vote_value' => $this->request->getPost('max_vote_value'),
             'voting_retain' => ($this->request->getPost('voting_retain') == 'on') ? 1 : 0,
             'allow_host_override' => ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0,
-            'pt_image_update_enabled' => ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0
+            'pt_image_update_enabled' => ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0,
+            'theme' => $this->request->getPost('theme')
         ];
         
         $tournamentData = new \App\Entities\Tournament($data);
@@ -427,6 +428,10 @@ class TournamentController extends BaseController
         
         if ($this->request->getPost('pt_image_update_enabled')) {
             $tournament['pt_image_update_enabled'] = ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0;
+        }
+
+        if ($this->request->getPost('theme')) {
+            $tournament['theme'] = $this->request->getPost('theme');
         }
 
         $tournamentModel->save($tournament);

@@ -34,6 +34,7 @@ class Tournament extends Entity
         'max_vote_value', 
         'voting_retain', 
         'allow_host_override',
-        'pt_image_update_enabled'
+        'pt_image_update_enabled',
+        'theme'
     ];
 }

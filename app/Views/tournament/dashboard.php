@@ -1375,6 +1375,10 @@ const changeSettings = (event) => {
                     $('.single-type-hint').addClass('d-none')
                 }
 
+                if (result.tournamentSettings.theme) {
+                    $('#tournamentTheme').val(result.tournamentSettings.theme)
+                }
+
                 $('#description').summernote('destroy');
                 $('#description').text(result.tournamentSettings.description)
 

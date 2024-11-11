@@ -83,7 +83,7 @@ $(document).on('ready', function () {
                 editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
             }
             
-            let roundName = $(`<div class="text-center p-2 m-1 border" style="height: auto" data-round-no="${g}" ${parseInt(grouped[g][0].is_double) ? 'data-knockout-second="true"' : ''}></div>`)
+            let roundName = $(`<div class="round-name-wrapper text-center p-2 m-1 border" style="height: auto" data-round-no="${g}" ${parseInt(grouped[g][0].is_double) ? 'data-knockout-second="true"' : ''}></div>`)
             let round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}`
             if (grouped[g][0].final_match && grouped[g][0].final_match !== "0") {
                 round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}: Grand Final`

@@ -16,13 +16,14 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
         <?= $this->renderSection('pageStyles') ?>
+        <link rel="stylesheet" href="/css/theme.css">
         <link rel="stylesheet" href="/css/style.css">
     </head>
 
-    <body class="bg-light">
+    <body class="<?= (isset($tournament) && $tournament['theme']) ? 'bg-' . $tournament['theme'] : 'bg-light' ?>">
 
         <main role="main">
-            <div class="header p-2 border-bottom sticky-top bg-light">
+            <div class="header p-2 border-bottom sticky-top">
                 <div class="container-fluid">
                     <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative">
                         <a class="navbar-brand" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo" /></a>
