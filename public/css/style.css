@@ -138,16 +138,20 @@
 .brackets div.bracketbox {
   position: relative;
   width: 100%;
+  flex-direction: row-reverse;
+}
+.brackets div.bracketbox .bracket-border-line {
+  position: absolute;
   height: 100%;
+  width: 50%;
+  left: 0;
   border-top: 1px solid #555;
   border-right: 1px solid #555;
   border-bottom: 1px solid #555;
 }
-.brackets .rtl div.bracketbox {
-  border-right: none;
-  border-left: 1px solid #555;
+.brackets .r1 div.bracketbox .bracket-border-line {
+  border: none;
 }
-
 .brackets div.bracketbox>span.info {
   position: absolute;
   top: 25%;
@@ -161,16 +165,6 @@
   left: 20px;
   font-size: 0.85em;
   min-height: 40px;
-}
-.brackets .rtl div.bracketbox>span {
-  left: auto;
-  right: 20px
-}
-
-.brackets span.p-id {
-    font-size: 0.85em;
-    padding: 0px 10px;
-    background: #ace8f4;
 }
 .brackets span.score {
   font-size: 0.85em;
@@ -241,15 +235,18 @@
   position: absolute;
   right: 0;
 }
-.brackets .rtl span.score-wrapper {
-  right: auto;
-  left: 0;
+.brackets span.p-id {
+  font-size: 0.85em;
+  padding: 0px 5px;
+  background: #ace8f4;
+  margin-right: 5px;
+  border-radius: 0 50% 50% 0;
 }
 .brackets span.name {
   padding: 0 10px;
 }
 .brackets div.bracketbox span.bracketNo {
-  left: 70px;
+  left: -5px;
   top: calc(50% - 15px);
   border-radius: 100%;
   border: solid 1px;
@@ -267,26 +264,18 @@
   padding-bottom: 38px;
   height: auto;
 }
-.brackets .rtl .r1 div.bracketbox>span.bracketNo {
-  right: -30px;
-  left: auto;
-}
 .brackets .r1 div.bracketbox>span {
   left: 0;
 }
-.brackets .rtl .r1 div.bracketbox>span {
-  right: 0;
-  left: auto;
-}
-.brackets div.bracketbox>span.teama {
+.brackets div.bracketbox span.teama {
   top: -20px;
 }
 
-.brackets div.bracketbox>span.teamb {
+.brackets div.bracketbox span.teamb {
   bottom: -20px;
 }
 
-.brackets div.bracketbox>span.teamc {
+.brackets div.bracketbox span.teamc {
   bottom: -20px;
 }
 
@@ -337,6 +326,7 @@
   display: flex;
   height: 40px;
   align-items: center;
+  position: absolute;
 }
 .brackets>div .bracket-team,
 .brackets>div .final > span {
@@ -349,18 +339,30 @@
 .brackets>div .final > span {
   margin-left: 20px;
 }
-.brackets>div .rtl .final>span {
-  left: 0;
-  right: auto;
-  margin-left: 0;
-}
 .brackets>div .final span.p-id{
   margin-left: 0;
 }
 
+.brackets .bracketbox .participants {
+    position: relative;
+    height: 60px;
+    width: 90%;
+    border-top: 1px solid #555;
+    border-right: 1px solid #555;
+    border-bottom: 1px solid #555;
+    background-color: #fff;
+}
+.brackets .bracketbox.final .participants {
+    height: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    border-bottom: none;
+    border-right: none;
+}
 .brackets .bracketbox .winner,
 .brackets .knockout-final .winner {
-  color: red;
+  color: #c12525;
+  font-weight: 800;
   background-color: #caf6cb;
 }
 
@@ -381,6 +383,83 @@
 .brackets .knockout-final .bracket-team {
   margin-bottom: -20px;
 }
+
+.brackets .bracket-link-border {
+  display: block;
+  height: 50%;
+  border: solid 2px #555;
+  border-left: none;
+  border-bottom: none;
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  right: -50%;
+}
+
+.brackets .rtl div.bracketbox {
+  border: none;
+  flex-direction: row;
+}
+
+.brackets .rtl div.bracketbox .participants {
+  border-right: none;
+  border-left: 1px solid #555;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.brackets .rtl .bracketbox.final .participants {
+  height: 0;
+  display: flex;
+  flex-direction: row;
+  border-bottom: none;
+  border-left: none;
+}
+
+.brackets .rtl div.bracketbox .bracket-border-line {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: solid 1px;
+}
+
+.brackets .rtl div.bracketbox>span {
+  left: auto;
+  right: 20px
+}
+
+.brackets .rtl span.p-id {
+  margin-left: 5px;
+  margin-right: 0;
+  border-radius: 50% 0 0 50%;
+}
+
+.brackets .rtl span.score-wrapper {
+  right: auto;
+  left: 0;
+}
+
+.brackets .rtl div.bracketbox span.bracketNo {
+  left: auto;
+  right: -5px;
+}
+
+.brackets .rtl .r1 div.bracketbox>span.bracketNo {
+  right: -30px;
+  left: auto;
+}
+
+.brackets .rtl .r1 div.bracketbox>span {
+  right: 0;
+  left: auto;
+}
+
+.brackets>div .rtl .final>span {
+  left: 0;
+  right: auto;
+  margin-left: 0;
+}
+
 #shareHistoryModal .share-settings .input-group{
   flex-wrap: nowrap;
 }

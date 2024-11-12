@@ -1,3 +1,7 @@
+:root {
+    --bg-cs-background-color: rgb(37, 35, 35);
+    --bg-cs-background-corner-border-color: rgb(37, 35, 35);
+}
 .background {
     position: fixed;
     top: 0;
@@ -20,7 +24,7 @@
 /** Theme for Championship Gold */
 .bg-cs .background {
     --bs-bg-opacity: 1;
-    background-color: rgba(37, 35, 35, 0.9);
+    background-color: var(--bg-cs-background-color);
 }
 
 .bg-cs .background .corner-top-left,
@@ -48,8 +52,8 @@
     z-index: 100;
     border-left: 150px solid transparent;
     border-top: 160px solid transparent;
-    border-right: 150px solid rgb(58 58 58);
-    border-bottom: 160px solid rgb(58 58 58);
+    border-right: 150px solid var(--bg-cs-background-corner-border-color);
+    border-bottom: 160px solid var(--bg-cs-background-corner-border-color);
 }
 
 .bg-cs .background .corner-bottom-right {
@@ -70,12 +74,12 @@
     z-index: 100;
     border-right: 150px solid transparent;
     border-bottom: 160px solid transparent;
-    border-left: 150px solid rgb(58 58 58);
-    border-top: 160px solid rgb(58 58 58);
+    border-left: 150px solid var(--bg-cs-background-corner-border-color);
+    border-top: 160px solid var(--bg-cs-background-corner-border-color);
 }
 
 .bg-cs .header {
-    background-color: rgba(37, 35, 35, 0.9);
+    background-color: var(--bg-cs-background-color);
 }
 
 .bg-cs .card {
@@ -86,6 +90,19 @@
 .bg-cs .breadcrumb-item.active,
 .bg-cs .card-title {
     color: rgba(255, 255, 255, 1);
+}
+
+.bg-cs .brackets div.bracketbox .bracket-border-line {
+    border-color: #b98d0f;
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+}
+
+.bg-cs .brackets div.bracketbox .participants {
+    border-color: #b98d0f;
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+    background-color: var(--bg-cs-background-color);
 }
 
 .bg-cs .brackets .round-name-wrapper,
@@ -100,6 +117,24 @@
     border: solid 1px;
     color: #fff;
     margin-left: 5px;
+}
+
+.bg-cs .brackets .bracket-link-border {
+    border: solid 2px #b98d0f;
+}
+
+.bg-cs .brackets .bracketbox .winner,
+.bg-cs .brackets .knockout-final .winner {
+    color: #613bd5;
+}
+
+.bg-cs .brackets span.score {
+    background: #88893e;
+}
+
+.bg-cs .brackets span.votes,
+.bg-cs .brackets .vote-btn {
+    background: #7782ab;
 }
 
 .bg-dr .background {

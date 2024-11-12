@@ -95,12 +95,19 @@ $(document).on('ready', function () {
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
 
             _.each(grouped[g], function (gg) {
+                var teamwrapper = document.createElement('div')
+                teamwrapper.className = "participants"
+
                 var teama = drawParticipant(gg, 0, direction);
                 var teamb = drawParticipant(gg, 1, direction);
                 var teams = JSON.parse(gg.teamnames);
 
                 var bracket = document.createElement('div')
 
+                var bracketBorder = document.createElement('div')
+                bracketBorder.className = "bracket-border-line"
+                bracket.append(bracketBorder)
+                
                 if (parseInt(gg.final_match)) {
                     bracket.className = "bracketbox final";
                     teama.className = (teams[0] && tournament_type !== 3) ? "bracket-team teama winner" : teama.className;
@@ -109,13 +116,15 @@ $(document).on('ready', function () {
                     bracketNo.classList.add('bracketNo')
                     bracketNo.innerHTML = gg.bracketNo
                     bracket.append(bracketNo)
-                    bracket.className = "bracketbox";
+                    bracket.className = "bracketbox d-flex align-items-center";
                 }
 
-                bracket.append(teama);
+                teamwrapper.append(teama);
 
                 if (!parseInt(gg.final_match))
-                    bracket.append(teamb);
+                    teamwrapper.append(teamb);
+
+                bracket.append(teamwrapper)
 
                 bracketBoxList.append(bracket);
             });
@@ -287,9 +296,9 @@ $(document).on('ready', function () {
             participant.appendChild(pid)
             
             if(teams[team_index].image){
-                $(participant).append(`<div class="p-image"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
+                $(participant).append(`<div class="p-image d-flex"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
             }else{
-                $(participant).append(`<div class="p-image"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
+                $(participant).append(`<div class="p-image d-flex"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
             }
 
             participant.dataset.id = teams[team_index].id;
@@ -729,7 +738,7 @@ function adjustBracketsStyles(obj) {
         
         if (bracket.classList.contains('final')) {
             bracket.style.height = `0`;
-            bracket.style.margin = `${margin}px 0 0`;    
+            bracket.style.margin = `${margin}px 0 0`;
         } else {
             bracket.style.height = `${height}px`;
             if (row.querySelectorAll('.bracketbox').length > index + 1) {
@@ -740,7 +749,7 @@ function adjustBracketsStyles(obj) {
             
         }
     })
-  });
+      });
 }
 
 function chooseImage(e, element_id){

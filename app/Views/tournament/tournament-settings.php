@@ -13,28 +13,21 @@
     </div>
 </div>
 
-<div class="border-bottom mb-3 ps-2 pb-3">
-    <div class="row g-3 align-items-center">
-        <div class="col-auto">
-            <label for="tournamentTheme" class="col-form-label"><strong>Theme</strong></label>
-        </div>
-        <div class="col-auto">
-            <select class="form-select" id="tournamentTheme" name="theme" aria-label="Theme" onchange="changeTournamentTheme(this)" required>
-                <option value="<?= TOURNAMENT_THEME_CLASSIC ?>" selected>Classic</option>
-                <option value="<?= TOURNAMENT_THEME_CHAIMPIONSHIP  ?>">Championship Gold</option>
-                <option value="<?= TOURNAMENT_THEME_DARKROYALE  ?>">Dark Royale</option>
-                <option value="<?= TOURNAMENT_THEME_GRIDIRON  ?>">Gridiron</option>
-                <option value="<?= TOURNAMENT_THEME_MODERNMETAL  ?>">Modern Metal</option>
-            </select>
-        </div>
-
-        <div class="tournament-theme-settings-hints">
-            <div class="theme-classic-hint form-text ps-3">A clean and simple bracket design, perfect for any tournament.</div>
-            <div class="theme-champion-hint form-text mb-1 ps-3 d-none">Bring a touch of luxury and prestige to your tournament.</div>
-            <div class="theme-darkroyale-hint form-text mb-1 ps-3 d-none">A sleek and intense theme for high-stakes competition.</div>
-            <div class="theme-gridiron-hint form-text mb-1 ps-3 d-none">Inspired by the football field, ideal for sports-themed tournaments.</div>
-            <div class="theme-modernmetal-hint form-text mb-1 ps-3 d-none">A bold and industrial look, adding strength to your tournament bracket.</div>
-        </div>
+<div class="input-group mb-3">
+    <span class="input-group-text" id="theme">Theme</span>
+    <select class="form-select" id="tournamentTheme" name="theme" aria-label="Theme" onchange="changeTournamentTheme(this)" required>
+        <option value="<?= TOURNAMENT_THEME_CLASSIC ?>" selected>Classic</option>
+        <option value="<?= TOURNAMENT_THEME_CHAIMPIONSHIP ?>">Championship Gold</option>
+        <option value="<?= TOURNAMENT_THEME_DARKROYALE ?>">Dark Royale</option>
+        <option value="<?= TOURNAMENT_THEME_GRIDIRON ?>">Gridiron</option>
+        <option value="<?= TOURNAMENT_THEME_MODERNMETAL ?>">Modern Metal</option>
+    </select>
+    <div class="tournament-theme-settings-hints">
+        <div class="theme-classic-hint form-text ps-md-3">A clean and simple bracket design, perfect for any tournament.</div>
+        <div class="theme-champion-hint form-text mb-1 ps-md-3 d-none">Bring a touch of luxury and prestige to your tournament.</div>
+        <div class="theme-darkroyale-hint form-text mb-1 ps-md-3 d-none">A sleek and intense theme for high-stakes competition.</div>
+        <div class="theme-gridiron-hint form-text mb-1 ps-md-3 d-none">Inspired by the football field, ideal for sports-themed tournaments.</div>
+        <div class="theme-modernmetal-hint form-text mb-1 ps-md-3 d-none">A bold and industrial look, adding strength to your tournament bracket.</div>
     </div>
 </div>
 
