@@ -494,12 +494,11 @@ $(document).on('ready', function () {
                         let bracketDiv = document.createElement('div')
                         bracketDiv.classList.add('knockout-final', 'd-flex', 'align-items-end', 'justify-content-center')
 
+                        let trophy = document.createElement('div')
+                        trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap"
+                        trophy.style.minHeight = '100px'
+                        center_wrapper.append(trophy)
                         if (knockout_final.winner) {
-                            let trophy = document.createElement('div')
-                            trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap"
-                            trophy.style.minHeight = '100px'
-                            center_wrapper.append(trophy)
-
                             $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
                             $(trophy).append(`<img src="/images/champion.svg">`)
 
