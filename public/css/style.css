@@ -356,8 +356,8 @@
     height: 0;
     display: flex;
     flex-direction: row-reverse;
-    border-bottom: none;
-    border-right: none;
+    border: none;
+    margin-bottom: 30px;
 }
 .brackets .bracketbox .winner,
 .brackets .knockout-final .winner {
@@ -371,11 +371,10 @@
   margin-right: -100px;
 }
 .brackets .knockout-final {
-  margin-top: 50px;
-  margin-bottom: -100px;
+  margin-bottom: 30px;
   border: 1px solid #555;
   border-top: none;
-  height: 100px;
+  height: 50px;
 }
 .brackets .knockout-final > span {
   position: relative;
@@ -396,6 +395,19 @@
   right: -50%;
 }
 
+.brackets .trophy {
+  position: absolute;
+  top: -100px;
+  left: 20px;
+}
+
+.brackets .center-wrapper .trophy {
+  position: relative;
+  top: initial;
+  left: initial;
+  margin-top: 45px;
+}
+
 .brackets .rtl div.bracketbox {
   border: none;
   flex-direction: row;
@@ -411,7 +423,7 @@
 .brackets .rtl .bracketbox.final .participants {
   height: 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   border-bottom: none;
   border-left: none;
 }
@@ -864,4 +876,13 @@
 }
 .evaluation-vote-round-availability-required {
   color: red;
+}
+
+#confetti {
+  min-width: 50%;
+  min-height: calc(100vh - 100px);
+  position: fixed;
+  top: 50px;
+  left: 25%;
+  display: flex;
 }

@@ -121,10 +121,23 @@ $(document).on('ready', function () {
 
                 teamwrapper.append(teama);
 
-                if (!parseInt(gg.final_match))
-                    teamwrapper.append(teamb);
+                if (!parseInt(gg.final_match)) {
+                    teamwrapper.append(teamb)
+                }
+
+                if (tournament_type != 3 && parseInt(gg.final_match) && parseInt(gg.winner)) {
+                    let trophy = document.createElement('div')
+                    trophy.className = "trophy d-flex flex-column justify-content-center align-items-center"
+                    trophy.style.minHeight = '100px'
+                    $(trophy).append(`<img src="/images/trophy.gif" height="150px" width="150px" class="trophy"/>`)
+                    bracket.append(trophy)
+                }
 
                 bracket.append(teamwrapper)
+
+                if (tournament_type != 3 && parseInt(gg.final_match) && parseInt(gg.winner)) {
+                    $(bracket).append(`<img src="/images/champion.svg">`)
+                }
 
                 bracketBoxList.append(bracket);
             });
@@ -463,12 +476,26 @@ $(document).on('ready', function () {
 
                         let center_wrapper = document.createElement('div')
                         center_wrapper.classList.add('center-wrapper', 'align-self-center')
-                        center_wrapper.style.minWidth = '300px'
+                        center_wrapper.style.minWidth = '350px'
                         let bracketDiv = document.createElement('div')
                         bracketDiv.classList.add('knockout-final', 'd-flex', 'align-items-end', 'justify-content-center')
+
+                        let trophy = document.createElement('div')
+                        trophy.className = "trophy d-flex flex-column justify-content-center align-items-center"
+                        trophy.style.minHeight = '100px'
+                        center_wrapper.append(trophy)
+
+                        if (knockout_final.winner) {
+                            $(trophy).append(`<img src="/images/trophy.gif" height="150px" width="150px" class="trophy"/>`)
+                        }
+
                         let final_bracket = drawParticipant(knockout_final)
                         bracketDiv.append(final_bracket)
                         center_wrapper.append(bracketDiv)
+                        
+                        if (knockout_final.winner) {
+                            $(center_wrapper).append(`<img src="/images/champion.svg">`)
+                        }
 
                         $('#brackets').html('')
                         $('#brackets').append(left_wrapper, center_wrapper, right_wrapper)
@@ -612,7 +639,10 @@ $(document).on('ready', function () {
         const pimageDiv = opt.$trigger.find('.p-image').clone();
 
         let is_final = false
-        if (next_bracketObj.parentElement.classList.contains('final')) {
+        if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
+            is_final = true
+        }
+        if (tournament_type == 3 && next_bracketObj.parentElement.classList.contains('knockout-final')) {
             is_final = true
         }
 
@@ -624,9 +654,22 @@ $(document).on('ready', function () {
             success: function (result) {
                 ws.send('marked!');
                 loadBrackets()
+
+                let final_win = false
+
+                if (tournament_type == 3) {
+                    if (next_bracketObj.parentElement.classList.contains('knockout-final')) {
+                        final_win = true
+                    }
+                } else {
+                    if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
+                        final_win = true
+                    }
+                }
                 
-                if (next_bracketObj.parentElement.classList.contains('final')) {
+                if (final_win) {
                     next_bracketObj.classList.add('winner');
+                    initConfetti();
 
                     var player = document.getElementById('myAudio');
                     if (player) {
@@ -913,4 +956,60 @@ let saveRoundName = (event) => {
             $("#overlay").fadeOut(300);
         }, 500);
     });
+}
+
+let initConfetti = () => {
+    const duration = 5 * 1000,
+        animationEnd = Date.now() + duration,
+        defaults = { startVelocity: 30, spread: 360, ticks: 20, zIndex: 0 };
+
+    scrollToMiddle(document.getElementById('brackets'));
+
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+    if ($(document.getElementById('confetti')).length > 0) {
+        document.getElementById('confetti').style.display = 'block';
+    }
+    var interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            if ($(document.getElementById('confetti')).length > 0) {
+                document.getElementById('confetti').style.display = 'none';
+            }
+            return clearInterval(interval);
+        }
+
+        const particleCount = 20 * (timeLeft / duration);
+
+        // since particles fall down, start a bit higher than random
+        confetti(
+            Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+            })
+        );
+        confetti(
+            Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+            })
+        );
+    }, 250);
+}
+
+function scrollToMiddle(element) {
+  const container = element.parentElement;
+
+    // Calculate the middle position
+    let middle = 0
+    if (tournament_type == 3) {
+        middle = element.scrollWidth / 2 - container.offsetWidth / 2
+    } else {
+        middle = element.scrollWidth
+    }
+
+  // Scroll to the middle
+  element.scrollLeft = middle;
 }

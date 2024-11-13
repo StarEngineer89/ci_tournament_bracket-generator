@@ -189,10 +189,7 @@ class BracketsController extends BaseController
                 $teamnames = json_decode($nextBracket['teamnames']);
                 $teamnames[$req->index] = ['id' => $req->winner, 'name' => $participant['name'], 'image'=> $participant['image'], 'order' => $req->order];
                 $nextBracket['teamnames'] = json_encode($teamnames);
-                if (($tournament && $tournament['type'] != TOURNAMENT_TYPE_KNOCKOUT) && isset($req->is_final) && $req->is_final) {
-                    $nextBracket['winner'] = $req->winner;
-                }
-                if ($nextBracket['knockout_final'] == 1) {
+                if (isset($req->is_final) && $req->is_final) {
                     $nextBracket['winner'] = $req->winner;
                 }
                 $this->bracketsModel->save($nextBracket);
@@ -209,9 +206,7 @@ class BracketsController extends BaseController
                 $teamnames = json_decode($nextBracket['teamnames']);
                 $teamnames[$req->index] = null;
                 $nextBracket['teamnames'] = json_encode($teamnames);
-                if (isset($req->is_final) && $req->is_final) {
-                    $nextBracket['winner'] = null;
-                }
+                $nextBracket['winner'] = null;
                 $this->bracketsModel->save($nextBracket);
             }
             
