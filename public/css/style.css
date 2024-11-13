@@ -357,7 +357,6 @@
     display: flex;
     flex-direction: row-reverse;
     border: none;
-    margin-bottom: 30px;
 }
 .brackets .bracketbox .winner,
 .brackets .knockout-final .winner {
@@ -369,9 +368,10 @@
 .brackets .center-wrapper {
   margin-left: -100px;
   margin-right: -100px;
+  margin-top: 50px;
 }
 .brackets .knockout-final {
-  margin-bottom: 30px;
+  margin-top: -160px;
   border: 1px solid #555;
   border-top: none;
   height: 50px;
@@ -397,15 +397,25 @@
 
 .brackets .trophy {
   position: absolute;
-  top: -100px;
+  top: -180px;
   left: 20px;
+  height: 280px;
+  width: 80%;
+  transition: transform .3s;
+  transform: scale(1);
+}
+.brackets .trophy.zoom {
+  transform: scale(2);
+  z-index: 100;
 }
 
 .brackets .center-wrapper .trophy {
   position: relative;
   top: initial;
   left: initial;
-  margin-top: 45px;
+  margin-top: -75px;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .brackets .rtl div.bracketbox {

@@ -1,6 +1,8 @@
 :root {
     --bg-cs-background-color: rgb(37, 35, 35);
     --bg-cs-background-corner-border-color: rgb(37, 35, 35);
+    --bg-cs-bracket-border-color: rgb(185, 141, 15);
+    --bg-cs-bracket-winner-font-color: rgb(171 41 41);
 }
 .background {
     position: fixed;
@@ -93,13 +95,13 @@
 }
 
 .bg-cs .brackets div.bracketbox .bracket-border-line {
-    border-color: #b98d0f;
+    border-color: var(--bg-cs-bracket-border-color);
     border-width: 2px;
     border-radius: 0 10px 10px 0;
 }
 
 .bg-cs .brackets div.bracketbox .participants {
-    border-color: #b98d0f;
+    border-color: var(--bg-cs-bracket-border-color);
     border-width: 2px;
     border-radius: 0 10px 10px 0;
     background-color: var(--bg-cs-background-color);
@@ -120,12 +122,17 @@
 }
 
 .bg-cs .brackets .bracket-link-border {
-    border: solid 2px #b98d0f;
+    border: solid 2px var(--bg-cs-bracket-border-color);
 }
 
 .bg-cs .brackets .bracketbox .winner,
 .bg-cs .brackets .knockout-final .winner {
-    color: #613bd5;
+    color: var(--bg-cs-bracket-winner-font-color);
+}
+
+.bg-cs .brackets .knockout-final {
+    border-width: 2px;
+    border-color: var(--bg-cs-bracket-border-color);
 }
 
 .bg-cs .brackets span.score {
@@ -135,6 +142,12 @@
 .bg-cs .brackets span.votes,
 .bg-cs .brackets .vote-btn {
     background: #7782ab;
+}
+
+.bg-cs .brackets .rtl div.bracketbox .bracket-border-line,
+.bg-cs .brackets .rtl div.bracketbox .participants {
+    border-radius: 10px 0 0 10px;
+    border-left: solid 2px var(--bg-cs-bracket-border-color);
 }
 
 .bg-dr .background {

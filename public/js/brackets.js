@@ -127,17 +127,20 @@ $(document).on('ready', function () {
 
                 if (tournament_type != 3 && parseInt(gg.final_match) && parseInt(gg.winner)) {
                     let trophy = document.createElement('div')
-                    trophy.className = "trophy d-flex flex-column justify-content-center align-items-center"
+                    trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap"
                     trophy.style.minHeight = '100px'
-                    $(trophy).append(`<img src="/images/trophy.gif" height="150px" width="150px" class="trophy"/>`)
                     bracket.append(trophy)
+
+                    $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
+                    $(trophy).append(`<img src="/images/champion.svg">`)
+
+                    trophy.classList.add('zoom')
+                    setTimeout(() => {
+                        trophy.classList.remove('zoom')
+                    }, 1000)
                 }
 
                 bracket.append(teamwrapper)
-
-                if (tournament_type != 3 && parseInt(gg.final_match) && parseInt(gg.winner)) {
-                    $(bracket).append(`<img src="/images/champion.svg">`)
-                }
 
                 bracketBoxList.append(bracket);
             });
@@ -376,7 +379,7 @@ $(document).on('ready', function () {
                 wrapper.appendChild(score)
             }
             
-            if (votingEnabled && (parseInt(bracket.final_match) == 0 || (tournament_type == 3 && bracket.knockout_final !== 1) )) {
+            if (votingEnabled) {
                 var votes = document.createElement('span')
                 votes.classList.add('votes')
                 votes.textContent = teams[team_index].votes ? teams[team_index].votes : 0
@@ -398,7 +401,18 @@ $(document).on('ready', function () {
                     teams[team_index].voted = true
                 }
                 
-                if (!parseInt(bracket.win_by_host) && !teams[team_index].voted && ([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism) || (maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount))) {
+                var voteBtnAvailable = true
+                if (parseInt(bracket.win_by_host) || teams[team_index].voted) {
+                    voteBtnAvailable = false
+                }
+                if ((tournament_type != 3 && parseInt(bracket.final_match) == 1) || (tournament_type == 3 && parseInt(bracket.knockout_final) == 1)) {
+                    voteBtnAvailable = false
+                }
+                if ( ( !([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism)) || !(maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount)) ) {
+                    voteBtnAvailable = false
+                }
+
+                if (voteBtnAvailable) {
                     var voteBtn = document.createElement('button')
                     voteBtn.classList.add('vote-btn')
                     voteBtn.dataset.id = participant.dataset.bracket
@@ -480,23 +494,25 @@ $(document).on('ready', function () {
                         let bracketDiv = document.createElement('div')
                         bracketDiv.classList.add('knockout-final', 'd-flex', 'align-items-end', 'justify-content-center')
 
-                        let trophy = document.createElement('div')
-                        trophy.className = "trophy d-flex flex-column justify-content-center align-items-center"
-                        trophy.style.minHeight = '100px'
-                        center_wrapper.append(trophy)
-
                         if (knockout_final.winner) {
-                            $(trophy).append(`<img src="/images/trophy.gif" height="150px" width="150px" class="trophy"/>`)
+                            let trophy = document.createElement('div')
+                            trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap"
+                            trophy.style.minHeight = '100px'
+                            center_wrapper.append(trophy)
+
+                            $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
+                            $(trophy).append(`<img src="/images/champion.svg">`)
+
+                            trophy.classList.add('zoom')
+                            setTimeout(() => {
+                                trophy.classList.remove('zoom')
+                            }, 1000)
                         }
 
                         let final_bracket = drawParticipant(knockout_final)
                         bracketDiv.append(final_bracket)
                         center_wrapper.append(bracketDiv)
                         
-                        if (knockout_final.winner) {
-                            $(center_wrapper).append(`<img src="/images/champion.svg">`)
-                        }
-
                         $('#brackets').html('')
                         $('#brackets').append(left_wrapper, center_wrapper, right_wrapper)
                         adjustBracketsStyles(document.getElementById('left_wrapper'))
@@ -959,7 +975,7 @@ let saveRoundName = (event) => {
 }
 
 let initConfetti = () => {
-    const duration = 5 * 1000,
+    const duration = 10 * 1000,
         animationEnd = Date.now() + duration,
         defaults = { startVelocity: 30, spread: 360, ticks: 20, zIndex: 0 };
 
