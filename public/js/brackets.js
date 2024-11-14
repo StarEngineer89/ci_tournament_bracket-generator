@@ -408,7 +408,7 @@ $(document).on('ready', function () {
                 if ((tournament_type != 3 && parseInt(bracket.final_match) == 1) || (tournament_type == 3 && parseInt(bracket.knockout_final) == 1)) {
                     voteBtnAvailable = false
                 }
-                if ( ( !([votingMechanismRoundDurationCode, votingMechanismOpenEndCode].includes(votingMechanism)) || !(maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount)) ) {
+                if ( !(maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount) ) {
                     voteBtnAvailable = false
                 }
 
