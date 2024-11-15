@@ -132,9 +132,16 @@ $(document).on('ready', function () {
                     bracket.append(trophy)
 
                     $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
-                    $(trophy).append(`<img src="/images/champion.svg">`)
+                    
+                    var svg = drawChampionTextSVG()
+                    $(trophy).append(`<div class="champion-text">${svg}</div>`)
 
                     trophy.classList.add('zoom')
+
+                    setTimeout(() => {
+                        document.getElementsByClassName('champion-text')[0].classList.add('animate')
+                    }, 300)
+
                     setTimeout(() => {
                         trophy.classList.remove('zoom')
                     }, 1000)
@@ -500,12 +507,19 @@ $(document).on('ready', function () {
                         center_wrapper.append(trophy)
                         if (knockout_final.winner) {
                             $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
-                            $(trophy).append(`<img src="/images/champion.svg">`)
+                            
+                            var svg = drawChampionTextSVG()
+                            $(trophy).append(`<div class="champion-text">${svg}</div>`)
 
                             trophy.classList.add('zoom')
+	
+                            setTimeout(() => {
+                                document.getElementsByClassName('champion-text')[0].classList.add('animate')
+                            }, 200)
+
                             setTimeout(() => {
                                 trophy.classList.remove('zoom')
-                            }, 1000)
+                            }, 2000)
                         }
 
                         let final_bracket = drawParticipant(knockout_final)
@@ -1027,4 +1041,56 @@ function scrollToMiddle(element) {
 
   // Scroll to the middle
   element.scrollLeft = middle;
+}
+
+let drawChampionTextSVG = () => {
+    var svg = `
+            <svg viewBox="0 0 1200 325" id="svg">
+
+            <defs>
+            <linearGradient id="redGradient">
+                <stop offset="0%" stop-color="rgba(255, 0, 0, 0.6)" />
+                <stop offset="50%" stop-color="rgba(0, 0, 0, 0.6)" />
+            </linearGradient>
+
+            <linearGradient id="yellowGradient" gradientTransform="rotate(90)">
+                <stop offset="0%" stop-color="#e1a588" />
+                <stop offset="50%" stop-color="#f1e9a7" />
+                <stop offset="100%" stop-color="#e1a588" />
+            </linearGradient>
+
+            </defs>
+
+            <g id="splines">
+            <rect id="spline-1" x="512.5" y="27.5" height="260" width="35" fill="url(#yellowGradient)" />
+            <rect id="spline-1" x="582.5" y="0" height="370" width="40" fill="url(#yellowGradient)" />
+            <rect id="spline-1" x="652.5" y="27.5" height="260" width="35" fill="url(#yellowGradient)" />
+            </g>
+
+            <rect id="banner-1" x="0" y="142.5" height="80" width="1200" fill="rgba(255, 255, 255, 0.3)" />
+
+            <rect id="banner-2" x="150" y="132.5" height="100" width="900" fill="rgba(255, 255, 255, 0.3)" />
+
+            <rect id="banner-3" x="225" y="102.5" height="140" width="750" fill="rgba(0, 0, 0, 0.3)" />
+
+            <rect id="banner-4" x="275" y="110" height="125" width="650" fill="url(#redGradient)" />
+
+            <rect id="banner-5" x="437.5" y="67.5" height="35" width="325" fill="rgba(0, 0, 0, 0.3)" />
+
+            <g fill="rgba(255, 255, 255, 1)" id="line-1">
+            <rect id="line-1-1" x="210" y="122" height="4" width="130" fill="rgba(255, 255, 255, 1)" />
+            <rect id="line-1-2" x="210" y="126" height="4" width="600" />
+            </g>
+
+            <g fill="rgba(255, 255, 255, 1)" id="line-2">
+            <rect id="line-2-1" x="390" y="223" height="4" width="600" />
+            <rect id="line-2-2" x="860" y="227" height="4" width="130" fill="rgba(255, 255, 255, 1)" />
+            </g>
+
+            <text x="50%" y="65%" class="heading" font-size-adjust="1" font-size="48px">CHAMPION</text>
+
+        </svg>
+    `
+    
+    return svg
 }
