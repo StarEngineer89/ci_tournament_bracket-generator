@@ -1,9 +1,19 @@
 :root {
     --bg-cs-background-color: rgb(37, 35, 35);
     --bg-cs-background-corner-border-color: rgb(37, 35, 35);
+    --bg-cs-nav-hover-background-color: rgb(45, 45, 45);
     --bg-cs-bracket-border-color: rgb(185, 141, 15);
     --bg-cs-bracket-winner-font-color: rgb(12 93 18);
+
+    --bg-dr-background-color: rgb(15, 15, 15);
+    --bg-dr-background-corner-border-color: rgb(37, 35, 35);
+    --bg-dr-nav-hover-background-color: rgb(45, 45, 45);
+    --bg-dr-bracket-border-color: rgb(185, 141, 15);
+    --bg-dr-bracket-winner-font-color: rgb(12 93 18);
+    --bg-dr-font-color: rgb(255, 255, 255);
+    --bg-dr-participant-background-color: rgb(85, 85, 85);
 }
+
 .background {
     position: fixed;
     top: 0;
@@ -94,6 +104,10 @@
     color: rgba(255, 255, 255, 1);
 }
 
+.bg-cs .navbar-nav .nav-link:hover {
+    background-color: var(--bg-cs-nav-hover-background-color);
+}
+
 .bg-cs .brackets div.bracketbox .bracket-border-line {
     border-color: var(--bg-cs-bracket-border-color);
     border-width: 2px;
@@ -150,17 +164,417 @@
     border-left: solid 2px var(--bg-cs-bracket-border-color);
 }
 
+/** Styles for Dark Royal */
+.bg-dr .navbar-nav,
+.bg-dr .nav-link,
+.bg-dr .card-body {
+    color: var(--bg-dr-font-color)
+}
+
+.bg-dr .navbar-nav .nav-link:hover {
+    background-color: var(--bg-dr-nav-hover-background-color);
+}
+
 .bg-dr .background {
     --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-blue-rgb), var(--bs-bg-opacity)) !important;
+    background-color: var(--bg-dr-background-color);
+}
+
+/* .bg-dr .background .corner-top-left,
+.bg-dr .background .corner-bottom-right {
+    width: 300px;
+    height: 300px;
+    background-image: url('../images/hexagon.svg');
+    background-size: contain;
+} */
+
+/* .bg-dr .background .corner-top-left {
+    position: fixed;
+    top: 100px;
+}
+
+.bg-dr .background .corner-top-left::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-left: 150px solid transparent;
+    border-top: 160px solid transparent;
+    border-right: 150px solid var(--bg-dr-background-corner-border-color);
+    border-bottom: 160px solid var(--bg-dr-background-corner-border-color);
+} */
+
+/* .bg-dr .background .corner-bottom-right {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+}
+
+.bg-dr .background .corner-bottom-right::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-right: 150px solid transparent;
+    border-bottom: 160px solid transparent;
+    border-left: 150px solid var(--bg-dr-background-corner-border-color);
+    border-top: 160px solid var(--bg-dr-background-corner-border-color);
+} */
+
+.bg-dr .header {
+    background-color: var(--bg-dr-background-color);
+}
+
+.bg-dr .card,
+.bg-dr .brackets .bracketbox .participants,
+.bg-dr .brackets div.bracketbox span.bracketNo {
+    background: none;
+}
+
+.bg-dr .brackets>div .bracket-team,
+.bg-dr .brackets>div .final>span {
+    background: var(--bg-dr-participant-background-color)
+}
+
+.bg-dr .brackets div.bracketbox .bracket-border-line {
+    border-color: var(--bg-cs-bracket-border-color);
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+}
+
+.bg-dr .brackets div.bracketbox .participants {
+    border-color: var(--bg-cs-bracket-border-color);
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+    background: none;
+}
+
+.bg-dr .brackets .round-name-wrapper,
+.bg-dr .brackets div.bracketbox span.bracketNo,
+.bg-dr .brackets>div .bracket-team,
+.bg-dr .brackets>div .final>span {
+    background-color: rgb(131 131 131);
+}
+
+.bg-dr .alert-btn-container .btn {
+    background-color: rgb(107, 107, 107);
+    border: solid 1px;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.bg-dr .brackets .bracket-link-border {
+    border: solid 2px var(--bg-cs-bracket-border-color);
+}
+
+.bg-dr .brackets .bracketbox .winner,
+.bg-dr .brackets .knockout-final .winner {
+    color: var(--bg-cs-bracket-winner-font-color);
+}
+
+.bg-dr .brackets .knockout-final {
+    border-width: 2px;
+    border-color: var(--bg-cs-bracket-border-color);
+}
+
+.bg-dr .brackets span.score {
+    background: #88893e;
+}
+
+.bg-dr .brackets span.votes,
+.bg-dr .brackets .vote-btn {
+    background: #7782ab;
+}
+
+.bg-dr .brackets .rtl div.bracketbox .bracket-border-line,
+.bg-dr .brackets .rtl div.bracketbox .participants {
+    border-radius: 10px 0 0 10px;
+    border-left: solid 2px var(--bg-cs-bracket-border-color);
+}
+
+/** Styles for GRIDIRON */
+.bg-gr .navbar-nav,
+.bg-gr .nav-link,
+.bg-gr .card-body {
+    color: var(--bg-dr-font-color)
+}
+
+.bg-gr .navbar-nav .nav-link:hover {
+    background-color: var(--bg-dr-nav-hover-background-color);
 }
 
 .bg-gr .background {
     --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-green-rgb), var(--bs-bg-opacity)) !important;
+    background: url('../images/football-grass.jpg') repeat-x;
+    background-size: contain;
+}
+
+/* .bg-gr .background .corner-top-left,
+.bg-gr .background .corner-bottom-right {
+    width: 300px;
+    height: 300px;
+    background-image: url('../images/hexagon.svg');
+    background-size: contain;
+} */
+
+/* .bg-gr .background .corner-top-left {
+    position: fixed;
+    top: 100px;
+}
+
+.bg-gr .background .corner-top-left::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-left: 150px solid transparent;
+    border-top: 160px solid transparent;
+    border-right: 150px solid var(--bg-dr-background-corner-border-color);
+    border-bottom: 160px solid var(--bg-dr-background-corner-border-color);
+} */
+
+/* .bg-gr .background .corner-bottom-right {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+}
+
+.bg-gr .background .corner-bottom-right::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-right: 150px solid transparent;
+    border-bottom: 160px solid transparent;
+    border-left: 150px solid var(--bg-dr-background-corner-border-color);
+    border-top: 160px solid var(--bg-dr-background-corner-border-color);
+} */
+
+.bg-gr .header {
+    background-color: var(--bg-dr-background-color);
+}
+
+.bg-gr .card,
+.bg-gr .brackets .bracketbox .participants,
+.bg-gr .brackets div.bracketbox span.bracketNo {
+    background: none;
+}
+
+.bg-gr .brackets>div .bracket-team,
+.bg-gr .brackets>div .final>span {
+    background: var(--bg-dr-participant-background-color)
+}
+
+.bg-gr .brackets div.bracketbox .bracket-border-line {
+    border-color: var(--bg-cs-bracket-border-color);
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+}
+
+.bg-gr .brackets div.bracketbox .participants {
+    border-color: var(--bg-cs-bracket-border-color);
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+    background: none;
+}
+
+.bg-gr .brackets .round-name-wrapper,
+.bg-gr .brackets div.bracketbox span.bracketNo,
+.bg-gr .brackets>div .bracket-team,
+.bg-gr .brackets>div .final>span {
+    background-color: rgb(131 131 131);
+}
+
+.bg-gr .alert-btn-container .btn {
+    background-color: rgb(107, 107, 107);
+    border: solid 1px;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.bg-gr .brackets .bracket-link-border {
+    border: solid 2px var(--bg-cs-bracket-border-color);
+}
+
+.bg-gr .brackets .bracketbox .winner,
+.bg-gr .brackets .knockout-final .winner {
+    color: var(--bg-cs-bracket-winner-font-color);
+}
+
+.bg-gr .brackets .knockout-final {
+    border-width: 2px;
+    border-color: var(--bg-cs-bracket-border-color);
+}
+
+.bg-gr .brackets span.score {
+    background: #88893e;
+}
+
+.bg-gr .brackets span.votes,
+.bg-gr .brackets .vote-btn {
+    background: #7782ab;
+}
+
+.bg-gr .brackets .rtl div.bracketbox .bracket-border-line,
+.bg-gr .brackets .rtl div.bracketbox .participants {
+    border-radius: 10px 0 0 10px;
+    border-left: solid 2px var(--bg-cs-bracket-border-color);
+}
+
+/** Theme for Modern Metal */
+.bg-gr .navbar-nav,
+.bg-gr .nav-link,
+.bg-gr .card-body {
+    color: var(--bg-dr-font-color)
+}
+
+.bg-mm .navbar-nav .nav-link:hover {
+    background-color: var(--bg-dr-nav-hover-background-color);
 }
 
 .bg-mm .background {
     --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-pink-rgb), var(--bs-bg-opacity)) !important;
+    background-color: var(--bg-dr-background-color);
+}
+
+/* .bg-mm .background .corner-top-left,
+.bg-mm .background .corner-bottom-right {
+    width: 300px;
+    height: 300px;
+    background-image: url('../images/hexagon.svg');
+    background-size: contain;
+} */
+
+/* .bg-mm .background .corner-top-left {
+    position: fixed;
+    top: 100px;
+}
+
+.bg-mm .background .corner-top-left::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-left: 150px solid transparent;
+    border-top: 160px solid transparent;
+    border-right: 150px solid var(--bg-dr-background-corner-border-color);
+    border-bottom: 160px solid var(--bg-dr-background-corner-border-color);
+} */
+
+/* .bg-mm .background .corner-bottom-right {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+}
+
+.bg-mm .background .corner-bottom-right::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    background: transparent;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    display: block;
+    z-index: 100;
+    border-right: 150px solid transparent;
+    border-bottom: 160px solid transparent;
+    border-left: 150px solid var(--bg-dr-background-corner-border-color);
+    border-top: 160px solid var(--bg-dr-background-corner-border-color);
+} */
+
+.bg-mm .header {
+    background-color: var(--bg-dr-background-color);
+}
+
+.bg-mm .card,
+.bg-mm .brackets .bracketbox .participants,
+.bg-mm .brackets div.bracketbox span.bracketNo {
+    background: none;
+}
+
+.bg-mm .brackets>div .bracket-team,
+.bg-mm .brackets>div .final>span {
+    background: var(--bg-dr-participant-background-color)
+}
+
+.bg-mm .brackets div.bracketbox .bracket-border-line {
+    border-color: var(--bg-cs-bracket-border-color);
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+}
+
+.bg-mm .brackets div.bracketbox .participants {
+    border-color: var(--bg-cs-bracket-border-color);
+    border-width: 2px;
+    border-radius: 0 10px 10px 0;
+    background: none;
+}
+
+.bg-mm .brackets .round-name-wrapper,
+.bg-mm .brackets div.bracketbox span.bracketNo,
+.bg-mm .brackets>div .bracket-team,
+.bg-mm .brackets>div .final>span {
+    background-color: rgb(131 131 131);
+}
+
+.bg-mm .alert-btn-container .btn {
+    background-color: rgb(107, 107, 107);
+    border: solid 1px;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.bg-mm .brackets .bracket-link-border {
+    border: solid 2px var(--bg-cs-bracket-border-color);
+}
+
+.bg-mm .brackets .bracketbox .winner,
+.bg-mm .brackets .knockout-final .winner {
+    color: var(--bg-cs-bracket-winner-font-color);
+}
+
+.bg-mm .brackets .knockout-final {
+    border-width: 2px;
+    border-color: var(--bg-cs-bracket-border-color);
+}
+
+.bg-mm .brackets span.score {
+    background: #88893e;
+}
+
+.bg-mm .brackets span.votes,
+.bg-mm .brackets .vote-btn {
+    background: #7782ab;
+}
+
+.bg-mm .brackets .rtl div.bracketbox .bracket-border-line,
+.bg-mm .brackets .rtl div.bracketbox .participants {
+    border-radius: 10px 0 0 10px;
+    border-left: solid 2px var(--bg-cs-bracket-border-color);
 }
