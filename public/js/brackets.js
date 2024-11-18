@@ -142,9 +142,9 @@ $(document).on('ready', function () {
                         document.getElementsByClassName('champion-text')[0].classList.add('animate')
                     }, 300)
 
-                    setTimeout(() => {
-                        trophy.classList.remove('zoom')
-                    }, 1000)
+                    // setTimeout(() => {
+                    //     trophy.classList.remove('zoom')
+                    // }, 1000)
                 }
 
                 bracket.append(teamwrapper)
@@ -415,7 +415,7 @@ $(document).on('ready', function () {
                 if ((tournament_type != 3 && parseInt(bracket.final_match) == 1) || (tournament_type == 3 && parseInt(bracket.knockout_final) == 1)) {
                     voteBtnAvailable = false
                 }
-                if ( !(maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount) ) {
+                if ( (votingMechanism == votingMechanismMaxVoteCode) && !(maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount) ) {
                     voteBtnAvailable = false
                 }
 
@@ -517,9 +517,9 @@ $(document).on('ready', function () {
                                 document.getElementsByClassName('champion-text')[0].classList.add('animate')
                             }, 200)
 
-                            setTimeout(() => {
-                                trophy.classList.remove('zoom')
-                            }, 2000)
+                            // setTimeout(() => {
+                            //     trophy.classList.remove('zoom')
+                            // }, 2000)
                         }
 
                         let final_bracket = drawParticipant(knockout_final)
