@@ -1175,4 +1175,12 @@ var performReuseParticipants = (tournament_id = null) => {
     </div>
 </div>
 
+<div id="processingMessage" class="overlay d-none">
+    <div class="snippet p-3 .bg-light" data-title="dot-elastic">
+        <p>Processing, please wait...</p>
+        <div class="stage">
+            <div class="dot-elastic"></div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
