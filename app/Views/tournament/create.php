@@ -883,7 +883,7 @@ var performReuseParticipants = (tournament_id = null) => {
                 <div class="video-wrapper col-12">
                     <?php if (isset($settings) && isset($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
                     <?php if ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['source'] == 'f'): ?>
-                    <video id="videoPlayer" class="col-12" preload="auto" data-starttime="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] : '' ?>" data-duration="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['duration']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['duration'] : '' ?>">
+                    <video id="videoPlayer" class="col-12 d-none" preload="auto" data-starttime="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] : '' ?>" data-duration="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['duration']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['duration'] : '' ?>">
                         <source src="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['source'] == 'f') ? '/uploads/' . $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['path'] : '/uploads/' . $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['path'] ?>" type="audio/mpeg" id="audioSrc">
                     </video>
                     <?php else: ?>
