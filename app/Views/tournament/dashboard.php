@@ -607,6 +607,7 @@ $(document).ready(function() {
         var selectedStatus = $(this).val().toLowerCase();
         tournamentsTable.columns(3).search(selectedStatus).draw();
     });
+
     $('#accessibilityFilter').on('change', function() {
         var selectedPermission = $(this).val().toLowerCase();
         tournamentsTable.columns(4).search(selectedPermission).draw();
@@ -1497,8 +1498,8 @@ const changeSettings = (event) => {
                 }
             }
 
-            if (result.musicSettings.length > 0) {
-                result.musicSettings.forEach((item, i) => {
+            if (result.musicSettings) {
+                for (const [i, item] of Object.entries(result.musicSettings)) {
                     let panel = $('.music-setting').eq(item.type);
                     panel.find("#toggle-music-settings-" + item.type).prop(
                         'checked', true);
@@ -1511,6 +1512,7 @@ const changeSettings = (event) => {
 
                         if (item.path != '') {
                             panel.find('input[data-source="file"]').attr('required', false);
+                            panel.find('.player').removeClass('d-none')
                         }
 
                         panel.find('input[name="file-path[' + item.type + ']"]').val(item.path);
@@ -1541,7 +1543,7 @@ const changeSettings = (event) => {
                     panel.find('input.stopAt[type="hidden"]').val(item.end);
 
                     panel.find('input.duration').val(item.duration);
-                });
+                }
             }
 
             $('#tournamentSettings').modal('show');

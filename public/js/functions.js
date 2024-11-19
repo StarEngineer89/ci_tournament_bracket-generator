@@ -479,10 +479,10 @@ var changeVotingMechanism = (element) => {
         $('.evaluation-vote-max').removeClass('d-none')
         $('.evaluation-open-ended').addClass('d-none')
         $('#maxVotes').attr('required', true)
-        $('#enableAvailability').prop('required', false)
         $('.evaluation-vote-round-availability-required').addClass('d-none')
         $('#votingMechanism').removeClass('is-invalid')
         $('.allow-host-override-setting').removeClass('d-none')
+        $('#enableAvailability').prop('required', false)
     }
 
     if (parseInt($(element).val()) == 3) {
@@ -494,6 +494,7 @@ var changeVotingMechanism = (element) => {
         $('.allow-host-override-setting').addClass('d-none')
         $('#votingMechanism').removeClass('is-invalid')
         $('.evaluation-vote-round-availability-required').addClass('d-none')
+        $('#enableAvailability').prop('required', false)
     }
 }
 

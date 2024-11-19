@@ -144,7 +144,7 @@
             <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp4 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated.</div>
         </div>
         <div class="mb-3 preview">
-            <video controls class="w-100 player">
+            <video controls class="w-100 player d-none">
                 <source class="playerSource" src="" type="video/mp4" />
             </video>
 

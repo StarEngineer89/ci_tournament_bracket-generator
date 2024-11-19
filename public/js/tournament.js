@@ -64,6 +64,7 @@ function musicFileUpload(element) {
                 panel.find('input[type="hidden"]').val(data.path);
 
                 let audioElement = panel.parents('.music-setting').find('.player');
+                audioElement.removeClass('d-none')
                 panel.parents('.music-setting').find('.playerSource').attr('src', '/uploads/' + data.path);
                 applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
                 audioElement[0].load();

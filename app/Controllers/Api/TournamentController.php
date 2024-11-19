@@ -321,6 +321,14 @@ class TournamentController extends BaseController
         $musicSettingModel = model('\App\Models\MusicSettingModel');
 
         $settings = $musicSettingModel->where(['tournament_id' => $id])->findAll();
+        if ($settings) {
+            $new_settings = [];
+            foreach ($settings as $setting) {
+                $new_settings[$setting['type']] = $setting;
+            }
+
+            $settings = $new_settings;
+        }
 
         $settingsBlock = view('tournament/tournament-settings', []);
         $html = view('tournament/music-setting', []);
