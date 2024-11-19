@@ -28,7 +28,7 @@ var hash = '<?= uniqid(rand(), TRUE);?>';
 let eleminationType;
 let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
 var user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>;
-let shuffle_duration = parseInt(<?= (isset($settings) && $settings) ? $settings[0]['duration'] : 10 ?>);
+let shuffle_duration = parseInt(<?= (isset($settings) && isset($settings[0])) ? $settings[0]['duration'] : 10 ?>);
 let audio = document.getElementById("myAudio");
 let audioStartTime = 0;
 let duplicates = [];
