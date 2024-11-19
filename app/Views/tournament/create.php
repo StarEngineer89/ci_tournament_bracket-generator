@@ -214,7 +214,7 @@ $(document).ready(function() {
                         }
 
                         if (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]) {
-                            shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) : 10;
+                            shuffle_duration = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) : 10;
                             videoStartTime = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].start) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].start) : 10;
                             video_duration = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) : video_duration;
                             let videoSrc = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
