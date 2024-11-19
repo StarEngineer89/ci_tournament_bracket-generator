@@ -268,7 +268,7 @@ $(document).ready(function() {
         tournament_id = "<?= $tournament['id'] ?>";
         eleminationType = <?= intval($tournament['type']) ?>;
 
-        <?php if (isset($settings) && count($settings)) : ?>
+        <?php if (isset($settings) && isset($settings[0])) : ?>
         audio.currentTime = parseInt(<?= $settings[0]['start'] ? $settings[0]['start'] : 0 ?>);
 
         document.getElementById('stopMusicButton').classList.remove('d-none');
@@ -277,7 +277,7 @@ $(document).ready(function() {
         });
         <?php endif; ?>
 
-        <?php if (isset($settings) && count($settings)) : ?>
+        <?php if (isset($settings) && isset($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
         videoPlayer.play()
         videoPlayer.currentTime = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] : 0 ?>);
 
