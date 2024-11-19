@@ -263,6 +263,12 @@ $(document).ready(function() {
             return false;
         }
 
+        document.getElementsByClassName('participants-box')[0].scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest"
+        })
+
         <?php if (isset($tournament) && count($tournament)) : ?>
         tournament_id = "<?= $tournament['id'] ?>";
         eleminationType = <?= intval($tournament['type']) ?>;
