@@ -151,6 +151,19 @@ let stopMusicPlaying = () => {
     }
 }
 
+let stopVideoPlaying = () => {
+    // Your code to stop music goes here
+    const videoPlayer = document.getElementById('videoPlayer');
+
+    if (videoPlayer.paused) {
+        videoPlayer.play();
+        document.getElementById('stopVideoButton').textContent = "Pause Video"
+    } else {
+        videoPlayer.pause();
+        document.getElementById('stopVideoButton').textContent = "Resume Video"
+    }
+}
+
 let saveGeneralSettings = () => {
     form = $('#settingsForm')
 

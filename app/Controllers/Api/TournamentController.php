@@ -261,7 +261,7 @@ class TournamentController extends BaseController
                         return json_encode(['error' => "Failed to save the music settings."]);
                     }
 
-                    $data['music'][] = $setting;
+                    $data['music'][$index] = $setting;
                 }
             }
         }
