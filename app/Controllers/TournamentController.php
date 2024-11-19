@@ -128,7 +128,15 @@ class TournamentController extends BaseController
 
             $settingsBlock = view('tournament/tournament-settings', []);
             $musicSettingsBlock = view('tournament/music-setting', []);
-            $musicSettings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_BRACKET_GENERATION])->orderBy('type','asc')->findAll();
+            $musicSettings = $musicSettingModel->where(['tournament_id' => $id])->whereIn('type', [MUSIC_TYPE_BRACKET_GENERATION, MUSIC_TYPE_BRACKET_GENERATION_VIDEO])->orderBy('type','asc')->findAll();
+            if ($musicSettings) {
+                $musics = [];
+                foreach ($musicSettings as $music) {
+                    $musics[$music['type']] = $music;
+                }
+
+                $musicSettings = $musics;
+            }
             
             $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
 

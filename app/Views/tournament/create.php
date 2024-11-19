@@ -845,6 +845,18 @@ var performReuseParticipants = (tournament_id = null) => {
                     <p> FYI, you may right click (or hold on mobile) to edit/delete individual participants here.</p>
                     <p> Btw, if you want to personalize your participants with images, you may do so here or in the tournament brackets by clicking the placeholder photo icon.</p>
                 </div>
+
+                <?php if (isset($settings) && isset($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
+                <?php if ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['source'] == 'f'): ?>
+                <video id="vPlayer" preload="auto" data-starttime="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] : '' ?>" data-duration="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['duration']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['duration'] : '' ?>" controls>
+                    <source src="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['source'] == 'f') ? '/uploads/' . $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['path'] : '/uploads/' . $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['path'] ?>" type="audio/mpeg" id="audioSrc">
+                </video>
+                <?php else: ?>
+                <iframe width="420" height="315" src="https://www.youtube.com/embed/tgbNymZ7vqY?start=<?= $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] ?>&end=<?= $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['end'] ?>"></iframe>
+                <?php endif; ?>
+
+                <?php endif; ?>
+
                 <div class="col-12 d-flex">
                     <div id="indexList" class="list-group col-auto"></div>
                     <div id="newList" class="list-group col-10"></div>
@@ -1089,9 +1101,9 @@ var performReuseParticipants = (tournament_id = null) => {
     </div>
 </div>
 
-<?php if (isset($settings) && $settings) : ?>
-<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[0]['start']) ? $settings[0]['start'] : '' ?>" data-duration="<?= ($settings[0]['duration']) ? $settings[0]['duration'] : '' ?>">
-    <source src="<?= ($settings[0]['source'] == 'f') ? '/uploads/' . $settings[0]['path'] : '/uploads/' . $settings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+<?php if (isset($settings) && isset($settings[MUSIC_TYPE_BRACKET_GENERATION])) : ?>
+<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION]['start']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION]['start'] : '' ?>" data-duration="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION]['duration']) ? $settings[MUSIC_TYPE_BRACKET_GENERATION]['duration'] : '' ?>">
+    <source src="<?= ($settings[MUSIC_TYPE_BRACKET_GENERATION]['source'] == 'f') ? '/uploads/' . $settings[MUSIC_TYPE_BRACKET_GENERATION]['path'] : '/uploads/' . $settings[MUSIC_TYPE_BRACKET_GENERATION]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 <?php else : ?>
 <audio id="myAudio" preload="auto">

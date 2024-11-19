@@ -548,13 +548,13 @@ class TournamentController extends BaseController
                 'label' => 'Audio File',
                 'rules' => [
                     'uploaded[audio]',
-                    'mime_in[audio,audio/mpeg, audio/wav,audio/ogg,audio/mid,audio/x-midi]',
+                    'mime_in[audio,audio/mpeg, audio/wav,audio/ogg,audio/mid,audio/x-midi, video,video/mp4]',
                 ],
             ],
         ];
         if (!$this->validateData([], $validationRule)) {
             $data = ['errors' => $this->validator->getErrors()];
-
+            
             return json_encode($data);
         }
 
