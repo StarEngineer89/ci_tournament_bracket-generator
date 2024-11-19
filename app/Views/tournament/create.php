@@ -279,6 +279,7 @@ $(document).ready(function() {
 
         <?php if (isset($settings) && isset($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
         videoPlayer.play()
+        videoPlayer.classList.remove('d-none')
         videoPlayer.currentTime = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] : 0 ?>);
 
         document.getElementById('stopVideoButton').classList.remove('d-none');
