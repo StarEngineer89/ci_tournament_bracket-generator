@@ -304,6 +304,14 @@
     </div>
 </div>
 
+<div id="processingMessage" class="overlay d-none">
+    <div class="snippet p-3 .bg-light" data-title="dot-elastic">
+        <p>Processing, please wait...</p>
+        <div class="stage">
+            <div class="dot-elastic"></div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
@@ -1080,6 +1088,8 @@ $(document).ready(function() {
             }
         }
 
+        changeEvaluationMethod(document.getElementById('evaluationMethod'))
+
         $('.music-setting').each((i, settingBox) => {
             const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
             const stopTime0 = document.getElementsByName('stop[' + i + ']')[0].value;
@@ -1500,6 +1510,13 @@ const changeSettings = (event) => {
 
             if (result.musicSettings) {
                 for (const [i, item] of Object.entries(result.musicSettings)) {
+                    if (item.type == <?= MUSIC_TYPE_BRACKET_GENERATION ?>) {
+                        $('.toggle-music-settings').eq(<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>).prop('disabled', true)
+                    }
+                    if (item.type == <?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>) {
+                        $('.toggle-music-settings').eq(<?= MUSIC_TYPE_BRACKET_GENERATION ?>).prop('disabled', true)
+                    }
+
                     let panel = $('.music-setting').eq(item.type);
                     panel.find("#toggle-music-settings-" + item.type).prop(
                         'checked', true);

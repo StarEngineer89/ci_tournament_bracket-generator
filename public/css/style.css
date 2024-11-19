@@ -84,14 +84,14 @@
   max-width: 100%;
 }
 .participants-box {
-  max-width: 500px;
+  max-width: 600px;
 }
 
 .participant-list {
   margin: auto;
   margin-bottom: 10px;
   margin-top: 20px;
-  padding: 50px;
+  padding: 50px 20px;
   background-color: #496aff;
 }
 
@@ -701,10 +701,6 @@
   justify-content: center;
   align-items: center;
   z-index: 1100;
-}
-
-#generateProcessing.overlay, .generateProcessing.overlay {
-  align-items: baseline;
 }
 
 .overlay .snippet {

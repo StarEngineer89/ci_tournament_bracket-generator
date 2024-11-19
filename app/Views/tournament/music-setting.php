@@ -1,7 +1,7 @@
 <!-- Music during the shuffling -->
 <div class="music-setting p-2 mb-1">
     <div class="form-check border-bottom mb-3">
-        <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[0]" id="toggle-music-settings-0" onChange="musicSettingToggleChange(this)">
+        <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[0]" id="toggle-music-settings-0" data-media-type="<?= MUSIC_TYPE_BRACKET_GENERATION ?>" onChange="musicSettingToggleChange(this)">
         <label class="form-check-label" for="toggle-music-settings-0">
             <h6>Music during Brackets Generation</h6>
         </label>
@@ -59,7 +59,7 @@
 <!-- Music for the Final Winner -->
 <div class="music-setting p-2 mb-1">
     <div class="form-check border-bottom mb-3">
-        <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[1]" id="toggle-music-settings-1" onChange="musicSettingToggleChange(this)">
+        <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[1]" id="toggle-music-settings-1" data-media-type="<?= MUSIC_TYPE_FINAL_WINNER ?>" onChange="musicSettingToggleChange(this)">
         <label class="form-check-label" for="toggle-music-settings-1">
             <h6>Music for a Final Winner</h6>
         </label>
@@ -118,7 +118,7 @@
 <!-- Video during the shuffling -->
 <div class="music-setting p-2 mb-1">
     <div class="form-check border-bottom mb-3">
-        <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[2]" id="toggle-music-settings-2" onChange="musicSettingToggleChange(this)">
+        <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]" data-media-type="<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>" id="toggle-music-settings-2" onChange="musicSettingToggleChange(this)">
         <label class="form-check-label" for="toggle-music-settings-2">
             <h6>Video during Brackets Generation</h6>
         </label>
@@ -141,7 +141,7 @@
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
-            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp4 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated.</div>
+            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp4 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated. Select file to upload....</div>
         </div>
         <div class="mb-3 preview">
             <video controls class="w-100 player d-none">

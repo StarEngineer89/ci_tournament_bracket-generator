@@ -11,9 +11,27 @@ function musicSettingToggleChange(element) {
         const radioElement = $(element).parent().parent().find('input[type="radio"]:checked');
         radioElement.parent().parent().children('.music-source').attr('disabled', false);
         settingPanel.removeClass('visually-hidden');
+
+        if ($(element).data('media-type') == 0) {
+            $('.toggle-music-settings').eq(2).prop('checked', false)
+            musicSettingToggleChange($('.toggle-music-settings').eq(2))
+            $('.toggle-music-settings').eq(2).prop('disabled', true)
+        }
+        if ($(element).data('media-type') == 2) {
+            $('.toggle-music-settings').eq(0).prop('checked', false)
+            musicSettingToggleChange($('.toggle-music-settings').eq(0))
+            $('.toggle-music-settings').eq(0).prop('disabled', true)
+        }
     } else {
         settingPanel.find('input[type!="hidden"]').attr('disabled', true);
         settingPanel.addClass('visually-hidden');
+
+        if ($(element).data('media-type') == 0) {
+            $('.toggle-music-settings').eq(2).prop('disabled', false)
+        }
+        if ($(element).data('media-type') == 2) {
+            $('.toggle-music-settings').eq(0).prop('disabled', false)
+        }
     }
 
     settingPanel.find('.duration[type="text"]').attr('disabled', true);
@@ -52,9 +70,11 @@ function musicFileUpload(element) {
         cache: false,
         processData: false,
         beforeSend: function () {
-            $("#err").fadeOut();
+            $("#processingMessage").removeClass('d-none')
         },
         success: function (data) {
+            $("#processingMessage").addClass('d-none')
+
             var data = JSON.parse(data);
             if (data.error) {
                 // invalid file format.

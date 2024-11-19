@@ -28,7 +28,7 @@ var hash = '<?= uniqid(rand(), TRUE);?>';
 let eleminationType;
 let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
 var user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>;
-let shuffle_duration = parseInt(<?= (isset($settings) && isset($settings[0])) ? $settings[0]['duration'] : 10 ?>);
+let shuffle_duration = 10;
 let audio = document.getElementById("myAudio");
 let audioStartTime = 0;
 let duplicates = [];
@@ -101,6 +101,8 @@ $(document).ready(function() {
     renderParticipants(participants)
     <?php endif ?>
 
+
+    /** Submit the tournament settings when create the new tournament */
     $('#submit').on('click', function(event) {
         const form = document.getElementById('tournamentForm');
 
@@ -167,9 +169,6 @@ $(document).ready(function() {
             name,
             value
         }) => [name, value]));
-        shuffle_duration = parseInt(data['duration[0]']);
-        audioStartTime = parseInt(data['start[<?= MUSIC_TYPE_BRACKET_GENERATION ?>]']);
-        videoStartTime = parseInt(data['start[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]']);
 
         $.ajax({
             url: apiURL + '/tournaments/save',
@@ -195,10 +194,10 @@ $(document).ready(function() {
 
                     if (result.data.music) {
                         if (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION ?>]) {
-                            shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[0].duration) : 10;
-                            audioStartTime = (result.data.music[0].start) ? parseInt(result.data.music[0].start) : 10;
-                            let audioSrc = (result.data.music[0].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
-                            audioSrc += result.data.music[0].path;
+                            shuffle_duration = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION ?>].duration) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION ?>].duration) : 10;
+                            audioStartTime = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION ?>].start) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION ?>].start) : 10;
+                            let audioSrc = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION ?>].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
+                            audioSrc += result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION ?>].path;
 
                             $('#audioSrc').attr('src', audioSrc);
 
@@ -215,6 +214,7 @@ $(document).ready(function() {
                         }
 
                         if (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]) {
+                            shuffle_duration = (result.data.music[0].duration) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) : 10;
                             videoStartTime = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].start) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].start) : 10;
                             video_duration = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) ? parseInt(result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) : video_duration;
                             let videoSrc = (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
@@ -262,14 +262,23 @@ $(document).ready(function() {
             $('#generateErrorModal').modal('show')
             return false;
         }
-        audio.load();
-        audio.play()
+
+        document.getElementsByClassName('participant-list')[0].scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+            inline: "nearest"
+        })
+
         <?php if (isset($tournament) && count($tournament)) : ?>
         tournament_id = "<?= $tournament['id'] ?>";
         eleminationType = <?= intval($tournament['type']) ?>;
 
-        <?php if (isset($settings) && isset($settings[0])) : ?>
-        audio.currentTime = parseInt(<?= $settings[0]['start'] ? $settings[0]['start'] : 0 ?>);
+        /** Music player setting */
+        <?php if (isset($settings) && isset($settings[MUSIC_TYPE_BRACKET_GENERATION])) : ?>
+        audio.load();
+        audio.currentTime = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION]['start'] ? $settings[MUSIC_TYPE_BRACKET_GENERATION]['start'] : 0 ?>);
+        audio.play()
+        shuffle_duration = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION]['duration'] ?>);
 
         document.getElementById('stopMusicButton').classList.remove('d-none');
         document.getElementById('stopMusicButton').addEventListener('click', function() {
@@ -277,10 +286,12 @@ $(document).ready(function() {
         });
         <?php endif; ?>
 
+        /** Video player setting */
         <?php if (isset($settings) && isset($settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
-        videoPlayer.play()
         videoPlayer.classList.remove('d-none')
         videoPlayer.currentTime = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] ? $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['start'] : 0 ?>);
+        videoPlayer.play()
+        shuffle_duration = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION_VIDEO]['duration'] ?>);
 
         document.getElementById('stopVideoButton').classList.remove('d-none');
         document.getElementById('stopVideoButton').addEventListener('click', function() {

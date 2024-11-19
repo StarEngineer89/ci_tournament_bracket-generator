@@ -128,11 +128,11 @@
     background-color: rgb(131 131 131);
 }
 
-.bg-cs .brackets .round-name,
+/* .bg-cs .brackets .round-name,
 .bg-cs .brackets .bracketNo,
 .bg-cs .brackets .fa-pencil {
     color: var(--bg-cs-bracket-border-color);
-}
+} */
 
 .bg-cs .alert-btn-container .btn {
     background-color: rgb(107, 107, 107);
