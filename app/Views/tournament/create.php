@@ -622,6 +622,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 var csvUpload = (element) => {
+    // Validate file type
+    const allowedExtensions = ['csv'];
+    const fileExtension = $('.csv-import')[0].name.split('.').pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+        $('#errorModal .errorDetails').html('Please upload a CSV file.')
+        $("#errorModal").modal('show');
+
+        return false;
+    }
+
     if (!$('.csv-import').val()) {
         $('.csv-import').addClass('is-invalid');
         return false;
@@ -642,6 +652,14 @@ var csvUpload = (element) => {
         },
         success: function(result) {
             $('#beforeProcessing').addClass('d-none')
+
+            if (result.errors) {
+                $('#errorModal .errorDetails').html(result.errors.file)
+                $("#errorModal").modal('show');
+
+                return false
+            }
+
             ptNames = result.names
             let validatedParticipantNames = validateParticipantNames(ptNames)
             let duplicatedNames = validatedParticipantNames.duplicates
@@ -666,7 +684,8 @@ var csvUpload = (element) => {
             }
         },
         error: function(e) {
-            $("#err").html(e).fadeIn();
+            $('#errorModal .errorDetails').html(e)
+            $("#errorModal").show();
         }
     });
 }

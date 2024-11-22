@@ -556,14 +556,22 @@ class TournamentController extends BaseController
                 'label' => 'Audio File',
                 'rules' => [
                     'uploaded[audio]',
-                    'mime_in[audio,audio/mpeg, audio/wav,audio/ogg,audio/mid,audio/x-midi, video,video/mp4]',
+                    'mime_in[audio,audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi]',
+                    'max_size[audio,10240]', // Limits file size to 10MB (10240 KB)
+                ],
+                'errors' => [
+                    'uploaded' => 'Please upload a file.',
+                    'mime_in' => 'The uploaded file must be a valid audio format.',
+                    'max_size' => 'The file size must not exceed 10MB.',
                 ],
             ],
         ];
+        
         if (!$this->validateData([], $validationRule)) {
             $data = ['errors' => $this->validator->getErrors()];
+            // log_message('debug', print_r($this->request->getFile('audio')));
             
-            return json_encode($data);
+            return $this->response->setJSON($data);
         }
 
         $audio = $this->request->getFile('audio');
@@ -573,12 +581,51 @@ class TournamentController extends BaseController
 
             $data = ['uploaded_fileinfo' => new File($filepath), 'path' => $filepath];
 
-            return json_encode($data);
+            return $this->response->setJSON($data);
         }
 
         $data = ['errors' => 'The file has already been moved.'];
 
-        return json_encode($data);
+        return $this->response->setJSON($data);
+    }
+
+    public function uploadVideo()
+    {
+        $validationRule = [
+            'video' => [
+                'label' => 'Video File',
+                'rules' => [
+                    'uploaded[video]',
+                    'mime_in[video,video/mp4]',
+                    'max_size[video, 512000]', // Limits file size to 10MB (10240 KB)
+                ],
+                'errors' => [
+                    'uploaded' => 'Please upload a file.',
+                    'mime_in' => 'The uploaded file must be a valid video format.',
+                    'max_size' => 'The file size must not exceed 500MB.',
+                ],
+            ],
+        ];
+        
+        if (!$this->validateData([], $validationRule)) {
+            $data = ['errors' => $this->validator->getErrors()];
+            
+            return $this->response->setJSON($data);
+        }
+
+        $video = $this->request->getFile('video');
+
+        if (!$video->hasMoved()) {
+            $filepath = $video->store();
+
+            $data = ['uploaded_fileinfo' => new File($filepath), 'path' => $filepath];
+
+            return $this->response->setJSON($data);
+        }
+
+        $data = ['errors' => 'The file has already been moved.'];
+
+        return $this->response->setJSON($data);
     }
 
     public function fetchShareSettings($tournament_id) {

@@ -74,6 +74,15 @@
   color: #fff;
   min-height: 177px;
 }
+
+#errorModal .modal-header {
+  background-color: #ff6b79;
+}
+
+#errorModal .modal-body {
+  background-color: rgb(200, 200, 200);
+}
+
 #tournamentSettings input.form-control-sm {
   max-width: 60px;
 }

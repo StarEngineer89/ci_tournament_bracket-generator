@@ -265,14 +265,19 @@ function checkBig(el, element_id){
     var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
     if (!allowedTypes.includes(el.files[0].type)) {
-        alert('Error uploading image! Please upload image as *.jpeg, *.jpg, *.png, *.gif format.');
+        $('#errorModal .errorDetails').html('Please upload image as *.jpeg, *.jpg, *.png, *.gif format.')
+        $("#errorModal").modal('show');
+
         this.value = '';
         return
     }
 
-    if(el.files[0].size > 1048576){
-        alert('Error uploading image! Max image size is 1MB. Please upload small image.');
+    if (el.files[0].size > 1048576) {
+        $('#errorModal .errorDetails').html('Max image size is 1MB. Please upload small image.')
+        $("#errorModal").modal('show');
+        
         this.value='';
+        return
     }else{
         var formData = new FormData();
         formData.append('image', $("#image_" + element_id)[0].files[0]);
@@ -286,6 +291,13 @@ function checkBig(el, element_id){
             processData: false,
             success: function (result) {
                 result = JSON.parse(result);
+                if (result.errors) {
+                    $('#errorModal .errorDetails').html(result.errors.file)
+                    $("#errorModal").modal('show');
+
+                    return false
+                }
+
                 $("#pimage_"+element_id).attr('src', result.data.image);
                 $("#pimage_"+element_id + ' ~ .btn').removeClass('d-none');
                 $("#pimage_"+element_id).removeClass('temp');

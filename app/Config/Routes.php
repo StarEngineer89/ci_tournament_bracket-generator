@@ -65,6 +65,7 @@ $routes->group('api', static function ($routes) {
         $routes->get('(:num)/brackets', 'Api\BracketsController::getBrackets/$1');
         $routes->post('(:num)/update', 'Api\TournamentController::update/$1');
         $routes->post('upload', 'Api\TournamentController::upload');
+        $routes->post('upload-video', 'Api\TournamentController::uploadVideo');
         $routes->get('(:num)/fetch-settings', 'Api\TournamentController::getSettings/$1');
         $routes->get('(:num)/clear', 'Api\BracketsController::clearBrackets/$1');
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');

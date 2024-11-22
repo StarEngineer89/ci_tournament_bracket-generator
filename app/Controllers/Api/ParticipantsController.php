@@ -221,15 +221,20 @@ class ParticipantsController extends BaseController
                 'label' => 'CSV File',
                 'rules' => [
                     'uploaded[file]',
-                    'mime_in[file,text/csv]',
+                    'ext_in[file,csv]',
+                ],
+                'errors' => [
+                    'uploaded' => 'Please upload a file.',
+                    'ext_in' => 'The uploaded file must be a valid CSV.',
                 ],
             ],
         ];
-        // if (! $this->validateData([], $validationRule)) {
-        //     $data = ['errors' => $this->validator->getErrors()];
-
-        //     return json_encode($data);
-        // }
+        
+        if (!$this->validateData([], $validationRule)) {
+            $data = ['errors' => $this->validator->getErrors()];
+            
+            return $this->response->setJSON($data);
+        }
 
         $path = WRITEPATH . 'uploads/';
 		$file = $this->request->getFile('file');
@@ -239,7 +244,7 @@ class ParticipantsController extends BaseController
         }
 
         if (!file_exists($filepath)) {
-            return json_encode(['errors' => "Imported file was not saved correctly"]);
+            return $this->response->setJSON(['errors' => "Imported file was not saved correctly"]);
         }
 
 		$arr_file 		= explode('.', $filepath);

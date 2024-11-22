@@ -56,12 +56,30 @@ function musicSourceChange(element) {
 };
 
 function musicFileUpload(element) {
+    var allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mid', 'audio/x-midi'];
+
+    if (element.files[0] && !allowedTypes.includes(element.files[0].type)) {
+        $('#errorModal .errorDetails').html('Please upload audio as *.mp3, *.wav, *.midi format.')
+        $("#errorModal").modal('show');
+
+        this.value = '';
+        return
+    }
+
+    if (element.files[0] && element.files[0].size > 1048576) {
+        $('#errorModal .errorDetails').html('Max audio size is 1MB. Please upload small audio.')
+        $("#errorModal").modal('show');
+        
+        this.value = '';
+        return
+    }
+
     let panel = $(element).parent();
     let index = $('.music-source[data-source="file"]').index($(element));
     $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
 
     var formData = new FormData();
-    formData.append('audio', $(element)[0].files[0]);
+    formData.append('audio', element.files[0]);
     $.ajax({
         url: apiURL + '/tournaments/upload',
         type: "POST",
@@ -75,10 +93,79 @@ function musicFileUpload(element) {
         success: function (data) {
             $("#processingMessage").addClass('d-none')
 
-            var data = JSON.parse(data);
-            if (data.error) {
-                // invalid file format.
-                $("#err").html("Invalid File !").fadeIn();
+            if (data.errors) {
+                $('#errorModal .errorDetails').html(data.errors.audio)
+                $("#errorModal").modal('show');
+
+                return false
+            }
+            else {
+                panel.find('input[type="hidden"]').val(data.path);
+
+                let audioElement = panel.parents('.music-setting').find('.player');
+                audioElement.removeClass('d-none')
+                panel.parents('.music-setting').find('.playerSource').attr('src', '/uploads/' + data.path);
+                applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
+                audioElement[0].load();
+
+                if (index == 0 && document.getElementById('myAudio')) {
+                    document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
+                    document.getElementById('myAudio').load();
+                }
+
+                panel.parents('.music-setting').find('.startAt[type="hidden"]').val(0);
+                panel.parents('.music-setting').find('.startAt[type="text"]').val("00:00:00");
+            }
+        },
+        error: function (e) {
+            $("#err").html(e).fadeIn();
+        }
+    });
+}
+
+function videoFileUpload(element) {
+    var allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+
+    if (element.files[0] && !allowedTypes.includes(element.files[0].type)) {
+        $('#errorModal .errorDetails').html('Please upload image as *.mp4, *.webm, *.ogg format.')
+        $("#errorModal").modal('show');
+
+        this.value = '';
+        return
+    }
+
+    if (element.files[0] && element.files[0].size > 1048576) {
+        $('#errorModal .errorDetails').html('Max image size is 1MB. Please upload small image.')
+        $("#errorModal").modal('show');
+        
+        this.value = '';
+        return
+    }
+
+    let panel = $(element).parent();
+    let index = $('.music-source[data-source="file"]').index($(element));
+    $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
+
+    var formData = new FormData();
+    formData.append('video', element.files[0]);
+    $.ajax({
+        url: apiURL + '/tournaments/upload-video',
+        type: "POST",
+        data: formData,
+        contentType: false,
+        cache: false,
+        processData: false,
+        beforeSend: function () {
+            $("#processingMessage").removeClass('d-none')
+        },
+        success: function (data) {
+            $("#processingMessage").addClass('d-none')
+
+            if (data.errors) {
+                $('#errorModal .errorDetails').html(data.errors.audio)
+                $("#errorModal").modal('show');
+
+                return false
             }
             else {
                 panel.find('input[type="hidden"]').val(data.path);

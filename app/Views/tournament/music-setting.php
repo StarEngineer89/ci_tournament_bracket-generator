@@ -130,7 +130,7 @@
             <div class="input-group-text">
                 <input class="form-check-input mt-0" type="radio" value="f" aria-label="Radio button for following text input" name="source[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]" onChange="musicSourceChange(this)" data-target="file" checked>
             </div>
-            <input type="file" class="form-control music-source" data-source="file" name="file" onChange="musicFileUpload(this)" accept="video/mp4" required disabled>
+            <input type="file" class="form-control music-source" data-source="file" name="file" onChange="videoFileUpload(this)" accept="video/mp4" required disabled>
             <input type="hidden" class="file-path" id="file-shuffling-video" name="file-path[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]">
             <div class="fileupload-hint form-text">Select a *.mp4 file to upload (max file size is 500MB). After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
         </div>
