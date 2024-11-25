@@ -623,8 +623,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 var csvUpload = (element) => {
     // Validate file type
-    const allowedExtensions = ['csv'];
-    const fileExtension = $('.csv-import')[0].name.split('.').pop().toLowerCase();
+    const allowedExtensions = ['text/csv'];
+    const fileExtension = $('.csv-import')[0].files[0].type;
     if (!allowedExtensions.includes(fileExtension)) {
         $('#errorModal .errorDetails').html('Please upload a CSV file.')
         $("#errorModal").modal('show');
