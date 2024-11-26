@@ -1019,28 +1019,24 @@
   transition-delay: 200ms;
 }
 
-.animate {
+.animate #banner-1,
+.animate #banner-2,
+.animate #banner-3,
+.animate #banner-4,
+.animate #line-1,
+.animate #line-2 {
+  transform: translateX(0);
+  transform-origin: 50% 50%;
+}
 
-  #banner-1,
-  #banner-2,
-  #banner-3,
-  #banner-4,
-  #line-1,
-  #line-2 {
-    transform: translateX(0);
-    transform-origin: 50% 50%;
-  }
+.animate #banner-5 {
+  opacity: 1;
+}
 
-  #banner-5 {
-    opacity: 1;
-  }
+.animate #splines {
+  opacity: 1;
+}
 
-  #splines {
-    opacity: 1;
-  }
-
-  .heading {
-    opacity: 1;
-  }
-
+.animate .heading {
+  opacity: 1;
 }

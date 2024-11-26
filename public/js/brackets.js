@@ -146,7 +146,7 @@ $(document).on('ready', function () {
 
                     setTimeout(() => {
                         document.getElementsByClassName('champion-text')[0].classList.add('animate')
-                    }, 300)
+                    }, 1500)
 
                     if (parseInt(gg.winner)) {
                         trophy.classList.remove('d-none')
