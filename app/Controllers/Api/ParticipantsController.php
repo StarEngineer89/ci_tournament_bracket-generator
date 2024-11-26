@@ -31,8 +31,12 @@ class ParticipantsController extends BaseController
     public function getParticipants() {
         // Check if it's an AJAX request
         if ($this->request->isAJAX()) {
-            $params = $this->request->getPost(); // Get the posted data
-            $participants = $this->participantsModel->findAll();
+            $participant_name = $this->request->getPost('participant'); // Get the posted data
+            if ($participant_name) {
+                $participants = $this->participantsModel->like('name', $participant_name)->findAll();
+            } else {
+                $participants = $this->participantsModel->findAll();
+            }
             
             if ($participants) {
                 $newList = [];
@@ -62,11 +66,29 @@ class ParticipantsController extends BaseController
                     $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
                     $participant['votes'] = ($votes) ? count($votes) : 0;
 
-                    $newList[] = $participant;
+                    if (!$this->request->getPost('tournament')) {
+                        $newList[] = $participant;
+                    } else {
+                        $tournament_name = $this->request->getPost('tournament');
+                        $inTournamentList = false;
+                        if (count($tournament_list) > 0) {
+                            foreach ($tournament_list as $t) {
+                                if (str_contains($t['name'], $tournament_name)) {
+                                    $inTournamentList = true;
+                                }
+                            }
+                        }
+                        if ($inTournamentList) {
+                            $newList[] = $participant;
+                        }
+                    }
                 }
 
-                $keys = array_column($newList, 'top_score');
+                $keys = array_column($newList, 'tournaments_won');
                 array_multisort($keys, SORT_DESC, $newList);
+
+                // $keys = array_column($newList, 'top_score');
+                // array_multisort($keys, SORT_DESC, $newList);
 
                 $participants = $newList;
             }

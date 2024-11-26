@@ -35,6 +35,7 @@ a {
 var participantsTable = null;
 var participantsTableRows;
 var participantNames = [];
+var tournamentList = [];
 
 participantsTable = $('#participantLeaderboardTable').DataTable({
     "searching": true,
@@ -45,7 +46,8 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         "dataSrc": "",
         "data": function(d) {
             d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
-            d.search_participant = $('#tournamentSearchInputBox').val();
+            d.participant = $('#pt-names').val();
+            d.tournament = $('#tournamentFilter').val();
         }
     },
     "order": [
@@ -74,12 +76,25 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             minLength: 0,
             scroll: true,
             change: function(event, ui) {
-                var selectedUser = $(this).val().toLowerCase().trim();
-                participantsTable.columns(1).search(selectedUser).draw();
+                participantsTable.ajax.reload()
             },
             close: function(event, ui) {
-                var selectedUser = $(this).val().toLowerCase().trim();
-                participantsTable.columns(1).search(selectedUser).draw();
+                participantsTable.ajax.reload()
+            }
+        }).focus(function() {
+            $(this).autocomplete("search", "");
+        })
+
+        // tournamentFilter
+        $('#tournamentFilter').autocomplete({
+            source: tournamentList,
+            minLength: 0,
+            scroll: true,
+            change: function(event, ui) {
+                participantsTable.ajax.reload()
+            },
+            close: function(event, ui) {
+                participantsTable.ajax.reload()
             }
         }).focus(function() {
             $(this).autocomplete("search", "");
@@ -115,6 +130,10 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                         if (i < row.tournaments_list.length - 1) {
                             listHtml += ', '
                         }
+
+                        if (!tournamentList.includes(tournament.name)) {
+                            tournamentList.push(tournament.name)
+                        }
                     })
 
                     return listHtml
@@ -122,10 +141,6 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
 
                 return ``; // Display index number
             }
-        },
-        {
-            "data": "top_score",
-            "className": "text-center"
         },
         {
             "data": 'accumulated_score',
@@ -151,7 +166,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             <h3>Participant Leaderboard</h3>
             <div class="d-flex  flex-column justify-content-center">
                 <p>Discover the top-performing participants across all tournaments. See who’s dominating the competition and climbing to the top with every victory!</p>
-                <p>Note: By default, the top 100 participants are ranked by the number of tournaments they’ve won.</p>
+                <p>Note: By default, the top participants are ranked by the number of tournaments they’ve won.</p>
             </div>
         </div>
         <div class="buttons d-flex justify-content-end">
@@ -163,13 +178,15 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">
-                            <label for="participantNameFilter">Participant Name</label>
+                            <label for="pt-names">Participant Name</label>
                             <input type="text" id="pt-names" class="form-control form-control-sm" />
                         </th>
                         <th scope="col" class="text-center">Brackets Won</th>
                         <th scope="col" class="text-center">Tournaments Won</th>
-                        <th scope="col">Tournaments List</th>
-                        <th scope="col" class="text-center">Top Score</th>
+                        <th scope="col">
+                            <label for="tournamentFilter">Participated Tournaments</label>
+                            <input type="text" id="tournamentFilter" class="form-control form-control-sm" />
+                        </th>
                         <th scope="col" class="text-center">Accumulated Score</th>
                         <th scope="col" class="text-center">Votes</th>
                     </tr>
