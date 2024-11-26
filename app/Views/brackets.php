@@ -17,6 +17,7 @@ apiURL = "<?= base_url('api') ?>";
 <?php endif; ?>
 const tournament_id = <?= $tournament['id'] ?>;
 const tournament_type = <?= intval($tournament['type']) ?>;
+const KNOCKOUT_TOURNAMENT_TYPE = <?= TOURNAMENT_TYPE_KNOCKOUT ?>;
 const markWinnerActionCode = '<?= BRACKET_ACTIONCODE_MARK_WINNER ?>';
 const unmarkWinnerActionCode = '<?= BRACKET_ACTIONCODE_UNMARK_WINNER ?>';
 const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?>';

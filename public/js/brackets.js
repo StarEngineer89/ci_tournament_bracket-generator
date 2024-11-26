@@ -65,18 +65,26 @@ $(document).on('ready', function () {
         var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
         
         var html = ''
+        var minWidth = 240 * groupCount
+
+        // tournament type (3) is Knockout bracket
+        if (tournament_type !== KNOCKOUT_TOURNAMENT_TYPE) {
+            minWidth = minWidth + 150
+        }
+
         if (direction == 'rtl') {
-            html = `<div class="groups group${groupCount} d-flex flex-row-reverse rtl" style="min-width:${240 * groupCount}px"></div>`
+            html = `<div class="groups group${groupCount} d-flex flex-row-reverse rtl" style="min-width:${minWidth}px"></div>`
         } else {
-            html = `<div class="groups group${groupCount} d-flex" style="min-width:${240 * groupCount}px"></div>`
+            html = `<div class="groups group${groupCount} d-flex" style="min-width:${minWidth}px"></div>`
         }
         var group = $(html),
             grouped = _.groupBy(struct, function (s) { return s.roundNo; });
 
-        // document.getElementById('brackets').style.width = 170 * (groupCount + 1) + 'px';
-
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="round r' + g + '"></div>');
+            if (tournament_type !== KNOCKOUT_TOURNAMENT_TYPE && g == groupCount) {
+                round = $('<div class="round r' + g + '" style="min-width: 350px"></div>');
+            }
             
             let editIcon = ''
             if (hasEditPermission) {
@@ -125,9 +133,9 @@ $(document).on('ready', function () {
                     teamwrapper.append(teamb)
                 }
 
-                if (tournament_type != 3 && parseInt(gg.final_match) && parseInt(gg.winner)) {
+                if (tournament_type != KNOCKOUT_TOURNAMENT_TYPE && parseInt(gg.final_match)) {
                     let trophy = document.createElement('div')
-                    trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap"
+                    trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap d-none"
                     trophy.style.minHeight = '100px'
                     bracket.append(trophy)
 
@@ -136,15 +144,13 @@ $(document).on('ready', function () {
                     var svg = drawChampionTextSVG()
                     $(trophy).append(`<div class="champion-text">${svg}</div>`)
 
-                    trophy.classList.add('zoom')
-
                     setTimeout(() => {
                         document.getElementsByClassName('champion-text')[0].classList.add('animate')
                     }, 300)
 
-                    // setTimeout(() => {
-                    //     trophy.classList.remove('zoom')
-                    // }, 1000)
+                    if (parseInt(gg.winner)) {
+                        trophy.classList.remove('d-none')
+                    }
                 }
 
                 bracket.append(teamwrapper)
