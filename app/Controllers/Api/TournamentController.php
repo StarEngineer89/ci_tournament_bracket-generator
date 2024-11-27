@@ -569,7 +569,6 @@ class TournamentController extends BaseController
         
         if (!$this->validateData([], $validationRule)) {
             $data = ['errors' => $this->validator->getErrors()];
-            // log_message('debug', print_r($this->request->getFile('audio')));
             
             return $this->response->setJSON($data);
         }
@@ -970,7 +969,7 @@ class TournamentController extends BaseController
             $voteData = $this->request->getPost(); // Get the posted data
 
             $voteModel = model('\App\Models\VotesModel');
-            $participantsModel = model('\App\Models\ParticipantModel');
+            $participantsModel = $this->participantModel;
             
             $bracketModel = model('\App\Models\BracketModel');
             $bracket = $bracketModel->find($voteData['bracket_id']);
@@ -1027,13 +1026,20 @@ class TournamentController extends BaseController
                 $saveData = $prevVote;
             }
 
-            // Check if bracket is double
-            if ($bracket && $bracket['is_double']) {
+            // Check if participant is second one
+            $currentTeams = json_decode($bracket['teamnames'], true);
+            $isDouble = null;
+            foreach ($currentTeams as $ct) {
+                if ($ct && $ct['id'] == $voteData['participant_id'] && isset($ct['is_double'])) {
+                    $isDouble = 1;
+                }
+            }
+            if ($isDouble) {
                 $saveData['is_double'] = 1;
             } else {
                 $saveData['is_double'] = null;
             }
-            // End check if bracket is double
+            // End check if participant is second one
 
             $db = \Config\Database::connect();
             $dbDriver = $db->DBDriver;
@@ -1066,9 +1072,11 @@ class TournamentController extends BaseController
                 $logActionsModel->insert($insert_data);
                 
                 /** Mark Participant win if max vote count reaches */
+                $voteData['is_double'] = $isDouble;
                 $vote_max_limit = intval($tournament_settings['max_vote_value']);
                 $search_params = array_diff_key($voteData, array('bracket_id' => true, 'user_id' => true, 'uuid' => true));
                 $votes_in_round = $voteModel->where($search_params)->findAll();
+                
                 if ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_retain']) {
                     $search_params = array_diff_key($search_params, array('round_no' => true));
                 }
@@ -1083,6 +1091,14 @@ class TournamentController extends BaseController
                 if ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE && count($votes_in_round) >= $vote_max_limit) {
                     $voteLibrary = new VoteLibrary();
                     $result = $voteLibrary->markWinParticipant($voteData);
+                    
+                    if ($tournament_settings && $tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $nextBracket['knockout_final']) {
+                        $saveData['final_win'] = true;
+                    }
+
+                    if ($tournament_settings && $tournament_settings['type'] != TOURNAMENT_TYPE_KNOCKOUT && $nextBracket['final_match'] == 1) {
+                        $saveData['final_win'] = true;
+                    }
                 }
                 
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)

@@ -118,7 +118,7 @@ $(document).on('ready', function () {
                 
                 if (parseInt(gg.final_match)) {
                     bracket.className = "bracketbox final";
-                    teama.className = (teams[0] && tournament_type !== 3) ? "bracket-team teama winner" : teama.className;
+                    teama.className = (teams[0] && tournament_type != KNOCKOUT_TOURNAMENT_TYPE) ? "bracket-team teama winner" : teama.className;
                 } else {
                     var bracketNo = document.createElement('span')
                     bracketNo.classList.add('bracketNo')
@@ -511,21 +511,18 @@ $(document).on('ready', function () {
                         trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap"
                         trophy.style.minHeight = '100px'
                         center_wrapper.append(trophy)
-                        if (knockout_final.winner) {
-                            $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
-                            
-                            var svg = drawChampionTextSVG()
-                            $(trophy).append(`<div class="champion-text">${svg}</div>`)
+                        
+                        $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
+                
+                        var svg = drawChampionTextSVG()
+                        $(trophy).append(`<div class="champion-text">${svg}</div>`)
 
-                            trophy.classList.add('zoom')
-	
+                        if (knockout_final.winner) {
+                            trophy.classList.remove('d-none')
+
                             setTimeout(() => {
                                 document.getElementsByClassName('champion-text')[0].classList.add('animate')
-                            }, 200)
-
-                            // setTimeout(() => {
-                            //     trophy.classList.remove('zoom')
-                            // }, 2000)
+                            }, 1500)
                         }
 
                         let final_bracket = drawParticipant(knockout_final)
@@ -926,6 +923,10 @@ let submitVote = (event) => {
             window.localStorage.setItem(storage_key, result.data.participant_id)
 
             loadBrackets()
+            
+            if (result.data.final_win) {
+                initConfetti();
+            }
 
             // triggerElement.parent().parent().remove();
             ws.send('Vote the participant!');

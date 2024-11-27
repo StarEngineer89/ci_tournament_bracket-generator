@@ -63,9 +63,16 @@ class VoteLibrary
 
             $teams = json_decode($nextBracket['teamnames']);
             $teams[$index] = ['id' => $participant['id'], 'name' => $participant['name'], 'image' => $participant['image']];
+            if (isset($voteData['is_double']) && $voteData['is_double']) {
+                $teams[$index]['is_double'] = 1;
+            }
             $nextBracket['teamnames'] = json_encode($teams);
 
             if ($tournament && $tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT && $nextBracket['knockout_final'] == 1) {
+                $nextBracket['winner'] = $voteData['participant_id'];
+            }
+
+            if ($tournament && $tournament['type'] != TOURNAMENT_TYPE_KNOCKOUT && $nextBracket['final_match'] == 1) {
                 $nextBracket['winner'] = $voteData['participant_id'];
             }
             
