@@ -492,6 +492,7 @@ $(document).ready(function() {
 
             // Set a timeout to check if the request exceeds the time limit
             const timeout = () => {
+                requestCompleted = false
                 setTimeout(() => {
                     if (!requestCompleted) {
                         console.warn("The request took too long!");
@@ -687,6 +688,7 @@ $(document).ready(function() {
 
             // Set a timeout to check if the request exceeds the time limit
             const timeout = () => {
+                requestCompleted = false
                 setTimeout(() => {
                     if (!requestCompleted) {
                         console.warn("The request took too long!");

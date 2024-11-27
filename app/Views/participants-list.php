@@ -104,9 +104,9 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
 
         // Set a timeout to check if the request exceeds the time limit
         const timeout = () => {
+            requestCompleted = false
             setTimeout(() => {
                 if (!requestCompleted) {
-                    console.warn("The request took too long!");
                     $('#beforeProcessing').removeClass('d-none')
                     // You can also abort the request here if needed
                     // xhr.abort(); // Uncomment if you implement an XMLHttpRequest
