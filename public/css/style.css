@@ -443,9 +443,98 @@
   right: -50%;
 }
 
+@keyframes fadeInUp {
+  0% {
+    transform: translate(0px, 100px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(0px, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(2000px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateX(-30px);
+  }
+
+  80% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounce-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-2000px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateX(30px);
+  }
+
+  80% {
+    transform: translateX(-10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(.3);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+
+  70% {
+    transform: scale(.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.brackets .trophy~.participants .bracket-team.winner .p-image,
+.brackets .trophy~.knockout-final .bracket-team.winner .p-image {
+  animation: bounce-in-left 2s ease;
+}
+
+.brackets .trophy~.participants .bracket-team.winner .score-wrapper,
+.brackets .trophy~.knockout-final .bracket-team.winner .score-wrapper {
+  animation: bounce-in-right 2s ease;
+  transition-delay: .5s;
+}
+
+.brackets .trophy~.participants .bracket-team.winner .name,
+.brackets .trophy~.knockout-final .bracket-team.winner .name {
+  animation: bounce-in 2s ease;
+  transition-delay: 1s;
+}
+
 @keyframes trophy-animation {
   from {
-    transform: scale(.7);
+    transform: scale(0);
   }
 
   to {
@@ -958,15 +1047,15 @@
 #svg {
   transform: skew(30deg);
   transform-origin: center;
+}
 
-  text {
-    transform: skew(-30deg);
-    transform-origin: center;
-    font-family: Apex;
-    fill: white;
-    text-anchor: middle;
-    transform-origin: 50% 50%;
-  }
+#svg text {
+  transform: skew(-30deg);
+  transform-origin: center;
+  font-family: Apex;
+  fill: white;
+  text-anchor: middle;
+  transform-origin: 50% 50%;
 }
 
 #banner-1 {
