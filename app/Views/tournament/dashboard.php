@@ -1143,6 +1143,7 @@ $(document).ready(function() {
                     $("#err").html("Invalid File !").fadeIn();
                 } else {
                     $('#tournamentSettings').modal('hide');
+                    window.location.reload()
                 }
             },
             error: function(e) {
@@ -1354,7 +1355,6 @@ const changeSettings = (event) => {
         type: "GET",
         url: apiURL + '/tournaments/' + tournament_id + '/fetch-settings',
         success: function(result) {
-            result = JSON.parse(result);
             $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
             $('#music-settings-panel').html(result.html);
             $('#music-settings-panel').html(result.html).promise().done(function() {
@@ -1377,6 +1377,7 @@ const changeSettings = (event) => {
             $('#tournamentForm').data('id', tournament_id);
 
             if (result.tournamentSettings) {
+                $('#tournamentTitle').val(result.tournamentSettings.name)
                 $('#eliminationType').val(result.tournamentSettings.type)
                 if (result.tournamentSettings.type == '<?= TOURNAMENT_TYPE_SINGLE ?>') {
                     $('.single-type-hint').removeClass('d-none')

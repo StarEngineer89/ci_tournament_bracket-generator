@@ -3,7 +3,7 @@
     <div class="form-check border-bottom mb-3">
         <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[0]" id="toggle-music-settings-0" data-media-type="<?= MUSIC_TYPE_BRACKET_GENERATION ?>" onChange="musicSettingToggleChange(this)">
         <label class="form-check-label" for="toggle-music-settings-0">
-            <h6>Music during Brackets Generation</h6>
+            <h6>Audio during Brackets Generation</h6>
         </label>
     </div>
 
@@ -15,7 +15,7 @@
             </div>
             <input type="file" class="form-control music-source" data-source="file" name="file" onChange="musicFileUpload(this)" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi" required disabled>
             <input type="hidden" class="file-path" id="file-shuffling-music" name="file-path[0]">
-            <div class="fileupload-hint form-text">Select a .mp3 file to upload. After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
+            <div class="fileupload-hint form-text">Select a .mp3 file to upload(max file size is 10MB). After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
         </div>
         <div class="input-group mb-3">
             <div class="input-group-text">
@@ -24,7 +24,7 @@
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[0]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
-            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp3 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated.</div>
+            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp3 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's audio settings action after it's generated.</div>
         </div>
         <div class="mb-3 preview">
             <audio controls class="w-100 player">
@@ -61,7 +61,7 @@
     <div class="form-check border-bottom mb-3">
         <input type="checkbox" class="form-check-input toggle-music-settings" name="setting-toggle[1]" id="toggle-music-settings-1" data-media-type="<?= MUSIC_TYPE_FINAL_WINNER ?>" onChange="musicSettingToggleChange(this)">
         <label class="form-check-label" for="toggle-music-settings-1">
-            <h6>Music for a Final Winner</h6>
+            <h6>Audio for a Final Winner</h6>
         </label>
     </div>
 
@@ -74,7 +74,7 @@
             <input type="file" class="form-control music-source" data-source="file" name="file" onChange="musicFileUpload(this)" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi" required disabled>
             <input type="hidden" class="file-path" id="file-input" name="file-path[1]">
             <div class="invalid-feedback">This field is required.</div>
-            <div class="fileupload-hint form-text">Select a .mp3 file to upload. After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
+            <div class="fileupload-hint form-text">Select a .mp3 file to upload(max file size is 10MB). After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
         </div>
         <div class="input-group mb-3">
             <div class="input-group-text">
@@ -83,7 +83,7 @@
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[1]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
-            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp3 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated.</div>
+            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp3 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's audio settings action after it's generated.</div>
         </div>
         <div class="mb-3 preview">
             <audio controls class="w-100 player">
@@ -141,7 +141,7 @@
             <span class="input-group-text">URL</span>
             <input type="text" class="form-control music-source" data-source="url" aria-describedby="basic-addon3 basic-addon4" name="url[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]" placeholder="Example: https://youtu.be/Gb1iGDchKYs?si=nR-n7KBMHfKWox7U" required disabled>
             <div class="invalid-feedback">This field is required.</div>
-            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp4 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's music settings action after it's generated.</div>
+            <div class="urlupload-hint form-text d-none">Enter a YouTube video url. <br />Note an <a href="https://developers.google.com/youtube/v3/guides/implementation/videos">API</a> will process the video into a .mp4 file in the backend once you click save. You may specify the timestamps before saving or you may revise the timestamps by navigating to the tournament's audio settings action after it's generated.</div>
         </div>
         <div class="mb-3 preview">
             <video controls class="w-100 player d-none">

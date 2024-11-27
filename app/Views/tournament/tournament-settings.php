@@ -1,4 +1,9 @@
 <div class="input-group mb-3">
+    <span class="input-group-text" id="tournamentTitleLabel">Tournament Title</span>
+    <input type="text" class="form-control music-source" id="tournamentTitle" name="name" required>
+</div>
+
+<div class="input-group mb-3">
     <span class="input-group-text" id="type">Elimination Type</span>
     <select class="form-select" id="eliminationType" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>" selected>Single</option>

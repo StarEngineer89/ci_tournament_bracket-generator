@@ -333,7 +333,8 @@ class TournamentController extends BaseController
         $settingsBlock = view('tournament/tournament-settings', []);
         $html = view('tournament/music-setting', []);
 
-        return json_encode(['msg' => "Tournament was updated successfully.", 'musicSettings' => $settings, 'tournamentSettings' => $tournament, 'settingsBlock' => $settingsBlock, 'html' => $html]);
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                            ->setJSON(['msg' => "Tournament was updated successfully.", 'musicSettings' => $settings, 'tournamentSettings' => $tournament, 'settingsBlock' => $settingsBlock, 'html' => $html]);
     }
 
     public function update($tournament_id)

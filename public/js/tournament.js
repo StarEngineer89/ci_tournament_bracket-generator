@@ -67,7 +67,7 @@ function musicFileUpload(element) {
     }
 
     if (element.files[0] && element.files[0].size > 1048576) {
-        $('#errorModal .errorDetails').html('Max audio size is 1MB. Please upload small audio.')
+        $('#errorModal .errorDetails').html('Max audio size is 100MB. Please upload small audio.')
         $("#errorModal").modal('show');
         
         this.value = '';
