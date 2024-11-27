@@ -99,6 +99,32 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         }).focus(function() {
             $(this).autocomplete("search", "");
         })
+
+        let requestCompleted = false;
+
+        // Set a timeout to check if the request exceeds the time limit
+        const timeout = () => {
+            setTimeout(() => {
+                if (!requestCompleted) {
+                    console.warn("The request took too long!");
+                    $('#beforeProcessing').removeClass('d-none')
+                    // You can also abort the request here if needed
+                    // xhr.abort(); // Uncomment if you implement an XMLHttpRequest
+                }
+            }, 1000);
+        }
+
+        $('#participantLeaderboardTable').on('preXhr.dt', function() {
+            // $('#beforeProcessing').removeClass('d-none')
+            timeout();
+        });
+
+        // Hide custom loading overlay after reload
+        $('#participantLeaderboardTable').on('xhr.dt', function() {
+            requestCompleted = true; // Mark the request as completed
+            clearTimeout(timeout); // Clear the timeout
+            $('#beforeProcessing').addClass('d-none')
+        });
     },
     "columns": [{
             "data": null,
