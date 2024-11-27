@@ -504,11 +504,12 @@ $(document).on('ready', function () {
                         let center_wrapper = document.createElement('div')
                         center_wrapper.classList.add('center-wrapper', 'align-self-center')
                         center_wrapper.style.minWidth = '350px'
+                        center_wrapper.style.minHeight = '350px'
                         let bracketDiv = document.createElement('div')
                         bracketDiv.classList.add('knockout-final', 'd-flex', 'align-items-end', 'justify-content-center')
 
                         let trophy = document.createElement('div')
-                        trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap"
+                        trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap d-none"
                         trophy.style.minHeight = '100px'
                         center_wrapper.append(trophy)
                         

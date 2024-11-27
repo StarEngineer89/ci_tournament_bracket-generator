@@ -394,6 +394,7 @@
     border-right: 1px solid #555;
     border-bottom: 1px solid #555;
     background-color: #fff;
+    z-index: 10;
 }
 .brackets .bracketbox.final .participants {
     height: 0;
@@ -413,12 +414,15 @@
   margin-left: -100px;
   margin-right: -100px;
   margin-top: 50px;
+  position: relative;
 }
 .brackets .knockout-final {
-  margin-top: -140px;
   border: 1px solid #555;
   border-top: none;
   height: 50px;
+  width: 100%;
+  position: absolute;
+  top: 55%;
 }
 .brackets .knockout-final > span {
   position: relative;
@@ -465,10 +469,9 @@
   position: relative;
   top: initial;
   left: initial;
-  margin-top: -75px;
+  margin-top: 50px;
   margin-bottom: 20px;
   width: 100%;
-  z-index: -10;
 }
 
 .brackets .rtl div.bracketbox {
