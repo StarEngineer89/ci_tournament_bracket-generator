@@ -190,23 +190,63 @@
     background-color: var(--bg-dr-background-color);
 }
 
-.bg-dr .background .corner-top-left {
+.bg-dr .background .corner-top-left,
+.bg-dr .background .corner-top-right,
+.bg-dr .background .corner-bottom-left,
+.bg-dr .background .corner-bottom-right {
     position: fixed;
-    top: 150px;
-    height: calc(100vh - 150px);
-    width: 15%;
-    background: url('../images/dark-royal-left.svg') no-repeat;
+    height: 200px;
+    width: 50%;
+}
+.bg-dr .background .corner-top-left {
+    top: 100px;
+    background: url('../images/dark-royal-top-left.svg') no-repeat;
+    background-size: contain;
+}
+
+.bg-dr .background .corner-top-right {
+    top: 100px;
+    right: 0;
+    background: url('../images/dark-royal-top-right.svg') no-repeat;
+    background-size: contain;
+    background-position: right;
+}
+
+.bg-dr .background .corner-bottom-left {
+    left: 0;
+    bottom: 0;
+    background: url('../images/dark-royal-bottom-left.svg') no-repeat;
     background-size: contain;
 }
 
 .bg-dr .background .corner-bottom-right {
-    position: fixed;
+    bottom: 0;
     right: 0;
-    top: 150px;
-    height: calc(100vh - 150px);
-    width: 15%;
-    background: url('../images/dark-royal-right.svg') no-repeat;
+    background: url('../images/dark-royal-bottom-right.svg') no-repeat;
     background-size: contain;
+    background-position: right;
+}
+
+.bg-dr .background .left-bg,
+.bg-dr .background .right-bg {
+    position: fixed;
+    top: 300px;
+    width: 50px;
+    height: calc(100% - 500px);
+}
+
+.bg-dr .background .left-bg {
+    left: 0;
+    background: url('../images/dark-royal-side-edge.svg') no-repeat;
+    background-size: auto 100%;
+    background-position: right;
+}
+
+.bg-dr .background .right-bg {
+    right: 0;
+    background: url('../images/dark-royal-side-edge.svg') no-repeat;
+    background-size: auto 100%;
+    background-position: left;
 }
 
 .bg-dr .header {
@@ -292,17 +332,20 @@
     background-color: var(--bg-dr-nav-hover-background-color);
 }
 
-.bg-gr .background {
+/* .bg-gr .background {
     --bs-bg-opacity: 1;
     background:
         radial-gradient(circle, rgba(235, 235, 235, 1) 0%, rgba(125, 125, 125, 1) 100%),
         url('../images/football-grass.jpg');
     background-repeat: no-repeat, repeat-x;
-    /* Separate the repeat behavior */
     background-size: cover, contain;
-    /* Define sizes for each layer */
     background-position: center, top;
-    /* Define positions for each layer */
+} */
+
+.bg-gr .background {
+    --bs-bg-opacity: 1;
+    background: url('../images/football-grass.jpg');
+    background-size: contain;
 }
 
 .bg-gr .background .corner-top-left,
