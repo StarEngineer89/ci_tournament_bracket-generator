@@ -332,20 +332,14 @@
     background-color: var(--bg-dr-nav-hover-background-color);
 }
 
-/* .bg-gr .background {
+.bg-gr .background {
     --bs-bg-opacity: 1;
     background:
-        radial-gradient(circle, rgba(235, 235, 235, 1) 0%, rgba(125, 125, 125, 1) 100%),
-        url('../images/football-grass.jpg');
+        radial-gradient(circle, rgb(20 20 20 / 70%) 50%, rgb(0 0 0 / 95%) 100%),
+        url(../images/football-grass.jpg);
     background-repeat: no-repeat, repeat-x;
     background-size: cover, contain;
     background-position: center, top;
-} */
-
-.bg-gr .background {
-    --bs-bg-opacity: 1;
-    background: url('../images/football-grass.jpg');
-    background-size: contain;
 }
 
 .bg-gr .background .corner-top-left,

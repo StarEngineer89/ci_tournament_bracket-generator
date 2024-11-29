@@ -478,7 +478,7 @@
 @keyframes bounce-in-left {
   0% {
     opacity: 0;
-    transform: translateX(-2000px);
+    transform: translateX(-100px);
   }
 
   60% {
