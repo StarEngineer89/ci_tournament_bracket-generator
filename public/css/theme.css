@@ -295,7 +295,7 @@
 .bg-gr .background {
     --bs-bg-opacity: 1;
     background:
-        radial-gradient(circle, rgba(255, 255, 255, 1) 50%, rgba(0, 0, 0, 1) 100%),
+        radial-gradient(circle, rgba(235, 235, 235, 1) 0%, rgba(125, 125, 125, 1) 100%),
         url('../images/football-grass.jpg');
     background-repeat: no-repeat, repeat-x;
     /* Separate the repeat behavior */
