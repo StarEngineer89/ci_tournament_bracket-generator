@@ -194,7 +194,7 @@ class TournamentController extends BaseController
             $db->query('SET FOREIGN_KEY_CHECKS = 0;');
         }
 
-        $existing = $tournamentModel->where(['name' => $this->request->getPost('name'), 'user_id' => $user_id])->findAll();
+        $existing = $tournamentModel->where(['name' => $this->request->getPost('title'), 'user_id' => $user_id])->findAll();
 
         if ($existing) {
             return json_encode(['error' => "The same tournament name is existing. Please use another name."]);
@@ -342,8 +342,8 @@ class TournamentController extends BaseController
         $tournamentModel = model('\App\Models\TournamentModel');
         $tournament = $tournamentModel->find(intval($tournament_id));
         
-        if ($this->request->getPost('name')) {
-            $tournament['name'] = $this->request->getPost('name');
+        if ($this->request->getPost('title')) {
+            $tournament['name'] = $this->request->getPost('title');
         }
         if ($this->request->getPost('type')) {
             $tournament['type'] = $this->request->getPost('type');

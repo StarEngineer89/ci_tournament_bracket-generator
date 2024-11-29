@@ -1,6 +1,6 @@
 <div class="input-group mb-3">
     <span class="input-group-text" id="tournamentTitleLabel">Tournament Title</span>
-    <input type="text" class="form-control music-source" id="tournamentTitle" name="name" required>
+    <input type="text" class="form-control music-source" id="tournamentTitle" name="title" required>
     <div class="invalid-feedback">This field is required.</div>
 </div>
 

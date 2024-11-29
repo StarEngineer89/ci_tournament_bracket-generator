@@ -1655,7 +1655,7 @@ function saveChange() {
     let data = {};
     const tournament_id = event.target.getAttribute('data-id');
     if ($(event.target).parents('tr').find('.name').length > 0)
-        data['name'] = $(event.target).parents('tr').find('.name').val();
+        data['title'] = $(event.target).parents('tr').find('.name').val();
     if ($(event.target).parents('tr').find('.status').length > 0)
         data['status'] = $(event.target).parents('tr').find('.status').val();
 
@@ -1666,10 +1666,10 @@ function saveChange() {
         success: function(result) {
             const data = JSON.parse(result).data;
 
-            if (data.name != undefined && data.name != '') {
+            if (data.title != undefined && data.title != '') {
                 const nameElement = document.createElement('a');
                 nameElement.href = '<?= base_url('tournaments') ?>/' + tournament_id + '/view';
-                nameElement.textContent = data.name
+                nameElement.textContent = data.title
                 $(`tr[data-id="${tournament_id}"]`).find('td[data-label="name"]').html(nameElement);
             }
 
