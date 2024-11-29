@@ -1,4 +1,5 @@
 :root {
+    --font-color-white: rgb(255, 255, 255);
     --bg-cs-background-color: rgb(37, 35, 35);
     --bg-cs-background-corner-border-color: rgb(37, 35, 35);
     --bg-cs-nav-hover-background-color: rgb(45, 45, 45);
@@ -97,7 +98,9 @@
 .bg-cs .card {
     background: none;
 }
-
+.bg-cs .card-body {
+    color: var(--font-color-white)
+}
 .bg-cs .nav-link,
 .bg-cs .breadcrumb-item.active,
 .bg-cs .card-title {
@@ -173,6 +176,7 @@
 /** Styles for Dark Royal */
 .bg-dr .navbar-nav,
 .bg-dr .nav-link,
+.bg-dr .breadcrumb-item.active,
 .bg-dr .card-body {
     color: var(--bg-dr-font-color)
 }
@@ -186,56 +190,24 @@
     background-color: var(--bg-dr-background-color);
 }
 
-/* .bg-dr .background .corner-top-left,
-.bg-dr .background .corner-bottom-right {
-    width: 300px;
-    height: 300px;
-    background-image: url('../images/hexagon.svg');
-    background-size: contain;
-} */
-
-/* .bg-dr .background .corner-top-left {
+.bg-dr .background .corner-top-left {
     position: fixed;
-    top: 100px;
+    top: 150px;
+    height: calc(100vh - 150px);
+    width: 15%;
+    background: url('../images/dark-royal-left.svg') no-repeat;
+    background-size: contain;
 }
 
-.bg-dr .background .corner-top-left::after {
-    content: '';
-    width: 0px;
-    height: 0px;
-    background: transparent;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    display: block;
-    z-index: 100;
-    border-left: 150px solid transparent;
-    border-top: 160px solid transparent;
-    border-right: 150px solid var(--bg-dr-background-corner-border-color);
-    border-bottom: 160px solid var(--bg-dr-background-corner-border-color);
-} */
-
-/* .bg-dr .background .corner-bottom-right {
+.bg-dr .background .corner-bottom-right {
     position: fixed;
     right: 0;
-    bottom: 0;
+    top: 150px;
+    height: calc(100vh - 150px);
+    width: 15%;
+    background: url('../images/dark-royal-right.svg') no-repeat;
+    background-size: contain;
 }
-
-.bg-dr .background .corner-bottom-right::after {
-    content: '';
-    width: 0px;
-    height: 0px;
-    background: transparent;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    display: block;
-    z-index: 100;
-    border-right: 150px solid transparent;
-    border-bottom: 160px solid transparent;
-    border-left: 150px solid var(--bg-dr-background-corner-border-color);
-    border-top: 160px solid var(--bg-dr-background-corner-border-color);
-} */
 
 .bg-dr .header {
     background-color: var(--bg-dr-background-color);
@@ -311,6 +283,7 @@
 /** Styles for GRIDIRON */
 .bg-gr .navbar-nav,
 .bg-gr .nav-link,
+.bg-gr .breadcrumb-item.active,
 .bg-gr .card-body {
     color: var(--bg-dr-font-color)
 }
@@ -321,60 +294,51 @@
 
 .bg-gr .background {
     --bs-bg-opacity: 1;
-    background: url('../images/football-grass.jpg') repeat-x;
-    background-size: contain;
+    background:
+        radial-gradient(circle, rgba(255, 255, 255, 1) 50%, rgba(0, 0, 0, 1) 100%),
+        url('../images/football-grass.jpg');
+    background-repeat: no-repeat, repeat-x;
+    /* Separate the repeat behavior */
+    background-size: cover, contain;
+    /* Define sizes for each layer */
+    background-position: center, top;
+    /* Define positions for each layer */
 }
 
-/* .bg-gr .background .corner-top-left,
+.bg-gr .background .corner-top-left,
+.bg-gr .background .corner-top-left,
+.bg-gr .background .corner-bottom-left,
 .bg-gr .background .corner-bottom-right {
+    position: fixed;
     width: 300px;
     height: 300px;
-    background-image: url('../images/hexagon.svg');
-    background-size: contain;
-} */
+}
 
-/* .bg-gr .background .corner-top-left {
-    position: fixed;
+.bg-gr .background .corner-top-left {
     top: 100px;
+    /* background-image: url('../images/hexagon.svg');
+    background-size: contain; */
 }
 
-.bg-gr .background .corner-top-left::after {
-    content: '';
-    width: 0px;
-    height: 0px;
-    background: transparent;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    display: block;
-    z-index: 100;
-    border-left: 150px solid transparent;
-    border-top: 160px solid transparent;
-    border-right: 150px solid var(--bg-dr-background-corner-border-color);
-    border-bottom: 160px solid var(--bg-dr-background-corner-border-color);
-} */
-
-/* .bg-gr .background .corner-bottom-right {
-    position: fixed;
+.bg-gr .background .corner-top-right {
+    top: 100px;
     right: 0;
-    bottom: 0;
+    /* background-image: url('../images/hexagon.svg');
+    background-size: contain; */
 }
 
-.bg-gr .background .corner-bottom-right::after {
-    content: '';
-    width: 0px;
-    height: 0px;
-    background: transparent;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    display: block;
-    z-index: 100;
-    border-right: 150px solid transparent;
-    border-bottom: 160px solid transparent;
-    border-left: 150px solid var(--bg-dr-background-corner-border-color);
-    border-top: 160px solid var(--bg-dr-background-corner-border-color);
-} */
+.bg-gr .background .corner-bottom-left {
+    bottom: 0;
+    /* background-image: url('../images/hexagon.svg');
+    background-size: contain; */
+}
+
+.bg-gr .background .corner-bottom-right {
+    bottom: 0;
+    right: 0;
+    /* background-image: url('../images/hexagon.svg');
+    background-size: contain; */
+}
 
 .bg-gr .header {
     background-color: var(--bg-dr-background-color);
@@ -463,56 +427,47 @@
     background-color: var(--bg-dr-background-color);
 }
 
-/* .bg-mm .background .corner-top-left,
+.bg-mm .background .corner-bottom-left,
 .bg-mm .background .corner-bottom-right {
-    width: 300px;
-    height: 300px;
-    background-image: url('../images/hexagon.svg');
-    background-size: contain;
-} */
+    position: fixed;
+    bottom: 0;
+    min-width: 15%;
+    min-height: 15%;
+}
 
-/* .bg-mm .background .corner-top-left {
+.bg-mm .background .corner-bottom-left {
+    left: 0;
+    background: url('../images/modern-metal-left-corner.svg') no-repeat;
+    background-size: contain;
+}
+
+.bg-mm .background .corner-bottom-right {
+    right: 0;
+    background: url('../images/modern-metal-right-corner.svg') no-repeat;
+    background-size: contain;
+    background-position-x: right;
+}
+
+.bg-mm .background .top-bg {
     position: fixed;
     top: 100px;
+    left: 30%;
+    min-width: 40%;
+    min-height: 50px;
+    background: url('../images/modern-metal-top-edge.svg') no-repeat;
+    background-size: 100% 100%;
 }
 
-.bg-mm .background .corner-top-left::after {
-    content: '';
-    width: 0px;
-    height: 0px;
-    background: transparent;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    display: block;
-    z-index: 100;
-    border-left: 150px solid transparent;
-    border-top: 160px solid transparent;
-    border-right: 150px solid var(--bg-dr-background-corner-border-color);
-    border-bottom: 160px solid var(--bg-dr-background-corner-border-color);
-} */
-
-/* .bg-mm .background .corner-bottom-right {
+.bg-mm .background .bottom-bg {
     position: fixed;
-    right: 0;
     bottom: 0;
+    left: 30%;
+    min-width: 40%;
+    min-height: 50px;
+    background: url('../images/modern-metal-bottom-edge.svg') no-repeat;
+    background-size: 100% 100%;
+    background-position-y: bottom;
 }
-
-.bg-mm .background .corner-bottom-right::after {
-    content: '';
-    width: 0px;
-    height: 0px;
-    background: transparent;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    display: block;
-    z-index: 100;
-    border-right: 150px solid transparent;
-    border-bottom: 160px solid transparent;
-    border-left: 150px solid var(--bg-dr-background-corner-border-color);
-    border-top: 160px solid var(--bg-dr-background-corner-border-color);
-} */
 
 .bg-mm .header {
     background-color: var(--bg-dr-background-color);
@@ -522,6 +477,12 @@
 .bg-mm .brackets .bracketbox .participants,
 .bg-mm .brackets div.bracketbox span.bracketNo {
     background: none;
+}
+
+.bg-mm .card-body,
+.bg-mm .nav-link,
+.bg-mm .breadcrumb-item.active {
+    color: var(--font-color-white);
 }
 
 .bg-mm .brackets>div .bracket-team,

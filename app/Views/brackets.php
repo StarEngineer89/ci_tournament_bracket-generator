@@ -220,10 +220,12 @@ $(document).ready(function() {
     <div class="corner-top-right"></div>
     <div class="corner-bottom-left"></div>
     <div class="corner-bottom-right"></div>
+    <div class="top-bg"></div>
     <div class="left-bg"></div>
     <div class="right-bg"></div>
+    <div class="bottom-bg"></div>
 </div>
-<div class="card col-12 shadow-sm" style="max-height: calc(100vh - 60px); overflow:scroll">
+<div class="card col-12 shadow-sm" style="min-height: calc(100vh - 60px);">
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
