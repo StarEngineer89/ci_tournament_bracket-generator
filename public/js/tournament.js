@@ -66,7 +66,7 @@ function musicFileUpload(element) {
         return
     }
 
-    if (element.files[0] && element.files[0].size > 1048576) {
+    if (element.files[0] && element.files[0].size > 102400) {
         $('#errorModal .errorDetails').html('Max audio size is 100MB. Please upload small audio.')
         $("#errorModal").modal('show');
         
@@ -127,15 +127,15 @@ function videoFileUpload(element) {
     var allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
 
     if (element.files[0] && !allowedTypes.includes(element.files[0].type)) {
-        $('#errorModal .errorDetails').html('Please upload image as *.mp4, *.webm, *.ogg format.')
+        $('#errorModal .errorDetails').html('Please upload video as *.mp4, *.webm, *.ogg format.')
         $("#errorModal").modal('show');
 
         this.value = '';
         return
     }
 
-    if (element.files[0] && element.files[0].size > 1048576) {
-        $('#errorModal .errorDetails').html('Max image size is 1MB. Please upload small image.')
+    if (element.files[0] && element.files[0].size > 512000) {
+        $('#errorModal .errorDetails').html('Max video size is 500MB. Please upload small image.')
         $("#errorModal").modal('show');
         
         this.value = '';

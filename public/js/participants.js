@@ -272,8 +272,8 @@ function checkBig(el, element_id){
         return
     }
 
-    if (el.files[0].size > 1048576) {
-        $('#errorModal .errorDetails').html('Max image size is 1MB. Please upload small image.')
+    if (el.files[0].size > 3145728) {
+        $('#errorModal .errorDetails').html('Max image size is 3MB. Please upload small image.')
         $("#errorModal").modal('show');
         
         this.value='';

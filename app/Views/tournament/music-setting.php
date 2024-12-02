@@ -15,7 +15,7 @@
             </div>
             <input type="file" class="form-control music-source" data-source="file" name="file" onChange="musicFileUpload(this)" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi" required disabled>
             <input type="hidden" class="file-path" id="file-shuffling-music" name="file-path[0]">
-            <div class="fileupload-hint form-text">Select a .mp3 file to upload(max file size is 10MB). After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
+            <div class="fileupload-hint form-text">Select a .mp3 file to upload(max file size is 100MB). After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
         </div>
         <div class="input-group mb-3">
             <div class="input-group-text">
@@ -74,7 +74,7 @@
             <input type="file" class="form-control music-source" data-source="file" name="file" onChange="musicFileUpload(this)" accept="audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi" required disabled>
             <input type="hidden" class="file-path" id="file-input" name="file-path[1]">
             <div class="invalid-feedback">This field is required.</div>
-            <div class="fileupload-hint form-text">Select a .mp3 file to upload(max file size is 10MB). After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
+            <div class="fileupload-hint form-text">Select a .mp3 file to upload(max file size is 100MB). After waiting a bit, you will notice the player loads the file here when the timestamps appear, in which you could then adjust accordingly.</div>
         </div>
         <div class="input-group mb-3">
             <div class="input-group-text">

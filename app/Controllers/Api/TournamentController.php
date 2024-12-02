@@ -558,7 +558,7 @@ class TournamentController extends BaseController
                 'rules' => [
                     'uploaded[audio]',
                     'mime_in[audio,audio/mpeg,audio/wav,audio/ogg,audio/mid,audio/x-midi]',
-                    'max_size[audio,10240]', // Limits file size to 10MB (10240 KB)
+                    'max_size[audio,104857600]', // Limits file size to 100MB (102400 KB)
                 ],
                 'errors' => [
                     'uploaded' => 'Please upload a file.',
@@ -597,7 +597,7 @@ class TournamentController extends BaseController
                 'rules' => [
                     'uploaded[video]',
                     'mime_in[video,video/mp4]',
-                    'max_size[video, 512000]', // Limits file size to 10MB (10240 KB)
+                    'max_size[video, 524288000]', // Limits file size to 500MB
                 ],
                 'errors' => [
                     'uploaded' => 'Please upload a file.',
