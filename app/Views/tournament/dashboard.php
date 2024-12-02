@@ -562,6 +562,9 @@ $(document).ready(function() {
                     }
 
                     return status;
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'status');
                 }
             },
             <?php if ($shareType == 'wh'): ?> {
