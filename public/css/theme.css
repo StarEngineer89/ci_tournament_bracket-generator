@@ -459,57 +459,6 @@
     width: 50%;
 }
 
-.bg-mm .background .corner-top-left {
-    top: 100px;
-    background: url('../images/dark-royal-top-left.svg') no-repeat;
-    background-size: contain;
-}
-
-.bg-mm .background .corner-top-right {
-    top: 100px;
-    right: 0;
-    background: url('../images/dark-royal-top-right.svg') no-repeat;
-    background-size: contain;
-    background-position: right;
-}
-
-.bg-mm .background .corner-bottom-left {
-    left: 0;
-    bottom: 0;
-    background: url('../images/dark-royal-bottom-left.svg') no-repeat;
-    background-size: contain;
-}
-
-.bg-mm .background .corner-bottom-right {
-    bottom: 0;
-    right: 0;
-    background: url('../images/dark-royal-bottom-right.svg') no-repeat;
-    background-size: contain;
-    background-position: right;
-}
-
-.bg-mm .background .left-bg,
-.bg-mm .background .right-bg {
-    position: fixed;
-    top: 300px;
-    width: 50px;
-    height: calc(100% - 500px);
-}
-
-.bg-mm .background .left-bg {
-    left: 0;
-    background: url('../images/dark-royal-side-edge.svg') no-repeat;
-    background-size: auto 100%;
-    background-position: right;
-}
-
-.bg-mm .background .right-bg {
-    right: 0;
-    background: url('../images/dark-royal-side-edge.svg') no-repeat;
-    background-size: auto 100%;
-    background-position: left;
-}
-
 .bg-mm .header {
     background-color: var(--bg-dr-background-color);
 }
