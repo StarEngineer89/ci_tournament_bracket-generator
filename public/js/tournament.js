@@ -66,7 +66,7 @@ function musicFileUpload(element) {
         return
     }
 
-    if (element.files[0] && element.files[0].size > 102400) {
+    if (element.files[0] && element.files[0].size > 102400000) {
         $('#errorModal .errorDetails').html('Max audio size is 100MB. Please upload small audio.')
         $("#errorModal").modal('show');
         
@@ -134,7 +134,7 @@ function videoFileUpload(element) {
         return
     }
 
-    if (element.files[0] && element.files[0].size > 512000) {
+    if (element.files[0] && element.files[0].size > 512000000) {
         $('#errorModal .errorDetails').html('Max video size is 500MB. Please upload small image.')
         $("#errorModal").modal('show');
         
