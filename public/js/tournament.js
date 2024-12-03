@@ -62,7 +62,7 @@ function musicFileUpload(element) {
         $('#errorModal .errorDetails').html('Please upload audio as *.mp3, *.wav, *.midi format.')
         $("#errorModal").modal('show');
 
-        this.value = '';
+        element.value = '';
         return
     }
 
@@ -70,7 +70,7 @@ function musicFileUpload(element) {
         $('#errorModal .errorDetails').html('Max audio size is 100MB. Please upload small audio.')
         $("#errorModal").modal('show');
         
-        this.value = '';
+        element.value = '';
         return
     }
 
@@ -130,7 +130,7 @@ function videoFileUpload(element) {
         $('#errorModal .errorDetails').html('Please upload video as *.mp4, *.webm, *.ogg format.')
         $("#errorModal").modal('show');
 
-        this.value = '';
+        element.value = '';
         return
     }
 
@@ -138,7 +138,7 @@ function videoFileUpload(element) {
         $('#errorModal .errorDetails').html('Max video size is 500MB. Please upload small image.')
         $("#errorModal").modal('show');
         
-        this.value = '';
+        element.value = '';
         return
     }
 

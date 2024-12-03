@@ -28,6 +28,13 @@
     /* Puts it behind other content */
 }
 
+.bg-cs .navbar-toggler,
+.bg-dr .navbar-toggler,
+.bg-gr .navbar-toggler,
+.bg-mm .navbar-toggler {
+    background-color: #fff;
+}
+
 /** Theme for Classic */
 .bg-cl .background {
     --bs-bg-opacity: 1;
@@ -49,40 +56,6 @@
     bottom: 0;
     min-width: 15%;
     min-height: 15%;
-}
-
-.bg-cs .background .corner-bottom-left {
-    left: 0;
-    background: url('../images/modern-metal-left-corner.svg') no-repeat;
-    background-size: contain;
-}
-
-.bg-cs .background .corner-bottom-right {
-    right: 0;
-    background: url('../images/modern-metal-right-corner.svg') no-repeat;
-    background-size: contain;
-    background-position-x: right;
-}
-
-.bg-cs .background .top-bg {
-    position: fixed;
-    top: 100px;
-    left: 30%;
-    min-width: 40%;
-    min-height: 50px;
-    background: url('../images/modern-metal-top-edge.svg') no-repeat;
-    background-size: 100% 100%;
-}
-
-.bg-cs .background .bottom-bg {
-    position: fixed;
-    bottom: 0;
-    left: 30%;
-    min-width: 40%;
-    min-height: 50px;
-    background: url('../images/modern-metal-bottom-edge.svg') no-repeat;
-    background-size: 100% 100%;
-    background-position-y: bottom;
 }
 
 .bg-cs .header {
@@ -115,7 +88,7 @@
     border-color: var(--bg-cs-bracket-border-color);
     border-width: 2px;
     border-radius: 0 10px 10px 0;
-    background-color: var(--bg-cs-background-color);
+    background: none;
 }
 
 .bg-cs .brackets .round-name-wrapper,
@@ -433,9 +406,9 @@
 }
 
 /** Theme for Modern Metal */
-.bg-gr .navbar-nav,
-.bg-gr .nav-link,
-.bg-gr .card-body {
+.bg-mm .navbar-nav,
+.bg-mm .nav-link,
+.bg-mm .card-body {
     color: var(--bg-dr-font-color)
 }
 

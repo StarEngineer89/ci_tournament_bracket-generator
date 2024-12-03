@@ -515,6 +515,52 @@
   }
 }
 
+@keyframes light {
+  0% {
+    background-position: -600px;
+  }
+
+  100% {
+    background-position: 0px;
+  }
+}
+
+@-webkit-keyframes light {
+  0% {
+    background-position: -600px;
+  }
+
+  100% {
+    background-position: 0px;
+  }
+}
+
+.brackets .trophy~.participants .bracket-team.winner,
+.brackets .trophy~.knockout-final .bracket-team.winner {
+  animation: light 1.3s;
+  -webkit-animation: light 1.3s;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 0s;
+
+  background: rgb(255, 99, 71);
+    /* Old browsers */
+  background: -moz-linear-gradient(-45deg, rgba(255, 99, 71, 1) 0%, rgba(255, 99, 71, 1) 5%, rgba(255, 99, 71, 1) 5%, rgba(255, 99, 71, 1) 42%, rgba(255, 255, 255, 1) 49%, rgba(255, 255, 255, 1) 53%, rgba(255, 99, 71, 1) 59%, rgba(255, 99, 71, 1) 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, rgba(255, 99, 71, 1) 0%, rgba(255, 99, 71, 1) 5%, rgba(255, 99, 71, 1) 5%, rgba(255, 99, 71, 1) 42%, rgba(255, 255, 255, 1) 49%, rgba(255, 255, 255, 1) 53%, rgba(255, 99, 71, 1) 59%, rgba(255, 99, 71, 1) 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, rgba(255, 99, 71, 1) 0%, rgba(255, 99, 71, 1) 5%, rgba(255, 99, 71, 1) 5%, rgba(255, 99, 71, 1) 42%, rgba(255, 255, 255, 1) 49%, rgba(255, 255, 255, 1) 53%, rgba(255, 99, 71, 1) 59%, rgba(255, 99, 71, 1) 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff6347', endColorstr='#ff6347', GradientType=1);
+  /* IE6-9 fallback on horizontal gradient */
+
+
+  background-repeat: no-repeat;
+  background-position: 0px;
+  background-size: 380%;
+}
+
 .brackets .trophy~.participants .bracket-team.winner .p-image,
 .brackets .trophy~.knockout-final .bracket-team.winner .p-image {
   animation: bounce-in-left 2s ease;

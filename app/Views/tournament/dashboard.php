@@ -1476,14 +1476,17 @@ const changeSettings = (event) => {
                 if (result.tournamentSettings.availability == 1) {
                     $('#enableAvailability').attr('checked', true);
 
-                    const [startDate, startTime] = result.tournamentSettings.available_start.split(' ');
-                    const [startHour, startMinute] = startTime.split(':');
+                    if (result.tournamentSettings.available_start && result.tournamentSettings.available_start != '0000-00-00 00:00:00') {
+                        const [startDate, startTime] = result.tournamentSettings.available_start.split(' ');
+                        const [startHour, startMinute] = startTime.split(':');
+                        $('#startAvPickerInput').val(`${startDate} ${startHour}:${startMinute}`);
+                    }
 
-                    const [endDate, endTime] = result.tournamentSettings.available_end.split(' ');
-                    const [endHour, endMinute] = endTime.split(':');
-
-                    $('#startAvPickerInput').val(`${startDate} ${startHour}:${startMinute}`);
-                    $('#endAvPickerInput').val(`${endDate} ${endHour}:${endMinute}`);
+                    if (result.tournamentSettings.available_end && result.tournamentSettings.available_end != '0000-00-00 00:00:00') {
+                        const [endDate, endTime] = result.tournamentSettings.available_end.split(' ');
+                        const [endHour, endMinute] = endTime.split(':');
+                        $('#endAvPickerInput').val(`${endDate} ${endHour}:${endMinute}`);
+                    }
                 } else {
                     $('#enableAvailability').attr('checked', false);
                     $('#startAvPickerInput').val('');

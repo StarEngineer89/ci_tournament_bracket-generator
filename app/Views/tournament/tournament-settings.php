@@ -65,7 +65,7 @@
                 <div class="col-6">
                     <div class="input-group" id="startAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
                         <div class="input-group-text">Start</div>
-                        <input type="text" name="startAvPicker" class="form-control datetime startAv" id="startAvPickerInput" pattern="^(19[0-9]{2}|20[0-9]{2})-\d{2}-\d{2} \d{2}:\d{2}$" required readonly>
+                        <input type="text" name="startAvPicker" class="form-control datetime startAv" id="startAvPickerInput" pattern="^(19[0-9]{2}|20[0-9]{2})-\d{2}-\d{2} \d{2}:\d{2}$" readonly>
                         <span class="input-group-text" data-td-target="#startAvPicker" data-td-toggle="datetimepicker">
                             <i class="fas fa-calendar"></i>
                         </span>
@@ -76,7 +76,7 @@
                 <div class="col-6">
                     <div class="input-group" id="endAvPicker" data-td-target-input="nearest" data-td-target-toggle="nearest">
                         <div class="input-group-text">End</div>
-                        <input type="text" name="endAvPicker" class="form-control datetime endAv" id="endAvPickerInput" pattern="^(19[0-9]{2}|20[0-9]{2})-\d{2}-\d{2} \d{2}:\d{2}$" required readonly>
+                        <input type="text" name="endAvPicker" class="form-control datetime endAv" id="endAvPickerInput" pattern="^(19[0-9]{2}|20[0-9]{2})-\d{2}-\d{2} \d{2}:\d{2}$" readonly>
                         <span class="input-group-text" data-td-target="#endAvPicker" data-td-toggle="datetimepicker">
                             <i class="fas fa-calendar"></i>
                         </span>
