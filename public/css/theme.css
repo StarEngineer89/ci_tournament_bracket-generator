@@ -333,13 +333,12 @@
 }
 
 .bg-gr .background {
-    --bs-bg-opacity: 1;
     background:
         radial-gradient(circle, rgb(20 20 20 / 70%) 50%, rgb(0 0 0 / 95%) 100%),
-        url(../images/football-grass.jpg);
-    background-repeat: no-repeat, repeat-x;
-    background-size: cover, contain;
-    background-position: center, top;
+        url(../images/gridiron-bg.jpg);
+    background-repeat: no-repeat, no-repeat;
+    background-size: cover, cover;
+    background-position: center, center bottom;
 }
 
 .bg-gr .background .corner-top-left,
@@ -460,8 +459,11 @@
 }
 
 .bg-mm .background {
-    --bs-bg-opacity: 1;
-    background-color: var(--bg-dr-background-color);
+    /* --bs-bg-opacity: 1;
+    background-color: var(--bg-dr-background-color); */
+    background: url(../images/modern-metal-bg.jpg) no-repeat;
+    background-size: cover;
+    background-position: center bottom;
 }
 
 .bg-mm .background .corner-bottom-left,
