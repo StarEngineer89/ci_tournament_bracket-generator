@@ -153,7 +153,7 @@ class TournamentController extends BaseController
 
         $musicSettings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled]);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'page' => 'view']);
     }
     
     public function viewShared($token)

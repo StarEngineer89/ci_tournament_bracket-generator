@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="/css/style.css">
     </head>
 
-    <body class="<?= (isset($tournament) && $tournament['theme']) ? 'bg-' . $tournament['theme'] : 'bg-light' ?>">
+    <body class="<?= (isset($page) && $page == 'view' && isset($tournament) && $tournament['theme']) ? 'bg-' . $tournament['theme'] : 'bg-light' ?>">
 
         <main role="main">
             <div class="header p-2 border-bottom sticky-top">
