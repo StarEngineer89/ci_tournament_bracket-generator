@@ -36,9 +36,12 @@ let maxVoteCount = <?= $tournament['max_vote_value'] ? $tournament['max_vote_val
 const votingMechanismRoundDurationCode = <?= EVALUATION_VOTING_MECHANISM_ROUND?>;
 const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE?>;
 const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
+
+const is_temp_tournament = false;
 </script>
 <script type="text/javascript">
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
+
 if (!location.href.includes('shared')) {
     <?php if(!auth()->user()){ ?>
     var dc = new Date();
@@ -161,7 +164,8 @@ $(document).ready(function() {
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
-    <?php if(!auth()->user() && !$tournament['user_id']) : ?>
+
+    <?php if(!auth()->user() && $editable && !$tournament['user_id']) : ?>
     var leaveUrl;
     $(document).on('click', function(e) {
 
@@ -268,20 +272,20 @@ $(document).ready(function() {
             </button>
             <?php endif ?>
 
-            <?php if($tournament['user_id'] == 0) :?>
+            <?php if($tournament['user_id'] == 0 && $editable) :?>
             <button type="button" class="btn" id="toggleWarningBtn">
                 <i class="fa-solid fa-warning"></i>
             </button>
             <?php endif; ?>
         </div>
 
-        <?php if($tournament['user_id'] == 0) :?>
+        <?php if($tournament['user_id'] == 0 && $editable) :?>
         <div id="warningPlaceholder"></div>
         <div id="warningMsg" class="d-none">
             <div class="text-center">⚠️ WARNING ⚠️</div>
             This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin!
             <br>
-            If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and music settings and more!) from your very own dedicated Tournament Dashboard available for registered users!
+            If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and audio settings and more!) from your very own dedicated Tournament Dashboard available for registered users!
             <br>
             Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
             <div class="text-center">
