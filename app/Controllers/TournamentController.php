@@ -63,6 +63,8 @@ class TournamentController extends BaseController
 
         $tournament = $tournamentModel->find($id);
 
+        $user_id = auth()->user() ? auth()->user()->id : 0;
+
         if (!$tournament) {
             $session = \Config\Services::session();
             $session->setFlashdata(['error' => "This tournament is not existing!"]);
@@ -115,7 +117,7 @@ class TournamentController extends BaseController
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
         
         if (!$brackets) {
-            if ($tournament['user_id'] != auth()->user()->id) {
+            if (auth()->user() && $tournament['user_id'] != auth()->user()->id) {
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "The brackets was not generated yet."]);
 
@@ -124,7 +126,7 @@ class TournamentController extends BaseController
 
             $participantModel = model('\App\Models\ParticipantModel');
 
-            $participants = $participantModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $id])->findAll();
+            $participants = $participantModel->where(['user_id' => $user_id, 'tournament_id' => $id])->findAll();
 
             $settingsBlock = view('tournament/tournament-settings', []);
             $musicSettingsBlock = view('tournament/music-setting', []);
@@ -138,7 +140,7 @@ class TournamentController extends BaseController
                 $musicSettings = $musics;
             }
             
-            $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
+            $userSettings = $userSettingModel->where('user_id', $user_id)->findAll();
 
             // Convert settings to key-value array
             $settingsArray = [];
