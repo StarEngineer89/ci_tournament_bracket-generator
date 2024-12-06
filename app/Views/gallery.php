@@ -22,6 +22,9 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         "data": function(d) {
             d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
             d.search_tournament = $('#tournamentSearchInputBox').val();
+            d.type = $('#typeFilter').val();
+            d.status = $('#stautsFilter').val();
+            d.created_by = $('#userByFilter').val();
         }
     },
     "order": [
@@ -39,14 +42,27 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             'search': 'applied'
         }).nodes();
 
+        $('#typeFilter').on('change', function() {
+            tournamentsTable.ajax.reload()
+        });
+
+        $('#stautsFilter').on('change', function() {
+            tournamentsTable.ajax.reload()
+        });
+
+        $('#userByFilter').on('change', function() {
+            console.log($('#userByFilter').val())
+            tournamentsTable.ajax.reload()
+        });
+
         var nameColumns = $('td[data-label="name"] span', datatableRows)
         var names = []
         nameColumns.each((i, element) => {
-            if (!names.includes(element.textContent.trim())) {
-                var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+            if (!names[element.dataset.id]) {
+                var option = $(`<option value="${element.dataset.id}">${element.textContent}</option>`)
                 $('#userByFilter').append(option)
 
-                names.push(element.textContent.trim())
+                names[element.dataset.id] = element.textContent.trim()
             }
         })
     },
@@ -126,10 +142,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         {
             "data": null,
             "render": function(data, type, row, meta) {
-                let html = `<a href="javascript:;" class="archive" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>`
-                if (row.archive == 1)
-                    html = `<a href="javascript:;" class="restore" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>`
-                return `<span data-toggle="tooltip" data-placement="top" title="${row.email}">${row.username}</span>`;
+                return `<span data-toggle="tooltip" data-placement="top" title="${row.email}" data-id="${row.user_id}">${row.username}</span>`;
             },
             "createdCell": function(td, cellData, rowData, row, col) {
                 $(td).attr('data-label', 'name');
@@ -143,21 +156,6 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         // Add a custom attribute to the row
         $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
     }
-});
-
-$('#typeFilter').on('change', function() {
-    var selectedType = $(this).val().toLowerCase();
-    tournamentsTable.columns(2).search(selectedType).draw();
-});
-
-$('#stautsFilter').on('change', function() {
-    var selectedStatus = $(this).val().toLowerCase();
-    tournamentsTable.columns(3).search(selectedStatus).draw();
-});
-
-$('#userByFilter').on('change', function() {
-    var selectedUser = $(this).val().toLowerCase().trim();
-    tournamentsTable.columns(8).search(selectedUser).draw();
 });
 
 function copyClipboard(url_id) {
@@ -212,18 +210,18 @@ function handleKeyPress(event) {
                             <label for="typeFilter">Type:</label>
                             <select id="typeFilter" class="form-select form-select-sm">
                                 <option value="">All Types</option>
-                                <option value="Single">Single</option>
-                                <option value="Double">Double</option>
-                                <option value="Knockout">Knockout</option>
+                                <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
+                                <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
+                                <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
                             </select>
                         </th>
                         <th scope="col">
                             <label for="statusFilter">Status:</label>
                             <select id="stautsFilter" class="form-select form-select-sm">
                                 <option value="">All Status</option>
-                                <option value="In progress">In progress</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Abandoned">Abandoned</option>
+                                <option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In progress</option>
+                                <option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Completed</option>
+                                <option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandoned</option>
                             </select>
                         </th>
                         <th scope="col"># Participants<br />&nbsp;</th>

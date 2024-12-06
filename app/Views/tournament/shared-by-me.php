@@ -30,17 +30,18 @@
                     <label for="typeFilter">Type:</label>
                     <select id="typeFilter" class="form-select form-select-sm">
                         <option value="">All Types</option>
-                        <option value="Single">Single</option>
-                        <option value="Double">Double</option>
+                        <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
+                        <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
+                        <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
                     </select>
                 </th>
                 <th scope="col">
                     <label for="statusFilter">Status:</label>
                     <select id="stautsFilter" class="form-select form-select-sm">
                         <option value="">All Status</option>
-                        <option value="In progress">In progress</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Abandoned">Abandoned</option>
+                        <option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In progress</option>
+                        <option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Completed</option>
+                        <option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandoned</option>
                     </select>
                 </th>
                 <th scope="col">Created Time</th>

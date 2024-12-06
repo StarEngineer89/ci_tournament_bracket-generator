@@ -35,6 +35,10 @@ class TournamentController extends BaseController
     {
         $tournaments = $this->tournamentModel;
         $searchable = $this->request->getPost('search_tournament');
+        $type = $this->request->getPost('type');
+        $status = $this->request->getPost('status');
+        $created_by = $this->request->getPost('created_by');
+        $accessibility = $this->request->getPost('accessibility');
         
         /** Filter the tournaments by my tournament, archived, shared, gallery */
         if ($this->request->getGet('filter') == 'shared') {
@@ -42,6 +46,18 @@ class TournamentController extends BaseController
 
             if ($searchable) {
                 $tournaments->like(['tournaments.searchable' => $searchable]);
+            }
+
+            if ($type) {
+                $tournaments->like(['tournaments.type' => $type]);
+            }
+
+            if ($status) {
+                $tournaments->like(['tournaments.status' => $status]);
+            }
+
+            if ($created_by || $created_by == 0) {
+                $tournaments->like(['tournaments.user_id' => $created_by]);
             }
 
             if ($this->request->getGet('type') == 'wh') {
@@ -98,6 +114,14 @@ class TournamentController extends BaseController
             } else {
                 $tournaments->where(['visibility' => 1]);
             }
+
+            if ($type) {
+                $tournaments->where('type', $type);
+            }
+
+            if ($status) {
+                $tournaments->where('status', $status);
+            }
         
             if ($this->request->getGet('filter') == 'archived') {
                 $tournaments->where(['archive' => 1]);
@@ -135,10 +159,13 @@ class TournamentController extends BaseController
         // Return the tournaments as a JSON response
         return $this->response->setJSON($result_tournaments);
     }
-
     
     public function fetch_gallery()
     {
+        $type = $this->request->getPost('type');
+        $status = $this->request->getPost('status');
+        $created_by = $this->request->getPost('created_by');
+
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
 
@@ -148,6 +175,18 @@ class TournamentController extends BaseController
             $tournaments->like(['tournaments.searchable' => $searchString]);
         }
         
+        if ($type) {
+            $tournaments->where('type', $type);
+        }
+
+        if ($status) {
+            $tournaments->where('status', $status);
+        }
+
+        if ($created_by || $created_by == 0) {
+            $tournaments->where('user_id', $created_by);
+        }
+
         $tournaments = $tournaments->findAll();
 
         $newTournaments = array();

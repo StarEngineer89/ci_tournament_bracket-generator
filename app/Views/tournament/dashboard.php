@@ -438,7 +438,6 @@ $(document).ready(function() {
     });
 
     <?php if ($navActive == 'shared'): ?>
-
     <?php if ($shareType == 'wh'): ?>
     var orderFalseColumns = [2, 3, 4, 5]
     <?php else: ?>
@@ -453,8 +452,11 @@ $(document).ready(function() {
             "type": "POST",
             "dataSrc": "",
             "data": function(d) {
-                d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
                 d.search_tournament = $('#tournamentSearchInputBox').val();
+                d.type = $('#typeFilter').val();
+                d.status = $('#stautsFilter').val();
+                d.accessibility = $('#accessibilityFilter').val();
+                d.created_by = $('#userByFilter').val();
             }
         },
         "order": [
@@ -474,15 +476,27 @@ $(document).ready(function() {
 
             initCollapseActions(datatableRows)
 
+            $('#typeFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#stautsFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#accessibilityFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
             <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
             var nameColumns = $('td[data-label="name"] span', datatableRows)
             var names = []
             nameColumns.each((i, element) => {
-                if (!names.includes(element.textContent.trim())) {
-                    var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
+                if (!names[element.dataset.id]) {
+                    var option = $(`<option value="${element.dataset.id}">${element.textContent}</option>`)
                     $('#userByFilter').append(option)
 
-                    names.push(element.textContent.trim())
+                    names[element.dataset.id] = element.textContent.trim()
                 }
             })
             <?php endif ?>
@@ -587,7 +601,7 @@ $(document).ready(function() {
                 "data": null,
                 "render": function(data, type, row, meta) {
                     return `
-                    <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="${row.email}">
+                    <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="${row.email}" data-id="${row.user_id}">
                         <button class="btn" type="button" disabled>${row.username}</button>
                     </span>
                     `
@@ -636,22 +650,6 @@ $(document).ready(function() {
             $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
         }
     });
-
-    $('#typeFilter').on('change', function() {
-        var selectedType = $(this).val().toLowerCase();
-        tournamentsTable.columns(2).search(selectedType).draw();
-    });
-
-    $('#stautsFilter').on('change', function() {
-        var selectedStatus = $(this).val().toLowerCase();
-        tournamentsTable.columns(3).search(selectedStatus).draw();
-    });
-
-    $('#accessibilityFilter').on('change', function() {
-        var selectedPermission = $(this).val().toLowerCase();
-        tournamentsTable.columns(4).search(selectedPermission).draw();
-    });
-
     <?php else: ?>
     tournamentsTable = $('#tournamentTable').DataTable({
         "searching": true,
@@ -663,6 +661,8 @@ $(document).ready(function() {
             "data": function(d) {
                 d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
                 d.search_tournament = $('#tournamentSearchInputBox').val();
+                d.type = $('#typeFilter').val();
+                d.status = $('#stautsFilter').val();
             }
         },
         "order": [
@@ -679,9 +679,18 @@ $(document).ready(function() {
             datatableRows = tournamentsTable.rows({
                 'search': 'applied'
             }).nodes();
+
             // Add a select all checkbox to the header
             $('#selectAllCheckbox').on('click', function() {
                 $('input[type="checkbox"]', datatableRows).prop('checked', this.checked);
+            });
+
+            $('#typeFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#stautsFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
             });
 
             initCollapseActions(datatableRows)
@@ -831,35 +840,7 @@ $(document).ready(function() {
             $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
         }
     });
-
-    $('#typeFilter').on('change', function() {
-        var selectedType = $(this).val().toLowerCase();
-        tournamentsTable.columns(3).search(selectedType).draw();
-    });
-
-    $('#stautsFilter').on('change', function() {
-        var selectedStatus = $(this).val().toLowerCase();
-        tournamentsTable.columns(4).search(selectedStatus).draw();
-    });
-    $('#userByFilter').on('change', function() {
-        var selectedUser = $(this).val().toLowerCase().trim();
-        tournamentsTable.columns(9).search(selectedUser).draw();
-    });
-    var nameColumns = $('td[data-label="name"] span', datatableRows)
-    var names = []
-    nameColumns.each((i, element) => {
-        if (!names.includes(element.textContent.trim())) {
-            var option = $(`<option value="${element.textContent.trim()}">${element.textContent}</option>`)
-            $('#userByFilter').append(option)
-
-            names.push(element.textContent.trim())
-        }
-    })
     <?php endif ?>
-
-    datatableRows = tournamentsTable.rows({
-        'search': 'applied'
-    }).nodes();
 
     actionLogsTable = $('#logActionsTable').DataTable({
         "order": [
