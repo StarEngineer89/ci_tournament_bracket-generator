@@ -65,6 +65,34 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                 names[element.dataset.id] = element.textContent.trim()
             }
         })
+
+        /** Display processing message of response is too long over 1s */
+        let requestCompleted = false;
+
+        // Set a timeout to check if the request exceeds the time limit
+        const timeout = () => {
+            requestCompleted = false
+            setTimeout(() => {
+                if (!requestCompleted) {
+                    console.warn("The request took too long!");
+                    $('#beforeProcessing').removeClass('d-none')
+                    // You can also abort the request here if needed
+                    // xhr.abort(); // Uncomment if you implement an XMLHttpRequest
+                }
+            }, 1000);
+        }
+
+        $('#tournamentTable').on('preXhr.dt', function() {
+            // $('#beforeProcessing').removeClass('d-none')
+            timeout();
+        });
+
+        // Hide custom loading overlay after reload
+        $('#tournamentTable').on('xhr.dt', function() {
+            requestCompleted = true; // Mark the request as completed
+            clearTimeout(timeout); // Clear the timeout
+            $('#beforeProcessing').addClass('d-none')
+        });
     },
     "columns": [{
             "data": null,

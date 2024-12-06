@@ -488,6 +488,10 @@ $(document).ready(function() {
                 tournamentsTable.ajax.reload()
             });
 
+            $('#userByFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
             <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
             var nameColumns = $('td[data-label="name"] span', datatableRows)
             var names = []
