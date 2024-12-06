@@ -350,6 +350,8 @@ class ParticipantsController extends BaseController
 
         // Fetch the data and write it to the CSV
         if ($participants) {
+            $newList = [];
+
             foreach ($participants as $participant) {
                 $brackets = $this->bracketsModel->where(['winner' => $participant['id']])->findAll();
                 $participant['brackets_won'] = ($brackets) ? count($brackets) : 0;
@@ -374,7 +376,14 @@ class ParticipantsController extends BaseController
 
                 $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
                 $participant['votes'] = ($votes) ? count($votes) : 0;
-                
+
+                $newList[] = $participant;
+            }
+            
+            $keys = array_column($newList, 'tournaments_won');
+            array_multisort($keys, SORT_DESC, $newList);
+
+            foreach ($newList as $participant) {
                 fputcsv($output, [
                     $participant['id'],
                     $participant['name'],
