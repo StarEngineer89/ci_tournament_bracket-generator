@@ -346,7 +346,7 @@ class ParticipantsController extends BaseController
         $output = fopen('php://output', 'w');
 
         // Add the CSV column headers
-        fputcsv($output, ['ID', 'Participant Name', 'Brackets Won', 'Tournaments Won', 'Tournaments List', 'Top Score', 'Accumulated Score', 'Votes']);
+        fputcsv($output, ['ID', 'Participant Name', 'Brackets Won', 'Tournaments Won', 'Participated Tournaments', 'Accumulated Score', 'Votes']);
 
         // Fetch the data and write it to the CSV
         if ($participants) {
@@ -370,7 +370,6 @@ class ParticipantsController extends BaseController
                 $participant['tournaments_list'] = (count($tournament_list)) ? implode(', ', $tournament_list) : '';
 
                 $scores = $this->calculateScores($participant['id'], $brackets);
-                $participant['top_score'] = $scores['top_score'];
                 $participant['accumulated_score'] = $scores['total_score'];
 
                 $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
@@ -382,7 +381,6 @@ class ParticipantsController extends BaseController
                     $participant['brackets_won'],
                     $participant['tournaments_won'],
                     $participant['tournaments_list'],
-                    $participant['top_score'],
                     $participant['accumulated_score'],
                     $participant['votes']
                 ]);
