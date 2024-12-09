@@ -82,13 +82,13 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             }, 1000);
         }
 
-        $('#tournamentTable').on('preXhr.dt', function() {
+        $('#tournamentGalleryTable').on('preXhr.dt', function() {
             // $('#beforeProcessing').removeClass('d-none')
             timeout();
         });
 
         // Hide custom loading overlay after reload
-        $('#tournamentTable').on('xhr.dt', function() {
+        $('#tournamentGalleryTable').on('xhr.dt', function() {
             requestCompleted = true; // Mark the request as completed
             clearTimeout(timeout); // Clear the timeout
             $('#beforeProcessing').addClass('d-none')
