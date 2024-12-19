@@ -559,17 +559,15 @@ class TournamentController extends BaseController
 
         $yt = new YoutubeDl();
         $yt->setBinPath('C:\ffmpeg\bin\yt-dlp.exe');
-        $youtubeUsername = env('youtube_auth_username');
-        $youtubePassword = env('youtube_auth_password');
         $collection = $yt->download(
             Options::create()
-                ->authenticate($youtubeUsername, $youtubePassword)
                 ->downloadPath(WRITEPATH . 'uploads/youtube')
                 ->extractAudio(true)
                 ->audioFormat('mp3')
                 ->audioQuality('0') // best
                 ->output($video_id)
                 ->url($youtubeLink)
+                ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
         );
 
         foreach ($collection->getVideos() as $video) {
