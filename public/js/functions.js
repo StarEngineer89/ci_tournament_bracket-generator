@@ -412,6 +412,7 @@ let toggleAvailability = (checkbox) => {
         $('.endAv').attr('disabled', false);
         $('.evaluation-vote-round-availability-required').addClass('d-none')
         $('#votingMechanism').removeClass('is-invalid')
+        $('#startAvPickerInput').attr('required', true)
     } else {
         $('.availability-option').addClass('d-none');
         $('.startAv').attr('disabled', true);
@@ -420,6 +421,7 @@ let toggleAvailability = (checkbox) => {
             $('.evaluation-vote-round-availability-required').removeClass('d-none')
             $('#votingMechanism').addClass('is-invalid')
         }
+        $('#startAvPickerInput').attr('required', false)
     }
 }
 
