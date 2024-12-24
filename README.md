@@ -99,7 +99,7 @@ On the final prompt `Run `spark migrate --all`now? [y, n]:`, select `'y'`.
 1. Set Up Google API Credentials
    First, you need to create a project in the Google Cloud Console and obtain OAuth 2.0 credentials.
 
-- Go to the [Google Cloud Console](https://console.cloud.google.com/?hl=ru).
+- Go to the [Google Cloud Console](https://console.cloud.google.com/).
 - Create a new project or select an existing one.
 - Navigate to "Credentials" in the sidebar.
 - Create credentials > OAuth 2.0 Client ID.
@@ -201,3 +201,16 @@ On Linux
 > `* * * * * /usr/bin/php /path/to/your/project/spark task:run`
 
 3. Save the Crontab File: After adding the cron job, save and close the crontab file. The task is now scheduled to run at the specified interval.
+
+## Do I need any other programs?
+
+For URL audio/video generation feature, youtube is used as the source and thus requires installing [FFMpeg](https://www.ffmpeg.org/) and [yt-dlp](https://github.com/yt-dlp/yt-dlp).
+
+By updated Youtube API policy, it's required to signin to extract the video or audio. But Youtube API doesn't support the user authentication in terminal.
+Therefore we must use cookie authentication through terminal. To use cookie authentication, navigate to browser on server and login to youtube.com.
+Then Export the cookie file as follows.
+
+1. You may also use a conforming browser extension for exporting cookies, such as [Get cookies.txt LOCALLY](https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc) for Chrome or [cookies.txt](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/) for Firefox. As with any browser extension, be careful about what you install. If you had previously installed the "Get cookies.txt" (not "LOCALLY") Chrome extension, it's recommended to uninstall it immediately; it has been reported as malware and removed from the Chrome Web Store.
+2. After that, upload cookie file under the directory FFmpeg was installed and replace existing/old one. (for example, C:\ffmpeg\www.youtube.com_cookies.txt)
+
+Note that this export step is required in case youtube account is signed out and requires re-login (may happen every once a while)
