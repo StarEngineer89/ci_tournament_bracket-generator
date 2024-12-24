@@ -165,7 +165,7 @@ $(document).ready(function() {
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
     <?php endif; ?>
 
-    <?php if(!auth()->user() && $editable && !$tournament['user_id']) : ?>
+    <?php if(!auth()->user() && isset($editable) && $editable && !$tournament['user_id']) : ?>
     var leaveUrl;
     $(document).on('click', function(e) {
 
