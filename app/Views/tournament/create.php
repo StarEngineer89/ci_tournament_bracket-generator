@@ -915,7 +915,7 @@ var performReuseParticipants = (tournament_id = null) => {
                         </div>
                     </form>
                     <div id="namesdHelpBlock" class="form-text">
-                        Or, upload a csv file of participant names. <a href="<?= base_url('/uploads/sample.csv') ?>">Download sample template file</a>
+                        Or, upload a csv file of participant names. <a href="<?= base_url('/uploads/CSV/Samples/sample.csv') ?>">Download sample template file</a>
                         <br />
                         Note that the first row header, as well as any other columns besides 1st column are ignored.
                     </div>

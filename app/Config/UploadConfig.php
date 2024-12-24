@@ -12,5 +12,5 @@ class UploadConfig extends BaseConfig
     public $urlVideoUploadPath = 'videos/url/';
     public $descriptionImagesUploadPath = 'images/description/';
     public $participantImagesUploadPath = 'images/participants/';
-    public $csvUploadPath = 'csv/';
+    public $csvUploadPath = 'CSV/UserLocal/';
 }
