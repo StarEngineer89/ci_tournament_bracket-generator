@@ -272,14 +272,14 @@ $(document).ready(function() {
             </button>
             <?php endif ?>
 
-            <?php if($tournament['user_id'] == 0 && $editable) :?>
+            <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
             <button type="button" class="btn" id="toggleWarningBtn">
                 <i class="fa-solid fa-warning"></i>
             </button>
             <?php endif; ?>
         </div>
 
-        <?php if($tournament['user_id'] == 0 && $editable) :?>
+        <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
         <div id="warningPlaceholder"></div>
         <div id="warningMsg" class="d-none">
             <div class="text-center">⚠️ WARNING ⚠️</div>

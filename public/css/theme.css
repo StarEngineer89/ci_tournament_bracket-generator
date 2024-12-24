@@ -43,19 +43,61 @@
 
 /** Theme for Championship Gold */
 .bg-cs .background {
-    /* --bs-bg-opacity: 1;
-    background-color: var(--bg-dr-background-color); */
-    background: url(../images/championship-bg.jpg) no-repeat;
-    background-size: cover;
-    background-position: center bottom;
+    --bs-bg-opacity: 1;
+    background-color: var(--bg-dr-background-color);
 }
-
+.bg-cs .background .corner-top-left,
+.bg-cs .background .corner-top-right {
+    position: fixed;
+    top: 150px;
+    min-width: 15%;
+    min-height: 15%;
+}
+.bg-cs .background .corner-top-right {
+    right: 0;
+}
 .bg-cs .background .corner-bottom-left,
 .bg-cs .background .corner-bottom-right {
     position: fixed;
     bottom: 0;
     min-width: 15%;
     min-height: 15%;
+}
+.bg-cs .background .corner-bottom-right {
+    right: 0;
+}
+.bg-cs .background .left-bg,
+.bg-cs .background .right-bg {
+    position: fixed;
+    top: 270px;
+    min-width: 50px;
+    min-height: calc(100vh - 30% - 150px);
+}
+.bg-cs .background .corner-top-left {
+    background: url(../images/champion-top-left.svg) no-repeat;
+    background-size: contain;
+}
+.bg-cs .background .corner-top-right {
+    background: url(../images/champion-top-right.svg) no-repeat;
+    background-size: contain;
+}
+.bg-cs .background .corner-bottom-left {
+    background: url(../images/champion-bottom-left.svg) no-repeat;
+    background-size: contain;
+}
+.bg-cs .background .corner-bottom-right {
+    background: url(../images/champion-bottom-right.svg) no-repeat;
+    background-size: contain;
+}
+.bg-cs .background .left-bg {
+    background: url(../images/champion-side-line.svg) no-repeat;
+    background-size: contain;
+    background-position: right;
+}
+.bg-cs .background .right-bg {
+    background: url(../images/champion-side-line.svg) no-repeat;
+    background-size: contain;
+    right: 0;
 }
 
 .bg-cs .header {
