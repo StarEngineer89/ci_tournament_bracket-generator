@@ -1106,6 +1106,36 @@ $(document).ready(function() {
             const startDate = new Date(document.getElementById('startAvPickerInput').value)
             const endDate = new Date(document.getElementById('endAvPickerInput').value)
 
+            let startDateInput = document.getElementById('startAvPickerInput')
+            let endDateInput = document.getElementById('endAvPickerInput')
+            if (!startDateInput.value.trim()) {
+                // Trigger validation error for empty readonly field
+                document.getElementById('startAvPicker').classList.add("is-invalid");
+                startDateInput.addEventListener('change', () => {
+                    if (startDateInput.value.trim()) {
+                        document.getElementById('startAvPicker').classList.remove("is-invalid");
+                    }
+                })
+                startDateInput.reportValidity(); // Shows default browser error message
+                event.preventDefault(); // Prevent form submission
+
+                isValid = false
+            }
+
+            if (!endDateInput.value.trim()) {
+                // Trigger validation error for empty readonly field
+                document.getElementById('endAvPicker').classList.add("is-invalid");
+                endDateInput.addEventListener('change', () => {
+                    if (endDateInput.value.trim()) {
+                        document.getElementById('endAvPicker').classList.remove("is-invalid");
+                    }
+                })
+                endDateInput.reportValidity(); // Shows default browser error message
+                event.preventDefault(); // Prevent form submission
+
+                isValid = false
+            }
+
             if (startDate > endDate) {
                 isValid = false
                 document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')

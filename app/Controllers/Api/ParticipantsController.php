@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
-
+use Config\UploadConfig;
 
 class ParticipantsController extends BaseController
 {
@@ -144,28 +144,31 @@ class ParticipantsController extends BaseController
             $participant['name'] = $this->request->getPost('name');
         }
 
-        $path = WRITEPATH . 'uploads/';
+        $uploadConfig = new UploadConfig();
+        
 		$file = $this->request->getFile('image');
         if($file){
             $filepath = '';
             if (! $file->hasMoved()) {
-                $filepath = '/uploads/' . $file->store();
+                $filepath = '/uploads/' . $file->store($uploadConfig->participantImagesUploadPath);
                 $participant['image'] = $filepath;
 
                 $brackets = $this->bracketsModel->where(['tournament_id'=> $participant['tournament_id']])->findAll();
                 foreach($brackets as $bracket){
                     $teamnames = json_decode($bracket['teamnames'], true);
                     $temp = [];
-                    foreach($teamnames as $teamname){
-    
-                        if($teamname && $teamname['id'] == $participant['id']){
-                            $teamname['image'] = $filepath;
+                    if ($teamnames) {
+                        foreach ($teamnames as $teamname) {
+
+                            if ($teamname && $teamname['id'] == $participant['id']) {
+                                $teamname['image'] = $filepath;
+                            }
+                            $temp[] = $teamname;
                         }
-                        $temp[] = $teamname;
+                        $new_bracket = $bracket;
+                        $new_bracket['teamnames'] = json_encode($temp);
+                        $this->bracketsModel->update($new_bracket['id'], $new_bracket);
                     }
-                    $new_bracket = $bracket;
-                    $new_bracket['teamnames'] = json_encode($temp);
-                    $this->bracketsModel->update($new_bracket['id'], $new_bracket);
                 }
             }
         }
@@ -258,13 +261,14 @@ class ParticipantsController extends BaseController
             return $this->response->setJSON($data);
         }
 
-        $path = WRITEPATH . 'uploads/';
+        $uploadConfig = new UploadConfig();
+
 		$file = $this->request->getFile('file');
         $filepath = '';
         if (! $file->hasMoved()) {
-            $filepath = $path . $file->store();
+            $filepath = WRITEPATH . 'uploads/' . $file->store($uploadConfig->csvUploadPath);
         }
-
+        
         if (!file_exists($filepath)) {
             return $this->response->setJSON(['errors' => "Imported file was not saved correctly"]);
         }

@@ -100,13 +100,13 @@ function musicFileUpload(element) {
                 return false
             }
             else {
-                panel.find('input[type="hidden"]').val(data.path);
-
                 let audioElement = panel.parents('.music-setting').find('.player');
+                applyDuration(audioElement[0], panel.parents('.music-setting'))
                 audioElement.removeClass('d-none')
-                panel.parents('.music-setting').find('.playerSource').attr('src', '/uploads/' + data.path);
-                applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
+                audioElement[0].src = '/uploads/' + data.path
                 audioElement[0].load();
+
+                panel.find('input[type="hidden"]').val(data.path);
 
                 if (index == 0 && document.getElementById('myAudio')) {
                     document.getElementById('audioSrc').setAttribute('src', '/uploads/' + data.path);
@@ -171,9 +171,9 @@ function videoFileUpload(element) {
                 panel.find('input[type="hidden"]').val(data.path);
 
                 let audioElement = panel.parents('.music-setting').find('.player');
+                applyDuration(audioElement[0], panel.parents('.music-setting'))
                 audioElement.removeClass('d-none')
-                panel.parents('.music-setting').find('.playerSource').attr('src', '/uploads/' + data.path);
-                applyDuration('/uploads/' + data.path, panel.parents('.music-setting'));
+                audioElement[0].src = '/uploads/' + data.path
                 audioElement[0].load();
 
                 if (index == 0 && document.getElementById('myAudio')) {
@@ -191,6 +191,16 @@ function videoFileUpload(element) {
     });
 }
 
+function applyDuration(audioElement, panel) {
+    $(audioElement).on("loadedmetadata", function () {
+        const date = new Date(null);
+        date.setSeconds(this.duration);
+        panel.find('.stopAt[type="hidden"]').val(this.duration);
+        panel.find('.stopAt[type="text"]').val(date.toISOString().slice(11, 19));
+        panel.find('.duration').val(this.duration);
+    });
+}
+
 function musicDurationChange(element) {
     const starttime = getSeconds($(element).parents('.preview').find('.startAt').val());
     $(element).parents('.preview').find('.startAt[type="hidden"]').val(starttime);
@@ -204,16 +214,4 @@ function musicDurationChange(element) {
 
         $(element).parents('.preview').find('.duration').val(stoptime - starttime);
     }
-}
-
-function applyDuration(src, obj) {
-    var audio = new Audio();
-    $(audio).on("loadedmetadata", function () {
-        const date = new Date(null);
-        date.setSeconds(audio.duration);
-        obj.find('.stopAt[type="hidden"]').val(audio.duration);
-        obj.find('.stopAt[type="text"]').val(date.toISOString().slice(11, 19));
-        obj.find('.duration').val(audio.duration);
-    });
-    audio.src = src;
 }

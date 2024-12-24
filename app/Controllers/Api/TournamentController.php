@@ -10,6 +10,7 @@ use YoutubeDl\Options;
 use App\Services\NotificationService;
 use App\Libraries\VoteLibrary;
 use App\Libraries\TournamentLibrary;
+use Config\UploadConfig;
 
 class TournamentController extends BaseController
 {
@@ -541,7 +542,8 @@ class TournamentController extends BaseController
     }
 
     public function process($youtubeLink)
-    {
+    {   
+        $uploadConfig = new UploadConfig();
         
         parse_str( parse_url( $youtubeLink, PHP_URL_QUERY ), $vars );
         
@@ -553,7 +555,7 @@ class TournamentController extends BaseController
             $video_id = $vars['si'];
         }
 
-        if (file_exists(WRITEPATH . 'uploads/youtube/' . $video_id . '.mp3')) {
+        if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath/" . $video_id . '.mp3')) {
             return $video_id . '.mp3';
         }
 
@@ -561,7 +563,7 @@ class TournamentController extends BaseController
         $yt->setBinPath('C:\ffmpeg\bin\yt-dlp.exe');
         $collection = $yt->download(
             Options::create()
-                ->downloadPath(WRITEPATH . 'uploads/youtube')
+                ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath")
                 ->extractAudio(true)
                 ->audioFormat('mp3')
                 ->audioQuality('0') // best
@@ -611,10 +613,12 @@ class TournamentController extends BaseController
             return $this->response->setJSON($data);
         }
 
+        $uploadConfig = new UploadConfig();
+
         $audio = $this->request->getFile('audio');
 
         if (!$audio->hasMoved()) {
-            $filepath = $audio->store();
+            $filepath = $audio->store($uploadConfig->localAudioUploadPath);
 
             $data = ['uploaded_fileinfo' => new File($filepath), 'path' => $filepath];
 
@@ -650,10 +654,12 @@ class TournamentController extends BaseController
             return $this->response->setJSON($data);
         }
 
+        $uploadConfig = new UploadConfig();
+
         $video = $this->request->getFile('video');
 
         if (!$video->hasMoved()) {
-            $filepath = $video->store();
+            $filepath = $video->store($uploadConfig->localVideoUploadPath);
 
             $data = ['uploaded_fileinfo' => new File($filepath), 'path' => $filepath];
 
