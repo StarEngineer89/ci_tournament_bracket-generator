@@ -507,7 +507,11 @@ class TournamentController extends BaseController
                 }
 
                 if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
-                    $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index]);
+                    if ($index == 2) {
+                        $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index], 'video');
+                    } else {
+                        $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index]);
+                    }
                     
                     $musicSetting['path'] = $path;
                     $musicSetting['source'] = $this->request->getPost('source')[$index];
@@ -541,7 +545,7 @@ class TournamentController extends BaseController
         return json_encode(['msg' => $msg, 'data' => $this->request->getPost()]);
     }
 
-    public function process($youtubeLink)
+    public function process($youtubeLink, $type = 'audio')
     {   
         $uploadConfig = new UploadConfig();
         
@@ -561,16 +565,26 @@ class TournamentController extends BaseController
 
         $yt = new YoutubeDl();
         $yt->setBinPath('C:\ffmpeg\bin\yt-dlp.exe');
-        $collection = $yt->download(
-            Options::create()
-                ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath")
-                ->extractAudio(true)
-                ->audioFormat('mp3')
-                ->audioQuality('0') // best
-                ->output($video_id)
-                ->url($youtubeLink)
-                ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
-        );
+        if ($type == 'audio') {
+            $collection = $yt->download(
+                Options::create()
+                    ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath")
+                    ->extractAudio(true)
+                    ->audioFormat('mp3')
+                    ->audioQuality('0') // best
+                    ->output($video_id)
+                    ->url($youtubeLink)
+                    ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
+            );
+        } else {
+            $collection = $yt->download(
+                Options::create()
+                    ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath")
+                    ->output($video_id)
+                    ->url($youtubeLink)
+                    ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
+            );
+        }
 
         foreach ($collection->getVideos() as $video) {
             if ($video->getError() !== null) {
