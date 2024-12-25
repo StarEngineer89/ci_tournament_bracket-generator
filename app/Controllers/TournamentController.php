@@ -228,7 +228,7 @@ class TournamentController extends BaseController
         }
 
         $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings, 'votingEnabled' => $votingEnabled]);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings, 'votingEnabled' => $votingEnabled, 'page' => 'view']);
     }
 
     public function export()
