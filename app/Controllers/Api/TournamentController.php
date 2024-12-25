@@ -559,13 +559,13 @@ class TournamentController extends BaseController
             $video_id = $vars['si'];
         }
 
-        if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath/" . $video_id . '.mp3')) {
-            return $video_id . '.mp3';
-        }
-
         $yt = new YoutubeDl();
         $yt->setBinPath('C:\ffmpeg\bin\yt-dlp.exe');
         if ($type == 'audio') {
+            if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath/" . $video_id . '.mp3')) {
+                return $video_id . '.mp3';
+            }
+
             $collection = $yt->download(
                 Options::create()
                     ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath")
@@ -577,6 +577,10 @@ class TournamentController extends BaseController
                     ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
             );
         } else {
+            if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath/" . $video_id . '.mp4')) {
+                return $video_id . '.mp4';
+            }
+
             $collection = $yt->download(
                 Options::create()
                     ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath")
