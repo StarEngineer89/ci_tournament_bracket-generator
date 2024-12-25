@@ -122,6 +122,8 @@ $(document).ready(function() {
                 })
                 startDateInput.reportValidity(); // Shows default browser error message
                 event.preventDefault(); // Prevent form submission
+
+                isValid = false
             }
 
             if (!endDateInput.value.trim()) {
@@ -134,6 +136,8 @@ $(document).ready(function() {
                 })
                 endDateInput.reportValidity(); // Shows default browser error message
                 event.preventDefault(); // Prevent form submission
+
+                isValid = false
             }
 
             const currentDate = new Date()
