@@ -134,11 +134,17 @@ On the final prompt `Run `spark migrate --all`now? [y, n]:`, select `'y'`.
 
 - You can change the directory structure by editing the Upload config file(`App/Config/UploadConfig.php`).
 - Upload directory structure
+
   > Directory for the local audio files uploaded: `public/uploads/audios/local/`
+
   > Directory for the youtube audio files uploaded: `public/uploads/audios/url/`
+
   > Directory for the local video files uploaded: `public/uploads/videos/local/`
+
   > Directory for the youtube video files uploaded: `public/uploads/videos/url/`
+
   > Directory for the participant images uploaded: `public/uploads/images/participants/`
+
   > Directory for the csv files uploaded: `public/uploads/CSV/UserLocal/`
 
 ## Start Websocket server
