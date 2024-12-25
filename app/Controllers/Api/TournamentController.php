@@ -577,8 +577,8 @@ class TournamentController extends BaseController
                     ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
             );
         } else {
-            if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath/" . $video_id . '.mp4')) {
-                return $video_id . '.mp4';
+            if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath/" . $video_id . '.webm')) {
+                return $video_id . '.webm';
             }
 
             $collection = $yt->download(
