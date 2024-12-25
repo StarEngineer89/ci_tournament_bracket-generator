@@ -579,7 +579,7 @@ class TournamentController extends BaseController
                     ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
             );
 
-            $filetype = 'mp3';
+            $filetype = '.mp3';
         } else {
             if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath/" . $video_id . '.webm')) {
                 return $video_id . '.webm';
@@ -593,7 +593,7 @@ class TournamentController extends BaseController
                     ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
             );
 
-            $filetype = 'webm';
+            $filetype = '.webm';
         }
 
         foreach ($collection->getVideos() as $video) {
