@@ -255,8 +255,8 @@ class TournamentController extends BaseController
             'increment_score_type' => $this->request->getPost('increment_score_type'),
             'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0,
             'availability' => ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0,
-            'available_start' => $this->request->getPost('startAvPicker'),
-            'available_end' => $this->request->getPost('endAvPicker'),
+            'available_start' => date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker'))),
+            'available_end' => date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker'))),
             'evaluation_method' => $this->request->getPost('evaluation_method'),
             'voting_accessibility' => $this->request->getPost('voting_accessibility'),
             'voting_mechanism' => $this->request->getPost('voting_mechanism'),
@@ -447,8 +447,8 @@ class TournamentController extends BaseController
             $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
 
             if($tournament['availability']){
-                $tournament['available_start'] = $this->request->getPost('startAvPicker');
-                $tournament['available_end'] = $this->request->getPost('endAvPicker');
+                $tournament['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
+                $tournament['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
             } else {
                 $tournament['available_start'] = null;
                 $tournament['available_end'] = null;
