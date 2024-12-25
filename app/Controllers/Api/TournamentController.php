@@ -495,6 +495,8 @@ class TournamentController extends BaseController
          * Update Music Settings
          */
         if ($this->request->getPost('audioType')) {
+            $uploadConfig = new UploadConfig();
+
             $musicSettingModel = model('\App\Models\MusicSettingModel');
             foreach ($this->request->getPost('audioType') as $index => $value) {
 
@@ -508,9 +510,9 @@ class TournamentController extends BaseController
 
                 if (isset($this->request->getPost('setting-toggle')[$index]) && $this->request->getPost('setting-toggle')[$index] == 'on') {
                     if ($index == 2) {
-                        $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index], 'video');
+                        $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $uploadConfig->urlVideoUploadPath . $this->process($this->request->getPost('url')[$index], 'video');
                     } else {
-                        $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : 'youtube/' . $this->process($this->request->getPost('url')[$index]);
+                        $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $uploadConfig->urlAudioUploadPath . $this->process($this->request->getPost('url')[$index]);
                     }
                     
                     $musicSetting['path'] = $path;
