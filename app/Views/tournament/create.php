@@ -41,6 +41,17 @@ let video_duration = 10;
 
 var enable_confirmPopup = false;
 
+function getOrCreateDeviceId() {
+    let deviceId = localStorage.getItem('deviceId');
+    if (!deviceId) {
+        deviceId = crypto.randomUUID(); // Generate a new UUID
+        localStorage.setItem('deviceId', deviceId);
+    }
+    return deviceId;
+}
+
+const deviceId = getOrCreateDeviceId();
+
 const itemList = document.getElementById('newList');
 
 $(window).on('load', function() {
@@ -556,17 +567,17 @@ $(document).ready(function() {
     }
 
     $('#selectBackgroundColorConfirmBtn').on('click', function() {
-        const color = $('#bgColorInput').val()
-        const settingId = $(selectBackgroundColorModal).data('setting-id')
+        let color = $('#bgColorInput').val()
+
+        <?php if (!auth()->user()): ?>
+        color += '_ ' + deviceId
+        <?php endif; ?>
 
         $.ajax({
             type: "POST",
             url: apiURL + '/usersettings/save',
             data: {
-                id: settingId,
-                user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
-                setting_name: '<?= USERSETTING_PARTICIPANTSLIST_BG_COLOR ?>',
-                setting_value: color
+                '<?= USERSETTING_PARTICIPANTSLIST_BG_COLOR ?>': color
             },
             success: function(result) {
                 $('.participant-list').css('background-color', color)

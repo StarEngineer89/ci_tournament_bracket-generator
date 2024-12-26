@@ -12,7 +12,7 @@ class UserSettingModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_id', 'setting_name', 'setting_value'];
+    protected $allowedFields    = ['user_id', 'setting_name', 'setting_value', 'uuid'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

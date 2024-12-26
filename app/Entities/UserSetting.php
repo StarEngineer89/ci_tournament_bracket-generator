@@ -12,6 +12,7 @@ class UserSetting extends Entity
         'user_id'       => null,
         'setting_name'  => null,
         'setting_value' => null,
+        'uuid' => null
     ];
     protected $dates   = ['created_at', 'updated_at', 'deleted_at'];
     protected $casts   = [];

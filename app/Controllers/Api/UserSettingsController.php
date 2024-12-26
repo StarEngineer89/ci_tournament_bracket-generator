@@ -40,13 +40,26 @@ class UserSettingsController extends BaseController
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
         foreach ($data as $key => $value) {
-            if ($setting = $this->userSettingsModel->where(['user_id' => $user_id, 'setting_name' => $key])->first()) {
+            if (auth()->user()) {
+                $setting = $this->userSettingsModel->where(['user_id' => $user_id, 'setting_name' => $key])->first();
+            } else {
+                $values = explode('_', $value);
+                $uuid = $values[1];
+                $value = $values[0];
+                $setting = $this->userSettingsModel->where(['uuid' => $uuid, 'setting_name' => $key])->first();
+            }
+            
+            if ($setting) {
                 $setting['setting_value'] = $value;
             } else {
                 $setting = new \App\Entities\UserSetting($data);
                 $setting->user_id = $user_id;
                 $setting->setting_name = $key;
                 $setting->setting_value = $value;
+
+                if (isset($uuid)) {
+                    $setting->uuid = $uuid;
+                }
             }
             
             if (!$this->userSettingsModel->save($setting)) {
