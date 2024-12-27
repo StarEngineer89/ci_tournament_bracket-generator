@@ -4,37 +4,7 @@ let eleminationType = "Single";
 let editing_mode = false;
 var ws;
 
-function generateUUIDByDevice() {
-    const navigatorInfo = window.navigator.userAgent;  // User agent info
-    const screenInfo = `${screen.height}x${screen.width}x${screen.colorDepth}`;  // Screen resolution and color depth
-
-    // Combine device information into a single string
-    const deviceInfo = navigatorInfo + screenInfo;
-
-    // Generate a hash (simple hash) from the device info
-    function hashString(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = (hash << 5) - hash + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return hash;
-    }
-
-    // Convert the hash to a UUID-like format
-    function formatToUUID(hash) {
-        const hexString = (hash >>> 0).toString(16);
-        return `${hexString.substring(0, 8)}-${hexString.substring(8, 12)}-${hexString.substring(12, 16)}-${hexString.substring(16, 20)}-${hexString.substring(20, 32)}`;
-    }
-
-    const hashedDeviceInfo = hashString(deviceInfo);
-    const uuid = formatToUUID(hashedDeviceInfo);
-
-    return uuid;
-}
-
-const UUID = generateUUIDByDevice()
+const UUID = getOrCreateDeviceId()
 
 $(document).on('ready', function () {
     

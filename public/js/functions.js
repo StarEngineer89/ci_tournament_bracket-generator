@@ -17,6 +17,40 @@ let rejectCookies = () => {
     alert('Cookies rejected. To reactivate, clear your browser history and visit the site again.');
 }
 
+function getOrCreateDeviceId() {
+    let deviceId = localStorage.getItem('deviceId');
+    if (!deviceId) {
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = (hash << 5) - hash + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash;
+        }
+
+        // Convert the hash to a UUID-like format
+        function formatToUUID(hash) {
+            const hexString = (hash >>> 0).toString(16);
+            return `${hexString.substring(0, 8)}-${hexString.substring(8, 12)}-${hexString.substring(12, 16)}-${hexString.substring(16, 20)}-${hexString.substring(20, 32)}`;
+        }
+
+        const navigatorInfo = window.navigator.userAgent;  // User agent info
+        const screenInfo = `${screen.height}x${screen.width}x${screen.colorDepth}`;  // Screen resolution and color depth
+
+        // Combine device information into a single string
+        const deviceInfo = navigatorInfo + screenInfo;
+
+        const hashedDeviceInfo = hashString(deviceInfo);
+        deviceId = formatToUUID(hashedDeviceInfo);
+
+        localStorage.setItem('deviceId', deviceId);
+    }
+    
+    return deviceId;
+}
+
 let appendAlert = (message, type) => {
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
     if (alertPlaceholder) {

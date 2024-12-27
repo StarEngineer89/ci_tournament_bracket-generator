@@ -41,15 +41,6 @@ let video_duration = 10;
 
 var enable_confirmPopup = false;
 
-function getOrCreateDeviceId() {
-    let deviceId = localStorage.getItem('deviceId');
-    if (!deviceId) {
-        deviceId = crypto.randomUUID(); // Generate a new UUID
-        localStorage.setItem('deviceId', deviceId);
-    }
-    return deviceId;
-}
-
 const deviceId = getOrCreateDeviceId();
 
 const itemList = document.getElementById('newList');
