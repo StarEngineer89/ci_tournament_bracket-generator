@@ -333,34 +333,49 @@ function removeImage(e, element_id){
 }
 function saveParticipant(e, element_id) {
     const name = $(e.target).parents('.list-group-item').find('.name-input').val();
-    var formData = new FormData();
-    formData.append('name', name);
-    // formData.append('image', $("#image_" + element_id)[0].files[0]);
-    $.ajax({
-        type: "POST",
-        url: apiURL + '/participants/update/' + element_id,
-        data: formData,
-        contentType: false,
-        cache: false,
-        processData: false,
-        success: function (result) {
-            result = JSON.parse(result);
-            let participant = `<span class="p-name col text-center">${result.data.name}</span>`;
-            if(result.data.image){
-                participant = `<div class="p-image"><img src="${result.data.image}" class="col-auto" height="30px" id="pimage_${result.data.id}" data-pid="${result.data.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
-            }else{
-                participant = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${result.data.id}" data-pid="${result.data.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
+
+    let ability = true;
+    $('.p-name').each((i, e) => {
+        if (e.textContent.trim() == name) {
+            let confirm_result = confirm("The same name already exists in the list. Are you sure you want to proceed?");
+
+            if (confirm_result == false) {
+                ability = false;
+                return false;
             }
-            $(e.target).parents('.list-group-item').html(participant);
-        },
-        error: function (error) {
-            console.log(error);
         }
-    }).done(() => {
-        setTimeout(function () {
-            $("#overlay").fadeOut(300);
-        }, 500);
     });
+
+    if (ability) {
+        var formData = new FormData();
+        formData.append('name', name);
+        // formData.append('image', $("#image_" + element_id)[0].files[0]);
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/participants/update/' + element_id,
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (result) {
+                result = JSON.parse(result);
+                let participant = `<span class="p-name col text-center">${result.data.name}</span>`;
+                if (result.data.image) {
+                    participant = `<div class="p-image"><img src="${result.data.image}" class="col-auto" height="30px" id="pimage_${result.data.id}" data-pid="${result.data.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
+                } else {
+                    participant = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${result.data.id}" data-pid="${result.data.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
+                }
+                $(e.target).parents('.list-group-item').html(participant);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    }
 }
 
 function generateBrackets(list) {

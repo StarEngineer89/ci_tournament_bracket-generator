@@ -427,7 +427,7 @@ $(document).ready(function() {
         <?php endif ?>
 
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: ajax_url,
             data: {
                 'hash': hash

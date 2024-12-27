@@ -234,7 +234,6 @@ class ParticipantsController extends BaseController
                 $this->participantsModel->where(['sessionid' => $hash, 'tournament_id' => 0])->delete();
             }
         }
-        
 
         return json_encode(array('result' => 'success'));
     }
