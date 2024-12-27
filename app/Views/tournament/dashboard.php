@@ -1491,6 +1491,18 @@ const changeSettings = (event) => {
                 if (result.tournamentSettings.availability == 1) {
                     $('#enableAvailability').attr('checked', true);
 
+                    if (result.tournamentSettings.available_start && result.tournamentSettings.available_start != '0000-00-00 00:00:00') {
+                        const [startDate, startTime] = result.tournamentSettings.available_start.split(' ');
+                        const [startHour, startMinute] = startTime.split(':');
+                        $('#startAvPickerInput').val(`${startDate} ${startHour}:${startMinute}`);
+                    }
+
+                    if (result.tournamentSettings.available_end && result.tournamentSettings.available_end != '0000-00-00 00:00:00') {
+                        const [endDate, endTime] = result.tournamentSettings.available_end.split(' ');
+                        const [endHour, endMinute] = endTime.split(':');
+                        $('#endAvPickerInput').val(`${endDate} ${endHour}:${endMinute}`);
+                    }
+
                     let startDateInput = document.getElementById('startAvPickerInput')
                     let endDateInput = document.getElementById('endAvPickerInput')
                     if (!startDateInput.value.trim()) {
@@ -1515,18 +1527,6 @@ const changeSettings = (event) => {
                         })
                         endDateInput.reportValidity(); // Shows default browser error message
                         event.preventDefault(); // Prevent form submission
-                    }
-
-                    if (result.tournamentSettings.available_start && result.tournamentSettings.available_start != '0000-00-00 00:00:00') {
-                        const [startDate, startTime] = result.tournamentSettings.available_start.split(' ');
-                        const [startHour, startMinute] = startTime.split(':');
-                        $('#startAvPickerInput').val(`${startDate} ${startHour}:${startMinute}`);
-                    }
-
-                    if (result.tournamentSettings.available_end && result.tournamentSettings.available_end != '0000-00-00 00:00:00') {
-                        const [endDate, endTime] = result.tournamentSettings.available_end.split(' ');
-                        const [endHour, endMinute] = endTime.split(':');
-                        $('#endAvPickerInput').val(`${endDate} ${endHour}:${endMinute}`);
                     }
                 } else {
                     $('#enableAvailability').attr('checked', false);

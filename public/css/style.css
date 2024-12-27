@@ -561,19 +561,19 @@
   background-size: 380%;
 }
 
-.brackets .trophy~.participants .bracket-team.winner .p-image,
-.brackets .trophy~.knockout-final .bracket-team.winner .p-image {
+.brackets .trophy.animate~.participants .bracket-team.winner .p-image,
+.brackets .trophy.animate~.knockout-final .bracket-team.winner .p-image {
   animation: bounce-in-left 2s ease;
 }
 
-.brackets .trophy~.participants .bracket-team.winner .score-wrapper,
-.brackets .trophy~.knockout-final .bracket-team.winner .score-wrapper {
+.brackets .trophy.animate~.participants .bracket-team.winner .score-wrapper,
+.brackets .trophy.animate~.knockout-final .bracket-team.winner .score-wrapper {
   animation: bounce-in-right 2s ease;
   transition-delay: .5s;
 }
 
-.brackets .trophy~.participants .bracket-team.winner .name,
-.brackets .trophy~.knockout-final .bracket-team.winner .name {
+.brackets .trophy.animate~.participants .bracket-team.winner .name,
+.brackets .trophy.animate~.knockout-final .bracket-team.winner .name {
   animation: bounce-in 2s ease;
   transition-delay: 1s;
 }
@@ -594,10 +594,12 @@
   left: 20px;
   height: 280px;
   width: 80%;
+  z-index: 0;
+}
+.brackets .trophy.animate {
   transition: transform 3s;
   transform: scale(1.1);
   animation: 1.5s trophy-animation;
-  z-index: 0;
 }
 
 .brackets .center-wrapper .trophy {

@@ -18,7 +18,12 @@ $(document).on('ready', function () {
 
         ws.onmessage = function(e) {
             console.log(e.data);
-            loadBrackets();
+            if (e.data == "winnerChange") {
+                loadBrackets('initConfetti');
+            } else {
+                loadBrackets();
+            }
+            
         };
     }catch(exception){
         alert("Websocket is not running now. The result will not be updated real time.");
@@ -112,11 +117,7 @@ $(document).on('ready', function () {
                     $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
                     
                     var svg = drawChampionTextSVG()
-                    $(trophy).append(`<div class="champion-text">${svg}</div>`)
-
-                    setTimeout(() => {
-                        document.getElementsByClassName('champion-text')[0].classList.add('animate')
-                    }, 1500)
+                    $(trophy).append(`<div class="champion-text animate">${svg}</div>`)
 
                     if (parseInt(gg.winner)) {
                         trophy.classList.remove('d-none')
@@ -438,7 +439,7 @@ $(document).on('ready', function () {
         });
     }
 
-    function loadBrackets() {
+    function loadBrackets(confetti = null) {
         $.ajax({
             type: "get",
             url: apiURL + '/tournaments/' + tournament_id + '/brackets?uuid=' + UUID,
@@ -486,14 +487,10 @@ $(document).on('ready', function () {
                         $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
                 
                         var svg = drawChampionTextSVG()
-                        $(trophy).append(`<div class="champion-text">${svg}</div>`)
+                        $(trophy).append(`<div class="champion-text animate">${svg}</div>`)
 
                         if (knockout_final.winner) {
                             trophy.classList.remove('d-none')
-
-                            setTimeout(() => {
-                                document.getElementsByClassName('champion-text')[0].classList.add('animate')
-                            }, 1500)
                         }
 
                         let final_bracket = drawParticipant(knockout_final)
@@ -521,6 +518,10 @@ $(document).on('ready', function () {
                 document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
                     var tooltip = new bootstrap.Tooltip(element)
                 })
+
+                if (confetti) {
+                    initConfetti()
+                }
             },
             error: function (error) {
                 console.log(error);
@@ -655,9 +656,6 @@ $(document).on('ready', function () {
             contentType: "application/json",
             data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final, index: index }),
             success: function (result) {
-                ws.send('marked!');
-                loadBrackets()
-
                 let final_win = false
 
                 if (tournament_type == 3) {
@@ -671,8 +669,11 @@ $(document).on('ready', function () {
                 }
                 
                 if (final_win) {
+                    ws.send('winnerChange')
+
+                    loadBrackets('initConfetti');
+
                     next_bracketObj.classList.add('winner');
-                    initConfetti();
 
                     var player = document.getElementById('myAudio');
                     if (player) {
@@ -694,6 +695,9 @@ $(document).on('ready', function () {
                         document.getElementById('stopMusicButton').textContent = "Pause Music"
                     }
                     
+                } else {
+                    ws.send('marked!')
+                    loadBrackets();
                 }
             },
             error: function (error) {
@@ -893,14 +897,19 @@ let submitVote = (event) => {
             const storage_key = 'vote_t' + tournament_id + '_n' + result.data.round_no + '_b' + result.data.bracket_id
             window.localStorage.setItem(storage_key, result.data.participant_id)
 
-            loadBrackets()
-            
             if (result.data.final_win) {
-                initConfetti();
+                // triggerElement.parent().parent().remove();
+                ws.send('winnerChange');
+
+                loadBrackets('initConfetti');
+            } else {
+                // triggerElement.parent().parent().remove();
+                ws.send('Vote the participant!');
+
+                loadBrackets();
             }
 
-            // triggerElement.parent().parent().remove();
-            ws.send('Vote the participant!');
+            
         },
         error: function (error) {
             console.log(error);
@@ -1016,6 +1025,10 @@ let initConfetti = () => {
             })
         );
     }, 250);
+
+    console.log($('.trophy'))
+    $('.trophy').addClass('animate')
+    console.log($('.trophy'))
 }
 
 function scrollToMiddle(element) {
