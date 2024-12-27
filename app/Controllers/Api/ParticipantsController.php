@@ -318,6 +318,15 @@ class ParticipantsController extends BaseController
                     $scores_by_tournaments[$bracket['tournament_id']] = 0;
                 }
 
+                if ($tournamentSettings[$bracket['tournament_id']]['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
+                    if ($bracket['knockout_final']) {
+                        continue;
+                    }
+                } else {
+                    if ($bracket['final_match']) {
+                        continue;
+                    }
+                }
                 if ($increment_score_type == TOURNAMENT_SCORE_INCREMENT_PLUS) {
                     $scores_by_tournaments[$bracket['tournament_id']] += $bracket_score + $increment_score * ($bracket['roundNo'] - 1);
                 }
