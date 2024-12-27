@@ -37,6 +37,10 @@ class UserSettingsController extends BaseController
             $db->query('SET FOREIGN_KEY_CHECKS = 0;');
         }
 
+        if (!auth()->user() && $dbDriver === 'SQLite3') {
+            $db->query('PRAGMA foreign_keys = OFF');
+        }
+
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
         foreach ($data as $key => $value) {
@@ -69,6 +73,10 @@ class UserSettingsController extends BaseController
         
         if (!auth()->user() && $dbDriver === 'MySQLi') {
             $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+        }
+
+        if (!auth()->user() && $dbDriver === 'SQLite3') {
+            $db->query('PRAGMA foreign_keys = ON');
         }
 
         return $this->response->setJson(['status' => 'success', 'setting' => $setting]);
