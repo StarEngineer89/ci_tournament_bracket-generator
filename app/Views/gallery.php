@@ -51,7 +51,6 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         });
 
         $('#userByFilter').on('change', function() {
-            console.log($('#userByFilter').val())
             tournamentsTable.ajax.reload()
         });
 

@@ -188,8 +188,9 @@ class TournamentController extends BaseController
             $tournaments->where('user_id', $created_by);
         }
 
+        // log_message('debug', json_encode($tournaments->findAll()));
         $tournaments = $tournaments->findAll();
-
+        // log_message('debug', json_encode($tournaments));
         $newTournaments = array();
         $existingHistory = $this->request->getCookie('guest_tournaments');
         $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];

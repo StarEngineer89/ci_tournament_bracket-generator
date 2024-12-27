@@ -723,7 +723,8 @@ var csvUpload = (element) => {
     });
 }
 
-var tournamentsTable = $('#tournamentTable')
+var tournamentsTable = null
+var datatableRows;
 var drawTournamentsTable = () => {
     // Check if the DataTable is already initialized
     if ($.fn.DataTable.isDataTable('#tournamentTable')) {
@@ -735,15 +736,75 @@ var drawTournamentsTable = () => {
         "searching": true,
         "processing": true,
         "ajax": {
-            "url": apiURL + '/tournaments/get-list',
+            "url": apiURL + '/tournaments/get-gallery' + window.location.search,
             "type": "POST",
             "dataSrc": "",
             "data": function(d) {
                 d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
                 d.search_tournament = $('#searchTournament').val();
+                d.type = $('#typeFilter').val();
+                d.status = $('#stautsFilter').val();
+                d.created_by = $('#userByFilter').val();
             }
         },
         scrollX: true,
+        // Add custom initComplete to initialize select all checkbox
+        "initComplete": function(settings, json) {
+            datatableRows = tournamentsTable.rows({
+                'search': 'applied'
+            }).nodes();
+
+            $('#typeFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#stautsFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#userByFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            var nameColumns = $('td[data-label="name"] span', datatableRows)
+            var names = []
+            nameColumns.each((i, element) => {
+                if (!names[element.dataset.id]) {
+                    var option = $(`<option value="${element.dataset.id}">${element.textContent}</option>`)
+                    $('#userByFilter').append(option)
+
+                    names[element.dataset.id] = element.textContent.trim()
+                }
+            })
+
+            /** Display processing message of response is too long over 1s */
+            let requestCompleted = false;
+
+            // Set a timeout to check if the request exceeds the time limit
+            const timeout = () => {
+                requestCompleted = false
+                setTimeout(() => {
+                    if (!requestCompleted) {
+                        console.warn("The request took too long!");
+                        $('#beforeProcessing').removeClass('d-none')
+                        // You can also abort the request here if needed
+                        // xhr.abort(); // Uncomment if you implement an XMLHttpRequest
+                    }
+                }, 1000);
+            }
+
+            $('#tournamentTable').on('preXhr.dt', function() {
+                // $('#beforeProcessing').removeClass('d-none')
+                timeout();
+            });
+
+            // Hide custom loading overlay after reload
+            $('#tournamentTable').on('xhr.dt', function() {
+                requestCompleted = true; // Mark the request as completed
+                clearTimeout(timeout); // Clear the timeout
+                $('#beforeProcessing').addClass('d-none')
+            });
+        },
         "columns": [{
                 "data": null,
                 "render": function(data, type, row, meta) {
@@ -781,7 +842,22 @@ var drawTournamentsTable = () => {
                     }
 
                     return status;
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'status');
                 }
+            },
+            {
+                "data": null,
+                "render": function(data, type, row, meta) {
+                    return `<span data-toggle="tooltip" data-placement="top" title="${row.email}" data-id="${row.user_id}">${row.username}</span>`;
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'name');
+                }
+            },
+            {
+                "data": "created_at"
             },
             {
                 "data": null,
@@ -794,24 +870,13 @@ var drawTournamentsTable = () => {
         ],
         "columnDefs": [{
             "orderable": false,
-            "targets": [2, 3, 4]
+            "targets": [2, 3, 4, 6]
         }],
     });
 
     $('#searchTournamentBtn').on('click', function() {
         tournamentsTable.ajax.reload();
     });
-
-    $('#typeFilter').on('change', function() {
-        var selectedType = $(this).val().toLowerCase();
-        tournamentsTable.columns(2).search(selectedType).draw();
-    });
-
-    $('#stautsFilter').on('change', function() {
-        var selectedStatus = $(this).val().toLowerCase();
-        tournamentsTable.columns(3).search(selectedStatus).draw();
-    });
-
 }
 
 var handleKeyPress = (event) => {
@@ -1094,24 +1159,31 @@ var performReuseParticipants = (tournament_id = null) => {
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>
+                                <th scope="col">
                                     <label for="typeFilter">Type:</label>
                                     <select id="typeFilter" class="form-select form-select-sm">
                                         <option value="">All Types</option>
-                                        <option value="Single">Single</option>
-                                        <option value="Double">Double</option>
-                                        <option value="Knockout">Knockout</option>
+                                        <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
+                                        <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
+                                        <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
                                     </select>
                                 </th>
-                                <th>
+                                <th scope="col">
                                     <label for="statusFilter">Status:</label>
                                     <select id="stautsFilter" class="form-select form-select-sm">
                                         <option value="">All Status</option>
-                                        <option value="In progress">In progress</option>
-                                        <option value="Completed">Completed</option>
-                                        <option value="Abandoned">Abandoned</option>
+                                        <option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In progress</option>
+                                        <option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Completed</option>
+                                        <option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandoned</option>
                                     </select>
                                 </th>
+                                <th scope="col">
+                                    <label for="userByFilter">Created By:</label>
+                                    <select id="userByFilter" class="form-select form-select-sm">
+                                        <option value="">All Users</option>
+                                    </select>
+                                </th>
+                                <th scope="col">Created Time<br />&nbsp;</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
