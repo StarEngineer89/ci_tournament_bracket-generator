@@ -895,6 +895,9 @@ class TournamentController extends BaseController
     public function bulkDelete()
     {
         $ids = $this->request->getPost('id');
+
+        $tournamentLibrary = new TournamentLibrary();
+
         $tournamentModel = model('\App\Models\TournamentModel');
 
         /** Alert Message */
@@ -906,9 +909,9 @@ class TournamentController extends BaseController
             } else {
                 $tournament_names .= $tournament['name'] .',';
             }
-        }
 
-        $tournamentModel->delete($ids);
+            $tournamentLibrary->deleteTournament($tournament['id']);
+        }
 
         return json_encode(['status' => 'success', 'msg' => "The following tournaments was deleted successfully.<br/>" . $tournament_names, 'data' => $ids]);
     }

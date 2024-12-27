@@ -308,14 +308,6 @@ class ParticipantsController extends BaseController
                     $tournamentSettings[$bracket['tournament_id']] = $this->tournamentsModel->find($bracket['tournament_id']);
                 }
 
-                $bracket_score = ($tournamentSettings[$bracket['tournament_id']]['score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['score_bracket'] : 0;
-                $increment_score = ($tournamentSettings[$bracket['tournament_id']]['increment_score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['increment_score'] : 0;
-                $increment_score_type = $tournamentSettings[$bracket['tournament_id']]['increment_score_type'];
-
-                if (!isset($scores_by_tournaments[$bracket['tournament_id']])) {
-                    $scores_by_tournaments[$bracket['tournament_id']] = 0;
-                }
-
                 if ($tournamentSettings[$bracket['tournament_id']]['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
                     if ($bracket['knockout_final']) {
                         continue;
@@ -325,6 +317,15 @@ class ParticipantsController extends BaseController
                         continue;
                     }
                 }
+                
+                $bracket_score = ($tournamentSettings[$bracket['tournament_id']]['score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['score_bracket'] : 0;
+                $increment_score = ($tournamentSettings[$bracket['tournament_id']]['increment_score_enabled']) ? $tournamentSettings[$bracket['tournament_id']]['increment_score'] : 0;
+                $increment_score_type = $tournamentSettings[$bracket['tournament_id']]['increment_score_type'];
+
+                if (!isset($scores_by_tournaments[$bracket['tournament_id']])) {
+                    $scores_by_tournaments[$bracket['tournament_id']] = 0;
+                }
+
                 if ($increment_score_type == TOURNAMENT_SCORE_INCREMENT_PLUS) {
                     $scores_by_tournaments[$bracket['tournament_id']] += $bracket_score + $increment_score * ($bracket['roundNo'] - 1);
                 }
