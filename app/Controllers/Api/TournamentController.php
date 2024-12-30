@@ -1142,7 +1142,7 @@ class TournamentController extends BaseController
                 }
                 
                 $data = [];
-                $data['bracket_no'] = $saveData['bracket_id'];
+                $data['bracket_no'] = $bracket['bracketNo'];
                 $data['round_no'] = $saveData['round_no'];
                 $participant = $participantsModel->find($saveData['participant_id']);
                 $data['participants'] = [$participant['name']];

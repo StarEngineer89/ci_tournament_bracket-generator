@@ -178,10 +178,10 @@ let stopMusicPlaying = () => {
 
     if (audio.paused) {
         audio.play();
-        document.getElementById('stopMusicButton').textContent = "Pause Music"
+        document.getElementById('stopMusicButton').textContent = "Pause Audio"
     } else {
         audio.pause();
-        document.getElementById('stopMusicButton').textContent = "Resume Music"
+        document.getElementById('stopMusicButton').textContent = "Resume Audio"
     }
 }
 

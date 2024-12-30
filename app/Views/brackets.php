@@ -238,7 +238,7 @@ $(document).ready(function() {
             </ol>
         </nav>
         <h5 class="card-title d-flex justify-content-center mb-5">
-            <? //= lang('Auth.login') ?><?= $tournament['name'] ?> Brackets
+            <? //= lang('Auth.login') ?><?= $tournament['name'] ?>
         </h5>
 
         <?php if (session('error') !== null) : ?>
