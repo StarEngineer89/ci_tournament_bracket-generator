@@ -1288,7 +1288,7 @@ var performReuseParticipants = (tournament_id = null) => {
 
 <div class="buttons skipButtons">
     <button id="skipShuffleButton" class="d-none">Skip</button>
-    <button id="stopMusicButton" class="d-none">Pause Music</button>
+    <button id="stopMusicButton" class="d-none">Pause Audio</button>
     <button id="stopVideoButton" class="d-none">Pause Video</button>
 </div>
 
