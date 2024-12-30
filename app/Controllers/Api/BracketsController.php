@@ -188,7 +188,7 @@ class BracketsController extends BaseController
             /** Update next bracket */
             if ($nextBracket) {
                 $participant = $this->participantsModel->find($req->winner);
-                $teamnames = json_decode($nextBracket['teamnames']);
+                $teamnames = json_decode($nextBracket['teamnames'], true);
                 $teamnames[$req->index] = ['id' => $req->winner, 'name' => $participant['name'], 'image'=> $participant['image'], 'order' => $req->order];
                 
                 if (isset($teamnames[0]['is_double'])) {
