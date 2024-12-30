@@ -75,7 +75,7 @@ class RunScheduledTask extends BaseCommand
         $tournamentsModel = model('\App\Models\TournamentModel');
         $tournamentLibrary = new \App\Libraries\TournamentLibrary();
 
-        $tournaments = $tournamentsModel->where(['user_id' => 0]);
+        $tournaments = $tournamentsModel->where(['user_id' => 0])->findAll();
         foreach ($tournaments as $tournament) {
             if(time() - strtotime($tournament['created_at']) > 86400){
                 /** Remove expired temp tournaments from cookie value */

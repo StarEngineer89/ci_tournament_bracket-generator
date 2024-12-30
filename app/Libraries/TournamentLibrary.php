@@ -50,7 +50,7 @@ class TournamentLibrary
         $musicSettings = $this->musicSettingsModel->where(['tournament_id' => $tournament_id])->findAll();
         if ($musicSettings) {
             foreach ($musicSettings as $setting) {
-                if ($setting['path']) {
+                if ($setting['path'] && file_exists(WRITEPATH . 'uploads/' . $setting['path'])) {
                     unlink(WRITEPATH . 'uploads/' . $setting['path']);
                 }
             }
