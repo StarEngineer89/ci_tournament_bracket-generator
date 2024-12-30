@@ -18,12 +18,15 @@ $(document).on('ready', function () {
 
         ws.onmessage = function(e) {
             console.log(e.data);
-            if (e.data == "winnerChange") {
-                loadBrackets('initConfetti');
-            } else {
-                loadBrackets();
+
+            let data = e.data.split(',')
+            if (data[1] == tournament_id) {
+                if (data[0] == "winnerChange") {
+                    loadBrackets('initConfetti');
+                } else {
+                    loadBrackets();
+                }
             }
-            
         };
     }catch(exception){
         alert("Websocket is not running now. The result will not be updated real time.");
@@ -244,7 +247,7 @@ $(document).on('ready', function () {
                                             })
 
                                             // triggerElement.parent().parent().remove();
-                                            ws.send('Deleted Brackets!');
+                                            ws.send(['Deleted Brackets!', tournament_id]);
                                         },
                                         error: function (error) {
                                             console.log(error);
@@ -545,7 +548,7 @@ $(document).on('ready', function () {
                     eleminationType = "Single";
                     brackets = [];
                     $('#brackets').html('');
-                    ws.send('reset!');
+                    ws.send(['reset!', tournament_id]);
                     loadBrackets()
                 },
                 error: function (error) {
@@ -569,7 +572,7 @@ $(document).on('ready', function () {
                     eleminationType = "Double";
                     brackets = [];
                     $('#brackets').html('');
-                    ws.send('reset!');
+                    ws.send(['reset!', tournament_id]);
                     loadBrackets()
                 },
                 error: function (error) {
@@ -587,7 +590,7 @@ $(document).on('ready', function () {
                 type: "GET",
                 url: apiURL + '/tournaments/' + tournament_id + '/clear',
                 success: function (result) {
-                    ws.send('reset!');
+                    ws.send(['reset!', tournament_id]);
                     alert("Brackets was cleared successfully.");
 
                     window.location.href = '/tournaments/' + tournament_id + '/view?mode=edit';
@@ -620,7 +623,7 @@ $(document).on('ready', function () {
             contentType: "application/json",
             dataType: "JSON",
             success: function (result) {
-                ws.send('updated!');
+                ws.send(['updated!', tournament_id]);
                 loadBrackets();
             },
             error: function (error) {
@@ -669,7 +672,7 @@ $(document).on('ready', function () {
                 }
                 
                 if (final_win) {
-                    ws.send('winnerChange')
+                    ws.send(['winnerChange', tournament_id])
 
                     loadBrackets('initConfetti');
 
@@ -696,7 +699,7 @@ $(document).on('ready', function () {
                     }
                     
                 } else {
-                    ws.send('marked!')
+                    ws.send(['marked!', tournament_id])
                     loadBrackets();
                 }
             },
@@ -729,7 +732,7 @@ $(document).on('ready', function () {
             contentType: "application/json",
             data: JSON.stringify({ action_code: unmarkWinnerActionCode, participant: opt.$trigger.data('id'), index: index, is_final: is_final}),
             success: function (result) {
-                ws.send('unmarked!');
+                ws.send(['unmarked!', tournament_id]);
                 // ele.find('.score').remove()
 
                 loadBrackets()
@@ -842,7 +845,7 @@ function checkBig(el, element_id) {
                     return false
                 }
 
-                ws.send('marked!');
+                ws.send(['marked!', tournament_id]);
                 loadBrackets();
             },
             error: function (error) {
@@ -862,7 +865,7 @@ function removeImage(e, element_id){
         url: apiURL + '/participants/update/' + element_id,
         data: {'action': 'removeImage'},
         success: function (result) {
-            ws.send('marked!')
+            ws.send(['marked!', tournament_id])
             loadBrackets();
         },
         error: function (error) {
@@ -899,12 +902,12 @@ let submitVote = (event) => {
 
             if (result.data.final_win) {
                 // triggerElement.parent().parent().remove();
-                ws.send('winnerChange');
+                ws.send(['winnerChange', tournament_id]);
 
                 loadBrackets('initConfetti');
             } else {
                 // triggerElement.parent().parent().remove();
-                ws.send('Vote the participant!');
+                ws.send(['Vote the participant!', tournament_id]);
 
                 loadBrackets();
             }
@@ -974,7 +977,7 @@ let saveRoundName = (event) => {
             loadBrackets()
 
             // triggerElement.parent().parent().remove();
-            ws.send('Vote the participant!');
+            ws.send(['Vote the participant!', tournament_id]);
         },
         error: function (error) {
             console.log(error);
