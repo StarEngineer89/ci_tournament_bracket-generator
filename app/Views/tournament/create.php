@@ -570,6 +570,10 @@ $(document).ready(function() {
             data: {
                 '<?= USERSETTING_PARTICIPANTSLIST_BG_COLOR ?>': color
             },
+            beforeSend: function() {
+                $("#err").fadeOut();
+                $('#beforeProcessing').removeClass('d-none')
+            },
             success: function(result) {
                 $('.participant-list').css('background-color', color)
                 $(selectBackgroundColorModal).modal('hide')
@@ -578,6 +582,7 @@ $(document).ready(function() {
                 console.log(error);
             }
         }).done(() => {
+            $('#beforeProcessing').addClass('d-none')
             setTimeout(function() {
                 $("#overlay").fadeOut(300);
             }, 500);
@@ -644,6 +649,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
         i18n: {
             'btn:save': 'Apply',
         }
+    });
+
+    pickr.on('change', (color) => {
+        document.getElementById('color-picker-text-hint').classList.remove('d-none')
     });
 
     $('.pcr-interaction .pcr-save').on('click', function() {
@@ -1124,6 +1133,9 @@ var performReuseParticipants = (tournament_id = null) => {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="d-flex justify-content-center align-items-center mb-2">
+                    <label class="color-picker-text-hint d-none" id="color-picker-text-hint">Once done choosing a color, make sure you click Apply and then Save to persist the change!</label>
+                </div>
                 <div class="d-flex justify-content-center align-items-center">
                     <label for="bgColorInput" class="form-label me-2">Choose a Background Color:</label>
                     <input type="hidden" class="form-control form-control-color" id="bgColorInput" value="<?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] : '' ?>" title="Choose your color">
