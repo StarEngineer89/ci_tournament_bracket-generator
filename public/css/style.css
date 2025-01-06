@@ -178,6 +178,10 @@
   margin: 40px 0;
 }
 
+.bg-cs .brackets .round-name-wrapper .btn {
+  color: #fff
+}
+
 .brackets div.bracketbox {
   position: relative;
   width: 100%;

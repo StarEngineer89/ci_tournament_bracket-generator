@@ -981,7 +981,6 @@ let cancelChangeRoundName = (event, name) => {
 
 let saveRoundName = (event) => {
     const name = event.currentTarget.value
-    const knockout_second = event.currentTarget.parentElement.parentElement.dataset.knockoutSecond
     $.ajax({
         type: "POST",
         url: apiURL + '/brackets/save-round',
@@ -989,7 +988,6 @@ let saveRoundName = (event) => {
             'tournament_id': tournament_id,
             'round_no': event.currentTarget.parentElement.parentElement.dataset.roundNo,
             'round_name': event.currentTarget.parentElement.firstChild.value,
-            'knockout_second': knockout_second
         },
         dataType: "JSON",
         success: function (result) {

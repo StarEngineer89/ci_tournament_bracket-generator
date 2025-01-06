@@ -107,7 +107,7 @@ class BracketsController extends BaseController
                 $bracket['teamnames'] = json_encode($teams);
                 
                 /** Get round name */
-                $roundSetting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo'], 'knockout_second' => $bracket['is_double']])->first();
+                $roundSetting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
                 if ($roundSetting) {
                     $bracket['round_name'] = $roundSetting['round_name'];
                 }
@@ -690,9 +690,8 @@ class BracketsController extends BaseController
         if ($this->request->isAJAX()) {
             $tournament_id = $this->request->getPost('tournament_id');
             $round_no = $this->request->getPost('round_no');
-            $is_knockout_second = $this->request->getPost('knockout_second') ? 1 : null;
             
-            $setting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no, 'knockout_second' => $is_knockout_second])->first();
+            $setting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->first();
 
             if ($setting) {
                 if ($this->request->getPost('round_name')) {
@@ -706,7 +705,6 @@ class BracketsController extends BaseController
                 $setting->tournament_id = $tournament_id;
                 $setting->round_no = $round_no;
                 $setting->round_name = $this->request->getPost('round_name');
-                $setting->knockout_second = $is_knockout_second;
             }
             
             $db = \Config\Database::connect();
