@@ -697,7 +697,6 @@ $(document).on('ready', function () {
                         document.getElementById('stopMusicButton').classList.remove('d-none');
                         document.getElementById('stopMusicButton').textContent = "Pause Audio"
                     }
-                    
                 } else {
                     ws.send(['marked!', tournament_id])
                     loadBrackets();
@@ -905,6 +904,26 @@ let submitVote = (event) => {
                 ws.send(['winnerChange', tournament_id]);
 
                 loadBrackets('initConfetti');
+
+                var player = document.getElementById('myAudio');
+                if (player) {
+                    player.addEventListener("timeupdate", function () {
+                        if ((player.currentTime - player._startTime) >= player.value) {
+                            player.pause();
+                            document.getElementById('stopMusicButton').classList.add('d-none');
+                        };
+                    });
+
+                    player.value = player.dataset.duration;
+                    player._startTime = player.dataset.starttime;
+                    player.currentTime = player.dataset.starttime;
+                    player.play();
+                }
+
+                if (document.getElementById('stopMusicButton')) {
+                    document.getElementById('stopMusicButton').classList.remove('d-none');
+                    document.getElementById('stopMusicButton').textContent = "Pause Audio"
+                }
             } else {
                 // triggerElement.parent().parent().remove();
                 ws.send(['Vote the participant!', tournament_id]);
