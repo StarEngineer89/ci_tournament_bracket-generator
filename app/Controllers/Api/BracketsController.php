@@ -636,6 +636,9 @@ class BracketsController extends BaseController
         $bracket_id = $this->bracketsModel->insert($bracketEntity);
 
         if ($type == 'k') {
+            $final_brackets = $this->bracketsModel->where(['tournament_id' => $this->request->getPost('tournament_id'), 'final_match' => 1])->findColumn('id');
+            $this->bracketsModel->update($final_brackets, ['nextGame' => $i + 1, 'final_match' => null]);
+
             $bracket = array(
                 'lastGames' => null,
                 'nextGame' => null,
@@ -654,9 +657,6 @@ class BracketsController extends BaseController
 
             array_push($brackets, $bracket);
             $bracket_id = $this->bracketsModel->insert($bracketEntity);
-
-            $final_brackets = $this->bracketsModel->where(['tournament_id' => $this->request->getPost('tournament_id'), 'final_match' => 1])->findColumn('id');
-            $this->bracketsModel->update($final_brackets, ['nextGame' => $i + 1]);
         }
 
         return $brackets;

@@ -165,7 +165,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                     return listHtml
                 }
 
-                return ``; // Display index number
+                return ``;
             }
         },
         {
