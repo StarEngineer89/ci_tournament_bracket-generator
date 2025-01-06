@@ -695,7 +695,7 @@ $(document).on('ready', function () {
 
                     if (document.getElementById('stopMusicButton')) {
                         document.getElementById('stopMusicButton').classList.remove('d-none');
-                        document.getElementById('stopMusicButton').textContent = "Pause Music"
+                        document.getElementById('stopMusicButton').textContent = "Pause Audio"
                     }
                     
                 } else {
@@ -739,7 +739,7 @@ $(document).on('ready', function () {
 
                 if (document.getElementById('stopMusicButton')) {
                     document.getElementById('stopMusicButton').classList.add('d-none');
-                    document.getElementById('stopMusicButton').textContent = "Pause Music"
+                    document.getElementById('stopMusicButton').textContent = "Pause Audio"
                 }
             },
             error: function (error) {

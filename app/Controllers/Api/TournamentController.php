@@ -568,7 +568,7 @@ class TournamentController extends BaseController
         }
 
         $yt = new YoutubeDl();
-        $yt->setBinPath('C:\ffmpeg\bin\yt-dlp.exe');
+        $yt->setBinPath($uploadConfig->ffmpegPath . 'bin\yt-dlp.exe');
         if ($type == 'audio') {
             if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlAudioUploadPath/" . $video_id . '.mp3')) {
                 return $video_id . '.mp3';
@@ -582,7 +582,7 @@ class TournamentController extends BaseController
                     ->audioQuality('0') // best
                     ->output($video_id)
                     ->url($youtubeLink)
-                    ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
+                    ->cookies($uploadConfig->ffmpegPath . 'www.youtube.com_cookies.txt')
             );
 
             $filetype = '.mp3';
@@ -596,7 +596,7 @@ class TournamentController extends BaseController
                     ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath")
                     ->output($video_id)
                     ->url($youtubeLink)
-                    ->cookies('C:\ffmpeg\www.youtube.com_cookies.txt')
+                    ->cookies($uploadConfig->ffmpegPath . 'www.youtube.com_cookies.txt')
             );
 
             $filetype = '.webm';

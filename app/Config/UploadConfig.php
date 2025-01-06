@@ -13,4 +13,5 @@ class UploadConfig extends BaseConfig
     public $descriptionImagesUploadPath = 'images/description/';
     public $participantImagesUploadPath = 'images/participants/';
     public $csvUploadPath = 'CSV/UserLocal/';
+    public $ffmpegPath = 'C:\\ffmpeg\\';
 }
