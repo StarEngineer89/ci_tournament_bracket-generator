@@ -5,6 +5,7 @@
 <?= $this->section('pageStyles') ?>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/nano.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/classic.min.css">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
 <?= $this->endSection() ?>
@@ -13,6 +14,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/pickr.es5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <!-- Popperjs -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
@@ -623,9 +625,13 @@ $(document).ready(function() {
 document.addEventListener('DOMContentLoaded', (event) => {
     const pickr = Pickr.create({
         el: '#color-picker-button',
-        theme: 'nano', // or 'monolith', or 'nano'
+        // Where the pickr-app should be added as child.
+        container: 'body',
+        theme: 'classic', // or 'monolith', or 'nano'
         default: '<?= (isset($userSettings) && isset($userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR])) ? $userSettings[USERSETTING_PARTICIPANTSLIST_BG_COLOR] : '' ?>',
-
+        inline: false,
+        autoReposition: true,
+        sliders: 'v',
         swatches: [
             'rgba(244, 67, 54, 1)',
             'rgba(233, 30, 99, 0.95)',
@@ -642,21 +648,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
             'rgba(255, 235, 59, 0.95)',
             'rgba(255, 193, 7, 1)'
         ],
-
         components: {
-
             // Main components
             preview: true,
             opacity: true,
             hue: true,
-
             // Input / output Options
             interaction: {
                 hex: true,
                 rgba: true,
-                hsla: true,
-                hsva: true,
-                cmyk: true,
                 input: true,
                 clear: true,
                 save: true
@@ -664,7 +664,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         },
         i18n: {
             'btn:save': 'Apply',
-        }
+        },
     });
 
     pickr.on('change', (color) => {
