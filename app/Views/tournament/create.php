@@ -198,6 +198,11 @@ $(document).ready(function() {
         }
 
         const values = $('#tournamentForm').serializeArray();
+
+        sendSubmitAjax(values)
+    });
+
+    let sendSubmitAjax = (values) => {
         const data = Object.fromEntries(values.map(({
             name,
             value
@@ -217,10 +222,21 @@ $(document).ready(function() {
             success: function(result) {
                 $('#beforeProcessing').addClass('d-none')
                 $('#beforeProcessing').removeClass('generateProcessing')
-                var result = JSON.parse(result);
-                if (result.error) {
-                    // invalid file format.
-                    $("#err").html("Invalid File !").fadeIn();
+                if (result.errors) {
+                    if (result.error_code == 'duplicated') {
+                        const userConfirmed = confirm("There is the tournament with the same name. Do you want to save this anyway?");
+                        if (userConfirmed) {
+                            values.push({
+                                name: 'confirm_duplicate_save',
+                                value: true
+                            })
+                            sendSubmitAjax(values)
+                        } else {
+                            $('#tournamentSettings').modal('show');
+                        }
+                    } else {
+                        $('#errorModal .errorDetails').html("There was the error occured during to save the tournament");
+                    }
                 } else {
                     tournament_id = result.data.tournament_id;
                     eleminationType = parseInt(result.data.type);
@@ -288,7 +304,7 @@ $(document).ready(function() {
                 $("#err").html(e).fadeIn();
             }
         });
-    });
+    }
 
     $('#generate').on('click', function() {
         if (itemList.children.length < 2) {

@@ -237,8 +237,10 @@ class TournamentController extends BaseController
 
         $existing = $tournamentModel->where(['name' => $this->request->getPost('title'), 'user_id' => $user_id])->findAll();
 
-        if ($existing) {
-            return json_encode(['error' => "The same tournament name is existing. Please use another name."]);
+        if ($existing && !$this->request->getPost('confirm_duplicate_save')) {
+            $data = ['errors' => "The same tournament name is existing. Please use another name.", 'error_code' => "duplicated"];
+            
+            return $this->response->setJSON($data);
         }
 
         $data = [
@@ -273,7 +275,9 @@ class TournamentController extends BaseController
         $tournament_id = $tournamentModel->insert($tournamentData);
 
         if (!$tournament_id) {
-            return json_encode(['error' => "Failed to save the tournament name."]);
+            $data = ['errors' => "Failed to save the tournament.", 'error_code' => "error"];
+            
+            return $this->response->setJSON($data);
         }
 
         if ($this->request->getPost('setting-toggle')) {
@@ -304,7 +308,9 @@ class TournamentController extends BaseController
                     $music_setting = $musicSettingsModel->insert($setting);
 
                     if (!$music_setting) {
-                        return json_encode(['error' => "Failed to save the music settings."]);
+                        $data = ['errors' => "Failed to save the music settings."];
+            
+                        return $this->response->setJSON($data);
                     }
 
                     $data['music'][$index] = $setting;
@@ -356,7 +362,9 @@ class TournamentController extends BaseController
 
         $data['tournament_id'] = $tournament_id;
 
-        return json_encode(['msg' => "Success to save the tournament settings.", 'data' => $data]);
+        $data = ['msg' => "Success to save the tournament settings.", 'data' => $data];
+            
+        return $this->response->setJSON($data);
     }
 
     public function getSettings($id)
