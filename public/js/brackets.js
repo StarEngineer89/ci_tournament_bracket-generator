@@ -87,6 +87,10 @@ $(document).on('ready', function () {
                 var teama = drawParticipant(gg, 0, direction);
                 var teamb = drawParticipant(gg, 1, direction);
                 var teams = JSON.parse(gg.teamnames);
+                var lastGames = JSON.parse(gg.lastGames)
+                if (!lastGames) {
+                    lastGames = []
+                }
 
                 var bracket = document.createElement('div')
 
@@ -94,9 +98,15 @@ $(document).on('ready', function () {
                 bracketBorder.className = "bracket-border-line"
                 bracket.append(bracketBorder)
                 
-                if (parseInt(gg.final_match)) {
-                    bracket.className = "bracketbox final";
-                    teama.className = (teams[0] && tournament_type != KNOCKOUT_TOURNAMENT_TYPE) ? "bracket-team teama winner" : teama.className;
+                if (parseInt(gg.final_match) || !isArray(lastGames)) {
+                    if (tournament_type == KNOCKOUT_TOURNAMENT_TYPE && !isArray(lastGames)) {
+                        bracket.className = "bracketbox knockout-semi-final"
+                    } else {
+                        bracket.className = "bracketbox final"
+                    }
+                    // bracket.className = "bracketbox final"
+                    
+                    teama.className = (teams[0] && gg.final_match) ? "bracket-team teama winner" : teama.className;
                 } else {
                     var bracketNo = document.createElement('span')
                     bracketNo.classList.add('bracketNo')
@@ -107,7 +117,7 @@ $(document).on('ready', function () {
 
                 teamwrapper.append(teama);
 
-                if (!parseInt(gg.final_match)) {
+                if (!(parseInt(gg.final_match) || !isArray(lastGames))) {
                     teamwrapper.append(teamb)
                 }
 
@@ -788,7 +798,7 @@ function adjustBracketsStyles(obj) {
       
     row.querySelectorAll('.bracketbox').forEach((bracket, index) => {
         
-        if (bracket.classList.contains('final')) {
+        if (bracket.classList.contains('final') || bracket.classList.contains('knockout-semi-final')) {
             bracket.style.height = `0`;
             bracket.style.margin = `${margin}px 0 0`;
         } else {
