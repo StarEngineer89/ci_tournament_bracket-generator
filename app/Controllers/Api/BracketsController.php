@@ -412,6 +412,10 @@ class BracketsController extends BaseController
 
         $logActionsModel->insert($insert_data);
 
+        /** Clear Schedules */
+        $schedulesModel = model('\App\Models\SchedulesModel');
+        $schedulesModel->where(['tournament_id' => $tournament_id])->delete();
+
         return json_encode(array('result' => 'success'));
     }
 

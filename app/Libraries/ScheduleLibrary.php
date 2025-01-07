@@ -51,6 +51,7 @@ class ScheduleLibrary
         $schedule = $this->schedulesModel->where(['schedule_name' => SCHEDULE_NAME_ROUNDUPDATE, 'tournament_id' => $tournament_id, 'round_no' => $round_no])->first();
         if ($schedule) {
             $schedule['schedule_time'] = $time;
+            $schedule['result'] = 0;
         } else {
             $schedule = new \App\Entities\Schedule();
             $schedule->schedule_name = SCHEDULE_NAME_ROUNDUPDATE;

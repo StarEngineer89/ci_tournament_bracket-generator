@@ -58,8 +58,8 @@ class RunScheduledTask extends BaseCommand
     {
         $voteLibrary = new \App\Libraries\VoteLibrary();
         $schedulesModel = model('\App\Models\SchedulesModel');
-        $schedules = $schedulesModel->where(['result' => 0])->findAll;
-
+        $schedules = $schedulesModel->where(['result' => 0])->findAll();
+        
         if ($schedules) {
             foreach($schedules as $schedule) {
                 $schedule_time = new \DateTime($schedule['schedule_time']);
@@ -67,6 +67,8 @@ class RunScheduledTask extends BaseCommand
                 
                 if ($schedule['schedule_name'] == SCHEDULE_NAME_ROUNDUPDATE && $current_time >= $schedule_time) {
                     $voteLibrary->finalizeRound($schedule['tournament_id'], $schedule['round_no']);
+
+                    $schedulesModel->update($schedule['id'], ['result' => 1]);
                 }
             }
         }

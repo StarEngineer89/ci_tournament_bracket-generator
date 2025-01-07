@@ -21,7 +21,7 @@ class VoteLibrary
     }
 
     public function markWinParticipant($voteData)
-    {   
+    {
         $currentBracket = $this->bracketsModel->find($voteData['bracket_id']);
 
         $tournament = $this->tournamentsModel->find($currentBracket['tournament_id']);
@@ -99,17 +99,33 @@ class VoteLibrary
             if ($teams[0]) {
                 $pa_votes = $this->votesModel->where(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $teams[0]['id'], 'round_no' => $round_no])->countAllResults();
             }
+            
             if ($teams[1]) {
                 $pb_votes = $this->votesModel->where(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $teams[1]['id'], 'round_no' => $round_no])->countAllResults();
             }
-
+            
             /** Compare vote counts and decide who is a winner */
             if ($teams[0] && $pa_votes > $pb_votes) {
-                $this->markWinParticipant(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $teams[0]['id'], 'round_no' => $round_no]);
-            } else {
-                if ($teams[1]) {
-                    $this->markWinParticipant(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $teams[0]['id'], 'round_no' => $round_no]);
+                $winner = $teams[0];
+            }
+
+            if ($teams[1] && $pa_votes < $pb_votes) {
+                $winner = $teams[1];
+            }
+
+            if ($pa_votes == $pb_votes) {
+                if (!$teams[0]) {
+                    $winner = $teams[1];
+                } elseif (!$teams[1]) {
+                    $winner = $teams[0];
+                } else {
+                    $randomNumber = mt_rand(0, 1);
+                    $winner = $teams[$randomNumber];
                 }
+            }
+            
+            if ($winner) {
+                $this->markWinParticipant(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $winner['id'], 'round_no' => $round_no]);
             }
         }
         
