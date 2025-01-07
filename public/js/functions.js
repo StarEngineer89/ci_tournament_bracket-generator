@@ -172,16 +172,16 @@ let toggleShuffleParticipants = (checkbox) => {
     }
 }
 
-let stopMusicPlaying = () => {
+let stopAudioPlaying = () => {
     // Your code to stop music goes here
     const audio = document.getElementById('myAudio');
 
     if (audio.paused) {
         audio.play();
-        document.getElementById('stopMusicButton').textContent = "Pause Audio"
+        document.getElementById('stopAudioButton').textContent = "Pause Audio"
     } else {
         audio.pause();
-        document.getElementById('stopMusicButton').textContent = "Resume Audio"
+        document.getElementById('stopAudioButton').textContent = "Resume Audio"
     }
 }
 

@@ -605,10 +605,10 @@ $(document).on('ready', function () {
             });
         });
 
-        const stopBtn = document.getElementById('stopMusicButton')
+        const stopBtn = document.getElementById('stopAudioButton')
         if (stopBtn) {
             stopBtn.addEventListener('click', function () {
-                stopMusicPlaying()
+                stopAudioPlaying()
             });
         }
     }
@@ -683,7 +683,7 @@ $(document).on('ready', function () {
                         player.addEventListener("timeupdate", function () {
                             if ((player.currentTime - player._startTime) >= player.value) {
                                 player.pause();
-                                document.getElementById('stopMusicButton').classList.add('d-none');
+                                document.getElementById('stopAudioButton').classList.add('d-none');
                             };
                         });
 
@@ -693,9 +693,9 @@ $(document).on('ready', function () {
                         player.play();
                     }
 
-                    if (document.getElementById('stopMusicButton')) {
-                        document.getElementById('stopMusicButton').classList.remove('d-none');
-                        document.getElementById('stopMusicButton').textContent = "Pause Audio"
+                    if (document.getElementById('stopAudioButton')) {
+                        document.getElementById('stopAudioButton').classList.remove('d-none');
+                        document.getElementById('stopAudioButton').textContent = "Pause Audio"
                     }
                 } else {
                     ws.send(['marked!', tournament_id])
@@ -736,9 +736,9 @@ $(document).on('ready', function () {
 
                 loadBrackets()
 
-                if (document.getElementById('stopMusicButton')) {
-                    document.getElementById('stopMusicButton').classList.add('d-none');
-                    document.getElementById('stopMusicButton').textContent = "Pause Audio"
+                if (document.getElementById('stopAudioButton')) {
+                    document.getElementById('stopAudioButton').classList.add('d-none');
+                    document.getElementById('stopAudioButton').textContent = "Pause Audio"
                 }
             },
             error: function (error) {
@@ -910,7 +910,7 @@ let submitVote = (event) => {
                     player.addEventListener("timeupdate", function () {
                         if ((player.currentTime - player._startTime) >= player.value) {
                             player.pause();
-                            document.getElementById('stopMusicButton').classList.add('d-none');
+                            document.getElementById('stopAudioButton').classList.add('d-none');
                         };
                     });
 
@@ -920,9 +920,9 @@ let submitVote = (event) => {
                     player.play();
                 }
 
-                if (document.getElementById('stopMusicButton')) {
-                    document.getElementById('stopMusicButton').classList.remove('d-none');
-                    document.getElementById('stopMusicButton').textContent = "Pause Audio"
+                if (document.getElementById('stopAudioButton')) {
+                    document.getElementById('stopAudioButton').classList.remove('d-none');
+                    document.getElementById('stopAudioButton').textContent = "Pause Audio"
                 }
             } else {
                 // triggerElement.parent().parent().remove();

@@ -225,8 +225,8 @@ $(document).ready(function() {
                 $('#beforeProcessing').addClass('d-none')
                 $('#beforeProcessing').removeClass('generateProcessing')
                 if (result.errors) {
-                    if (result.error_code == 'duplicated') {
-                        const userConfirmed = confirm("There is the tournament with the same name. Do you want to save this anyway?");
+                    if (result.errors == 'duplicated') {
+                        const userConfirmed = confirm(result.message);
                         if (userConfirmed) {
                             values.push({
                                 name: 'confirm_duplicate_save',
@@ -237,7 +237,7 @@ $(document).ready(function() {
                             $('#tournamentSettings').modal('show');
                         }
                     } else {
-                        $('#errorModal .errorDetails').html("There was the error occured during to save the tournament");
+                        $('#errorModal .errorDetails').html("An error occurred while saving the tournament!");
                     }
                 } else {
                     tournament_id = result.data.tournament_id;
@@ -258,9 +258,9 @@ $(document).ready(function() {
                                 audio.play();
                             });
 
-                            document.getElementById('stopMusicButton').classList.remove('d-none');
-                            document.getElementById('stopMusicButton').addEventListener('click', function() {
-                                stopMusicPlaying()
+                            document.getElementById('stopAudioButton').classList.remove('d-none');
+                            document.getElementById('stopAudioButton').addEventListener('click', function() {
+                                stopAudioPlaying()
                             });
                         }
 
@@ -331,9 +331,9 @@ $(document).ready(function() {
         audio.play()
         shuffle_duration = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION]['duration'] ?>);
 
-        document.getElementById('stopMusicButton').classList.remove('d-none');
-        document.getElementById('stopMusicButton').addEventListener('click', function() {
-            stopMusicPlaying()
+        document.getElementById('stopAudioButton').classList.remove('d-none');
+        document.getElementById('stopAudioButton').addEventListener('click', function() {
+            stopAudioPlaying()
         });
         <?php endif; ?>
 
@@ -1304,7 +1304,7 @@ var performReuseParticipants = (tournament_id = null) => {
 
 <div class="buttons skipButtons">
     <button id="skipShuffleButton" class="d-none">Skip</button>
-    <button id="stopMusicButton" class="d-none">Pause Audio</button>
+    <button id="stopAudioButton" class="d-none">Pause Audio</button>
     <button id="stopVideoButton" class="d-none">Pause Video</button>
 </div>
 

@@ -238,7 +238,7 @@ class TournamentController extends BaseController
         $existing = $tournamentModel->where(['name' => $this->request->getPost('title'), 'user_id' => $user_id])->findAll();
 
         if ($existing && !$this->request->getPost('confirm_duplicate_save')) {
-            $data = ['errors' => "The same tournament name is existing. Please use another name.", 'error_code' => "duplicated"];
+            $data = ['errors' => "duplicated", 'message' => "Chosen tournament name already exists. Do you want to proceed saving anyways?"];
             
             return $this->response->setJSON($data);
         }
@@ -275,7 +275,7 @@ class TournamentController extends BaseController
         $tournament_id = $tournamentModel->insert($tournamentData);
 
         if (!$tournament_id) {
-            $data = ['errors' => "Failed to save the tournament.", 'error_code' => "error"];
+            $data = ['errors' => "tournament_saving", 'message' => "Failed to save the tournament."];
             
             return $this->response->setJSON($data);
         }
@@ -308,7 +308,7 @@ class TournamentController extends BaseController
                     $music_setting = $musicSettingsModel->insert($setting);
 
                     if (!$music_setting) {
-                        $data = ['errors' => "Failed to save the music settings."];
+                        $data = ['errors' => "audio_saving", 'message' => "Failed to save the audio settings."];
             
                         return $this->response->setJSON($data);
                     }
@@ -362,7 +362,7 @@ class TournamentController extends BaseController
 
         $data['tournament_id'] = $tournament_id;
 
-        $data = ['msg' => "Success to save the tournament settings.", 'data' => $data];
+        $data = ['msg' => "Tournament settings successfully saved.", 'data' => $data];
             
         return $this->response->setJSON($data);
     }
