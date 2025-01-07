@@ -191,7 +191,7 @@ class BracketsController extends BaseController
                 $teamnames = json_decode($nextBracket['teamnames'], true);
                 $teamnames[$req->index] = ['id' => $req->winner, 'name' => $participant['name'], 'image'=> $participant['image'], 'order' => $req->order];
                 
-                if (isset($teamnames[0]['is_double'])) {
+                if ($nextBracket['is_double']) {
                     $teamnames[$req->index]['is_double'] = 1;
                 }
 
