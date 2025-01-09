@@ -258,8 +258,6 @@ class TournamentController extends BaseController
             'increment_score_type' => $this->request->getPost('increment_score_type'),
             'visibility' => ($this->request->getPost('visibility') == 'on') ? 1 : 0,
             'availability' => ($this->request->getPost('availability') && $this->request->getPost('availability') == 'on') ? 1 : 0,
-            'available_start' => date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker'))),
-            'available_end' => date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker'))),
             'evaluation_method' => $this->request->getPost('evaluation_method'),
             'voting_accessibility' => $this->request->getPost('voting_accessibility'),
             'voting_mechanism' => $this->request->getPost('voting_mechanism'),
@@ -269,6 +267,11 @@ class TournamentController extends BaseController
             'pt_image_update_enabled' => ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0,
             'theme' => $this->request->getPost('theme')
         ];
+
+        if ($this->request->getPost('availability')) {
+            $data['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
+            $data['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
+        }
         
         $tournamentData = new \App\Entities\Tournament($data);
 
