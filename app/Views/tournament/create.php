@@ -259,9 +259,6 @@ $(document).ready(function() {
                             });
 
                             document.getElementById('stopAudioButton').classList.remove('d-none');
-                            document.getElementById('stopAudioButton').addEventListener('click', function() {
-                                stopAudioPlaying()
-                            });
                         }
 
                         if (result.data.music[<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>]) {
@@ -332,9 +329,6 @@ $(document).ready(function() {
         shuffle_duration = parseInt(<?= $settings[MUSIC_TYPE_BRACKET_GENERATION]['duration'] ?>);
 
         document.getElementById('stopAudioButton').classList.remove('d-none');
-        document.getElementById('stopAudioButton').addEventListener('click', function() {
-            stopAudioPlaying()
-        });
         <?php endif; ?>
 
         /** Video player setting */

@@ -172,6 +172,13 @@ let toggleShuffleParticipants = (checkbox) => {
     }
 }
 
+const stopBtn = document.getElementById('stopAudioButton')
+if (stopBtn) {
+    stopBtn.addEventListener('click', function () {
+        stopAudioPlaying()
+    });
+}
+
 let stopAudioPlaying = () => {
     // Your code to stop music goes here
     const audio = document.getElementById('myAudio');

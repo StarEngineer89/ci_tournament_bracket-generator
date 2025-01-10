@@ -32,8 +32,7 @@ $(document).on('ready', function () {
         alert("Websocket is not running now. The result will not be updated real time.");
         loadBrackets();
     }
-    initialize();
-
+    
 });
 
     /*
@@ -521,8 +520,6 @@ $(document).on('ready', function () {
                         adjustBracketsStyles(document.getElementById('brackets'))
                     }
 
-                    initialize();
-
                     $('html,body').animate({
                         // scrollTop: $("#b" + (result.length - 1)).offset().top
                     });
@@ -544,83 +541,6 @@ $(document).on('ready', function () {
                 $("#overlay").fadeOut(300);
             }, 500);
         });
-    }
-    
-    function initialize(){
-        $('#reset-single').on('click', function () {
-            $.ajax({
-                type: "POST",
-                url: apiURL + '/brackets/switch',
-                data: { 'type': 'Single', 'tournament_id': tournament_id },
-                success: function (result) {
-                    alert("Brackets was cleared successfully.");
-
-                    eleminationType = "Single";
-                    brackets = [];
-                    $('#brackets').html('');
-                    ws.send(['reset!', tournament_id]);
-                    loadBrackets()
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            }).done(() => {
-                setTimeout(function () {
-                    $("#overlay").fadeOut(300);
-                }, 500);
-            });
-        });
-
-        $('#reset-double').on('click', function () {
-            $.ajax({
-                type: "POST",
-                url: apiURL + '/brackets/switch',
-                data: { type: 'Double', 'tournament_id': tournament_id },
-                success: function (result) {
-                    alert("Brackets was cleared successfully.");
-
-                    eleminationType = "Double";
-                    brackets = [];
-                    $('#brackets').html('');
-                    ws.send(['reset!', tournament_id]);
-                    loadBrackets()
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            }).done(() => {
-                setTimeout(function () {
-                    $("#overlay").fadeOut(300);
-                }, 500);
-            });
-        });
-
-        $('#clear').on('click', function () {
-            $.ajax({
-                type: "GET",
-                url: apiURL + '/tournaments/' + tournament_id + '/clear',
-                success: function (result) {
-                    ws.send(['reset!', tournament_id]);
-                    alert("Brackets was cleared successfully.");
-
-                    window.location.href = '/tournaments/' + tournament_id + '/view?mode=edit';
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            }).done(() => {
-                setTimeout(function () {
-                    $("#overlay").fadeOut(300);
-                }, 500);
-            });
-        });
-
-        const stopBtn = document.getElementById('stopAudioButton')
-        if (stopBtn) {
-            stopBtn.addEventListener('click', function () {
-                stopAudioPlaying()
-            });
-        }
     }
     
     function updateBracket(element, data) {
