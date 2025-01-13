@@ -138,7 +138,7 @@ class BracketsController extends BaseController
             $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame'], 'is_double' => $bracket['is_double']])->first();
         }
 
-        $teamnames = json_decode($bracket['teamnames']);
+        $teamnames = json_decode($bracket['teamnames'], true);
         $original = $teamnames;
         $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         
@@ -185,13 +185,23 @@ class BracketsController extends BaseController
             $bracket['win_by_host'] = 1;
             $this->bracketsModel->save($bracket);
 
+            /** Check if the participant is in double */
+            $is_double = false;
+            if ($teamnames) {
+                foreach ($teamnames as $team) {
+                    if ($team['id'] == $bracket['winner'] && isset($team['is_double']) && $team['is_double']) {
+                        $is_double = true;
+                    }
+                }
+            }
+
             /** Update next bracket */
             if ($nextBracket) {
                 $participant = $this->participantsModel->find($req->winner);
                 $teamnames = json_decode($nextBracket['teamnames'], true);
                 $teamnames[$req->index] = ['id' => $req->winner, 'name' => $participant['name'], 'image'=> $participant['image'], 'order' => $req->order];
                 
-                if ($bracket['is_double']) {
+                if ($is_double) {
                     $teamnames[$req->index]['is_double'] = 1;
                 }
 
