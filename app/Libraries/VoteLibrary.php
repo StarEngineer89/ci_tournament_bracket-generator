@@ -125,7 +125,39 @@ class VoteLibrary
             }
             
             if ($winner) {
-                $this->markWinParticipant(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $winner['id'], 'round_no' => $round_no]);
+                if ($this->markWinParticipant(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $winner['id'], 'round_no' => $round_no])) {
+                    $logActionsModel = model('\App\Models\LogActionsModel');
+                    $insert_data = ['tournament_id' => $tournament_id, 'action' => BRACKET_ACTIONCODE_MARK_WINNER, 'user_id' => 0, 'system_log' => 1];
+
+                    $participant = $this->participantsModel->find($winner['id']);
+                    
+                    $data = [];
+                    $data['bracket_no'] = $bracket['bracketNo'];
+                    $data['round_no'] = $bracket['roundNo'];
+                    $data['participants'] = [$participant['name']];
+
+                    $insert_data['params'] = json_encode($data);
+
+                    $db = \Config\Database::connect();
+                    $dbDriver = $db->DBDriver;
+                    if (!auth()->user() && $dbDriver === 'MySQLi') {
+                        $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+                    }
+                    
+                    if (!auth()->user() && $dbDriver === 'SQLite3') {
+                        $db->query('PRAGMA foreign_keys = OFF');
+                    }
+
+                    $logActionsModel->insert($insert_data);
+                    
+                    if (!auth()->user() && $dbDriver === 'MySQLi') {
+                        $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+                    }
+                    
+                    if (!auth()->user() && $dbDriver === 'SQLite3') {
+                        $db->query('PRAGMA foreign_keys = ON');
+                    }
+                }
             }
         }
         

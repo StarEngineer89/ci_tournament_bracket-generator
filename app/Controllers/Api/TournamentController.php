@@ -880,6 +880,7 @@ class TournamentController extends BaseController
 
                 $data[] = [
                     'name' => $row['username'],
+                    'system_log' => intval($row['system_log']),
                     'type' => $type,
                     'description' => $description,
                     'time' => convert_to_user_timezone($row['updated_at'], user_timezone(auth()->user()->id))

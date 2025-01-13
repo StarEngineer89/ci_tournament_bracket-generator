@@ -12,7 +12,7 @@ class LogActionsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_id', 'tournament_id', 'action', 'params'];
+    protected $allowedFields    = ['user_id', 'tournament_id', 'action', 'params', 'system_log'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

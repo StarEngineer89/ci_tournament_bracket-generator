@@ -1773,14 +1773,14 @@ function drawActionHistoryTable(tournament_id) {
             if (result.history) {
                 rows = [];
                 result.history.forEach((record, i) => {
-                    if (!record.name) record.name = 'Guest'
-                    // rows += '<tr>';
-                    // rows += '<td>' + (i + 1) + '</td>';
-                    // rows += '<td>' + record.name + '</td>';
-                    // rows += '<td>' + record.type + '</td>';
-                    // rows += '<td>' + record.description + '</td>';
-                    // rows += '<td>' + record.time + '</td>';
-                    // rows += '</tr>';
+                    if (!record.name) {
+                        if (!record.system_log) {
+                            record.name = 'Guest'
+                        } else {
+                            record.name = 'System - Round Duration'
+                        }
+                    }
+
                     rows.push([(i + 1), record.name, record.type, record.description, record.time])
 
                     if (!names.includes(record.name)) {
