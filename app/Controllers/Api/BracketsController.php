@@ -189,7 +189,7 @@ class BracketsController extends BaseController
             $is_double = false;
             if ($teamnames) {
                 foreach ($teamnames as $team) {
-                    if ($team['id'] == $bracket['winner'] && isset($team['is_double']) && $team['is_double']) {
+                    if ($team && $team['id'] == $bracket['winner'] && isset($team['is_double']) && $team['is_double']) {
                         $is_double = true;
                     }
                 }
