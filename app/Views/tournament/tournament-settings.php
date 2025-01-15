@@ -120,7 +120,7 @@
                 </select>
             </div>
             <div class="evaluation-vote-restricted form-text mb-1 ps-3">
-                Only users whom the tournament link is shared with (from Share setting) may vote. Tournament links may be shared publicly for nonregistered (guest) users who prefer to vote anonymously.
+                Only users whom the tournament link is shared with (from Share setting) may vote. Tournament links may be shared publicly for nonregistered (guest) users who prefer to vote anonymously. Enabling visibility setting (i.e. making tournament accessible on the gallery) overrides this restriction option.
                 <br />
                 Note: All votes by registered and/or anonymous (guest) users are tracked in the "View Log" action available to the host on the Tournament Dashboard. This may be helpful for tracking purposes and monitoring potential spam.
             </div>
