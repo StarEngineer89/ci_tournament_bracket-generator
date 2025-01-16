@@ -1047,3 +1047,18 @@ let drawChampionTextSVG = () => {
     
     return svg
 }
+
+let displayQRCode = () => {
+    const currentUrl = window.location.href;
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = '';
+    const qrCode = new QRCode(qrContainer, {
+            text: currentUrl,     // The URL to encode
+            width: 200,           // QR code width
+            height: 200,          // QR code height
+            colorDark: "#000000", // Dark color
+            colorLight: "#ffffff" // Light color
+    });
+    
+    $('#displayQRCodeModal').modal('show')
+}

@@ -9,6 +9,7 @@
 <?= $this->section('pageScripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="text/javascript">
 <?php if (url_is('/tournaments/shared/*')) : ?>
 apiURL = "<?= base_url('api/shared') ?>";
@@ -277,6 +278,10 @@ $(document).ready(function() {
                 <i class="fa-solid fa-warning"></i>
             </button>
             <?php endif; ?>
+
+            <button type="button" class="btn" id="viewQRBtn" onclick="displayQRCode()">
+                <i class="fa fa-qrcode" aria-hidden="true"></i>
+            </button>
         </div>
 
         <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
@@ -386,5 +391,17 @@ $(document).ready(function() {
     </div>
 </div>
 
-
+<!-- Display QR Modal -->
+<div class="modal fade" id="displayQRCodeModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="qrcode" class="d-flex justify-content-center"></div>
+            </div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
