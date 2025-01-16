@@ -545,7 +545,8 @@ $(document).ready(function() {
                     <?php if ($shareType == 'wh'): ?>
                     return `<a href="${window.location.pathname}/shared/${row.token}">${row.name}</a>`
                     <?php else: ?>
-                    return `<a href="${window.location.pathname}/${row.id}/view">${row.name}</a>`
+                    let tournament_id = (row.tournament_id) ? row.tournament_id : row.id
+                    return `<a href="${window.location.pathname}/${tournament_id}/view">${row.name}</a>`
                     <?php endif; ?>
                 },
                 "createdCell": function(td, cellData, rowData, row, col) {

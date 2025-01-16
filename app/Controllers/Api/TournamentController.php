@@ -90,14 +90,14 @@ class TournamentController extends BaseController
 
                         if ($add_in_list && !in_array($tempRow['token'], $access_tokens)) {
                             $tempRow['access_time'] = convert_to_user_timezone($tempRow['access_time'], user_timezone(auth()->user()->id));
-                            $tournaments[] = $tempRow;
+                            $tournaments[$tempRow['tournament_id']] = $tempRow;
                             $access_tokens[] = $tempRow['token'];
                         }
                     }
                 }
             } else {
                 $tempRows = $tournaments->where('share_settings.user_id', auth()->user()->id)->findAll();
-
+                
                 $tournaments = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
@@ -142,7 +142,8 @@ class TournamentController extends BaseController
         // Fetch participants and public URL for each tournament
         $result_tournaments = [];
         foreach ($tournaments as &$tournament) {
-            $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
+            $tournament_id = (isset($tournament['tournament_id'])) ? $tournament['tournament_id'] : $tournament['id'];
+            $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
             $tournament['public_url'] = '';
             if($shareSetting) {
                 $tournament['public_url'] = base_url('/tournaments/shared/') . $shareSetting['token'];
@@ -150,7 +151,7 @@ class TournamentController extends BaseController
 
             $tournament['created_at'] = (auth()->user()) ? convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) : $tournament['created_at'];
                 
-            $participants = $this->participantModel->where('tournament_id', $tournament['id'])->findAll();
+            $participants = $this->participantModel->where('tournament_id', $tournament_id)->findAll();
             if ($participants) {
                 $tournament['participants_count'] = count($participants);
                 $result_tournaments[] = $tournament;
