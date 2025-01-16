@@ -1,5 +1,7 @@
 :root {
     --font-color-white: rgb(255, 255, 255);
+    --color-purple: rgb(177, 60, 255);
+    --color-orange: rgb(253, 121, 60);
     --bg-cs-background-color: rgb(37, 35, 35);
     --bg-cs-background-corner-border-color: rgb(37, 35, 35);
     --bg-cs-nav-hover-background-color: rgb(45, 45, 45);

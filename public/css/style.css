@@ -32,6 +32,13 @@
   }
 }
 
+.btn-purple {
+  background-color: var(--color-purple);
+}
+.btn-orange {
+  background-color: var(--color-orange);
+}
+
 .header {
   background-color: rgb(248, 249, 250);
 }
@@ -83,6 +90,9 @@
   background-color: rgb(200, 200, 200);
 }
 
+.home-content {
+  max-width: 600px;
+}
 #tournamentSettings input.form-control-sm {
   max-width: 60px;
 }
