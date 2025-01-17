@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="main-content container-fluid p-3">
+            <div class="main-content container-fluid p-0">
                 <div id="notificationAlertPlaceholder" class="position-fixed"></div>
 
                 <?= $this->renderSection('main') ?>

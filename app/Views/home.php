@@ -10,33 +10,35 @@
 
 <?= $this->section('main') ?>
 <div class="text-center align-middle">
-    <div class="d-flex justify-content-center mb-3">
-        <h1>Welcome!<br>to<br>Tournament!</h1>
+    <div class="home-title d-flex justify-content-center p-3">
+        <h1 class="p-5">Welcome to Tournament!</h1>
     </div>
-    <div class="d-flex justify-content-center mb-3">
-        <p class="home-content">
-            Get started by creating your first tournament!<br />
-            <a class="btn btn-success mt-3" href="<?= base_url('/tournaments/create') ?>">Create Tournament</a>
-        </p>
-    </div>
-    <div class="d-flex justify-content-center mb-3">
-        <p class="home-content">
-            Here to spectate? Visit the Tournament Gallery!<br />
-            <a class="btn btn-purple mt-3" href="<?= base_url('/gallery?filter=glr') ?>">Teleport to Gallery</a>
-        </p>
-    </div>
-    <div class="d-flex justify-content-center mb-3">
-        <p class="home-content">
-            Feeling the hype? Checkout the top contestants on the Participant Leaderboard!<br />
-            <a class="btn btn-orange mt-3" href="<?= base_url('/participants') ?>">Check Leaderboard</a>
-        </p>
-    </div>
-    <div class="d-flex justify-content-center mb-3">
-        <p class="home-content">
-            Want to manage/customize your tournaments?<br />
-            Signup/Signin now to access your own dedicated Tournament Dashboard!<br />
-            <a class="btn btn-warning mt-3" href="<?= base_url('/tournaments') ?>">My Tournament Dashboard</a>
-        </p>
+    <div class="row">
+        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+            <p class="home-content">
+                <span>Get started by creating your first tournament!</span><br />
+                <a class="btn btn-success mt-5" href="<?= base_url('/tournaments/create') ?>">Create Tournament</a>
+            </p>
+        </div>
+        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+            <p class="home-content">
+                <span>Here to spectate? Visit the Tournament Gallery!</span><br />
+                <a class="btn btn-purple mt-5" href="<?= base_url('/gallery?filter=glr') ?>">Teleport to Gallery</a>
+            </p>
+        </div>
+        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+            <p class="home-content">
+                <span>Feeling the hype? Checkout the top contestants on the Participant Leaderboard!</span><br />
+                <a class="btn btn-orange mt-5" href="<?= base_url('/participants') ?>">Check Leaderboard</a>
+            </p>
+        </div>
+        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+            <p class="home-content">
+                <span>Want to manage/customize your tournaments?</span><br />
+                <span>Signup/Signin now to access your own dedicated Tournament Dashboard!</span><br />
+                <a class="btn btn-warning mt-5" href="<?= base_url('/tournaments') ?>">My Tournament Dashboard</a>
+            </p>
+        </div>
     </div>
 </div>
 <?= $this->endSection() ?>

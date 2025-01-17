@@ -35,8 +35,14 @@
 .btn-purple {
   background-color: var(--color-purple);
 }
+.btn-purple:hover {
+  background-color: var(--color-purple-hover);
+}
 .btn-orange {
   background-color: var(--color-orange);
+}
+.btn-orange:hover {
+  background-color: var(--color-orange-hover);
 }
 
 .header {
@@ -90,11 +96,35 @@
   background-color: rgb(200, 200, 200);
 }
 
-.home-content {
+.home-title {
+  background-color: #F3ECEA;
+}
+.home-block {
+  min-height: 300px;
+}
+.home-block:nth-child(1) {
+  background-color: #282A35;
+  color: #fff;
+}
+.home-block:nth-child(2) {
+  background-color: #96D4D4;
+}
+.home-block:nth-child(3) {
+  background-color: #D9EEE1;
+}
+.home-block:nth-child(4) {
+  background-color: #FFF4A3;
+}
+.home-block p {
   max-width: 450px;
 }
 
-.home-content > .btn {
+.home-block p span {
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.home-block p > .btn {
   min-width: 300px;
   border-radius: 20px;
   padding: 15px;
