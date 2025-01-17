@@ -91,8 +91,15 @@
 }
 
 .home-content {
-  max-width: 600px;
+  max-width: 450px;
 }
+
+.home-content > .btn {
+  min-width: 300px;
+  border-radius: 20px;
+  padding: 15px;
+}
+
 #tournamentSettings input.form-control-sm {
   max-width: 60px;
 }
@@ -169,6 +176,14 @@
 
 #descriptionPlaceholder img {
   max-width: 100%;
+}
+
+#viewQRBtn {
+  padding: 5px;
+}
+#viewQRBtn i {
+  color: #000;
+  font-size: 1.5em;
 }
 
 .brackets {
