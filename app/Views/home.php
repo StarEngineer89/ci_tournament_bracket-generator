@@ -9,10 +9,11 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
-<div class="text-center align-middle">
-    <div class="home-title d-flex justify-content-center p-3">
+<div class="container-fluid text-center align-middle">
+    <div class="home-title row d-flex justify-content-center p-3">
         <h1 class="p-5">Welcome to Tournament!</h1>
     </div>
+
     <div class="row">
         <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
             <p class="home-content">
