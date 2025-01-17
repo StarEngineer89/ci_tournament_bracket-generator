@@ -115,6 +115,9 @@
 .home-block:nth-child(4) {
   background-color: #FFF4A3;
 }
+.home-block:hover {
+  scale: 1.01;
+}
 .home-block p {
   max-width: 450px;
 }
