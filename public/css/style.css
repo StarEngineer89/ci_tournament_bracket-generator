@@ -34,15 +34,27 @@
 
 .btn-purple {
   background-color: var(--color-purple);
+  text-decoration: none;
 }
 .btn-purple:hover {
   background-color: var(--color-purple-hover);
 }
+.btn-purple:visited,
+.btn-purple:active {
+  background-color: var(--color-purple);
+  /* Ensure consistency */
+}
 .btn-orange {
   background-color: var(--color-orange);
+  text-decoration: none;
 }
 .btn-orange:hover {
   background-color: var(--color-orange-hover);
+}
+.btn-orange:visited,
+.btn-orange:active {
+  background-color: var(--color-orange);
+  /* Ensure consistency */
 }
 
 .header {
@@ -108,12 +120,11 @@
 }
 .home-block:nth-child(2) {
   background-color: #96D4D4;
-}
-.home-block:nth-child(3) {
-  background-color: #D9EEE1;
+}.home-block:nth-child(3) {
+  background-color: #FFF4A3;
 }
 .home-block:nth-child(4) {
-  background-color: #FFF4A3;
+  background-color: #D9EEE1;
 }
 .home-block:hover {
   scale: 1.01;
@@ -131,6 +142,9 @@
   min-width: 300px;
   border-radius: 20px;
   padding: 15px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.2em;
 }
 
 #tournamentSettings input.form-control-sm {

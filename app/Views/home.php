@@ -15,25 +15,25 @@
     </div>
 
     <div class="row">
-        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+        <div class="home-block col-md-12 d-flex align-items-center justify-content-center">
             <p class="home-content">
                 <span>Get started by creating your first tournament!</span><br />
                 <a class="btn btn-success mt-5" href="<?= base_url('/tournaments/create') ?>">Create Tournament</a>
             </p>
         </div>
-        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+        <div class="home-block col-md-12 d-flex align-items-center justify-content-center">
             <p class="home-content">
                 <span>Here to spectate? Visit the Tournament Gallery!</span><br />
-                <a class="btn btn-purple mt-5" href="<?= base_url('/gallery?filter=glr') ?>">Teleport to Gallery</a>
+                <a class="btn btn-danger mt-5" href="<?= base_url('/gallery?filter=glr') ?>">Teleport to Gallery</a>
             </p>
         </div>
-        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+        <div class="home-block col-md-12 d-flex align-items-center justify-content-center">
             <p class="home-content">
                 <span>Feeling the hype? Checkout the top contestants on the Participant Leaderboard!</span><br />
-                <a class="btn btn-orange mt-5" href="<?= base_url('/participants') ?>">Check Leaderboard</a>
+                <a class="btn btn-info light mt-5" href="<?= base_url('/participants') ?>">Check Leaderboard</a>
             </p>
         </div>
-        <div class="home-block col-md-6 col-sm-12 d-flex align-items-center justify-content-center">
+        <div class="home-block col-md-12 d-flex align-items-center justify-content-center">
             <p class="home-content">
                 <span>Want to manage/customize your tournaments?</span><br />
                 <span>Signup/Signin now to access your own dedicated Tournament Dashboard!</span><br />
