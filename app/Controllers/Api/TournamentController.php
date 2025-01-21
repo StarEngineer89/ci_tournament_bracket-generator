@@ -598,19 +598,20 @@ class TournamentController extends BaseController
 
             $filetype = '.mp3';
         } else {
-            if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath/" . $video_id . '.webm')) {
-                return $video_id . '.webm';
+            if (file_exists(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath/" . $video_id . '.mp4')) {
+                return $video_id . '.mp4';
             }
 
             $collection = $yt->download(
                 Options::create()
                     ->downloadPath(WRITEPATH . "uploads/$uploadConfig->urlVideoUploadPath")
-                    ->output($video_id)
+                    ->format('mp4')
+                    ->output($video_id . '.mp4')
                     ->url($youtubeLink)
                     ->cookies($uploadConfig->ffmpegPath . 'www.youtube.com_cookies.txt')
             );
 
-            $filetype = '.webm';
+            $filetype = '.mp4';
         }
 
         foreach ($collection->getVideos() as $video) {
