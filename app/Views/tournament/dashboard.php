@@ -489,7 +489,12 @@ $(document).ready(function() {
             });
 
             $('#userByFilter').on('change', function() {
-                tournamentsTable.ajax.reload()
+                tournamentsTable.ajax.reload(function() {
+                    // Re-initialize tooltips after the table reloads
+                    document.querySelectorAll('span.tooltip-span').forEach((element) => {
+                        new bootstrap.Tooltip(element);
+                    });
+                });
             });
 
             <?php if ($navActive == 'shared' && $shareType == 'wh'): ?>
@@ -532,6 +537,10 @@ $(document).ready(function() {
                 clearTimeout(timeout); // Clear the timeout
                 $('#beforeProcessing').addClass('d-none')
             });
+
+            document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+                var tooltip = new bootstrap.Tooltip(element)
+            })
         },
         "columns": [{
                 "data": null,
@@ -606,8 +615,8 @@ $(document).ready(function() {
                 "data": null,
                 "render": function(data, type, row, meta) {
                     return `
-                    <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-title="${row.email}" data-id="${row.user_id}">
-                        <button class="btn" type="button" disabled>${row.username}</button>
+                    <span class="d-inline-block tooltip-span" data-bs-toggle="tooltip" data-bs-title="${row.email}" data-id="${row.user_id}">
+                        ${row.username}
                     </span>
                     `
                 },
@@ -624,6 +633,7 @@ $(document).ready(function() {
             {
                 "data": null,
                 "render": function(data, type, row, meta) {
+                    let tournament_id = (row.tournament_id) ? row.tournament_id : row.id
                     return `
                         <div class="btn-groups list-group">
                         <button class="btn text-start collapse-actions-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActions-${row.id}" aria-expanded="false" aria-controls="collapseActions-${row.id}">
@@ -631,19 +641,19 @@ $(document).ready(function() {
                         </button>
                         <div class="collapse" id="collapseActions-${row.id}">
                             <div class="card card-body p-3">
-                                <a href="javascript:;" class="rename" data-id="${row.id}" onclick="renameTournament(this)">Rename</a>
-                                <a href="javascript:;" class="reset" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
-                                <a href="javascript:;" class="delete" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
-                                <a href="javascript:;" class="change-status" data-id="${row.id}" data-status="${row.status}" onclick="changeStatus(event)">Change Status</a>
-                                <a href="javascript:;" class="change-settings" data-id="${row.id}" onclick="changeSettings(event)">Settings</a>
-                                <a href="javascript:;" class="share" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
-                                <a href="javascript:;" class="view-log" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+                                <a href="javascript:;" class="rename" data-id="${tournament_id}" onclick="renameTournament(this)">Rename</a>
+                                <a href="javascript:;" class="reset" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                                <a href="javascript:;" class="delete" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
+                                <a href="javascript:;" class="change-status" data-id="${tournament_id}" data-status="${row.status}" onclick="changeStatus(event)">Change Status</a>
+                                <a href="javascript:;" class="change-settings" data-id="${tournament_id}" onclick="changeSettings(event)">Settings</a>
+                                <a href="javascript:;" class="share" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
+                                <a href="javascript:;" class="view-log" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
                             </div>
                         </div>
                     </div>
 
-                    <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="saveChange(event)">Save</a>
-                    <a href="javascript:;" class="save visually-hidden" data-id="${row.id}" data-status="${row.status}" onClick="cancelUpdateTorunament(this)">Cancel</a>
+                    <a href="javascript:;" class="save visually-hidden" data-id="${tournament_id}" data-status="${row.status}" onClick="saveChange(event)">Save</a>
+                    <a href="javascript:;" class="save visually-hidden" data-id="${tournament_id}" data-status="${row.status}" onClick="cancelUpdateTorunament(this)">Cancel</a>
                     `;
                 }
             }
@@ -652,7 +662,8 @@ $(document).ready(function() {
         ],
         "createdRow": function(row, data, dataIndex) {
             // Add a custom attribute to the row
-            $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
+            let tournament_id = (data.tournament_id) ? data.tournament_id : data.id
+            $(row).attr('data-id', tournament_id); // Adds a data-id attribute with the row's ID
         }
     });
     <?php else: ?>

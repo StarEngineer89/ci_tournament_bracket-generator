@@ -200,7 +200,7 @@ class TournamentController extends BaseController
             $temp = $tournament;
             
             $temp['username'] = 'Guest';
-            $temp['email'] = '';
+            $temp['email'] = 'Guest User';
             if($tournament['user_id'] > 0){
                 $user = $userModel->find($tournament['user_id']);
                 $userId = $userIdentityModel->where(['user_id' => $tournament['user_id']])->first();
@@ -343,9 +343,8 @@ class TournamentController extends BaseController
                 $shareSettingsModel->insert($shareData);
             }
         }
-        /** End adding the tournament created by guest users to share table */
 
-        /** Add the tournament Id into the cookie for guest users */
+        /** Add the tournament Id into the cookie for guest users */        
         if (!$user_id) {
             $existingHistory = $this->request->getCookie('guest_tournaments');
             $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
@@ -505,7 +504,7 @@ class TournamentController extends BaseController
         $tournamentModel->save($tournament);
 
         /** Schedule to update the rounds by cron */
-        if ($tournament['availability'] && $tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
+        if (isset($tournament['availability']) && $tournament['availability'] && $tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
             $scheduleLibrary->scheduleRoundUpdate($tournament_id);
         }
         

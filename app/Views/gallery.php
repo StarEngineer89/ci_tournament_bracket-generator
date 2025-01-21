@@ -25,7 +25,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             d.type = $('#typeFilter').val();
             d.status = $('#stautsFilter').val();
             d.created_by = $('#userByFilter').val();
-        }
+        },
     },
     "order": [
         [0, "asc"]
@@ -51,7 +51,12 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         });
 
         $('#userByFilter').on('change', function() {
-            tournamentsTable.ajax.reload()
+            tournamentsTable.ajax.reload(function() {
+                // Re-initialize tooltips after the table reloads
+                document.querySelectorAll('span.tooltip-span').forEach((element) => {
+                    new bootstrap.Tooltip(element);
+                });
+            });
         });
 
         var nameColumns = $('td[data-label="name"] span', datatableRows)
@@ -92,6 +97,10 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             clearTimeout(timeout); // Clear the timeout
             $('#beforeProcessing').addClass('d-none')
         });
+
+        document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+            var tooltip = new bootstrap.Tooltip(element)
+        })
     },
     "columns": [{
             "data": null,
@@ -169,7 +178,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         {
             "data": null,
             "render": function(data, type, row, meta) {
-                return `<span data-toggle="tooltip" data-placement="top" title="${row.email}" data-id="${row.user_id}">${row.username}</span>`;
+                return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email}" data-id="${row.user_id}">${row.username}</span>`;
             },
             "createdCell": function(td, cellData, rowData, row, col) {
                 $(td).attr('data-label', 'name');

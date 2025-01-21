@@ -4,8 +4,6 @@ let eleminationType = "Single";
 let editing_mode = false;
 var ws;
 
-const UUID = getOrCreateDeviceId()
-
 $(document).on('ready', function () {
     
     $("#overlay").fadeIn(300);

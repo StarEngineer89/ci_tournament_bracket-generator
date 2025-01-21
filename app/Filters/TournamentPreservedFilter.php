@@ -42,25 +42,35 @@ class TournamentPreservedFilter implements FilterInterface
      */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        //log_message('debug', "TournamentPreservedFilter is working");
-        if(isset($_COOKIE['tournament_id']) && auth()->user()){
-            $tournament_id = $_COOKIE['tournament_id'];
+        if(isset($_COOKIE['guest_tournaments']) && auth()->user()){
+            $tournament_ids_array = json_decode($_COOKIE['guest_tournaments'], true);
+            $tournament_ids = [];
+            if ($tournament_ids_array) {
+                foreach ($tournament_ids_array as $item) {
+                    $split_data = explode('_', $item);
+                    $tournament_ids[] = $split_data[0];
+                }
+            }
+            
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
             $tournamentModel = model('\App\Models\TournamentModel');
-            $sharedTournament = $shareSettingsModel->where(['tournament_id'=> $tournament_id, 'user_id' => 0])->first();
-            if($sharedTournament){
-                $sharedTournament['user_id'] = auth()->user()->id;
-                $shareSettingsModel->save($sharedTournament);
+            $sharedTournaments = $shareSettingsModel->where(['user_id' => 0])->whereIn('tournament_id', $tournament_ids)->findAll();
+            if($sharedTournaments){
+                foreach ($sharedTournaments as $sharedTournament) {
+                    $sharedTournament['user_id'] = auth()->user()->id;
+                    $sharedTournament['uuid'] = null;
+                    $shareSettingsModel->save($sharedTournament);
 
-                $tournament = $tournamentModel->find($tournament_id);
-                $tournament['user_id'] = auth()->user()->id;
-                $tournamentModel->save($tournament);
+                    $tournament = $tournamentModel->find($sharedTournament['tournament_id']);
+                    $tournament['user_id'] = auth()->user()->id;
+                    $tournamentModel->save($tournament);
 
-                $bracketModel = model('\App\Models\BracketModel');
-                $bracketModel->where(['tournament_id'=> $tournament_id, 'user_id'=> 0])->set('user_id', auth()->user()->id)->update();
+                    $bracketModel = model('\App\Models\BracketModel');
+                    $bracketModel->where(['tournament_id' => $sharedTournament['tournament_id'], 'user_id' => 0])->set('user_id', auth()->user()->id)->update();
+                }
             }
 
-            setcookie('tournament_id', '', time()-3600);
+            $response->deleteCookie('guest_tournaments');
         }
     }
 }

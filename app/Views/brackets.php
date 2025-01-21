@@ -39,6 +39,8 @@ const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE?>;
 const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
 
 const is_temp_tournament = false;
+
+const UUID = getOrCreateDeviceId()
 </script>
 <script type="text/javascript">
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
@@ -47,9 +49,9 @@ if (!location.href.includes('shared')) {
     <?php if(!auth()->user()){ ?>
     var dc = new Date();
     dc.setTime(dc.getTime() + (24 * 60 * 60 * 1000));
-    document.cookie = 'tournament_id=<?= $tournament["id"] ?>;expires=' + dc.toUTCString() + ';path=/';
+    document.cookie = 'device_id=' + UUID + 'tournament_id=<?= $tournament["id"] ?>;expires=' + dc.toUTCString() + ';path=/';
     <?php }else{?>
-    document.cookie = 'tournament_id=;Max-Age=0'
+    document.cookie = 'device_id=' + UUID + 'tournament_id=;Max-Age=0'
     <?php } ?>
 } else {
     if (parseInt(getCookie('tournament_id')) == tournament_id) hasEditPermission = true;
