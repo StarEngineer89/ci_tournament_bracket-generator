@@ -30,17 +30,21 @@ class ScheduleLibrary
             $startDate = new \DateTime($tournamentSettings['available_start']);
             $endDate = new \DateTime($tournamentSettings['available_end']);
 
-            $tournamentDuration = $endDate->diff($startDate);
-            
-            $roundDuration = ($maxRounds && $maxRounds->roundNo) ? floor(intval($tournamentDuration->days) / $maxRounds->roundNo) : intval($tournamentDuration->days);
+            // Calculate the total hours between start and end date
+            $tournamentDuration = $endDate->getTimestamp() - $startDate->getTimestamp(); // Total duration in seconds
+            $totalHours = $tournamentDuration / 3600; // Convert seconds to hours
 
+            // Divide hours by max rounds
+            $roundDuration = ($maxRounds && $maxRounds->roundNo) ? $totalHours / $maxRounds->roundNo : $totalHours;
+            $roundDuration = $roundDuration * 60;
+            
             for ($i = 1; $i < $maxRounds->roundNo; $i++) {
-                $scheduleTime = $startDate->modify("+$roundDuration days")->format('Y-m-d 00:00:00');
+                $scheduleTime = $startDate->modify("+$roundDuration minutes")->format('Y-m-d H:i:s');
 
                 $this->registerSchedule($tournament_id, $i, $scheduleTime);
             }
 
-            $scheduleTime = $endDate->format('Y-m-d 00:00:00');
+            $scheduleTime = $endDate->format('Y-m-d H:i:s');
             $this->registerSchedule($tournament_id, $maxRounds->roundNo, $scheduleTime);
         }
         
