@@ -11,7 +11,7 @@
 <?= $this->section('main') ?>
 <div class="container-fluid text-center align-middle">
     <div class="home-title row d-flex justify-content-center p-3">
-        <h1 class="p-5">Welcome to Tournament!</h1>
+        <h1 class="p-5">Welcome!</h1>
     </div>
 
     <div class="row">

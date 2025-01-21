@@ -398,6 +398,7 @@ $(document).ready(function() {
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
+                <h5 class="modal-title" id="dismissModalLabel">Share/Scan the tournanent's QR code!</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
