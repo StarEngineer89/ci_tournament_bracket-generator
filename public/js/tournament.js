@@ -4,41 +4,41 @@ function getSeconds(time) {
     return parseInt(timeArray[0] * 3600) + parseInt(timeArray[1] * 60) + parseInt(timeArray[2]);
 }
 
-function musicSettingToggleChange(element) {
-    const settingPanel = $(element).parents('.music-setting').find('.setting');
+function audioSettingToggleChange(element) {
+    const settingPanel = $(element).parents('.audio-setting').find('.setting');
     if ($(element).prop("checked") == true) {
         settingPanel.find('input[type="radio"], .preview input').attr('disabled', false);
         const radioElement = $(element).parent().parent().find('input[type="radio"]:checked');
-        radioElement.parent().parent().children('.music-source').attr('disabled', false);
+        radioElement.parent().parent().children('.audio-source').attr('disabled', false);
         settingPanel.removeClass('visually-hidden');
 
         if ($(element).data('media-type') == 0) {
-            $('.toggle-music-settings').eq(2).prop('checked', false)
-            musicSettingToggleChange($('.toggle-music-settings').eq(2))
-            $('.toggle-music-settings').eq(2).prop('disabled', true)
+            $('.toggle-audio-settings').eq(2).prop('checked', false)
+            audioSettingToggleChange($('.toggle-audio-settings').eq(2))
+            $('.toggle-audio-settings').eq(2).prop('disabled', true)
         }
         if ($(element).data('media-type') == 2) {
-            $('.toggle-music-settings').eq(0).prop('checked', false)
-            musicSettingToggleChange($('.toggle-music-settings').eq(0))
-            $('.toggle-music-settings').eq(0).prop('disabled', true)
+            $('.toggle-audio-settings').eq(0).prop('checked', false)
+            audioSettingToggleChange($('.toggle-audio-settings').eq(0))
+            $('.toggle-audio-settings').eq(0).prop('disabled', true)
         }
     } else {
         settingPanel.find('input[type!="hidden"]').attr('disabled', true);
         settingPanel.addClass('visually-hidden');
 
         if ($(element).data('media-type') == 0) {
-            $('.toggle-music-settings').eq(2).prop('disabled', false)
+            $('.toggle-audio-settings').eq(2).prop('disabled', false)
         }
         if ($(element).data('media-type') == 2) {
-            $('.toggle-music-settings').eq(0).prop('disabled', false)
+            $('.toggle-audio-settings').eq(0).prop('disabled', false)
         }
     }
 
     settingPanel.find('.duration[type="text"]').attr('disabled', true);
 };
 
-function musicSourceChange(element) {
-    $(element).parents('.setting').find('.music-source').attr('disabled', true);
+function audioSourceChange(element) {
+    $(element).parents('.setting').find('.audio-source').attr('disabled', true);
     const panel = $(element).parent().parent();
 
     if ($(element).data('target') == 'file') {
@@ -55,7 +55,7 @@ function musicSourceChange(element) {
 
 };
 
-function musicFileUpload(element) {
+function audioFileUpload(element) {
     var allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mid', 'audio/x-midi'];
 
     if (element.files[0] && !allowedTypes.includes(element.files[0].type)) {
@@ -75,8 +75,8 @@ function musicFileUpload(element) {
     }
 
     let panel = $(element).parent();
-    let index = $('.music-source[data-source="file"]').index($(element));
-    $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
+    let index = $('.audio-source[data-source="file"]').index($(element));
+    $(this).parents('.audio-setting').find('input[type="radio"][value="f"]').prop('checked', true);
 
     var formData = new FormData();
     formData.append('audio', element.files[0]);
@@ -100,8 +100,8 @@ function musicFileUpload(element) {
                 return false
             }
             else {
-                let audioElement = panel.parents('.music-setting').find('.player');
-                applyDuration(audioElement[0], panel.parents('.music-setting'))
+                let audioElement = panel.parents('.audio-setting').find('.player');
+                applyDuration(audioElement[0], panel.parents('.audio-setting'))
                 audioElement.removeClass('d-none')
                 audioElement[0].src = '/uploads/' + data.path
                 audioElement[0].load();
@@ -113,8 +113,8 @@ function musicFileUpload(element) {
                     document.getElementById('myAudio').load();
                 }
 
-                panel.parents('.music-setting').find('.startAt[type="hidden"]').val(0);
-                panel.parents('.music-setting').find('.startAt[type="text"]').val("00:00:00");
+                panel.parents('.audio-setting').find('.startAt[type="hidden"]').val(0);
+                panel.parents('.audio-setting').find('.startAt[type="text"]').val("00:00:00");
             }
         },
         error: function (e) {
@@ -143,8 +143,8 @@ function videoFileUpload(element) {
     }
 
     let panel = $(element).parent();
-    let index = $('.music-source[data-source="file"]').index($(element));
-    $(this).parents('.music-setting').find('input[type="radio"][value="f"]').prop('checked', true);
+    let index = $('.audio-source[data-source="file"]').index($(element));
+    $(this).parents('.audio-setting').find('input[type="radio"][value="f"]').prop('checked', true);
 
     var formData = new FormData();
     formData.append('video', element.files[0]);
@@ -170,8 +170,8 @@ function videoFileUpload(element) {
             else {
                 panel.find('input[type="hidden"]').val(data.path);
 
-                let audioElement = panel.parents('.music-setting').find('.player');
-                applyDuration(audioElement[0], panel.parents('.music-setting'))
+                let audioElement = panel.parents('.audio-setting').find('.player');
+                applyDuration(audioElement[0], panel.parents('.audio-setting'))
                 audioElement.removeClass('d-none')
                 audioElement[0].src = '/uploads/' + data.path
                 audioElement[0].load();
@@ -181,8 +181,8 @@ function videoFileUpload(element) {
                     document.getElementById('myAudio').load();
                 }
 
-                panel.parents('.music-setting').find('.startAt[type="hidden"]').val(0);
-                panel.parents('.music-setting').find('.startAt[type="text"]').val("00:00:00");
+                panel.parents('.audio-setting').find('.startAt[type="hidden"]').val(0);
+                panel.parents('.audio-setting').find('.startAt[type="text"]').val("00:00:00");
             }
         },
         error: function (e) {
@@ -201,7 +201,7 @@ function applyDuration(audioElement, panel) {
     });
 }
 
-function musicDurationChange(element) {
+function audioDurationChange(element) {
     const starttime = getSeconds($(element).parents('.preview').find('.startAt').val());
     $(element).parents('.preview').find('.startAt[type="hidden"]').val(starttime);
     const stoptime = getSeconds($(element).parents('.preview').find('.stopAt').val());
