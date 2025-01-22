@@ -623,7 +623,7 @@ $(document).on('ready', function () {
 
                     if (document.getElementById('stopAudioButton')) {
                         document.getElementById('stopAudioButton').classList.remove('d-none');
-                        document.getElementById('stopAudioButton').textContent = "Pause Music"
+                        document.getElementById('stopAudioButton').textContent = "Pause Audio"
                     }
                 } else {
                     ws.send(['marked!', tournament_id])
@@ -666,7 +666,7 @@ $(document).on('ready', function () {
 
                 if (document.getElementById('stopAudioButton')) {
                     document.getElementById('stopAudioButton').classList.add('d-none');
-                    document.getElementById('stopAudioButton').textContent = "Pause Music"
+                    document.getElementById('stopAudioButton').textContent = "Pause Audio"
                 }
             },
             error: function (error) {
@@ -850,7 +850,7 @@ let submitVote = (event) => {
 
                 if (document.getElementById('stopAudioButton')) {
                     document.getElementById('stopAudioButton').classList.remove('d-none');
-                    document.getElementById('stopAudioButton').textContent = "Pause Music"
+                    document.getElementById('stopAudioButton').textContent = "Pause Audio"
                 }
             } else {
                 // triggerElement.parent().parent().remove();
@@ -959,7 +959,7 @@ let initConfetti = () => {
 
         if (document.getElementById('stopAudioButton')) {
             document.getElementById('stopAudioButton').classList.remove('d-none');
-            document.getElementById('stopAudioButton').textContent = "Pause Music"
+            document.getElementById('stopAudioButton').textContent = "Pause Audio"
         }
     }
 
