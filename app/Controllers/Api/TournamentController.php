@@ -266,7 +266,8 @@ class TournamentController extends BaseController
             'voting_retain' => ($this->request->getPost('voting_retain') == 'on') ? 1 : 0,
             'allow_host_override' => ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0,
             'pt_image_update_enabled' => ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0,
-            'theme' => $this->request->getPost('theme')
+            'theme' => $this->request->getPost('theme'),
+            'winner_music_everyone' => ($this->request->getPost('winner_music_everyone') == 'on') ? 1 : null
         ];
 
         if ($this->request->getPost('availability')) {
@@ -501,6 +502,12 @@ class TournamentController extends BaseController
             $tournament['theme'] = $this->request->getPost('theme');
         }
 
+        if ($this->request->getPost('winner_music_everyone') == 'on') {
+            $tournament['winner_music_everyone'] = 1;
+        } else {
+            $tournament['winner_music_everyone'] = null;
+        }
+
         $tournamentModel->save($tournament);
 
         /** Schedule to update the rounds by cron */
@@ -617,6 +624,7 @@ class TournamentController extends BaseController
         foreach ($collection->getVideos() as $video) {
             if ($video->getError() !== null) {
                 echo "Error downloading video: {$video->getError()}.";
+                log_message('debug', $video->getError());
             }
         }
 

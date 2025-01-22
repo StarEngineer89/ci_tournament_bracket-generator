@@ -229,3 +229,9 @@ Then Export the cookie file as follows.
 2. After that, upload cookie file under the directory FFmpeg was installed and replace existing/old one. (for example, C:\ffmpeg\www.youtube.com_cookies.txt)
 
 Note that this export step is required in case youtube account is signed out and requires re-login (may happen every once a while)
+
+To update this program to the latest version, you can navigate the the directory which the yt-dlp is installed and then run the following command.
+
+> `cd .\bin`
+
+> `yt-dlp -U`

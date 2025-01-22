@@ -1677,6 +1677,12 @@ const changeSettings = (event) => {
 
                     panel.find('input.duration').val(item.duration);
                 }
+
+                if (result.tournamentSettings.winner_music_everyone == 1) {
+                    $('#winnerMusicForEveryone').attr('checked', true)
+                } else {
+                    $('#winnerMusicForEveryone').attr('checked', false)
+                }
             }
 
             $('#tournamentSettings').modal('show');

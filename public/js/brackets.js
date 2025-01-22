@@ -623,7 +623,7 @@ $(document).on('ready', function () {
 
                     if (document.getElementById('stopAudioButton')) {
                         document.getElementById('stopAudioButton').classList.remove('d-none');
-                        document.getElementById('stopAudioButton').textContent = "Pause Audio"
+                        document.getElementById('stopAudioButton').textContent = "Pause Music"
                     }
                 } else {
                     ws.send(['marked!', tournament_id])
@@ -666,7 +666,7 @@ $(document).on('ready', function () {
 
                 if (document.getElementById('stopAudioButton')) {
                     document.getElementById('stopAudioButton').classList.add('d-none');
-                    document.getElementById('stopAudioButton').textContent = "Pause Audio"
+                    document.getElementById('stopAudioButton').textContent = "Pause Music"
                 }
             },
             error: function (error) {
@@ -850,7 +850,7 @@ let submitVote = (event) => {
 
                 if (document.getElementById('stopAudioButton')) {
                     document.getElementById('stopAudioButton').classList.remove('d-none');
-                    document.getElementById('stopAudioButton').textContent = "Pause Audio"
+                    document.getElementById('stopAudioButton').textContent = "Pause Music"
                 }
             } else {
                 // triggerElement.parent().parent().remove();
@@ -940,6 +940,28 @@ let initConfetti = () => {
         defaults = { startVelocity: 30, spread: 360, ticks: 20, zIndex: 0 };
 
     scrollToMiddle(document.getElementById('brackets'));
+
+    if (winnerMusicPlayingForEveryone) {
+        var player = document.getElementById('myAudio');
+        if (player) {
+            player.addEventListener("timeupdate", function () {
+                if ((player.currentTime - player._startTime) >= player.value) {
+                    player.pause();
+                    document.getElementById('stopAudioButton').classList.add('d-none');
+                };
+            });
+
+            player.value = player.dataset.duration;
+            player._startTime = player.dataset.starttime;
+            player.currentTime = player.dataset.starttime;
+            player.play();
+        }
+
+        if (document.getElementById('stopAudioButton')) {
+            document.getElementById('stopAudioButton').classList.remove('d-none');
+            document.getElementById('stopAudioButton').textContent = "Pause Music"
+        }
+    }
 
     function randomInRange(min, max) {
         return Math.random() * (max - min) + min;

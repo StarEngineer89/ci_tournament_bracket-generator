@@ -37,6 +37,7 @@ let maxVoteCount = <?= $tournament['max_vote_value'] ? $tournament['max_vote_val
 const votingMechanismRoundDurationCode = <?= EVALUATION_VOTING_MECHANISM_ROUND?>;
 const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE?>;
 const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
+let winnerMusicPlayingForEveryone = <?= $tournament['winner_music_everyone'] ? $tournament['winner_music_everyone'] : 0 ?>;
 
 const is_temp_tournament = false;
 
