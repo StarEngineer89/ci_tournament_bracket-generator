@@ -180,7 +180,7 @@ if (stopBtn) {
 }
 
 let stopAudioPlaying = () => {
-    // Your code to stop music goes here
+    // Your code to stop audio goes here
     const audio = document.getElementById('myAudio');
 
     if (audio.paused) {
@@ -193,7 +193,7 @@ let stopAudioPlaying = () => {
 }
 
 let stopVideoPlaying = () => {
-    // Your code to stop music goes here
+    // Your code to stop audio goes here
     const videoPlayer = document.getElementById('videoPlayer');
 
     if (videoPlayer.paused) {
