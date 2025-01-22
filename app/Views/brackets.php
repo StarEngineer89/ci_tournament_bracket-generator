@@ -37,7 +37,7 @@ let maxVoteCount = <?= $tournament['max_vote_value'] ? $tournament['max_vote_val
 const votingMechanismRoundDurationCode = <?= EVALUATION_VOTING_MECHANISM_ROUND?>;
 const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE?>;
 const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
-let winnerMusicPlayingForEveryone = <?= $tournament['winner_music_everyone'] ? $tournament['winner_music_everyone'] : 0 ?>;
+let winnerAudioPlayingForEveryone = <?= $tournament['winner_audio_everyone'] ? $tournament['winner_audio_everyone'] : 0 ?>;
 
 const is_temp_tournament = false;
 
@@ -345,9 +345,9 @@ $(document).ready(function() {
     </div>
 </div>
 
-<?php if (isset($musicSettings) && $musicSettings) : ?>
-<audio id="myAudio" preload="auto" data-starttime="<?= ($musicSettings[0]['start']) ? $musicSettings[0]['start'] : '' ?>" data-duration="<?= ($musicSettings[0]['duration']) ? $musicSettings[0]['duration'] : '' ?>">
-    <source src="<?= ($musicSettings[0]['source'] == 'f') ? '/uploads/' . $musicSettings[0]['path'] : '/uploads/' . $musicSettings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
+<?php if (isset($audioSettings) && $audioSettings) : ?>
+<audio id="myAudio" preload="auto" data-starttime="<?= ($audioSettings[0]['start']) ? $audioSettings[0]['start'] : '' ?>" data-duration="<?= ($audioSettings[0]['duration']) ? $audioSettings[0]['duration'] : '' ?>">
+    <source src="<?= ($audioSettings[0]['source'] == 'f') ? '/uploads/' . $audioSettings[0]['path'] : '/uploads/' . $audioSettings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 
 <div class="buttons skipButtons">

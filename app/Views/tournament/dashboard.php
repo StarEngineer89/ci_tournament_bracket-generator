@@ -97,8 +97,8 @@
                         <?= $settingsBlock ?>
                     </div>
 
-                    <div id="music-settings-panel">
-                        <?= $musicSettingsBlock ?>
+                    <div id="audio-settings-panel">
+                        <?= $audioSettingsBlock ?>
                     </div>
                 </form>
             </div>
@@ -1176,7 +1176,7 @@ $(document).ready(function() {
 
         changeEvaluationMethod(document.getElementById('evaluationMethod'))
 
-        $('.music-setting').each((i, settingBox) => {
+        $('.audio-setting').each((i, settingBox) => {
             const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
             const stopTime0 = document.getElementsByName('stop[' + i + ']')[0].value;
 
@@ -1442,10 +1442,10 @@ const changeSettings = (event) => {
         url: apiURL + '/tournaments/' + tournament_id + '/fetch-settings',
         success: function(result) {
             $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
-            $('#music-settings-panel').html(result.html);
-            $('#music-settings-panel').html(result.html).promise().done(function() {
+            $('#audio-settings-panel').html(result.html);
+            $('#audio-settings-panel').html(result.html).promise().done(function() {
                 // Once the HTML is loaded, apply the inputmask
-                $('#music-settings-panel').find('input.startAt[type="text"], input.stopAt[type="text"]').each((i, element) => {
+                $('#audio-settings-panel').find('input.startAt[type="text"], input.stopAt[type="text"]').each((i, element) => {
                     $(element).inputmask(
                         "99:59:59", {
                             placeholder: "00:00:00",
@@ -1624,17 +1624,17 @@ const changeSettings = (event) => {
                 }
             }
 
-            if (result.musicSettings) {
-                for (const [i, item] of Object.entries(result.musicSettings)) {
-                    if (item.type == <?= MUSIC_TYPE_BRACKET_GENERATION ?>) {
-                        $('.toggle-music-settings').eq(<?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>).prop('disabled', true)
+            if (result.audioSettings) {
+                for (const [i, item] of Object.entries(result.audioSettings)) {
+                    if (item.type == <?= AUDIO_TYPE_BRACKET_GENERATION ?>) {
+                        $('.toggle-audio-settings').eq(<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>).prop('disabled', true)
                     }
-                    if (item.type == <?= MUSIC_TYPE_BRACKET_GENERATION_VIDEO ?>) {
-                        $('.toggle-music-settings').eq(<?= MUSIC_TYPE_BRACKET_GENERATION ?>).prop('disabled', true)
+                    if (item.type == <?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>) {
+                        $('.toggle-audio-settings').eq(<?= AUDIO_TYPE_BRACKET_GENERATION ?>).prop('disabled', true)
                     }
 
-                    let panel = $('.music-setting').eq(item.type);
-                    panel.find("#toggle-music-settings-" + item.type).prop(
+                    let panel = $('.audio-setting').eq(item.type);
+                    panel.find("#toggle-audio-settings-" + item.type).prop(
                         'checked', true);
                     panel.find('.setting').removeClass('visually-hidden');
                     panel.find('input[type="radio"][value="' + item.source +
@@ -1678,10 +1678,10 @@ const changeSettings = (event) => {
                     panel.find('input.duration').val(item.duration);
                 }
 
-                if (result.tournamentSettings.winner_music_everyone == 1) {
-                    $('#winnerMusicForEveryone').attr('checked', true)
+                if (result.tournamentSettings.winner_audio_everyone == 1) {
+                    $('#winnerAudioForEveryone').attr('checked', true)
                 } else {
-                    $('#winnerMusicForEveryone').attr('checked', false)
+                    $('#winnerAudioForEveryone').attr('checked', false)
                 }
             }
 

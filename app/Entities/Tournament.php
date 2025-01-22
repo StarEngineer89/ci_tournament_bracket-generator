@@ -36,6 +36,6 @@ class Tournament extends Entity
         'allow_host_override',
         'pt_image_update_enabled',
         'theme',
-        'winner_music_everyone' => null
+        'winner_audio_everyone' => null
     ];
 }

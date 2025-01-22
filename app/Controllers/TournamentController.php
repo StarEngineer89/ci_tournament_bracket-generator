@@ -15,7 +15,7 @@ class TournamentController extends BaseController
         $table = view('tournament/list', ['navActive' => $navActive, 'searchString' => $searchString, 'shareType' => $this->request->getGet('type')]);
 
         $settingsBlock = view('tournament/tournament-settings', []);
-        $musicSettingsBlock = view('tournament/music-setting', []);
+        $audioSettingsBlock = view('tournament/audio-setting', []);
 
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         $users = $userModel->select(['id', 'username'])->findAll();
@@ -24,7 +24,7 @@ class TournamentController extends BaseController
             return view('gallery', ['searchString' => $searchString]);
         }
 
-        return view('tournament/dashboard', ['table' => $table, 'musicSettingsBlock' => $musicSettingsBlock, 'settingsBlock' => $settingsBlock, 'users' => $users, 'navActive' => $navActive]);
+        return view('tournament/dashboard', ['table' => $table, 'audioSettingsBlock' => $audioSettingsBlock, 'settingsBlock' => $settingsBlock, 'users' => $users, 'navActive' => $navActive]);
     }
 
     public function create()
@@ -47,16 +47,16 @@ class TournamentController extends BaseController
         }
 
         $settingsBlock = view('tournament/tournament-settings', []);
-        $musicSettingsBlock = view('tournament/music-setting', []);
+        $audioSettingsBlock = view('tournament/audio-setting', []);
 
-        return view('tournament/create', ['musicSettingsBlock' => $musicSettingsBlock, 'settingsBlock' => $settingsBlock, 'userSettings' => $settingsArray]);
+        return view('tournament/create', ['audioSettingsBlock' => $audioSettingsBlock, 'settingsBlock' => $settingsBlock, 'userSettings' => $settingsArray]);
     }
 
     public function view($id)
     {
         $tournamentModel = model('\App\Models\TournamentModel');
         $bracketModel = model('\App\Models\BracketModel');
-        $musicSettingModel = model('\App\Models\MusicSettingModel');
+        $audioSettingModel = model('\App\Models\AudioSettingModel');
         $userSettingModel = model('\App\Models\UserSettingModel');
 
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
@@ -128,15 +128,15 @@ class TournamentController extends BaseController
             $participants = $participantModel->where(['user_id' => $user_id, 'tournament_id' => $id])->findAll();
 
             $settingsBlock = view('tournament/tournament-settings', []);
-            $musicSettingsBlock = view('tournament/music-setting', []);
-            $musicSettings = $musicSettingModel->where(['tournament_id' => $id])->whereIn('type', [MUSIC_TYPE_BRACKET_GENERATION, MUSIC_TYPE_BRACKET_GENERATION_VIDEO])->orderBy('type','asc')->findAll();
-            if ($musicSettings) {
-                $musics = [];
-                foreach ($musicSettings as $music) {
-                    $musics[$music['type']] = $music;
+            $audioSettingsBlock = view('tournament/audio-setting', []);
+            $audioSettings = $audioSettingModel->where(['tournament_id' => $id])->whereIn('type', [AUDIO_TYPE_BRACKET_GENERATION, AUDIO_TYPE_BRACKET_GENERATION_VIDEO])->orderBy('type','asc')->findAll();
+            if ($audioSettings) {
+                $audios = [];
+                foreach ($audioSettings as $audio) {
+                    $audios[$audio['type']] = $audio;
                 }
 
-                $musicSettings = $musics;
+                $audioSettings = $audios;
             }
             
             $userSettings = $userSettingModel->where('user_id', $user_id)->findAll();
@@ -149,12 +149,12 @@ class TournamentController extends BaseController
                 }
             }
 
-            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $musicSettings, 'settingsBlock' => $settingsBlock, 'musicSettingsBlock' => $musicSettingsBlock, 'userSettings' => $settingsArray]);
+            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
-        $musicSettings = $musicSettingModel->where(['tournament_id' => $id, 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'musicSettings' => $musicSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'page' => 'view']);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'page' => 'view']);
     }
     
     public function viewShared($token)
@@ -162,7 +162,7 @@ class TournamentController extends BaseController
         $shareSettingModel = model('\App\Models\ShareSettingsModel');
         $tournamentModel = model('\App\Models\TournamentModel');
         $bracketModel = model('\App\Models\BracketModel');
-        $musicSettingModel = model('\App\Models\MusicSettingModel');
+        $audioSettingModel = model('\App\Models\AudioSettingModel');
 
         $settings = $shareSettingModel->where(['token'=> $token])->first();
         if (!$settings) {
@@ -237,9 +237,9 @@ class TournamentController extends BaseController
             return redirect()->to('/tournaments');
         }
 
-        $musicSettings = $musicSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => MUSIC_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        $audioSettings = $audioSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'musicSettings' => $musicSettings, 'votingEnabled' => $votingEnabled, 'editable' => $editable, 'page' => 'view']);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'editable' => $editable, 'page' => 'view']);
     }
 
     public function export()

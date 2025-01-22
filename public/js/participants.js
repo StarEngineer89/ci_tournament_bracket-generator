@@ -47,7 +47,7 @@ function callShuffle(enableShuffling = true) {
 
 function skipShuffling() {
     audio.pause();
-    document.getElementById('stopAudioButton').textContent = "Resume Music"
+    document.getElementById('stopAudioButton').textContent = "Resume Audio"
     shuffle_duration = 0;
 }
 
@@ -492,7 +492,7 @@ var checkDuplicatedParticipants = () => {
 }
 
 $(document).ready(function () {
-    $(".music-setting .time").inputmask(
+    $(".audio-setting .time").inputmask(
         "99:59:59",
         {
             placeholder: "00:00:00",

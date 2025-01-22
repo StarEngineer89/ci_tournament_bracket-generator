@@ -9,7 +9,7 @@ class TournamentLibrary
     protected $tournamentsModel;
     protected $votesModel;
     protected $shareSettingsModel;
-    protected $musicSettingsModel;
+    protected $audioSettingsModel;
     protected $roundSettingsModel;
     protected $schedulesModel;
     protected $logActionsModel;
@@ -23,7 +23,7 @@ class TournamentLibrary
         $this->tournamentsModel = model('\App\Models\TournamentModel');
         $this->votesModel = model('\App\Models\VotesModel');
         $this->shareSettingsModel = model('\App\Models\ShareSettingsModel');
-        $this->musicSettingsModel = model('\App\Models\MusicSettingModel');
+        $this->audioSettingsModel = model('\App\Models\AudioSettingModel');
         $this->roundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
         $this->schedulesModel = model('\App\Models\SchedulesModel');
         $this->logActionsModel = model('\App\Models\LogActionsModel');
@@ -47,15 +47,15 @@ class TournamentLibrary
             $this->participantsModel->where(['tournament_id' => $tournament_id])->delete();
         }
 
-        $musicSettings = $this->musicSettingsModel->where(['tournament_id' => $tournament_id])->findAll();
-        if ($musicSettings) {
-            foreach ($musicSettings as $setting) {
+        $audioSettings = $this->audioSettingsModel->where(['tournament_id' => $tournament_id])->findAll();
+        if ($audioSettings) {
+            foreach ($audioSettings as $setting) {
                 if ($setting['path'] && file_exists(WRITEPATH . 'uploads/' . $setting['path'])) {
                     unlink(WRITEPATH . 'uploads/' . $setting['path']);
                 }
             }
         }
-        $this->musicSettingsModel->where(['tournament_id' => $tournament_id])->delete();
+        $this->audioSettingsModel->where(['tournament_id' => $tournament_id])->delete();
 
         $this->bracketsModel->where(['tournament_id' => $tournament_id])->delete();
         

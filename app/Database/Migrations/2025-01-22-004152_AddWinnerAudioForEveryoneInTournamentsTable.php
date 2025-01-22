@@ -4,12 +4,12 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddWinnerMusicForEveryoneInTournamentsTable extends Migration
+class AddWinnerAudioForEveryoneInTournamentsTable extends Migration
 {
     public function up()
     {
         $this->forge->addColumn('tournaments', [
-            'winner_music_everyone' => [
+            'winner_audio_everyone' => [
                 'type' => 'tinyint',
                 'null' => true, 
                 'default' => null
@@ -19,6 +19,6 @@ class AddWinnerMusicForEveryoneInTournamentsTable extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('tournaments', 'winner_music_everyone');
+        $this->forge->dropColumn('tournaments', 'winner_audio_everyone');
     }
 }

@@ -941,7 +941,7 @@ let initConfetti = () => {
 
     scrollToMiddle(document.getElementById('brackets'));
 
-    if (winnerMusicPlayingForEveryone) {
+    if (winnerAudioPlayingForEveryone) {
         var player = document.getElementById('myAudio');
         if (player) {
             player.addEventListener("timeupdate", function () {

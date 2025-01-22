@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class MusicSettingModel extends Model
+class AudioSettingModel extends Model
 {
     protected $table            = 'music_settings';
     protected $primaryKey       = 'id';
