@@ -110,6 +110,6 @@ class Filters extends BaseFilters
      */
     public array $filters = [
         'tournamentAccessPermission' => ['before' => ['tournaments/shared/*']],
-        'TournamentPreservedFilter' => ['after' => ['login*', 'register']]
+        'TournamentPreservedFilter' => ['after' => ['login*', 'register', 'auth/google/callback']]
     ];
 }
