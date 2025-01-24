@@ -25,8 +25,8 @@
         <main role="main">
             <div class="header p-2 border-bottom sticky-top">
                 <div class="container-fluid">
-                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative">
-                        <a class="navbar-brand" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo" /></a>
+                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative d-flex">
+                        <a class="navbar-brand me-auto pe-5" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo" /></a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>
                         <div class="notification-box me-3 order-md-3">
@@ -69,8 +69,8 @@
                             </ul>
                         </div>
                         <?php else: ?>
-                        <a class="btn btn-primary me-md-3 order-md-3" href="<?= base_url('login') ?>">Login</a>
-                        <a class="btn btn-primary order-md-4" href="<?= base_url('register') ?>">Signup</a>
+                        <a class="btn btn-primary me-md-3 me-sm-2 order-md-3" href="<?= base_url('login') ?>">Login</a>
+                        <a class="btn btn-primary order-md-4 me-sm-2" href="<?= base_url('register') ?>">Signup</a>
                         <?php endif; ?>
 
                         <button class="navbar-toggler order-md-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@
                         </button>
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <ul class="navbar-nav d-flex ms-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
                                     <a class="nav-link  <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">Home</a>
                                 </li>
