@@ -7,6 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index');
 
+$routes->get('emailtest', 'EmailTestController::index');
 $routes->get('profile', 'ProfileController::index');
 $routes->get('profile/change-email', 'ProfileController::changeEmail', ['as' => 'profile.change-email']);
 $routes->post('profile/update-email', 'ProfileController::updateEmail');
