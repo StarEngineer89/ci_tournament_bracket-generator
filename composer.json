@@ -18,7 +18,8 @@
         "google/auth": "^1.40",
         "norkunas/youtube-dl-php": "^2.6",
         "phpoffice/phpspreadsheet": "^2.1",
-        "psr/http-message": "^2.0"
+        "psr/http-message": "^2.0",
+        "sendgrid/sendgrid": "^8.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",
