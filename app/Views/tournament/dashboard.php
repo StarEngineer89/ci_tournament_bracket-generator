@@ -1728,7 +1728,12 @@ function saveChange() {
         type: "POST",
         url: `${apiURL}/tournaments/${tournament_id}/update`,
         data: data,
+        beforeSend: function() {
+            $('#beforeProcessing').removeClass('d-none')
+        },
         success: function(result) {
+            $('#beforeProcessing').addClass('d-none')
+
             const data = JSON.parse(result).data;
 
             if (data.title != undefined && data.title != '') {
