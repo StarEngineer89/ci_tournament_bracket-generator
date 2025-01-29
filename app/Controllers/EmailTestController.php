@@ -9,9 +9,9 @@ class EmailTestController extends BaseController
     public function index()
     {
         $email = new \SendGrid\Mail\Mail();
-        $email->setFrom("hello@tourncreator.com", "Turn Creator");
+        $email->setFrom(getenv('email.fromEmail'), getenv('email.fromName'));
         $email->setSubject("Test Email with sendgrid api");
-        $email->addTo("kenny.aujob@gmail.com");
+        $email->addTo("mrg8406@gmail.com");
         $email->addContent("text/plain", "and easy to do anywhere, even with PHP");
         $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
         try {

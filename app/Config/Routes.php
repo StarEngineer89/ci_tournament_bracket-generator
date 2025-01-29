@@ -123,5 +123,3 @@ $routes->group('api/shared', static function ($routes) {
 
 /** Shield routs for authentication */
 service('auth')->routes($routes);
-
-$routes->get('/sendtestemail', 'EmailTest::sendTestEmail');
