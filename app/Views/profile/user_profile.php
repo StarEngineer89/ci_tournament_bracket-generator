@@ -215,7 +215,7 @@ let confirmVerificationCode = () => {
                         <div class="row mb-3">
                             <label for="new_email" class="form-label col-md-4 col-sm-12">Verification Code</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="code" id="confirm_code" required>
+                                <input type="text" class="form-control" name="confirm_code" id="confirm_code" required>
                             </div>
                         </div>
 

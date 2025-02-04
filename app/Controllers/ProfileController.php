@@ -61,7 +61,7 @@ class ProfileController extends BaseController
     public function updateEmailConfirm()
     {
         $userId = auth()->user()->id;
-        $code = $this->request->getPost('code');
+        $code = $this->request->getPost('confirm_code');
 
         $emailVerificationModel = new \App\Models\EmailVerificationModel();
         $verification = $emailVerificationModel->where('user_id', $userId)
