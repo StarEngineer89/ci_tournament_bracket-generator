@@ -74,6 +74,7 @@ class TournamentController extends BaseController
 
         /** Check if the tournament is associated with guest user */
         $editable = false;
+        $votingEnabled = false;
         if (auth()->user() && $tournament['user_id'] == auth()->user()->id) {
             $editable = true;
         }
@@ -83,17 +84,21 @@ class TournamentController extends BaseController
             $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
             $shareSetting = $shareSettingsModel->where(['tournament_id' => $id, 'user_id' => 0])->first();
 
-            $cookie_value = $id . "_" . $shareSetting['token'];
+            if ($shareSetting) {
+                $cookie_value = $id . "_" . $shareSetting['token'];
+            } else {
+                $cookie_value = $id . "_" . 'guest';
+            }
 
             if (in_array($cookie_value, $tournamentHistory)) {
                 $editable = true;
+                $votingEnabled = true;
             }
         }
 
         /** 
          * Check if vote is available 
          */
-        $votingEnabled = false;
         if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING) {
             if ($tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED) {
                 if (auth()->user()) {

@@ -322,13 +322,13 @@ class TournamentController extends BaseController
                 }
             }
         }
+        
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
 
         /**
          * Add the tournament created by guest users to share table
          */
-        if(!$user_id || $tournamentData->visibility){
-            $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-
+        if($tournamentData->visibility){
             $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->first();
             if(!$shareSetting){
                 $config = new \Config\Encryption();
@@ -353,7 +353,11 @@ class TournamentController extends BaseController
             $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament_id, 'user_id' => 0])->first();
 
             // Add the new tournament to the history
-            $tournamentHistory[] = $tournament_id . "_" . $shareSetting['token'];
+            if ($shareSetting) {
+                $tournamentHistory[] = $tournament_id . "_" . $shareSetting['token'];
+            } else {
+                $tournamentHistory[] = $tournament_id . "_" . 'guest';
+            }
 
             // Store updated history in cookies (expire in 1 days)
             $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
