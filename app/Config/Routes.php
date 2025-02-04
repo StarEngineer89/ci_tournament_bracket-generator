@@ -7,14 +7,16 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index');
 
-$routes->get('emailtest', 'EmailTestController::index');
 $routes->get('profile', 'ProfileController::index');
 $routes->get('profile/change-email', 'ProfileController::changeEmail', ['as' => 'profile.change-email']);
-$routes->post('profile/update-email', 'ProfileController::updateEmail');
+$routes->post('profile/update-email', 'ProfileController::sendVerification');
+$routes->post('profile/update-email-confirm', 'ProfileController::updateEmailConfirm');
 $routes->get('profile/change-password', 'ProfileController::changePassword', ['as' => 'profile.change-password']);
 $routes->post('profile/update-password', 'ProfileController::updatePassword');
 
 $routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
+$routes->post('login/magic-link', '\App\Controllers\Auth\CustomMagicLinkController::loginAction');
+
 $routes->get('auth/google', 'GoogleAuthController::login');
 $routes->get('auth/google/callback', 'GoogleAuthController::callback');
 

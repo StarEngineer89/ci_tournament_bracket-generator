@@ -4,6 +4,7 @@ namespace Config;
 
 use CodeIgniter\Config\BaseService;
 use App\Services\NotificationService;
+use App\Services\SendGridEmailService;
 
 /**
  * Services Configuration file.
@@ -35,4 +36,9 @@ class Services extends BaseService
      {
         return new NotificationService();
      }
+
+      public static function email($config = null, $getShared = true)
+      {  
+         return new SendGridEmailService();
+      }
 }

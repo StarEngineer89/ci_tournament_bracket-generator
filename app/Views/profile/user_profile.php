@@ -21,6 +21,8 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#changePasswordForm')[0].reset(); // Reset form if successful
                 }
+
+                $('#changePasswordModal').modal('hide')
             },
             error: function() {
                 $('#responseMessage').html(
@@ -30,6 +32,51 @@ $(document).ready(function() {
         });
     });
 });
+
+let sendVerificationCode = () => {
+    $.ajax({
+        url: '<?= base_url('profile/update-email') ?>',
+        type: 'POST',
+        data: $('#updateEmailForm').serialize(),
+        dataType: 'json',
+        success: function(response) {
+            $('#responseMessage').html(
+                `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
+            );
+            if (response.status == 'success') {
+                $('.update-email-block').addClass('d-none')
+                $('.confirm-code-block').removeClass('d-none')
+            }
+        },
+        error: function() {
+            $('#responseMessage').html(
+                '<div class="alert alert-danger">An error occurred. Please try again.</div>'
+            );
+        }
+    });
+}
+let confirmVerificationCode = () => {
+    $.ajax({
+        url: '<?= base_url('profile/update-email-confirm') ?>',
+        type: 'POST',
+        data: $('#updateEmailForm').serialize(),
+        dataType: 'json',
+        success: function(response) {
+            $('#responseMessage').html(
+                `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
+            );
+            if (response.status == 'success') {
+                $('.update-email-block').addClass('d-none')
+                $('.confirm-code-block').removeClass('d-none')
+            }
+        },
+        error: function() {
+            $('#responseMessage').html(
+                '<div class="alert alert-danger">An error occurred. Please try again.</div>'
+            );
+        }
+    });
+}
 </script>
 <?= $this->endSection() ?>
 
@@ -63,6 +110,8 @@ $(document).ready(function() {
             <?php if (session('message') !== null) : ?>
             <div class="alert alert-success" role="alert"><?= session('message') ?><?= \Config\Services::validation()->listErrors() ?></div>
             <?php endif ?>
+
+            <div id="responseMessage"></div>
 
             <div class="container">
                 <form>
@@ -137,9 +186,11 @@ $(document).ready(function() {
             </div>
             <div class="modal-body">
                 <div class="text-hint mb-3">
-                    To change your account email, enter your current email address and the new email address you want to use. After clicking "Update Email," a verification code will be sent to your new email address. Enter the code in the field provided to finalize the update process.
+                    To change your account email, enter the new email address you want to use. <br />
+                    After clicking "Update Email," a verification code will be sent to your new email address. Enter the code in the field provided to finalize the update process.<br /><br />
+                    Note: Check your spam folder in case the email may have been sent there and you're not seeing it in your primary inbox.
                 </div>
-                <form action="<?= site_url('profile/update-email') ?>" method="post">
+                <form action="<?= site_url('profile/update-email') ?>" id="updateEmailForm" method="post">
                     <?= csrf_field() ?>
 
                     <div class="row mb-3">
@@ -149,27 +200,31 @@ $(document).ready(function() {
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <label for="new_email" class="form-label col-md-4 col-sm-12">New Email</label>
-                        <div class="col-sm-8">
-                            <input type="email" class="form-control" name="new_email" id="new_email" required>
+                    <div class="update-email-block">
+                        <div class="row mb-3">
+                            <label for="new_email" class="form-label col-md-4 col-sm-12">New Email</label>
+                            <div class="col-sm-8">
+                                <input type="email" class="form-control" name="new_email" id="new_email" required>
+                            </div>
                         </div>
+
+                        <button class="btn btn-primary w-100" id="sendVerificationCodeBtn" onclick="sendVerificationCode()">Update Email</button>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">Update Email</button>
+                    <div class="confirm-code-block d-none">
+                        <div class="row mb-3">
+                            <label for="new_email" class="form-label col-md-4 col-sm-12">Verification Code</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" name="code" id="confirm_code" required>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary w-100" id="confirmVerificationCodeBtn" onclick="confirmVerificationCode()">Confirm</button>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer visually-hidden">
-                <form action="<?= base_url('profile/confirm-email-update') ?>" method="post">
-                    <div class="mb-3">
-                        <label for="verification_code" class="form-label">Verification Code</label>
-                        <input type="text" class="form-control" name="verification_code" id="verification_code" required>
-                        <div class="form-text">Enter the verification code sent to your new email address.</div>
-                    </div>
-                </form>
 
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitPassword">Confirm</button>
             </div>
         </div>
     </div>
