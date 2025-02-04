@@ -190,7 +190,7 @@ let confirmVerificationCode = () => {
                     After clicking "Update Email," a verification code will be sent to your new email address. Enter the code in the field provided to finalize the update process.<br /><br />
                     Note: Check your spam folder in case the email may have been sent there and you're not seeing it in your primary inbox.
                 </div>
-                <form action="<?= site_url('profile/update-email') ?>" id="updateEmailForm" method="post">
+                <form action="<?= site_url('profile/update-email-confirm') ?>" id="updateEmailForm" method="post">
                     <?= csrf_field() ?>
 
                     <div class="row mb-3">
