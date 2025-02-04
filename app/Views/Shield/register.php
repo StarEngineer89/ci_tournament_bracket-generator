@@ -10,18 +10,25 @@
                 <h5 class="card-title mb-5"><?= lang('Auth.register') ?></h5>
 
                 <?php if (session('error') !== null) : ?>
-                    <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
+                <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
                 <?php elseif (session('errors') !== null) : ?>
-                    <div class="alert alert-danger" role="alert">
-                        <?php if (is_array(session('errors'))) : ?>
-                            <?php foreach (session('errors') as $error) : ?>
-                                <?= $error ?>
-                                <br>
-                            <?php endforeach ?>
-                        <?php else : ?>
-                            <?= session('errors') ?>
-                        <?php endif ?>
-                    </div>
+                <div class="alert alert-danger" role="alert">
+                    <?php if (is_array(session('errors'))) : ?>
+                    <?php $duplicated_identifier = false ?>
+                    <?php foreach (session('errors') as $key => $error) : ?>
+                    <?php if (!$duplicated_identifier): ?>
+                    <?= $error ?>
+                    <br>
+                    <?php if ($key == 'username' || $key == 'email'): ?>
+                    <?= (!$duplicated_identifier) ? "<br/>Use the login link function if you've forgotten your account credentials or try using different credentials if registering for a new account." : '' ?>
+                    <?php $duplicated_identifier = true ?>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                    <?php endforeach ?>
+                    <?php else : ?>
+                    <?= session('errors') ?>
+                    <?php endif ?>
+                </div>
                 <?php endif ?>
 
                 <form action="<?= url_to('register') ?>" method="post">
