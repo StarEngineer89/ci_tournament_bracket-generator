@@ -87,7 +87,7 @@ class ProfileController extends BaseController
 
             return redirect()->back()->with('message', 'Email updated. Please verify the new email address.');
         } else {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid or expired code']);
+            return redirect()->back()->with('message', 'Invalid or expired code');
         }
     }
 
