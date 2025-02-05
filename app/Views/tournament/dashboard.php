@@ -336,6 +336,7 @@ var tournamentsTable = null;
 var datatableRows;
 var actionLogsTable = null;
 var actionLogsTableRows;
+var availability_start_changed = false;
 
 //get data pass to json
 var task = new Bloodhound({
@@ -1124,6 +1125,7 @@ $(document).ready(function() {
                 // Trigger validation error for empty readonly field
                 document.getElementById('startAvPicker').classList.add("is-invalid");
                 startDateInput.addEventListener('change', () => {
+                    availability_start_changed = true;
                     if (startDateInput.value.trim()) {
                         document.getElementById('startAvPicker').classList.remove("is-invalid");
                     }
@@ -1132,6 +1134,10 @@ $(document).ready(function() {
                 event.preventDefault(); // Prevent form submission
 
                 isValid = false
+            } else {
+                startDateInput.addEventListener('change', () => {
+                    availability_start_changed = true;
+                })
             }
 
             if (!endDateInput.value.trim()) {
@@ -1155,13 +1161,15 @@ $(document).ready(function() {
                 document.getElementById('availability-end-date-error').classList.remove('d-none')
             }
 
-            if (startDate < currentDate) {
-                isValid = false
-                document.getElementById('availability-start-date-error').previousElementSibling.classList.add('is-invalid')
-                document.getElementById('availability-start-date-error').textContent = "You cannot select a past date/time!"
-                document.getElementById('availability-start-date-error').classList.remove('d-none')
-            } else {
-                document.getElementById('availability-start-date-error').classList.add('d-none')
+            if (availability_start_changed) {
+                if (startDate < currentDate) {
+                    isValid = false
+                    document.getElementById('availability-start-date-error').previousElementSibling.classList.add('is-invalid')
+                    document.getElementById('availability-start-date-error').textContent = "You cannot select a past date/time!"
+                    document.getElementById('availability-start-date-error').classList.remove('d-none')
+                } else {
+                    document.getElementById('availability-start-date-error').classList.add('d-none')
+                }
             }
 
             if (endDate < currentDate) {

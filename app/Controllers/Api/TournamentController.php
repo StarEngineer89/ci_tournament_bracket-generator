@@ -416,6 +416,7 @@ class TournamentController extends BaseController
         if ($this->request->getPost('status')) {
             $tournament['status'] = $this->request->getPost('status');
         }
+            
         if ($this->request->getPost('visibility')) {
             $tournament['visibility'] = ($this->request->getPost('visibility') == 'on') ? 1 : 0;
 
@@ -427,14 +428,17 @@ class TournamentController extends BaseController
                     $shareData = array(
                         'user_id' => $tournament['user_id'],
                         'tournament_id' => $tournament_id,
-                        'target' => 'p',
+                        'target' => SHARE_TO_PUBLIC,
                         'permission' => SHARE_PERMISSION_VIEW,
                         'token' => $token
                     );
                     $this->shareSettingModel->insert($shareData);
                 }
+            } else {
+                $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'user_id' => $tournament['user_id'], 'target' => SHARE_TO_PUBLIC])->delete();
             }
         }
+
         if ($this->request->getPost('shuffle_enabled')) {
             $tournament['shuffle_enabled'] = ($this->request->getPost('shuffle_enabled') == 'on') ? 1 : 0;
         }
