@@ -125,7 +125,8 @@ $routes->post('login/magic-link', '\App\Controllers\Auth\CustomMagicLinkControll
 
 $routes->get('auth/google', 'GoogleAuthController::login');
 $routes->get('auth/google/callback', 'GoogleAuthController::callback');
-$routes->get('auth/resend-verification', 'RegisterController::resendVerification');
+$routes->get('auth/resend-verification', 'Auth\RegisterController::resendVerification');
+$routes->get('auth/a/abort-verification', 'Auth\RegisterController::abortVerification');
 $routes->get('auth/verification-success', function() {
-    return view('Shield/verification_success');
+    return view('shield/verification_success');
 });

@@ -38,7 +38,7 @@ class EmailActivator extends ShieldEmailActivator
         if (! $authenticator->checkAction($identity, $postedToken)) {
             session()->setFlashdata('error', lang('Auth.invalidActivateToken'));
 
-            return $this->view(setting('Auth.views')['action_email_activate_show']);
+            return $this->view(setting('Auth.views')['action_email_activate_show'], ['user' => $user]);
         }
 
         // Get authenticated user
@@ -49,7 +49,7 @@ class EmailActivator extends ShieldEmailActivator
         
         // Send welcome email
         $this->sendWelcomeEmail($user);
-        log_message('debug', config('Auth')->registerRedirect());
+        
         // Success!
         return redirect()->to(config('Auth')->registerRedirect())
             ->with('message', lang('Auth.registerSuccess'));

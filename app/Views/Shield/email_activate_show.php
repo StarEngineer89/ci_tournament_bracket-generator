@@ -9,11 +9,15 @@
         <div class="card-body">
             <h5 class="card-title mb-5"><?= lang('Auth.emailActivateTitle') ?></h5>
 
-            <?php if (session('error')) : ?>
-            <div class="alert alert-danger"><?= session('error') ?></div>
-            <?php endif ?>
+            <div id="notification-area">
+                <?php if (session('error')) : ?>
+                <div class="alert alert-danger"><?= session('error') ?></div>
+                <?php endif; ?>
+            </div>
 
-            <p><?= lang('Auth.emailActivateBody') ?></p>
+            <p>
+                <?= lang('Auth.emailActivateBody', [$user->email]) ?>
+            </p>
 
             <form action="<?= url_to('auth-action-verify') ?>" method="post">
                 <?= csrf_field() ?>
@@ -29,15 +33,34 @@
                     <button class="resend-verification-code-link btn btn-link" id="resend-code" onclick="sendVerificationCode()">Resend Code</b>
                 </div>
 
-                <div class="d-grid col-8 mx-auto m-3">
+                <div class="d-grid col-4 col-sm-6 mx-auto mb-3">
                     <button type="submit" class="btn btn-primary btn-block"><?= lang('Auth.send') ?></button>
                 </div>
 
+                <div class="d-grid col-4 col-sm-6 mx-auto">
+                    <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#abortVerificationModal"><?= lang('Auth.abortVerification') ?></button>
+                </div>
             </form>
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="abortVerificationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="abortVerificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="abortVerificationModalLabel"><?= lang('Auth.abortVerification') ?></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <?= lang('Auth.abortVerificationModalBody') ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('Button.dismiss') ?></button>
+                <button type="button" class="btn btn-primary" onclick="abortVerification()"><?= lang('Button.ok') ?></button>
+            </div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
 
 
@@ -48,6 +71,13 @@ $(document).ready(function() {
     resendButton.disabled = true;
 
     startCooldown(resendButton);
+
+    // Clear notification after 10 seconds
+    setTimeout(function() {
+        $('#notification-area').fadeOut('slow', function() {
+            $(this).empty().show(); // Empty and show to reset for future messages
+        });
+    }, 10000);
 });
 let startCooldown = (button) => {
     let cooldown = 60;
@@ -63,7 +93,7 @@ let startCooldown = (button) => {
     }, 1000);
 }
 
-let sendVerificationCode = () => {
+let sendVerificationCode = (resend = false) => {
     let resendButton = document.getElementById('resend-code');
     resendButton.disabled = true;
 
@@ -71,22 +101,30 @@ let sendVerificationCode = () => {
         url: '<?= base_url('auth/resend-verification') ?>',
         type: 'get',
         success: function(response) {
-            $('#responseMessage').html(
-                `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
+            let message = `<?= isset($user) ? lang('Auth.newVerificationCodeSentMessage', [$user->email]) : '' ?>`
+            $('#notification-area').html(
+                `<div class="alert alert-success">${message}</div>`
             );
-            if (response.status == 'success') {
-                $('.update-email-block').addClass('d-none')
-                $('.confirm-code-block').removeClass('d-none')
-            }
 
             startCooldown(resendButton);
+
+            // Clear notification after 10 seconds
+            setTimeout(function() {
+                $('#notification-area').fadeOut('slow', function() {
+                    $(this).empty().show(); // Empty and show to reset for future messages
+                });
+            }, 10000);
         },
         error: function() {
-            $('#responseMessage').html(
+            $('#notification-area').html(
                 '<div class="alert alert-danger">An error occurred. Please try again.</div>'
             );
         }
     });
+}
+
+let abortVerification = () => {
+    window.location.href = "<?= base_url('auth/a/abort-verification') ?>"
 }
 </script>
 <?= $this->endSection() ?>

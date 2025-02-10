@@ -65,7 +65,7 @@ class ProfileController extends BaseController
             throw new RuntimeException('Cannot send email for user: ' . $new_email . "\n" . $email->printDebugger(['headers']));
         }
 
-        return $this->response->setJSON(['status' => 'success', 'success' => true, 'message' => 'Verification code sent']);
+        return $this->response->setJSON(['status' => 'success', 'success' => true, 'message' => lang('Auth.newVerificationCodeSentMessage', [auth()->user()->email])]);
     }
 
     public function updateEmailConfirm()
@@ -113,7 +113,7 @@ class ProfileController extends BaseController
 
             return redirect()->back()->with('message', 'Email updated. Please verify the new email address.');
         } else {
-            return redirect()->back()->with('message', 'Invalid or expired code');
+            return redirect()->back()->with('message', lang('Auth.invalidActivateToken'));
         }
     }
 

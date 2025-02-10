@@ -31,9 +31,16 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Clear notification after 10 seconds
+    setTimeout(function() {
+        $('#notification-area').fadeOut('slow', function() {
+            $(this).empty().show(); // Empty and show to reset for future messages
+        });
+    }, 10000);
 });
 
-let sendVerificationCode = () => {
+let sendVerificationCode = (resend = false) => {
     let resendButton = document.getElementById('resend-code');
     resendButton.disabled = true;
 
@@ -43,7 +50,7 @@ let sendVerificationCode = () => {
         data: $('#updateEmailForm').serialize(),
         dataType: 'json',
         success: function(response) {
-            $('#responseMessage').html(
+            $('#email-update-notification-area').html(
                 `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
             );
             if (response.status == 'success') {
@@ -52,9 +59,16 @@ let sendVerificationCode = () => {
             }
 
             startCooldown(resendButton);
+
+            // Clear notification after 10 seconds
+            setTimeout(function() {
+                $('#email-update-notification-area').fadeOut('slow', function() {
+                    $(this).empty().show(); // Empty and show to reset for future messages
+                });
+            }, 10000);
         },
         error: function() {
-            $('#responseMessage').html(
+            $('#email-update-notification-area').html(
                 '<div class="alert alert-danger">An error occurred. Please try again.</div>'
             );
         }
@@ -82,7 +96,7 @@ let confirmVerificationCode = () => {
         data: $('#updateEmailForm').serialize(),
         dataType: 'json',
         success: function(response) {
-            $('#responseMessage').html(
+            $('#notification-area').html(
                 `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
             );
             if (response.status == 'success') {
@@ -91,7 +105,7 @@ let confirmVerificationCode = () => {
             }
         },
         error: function() {
-            $('#responseMessage').html(
+            $('#notification-area').html(
                 '<div class="alert alert-danger">An error occurred. Please try again.</div>'
             );
         }
@@ -112,26 +126,25 @@ let confirmVerificationCode = () => {
             </nav>
             <h5 class="card-title d-flex justify-content-center mb-5">User Information</h5>
 
-            <?php if (session('error') !== null) : ?>
-            <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
-            <?php elseif (session('errors') !== null) : ?>
-            <div class="alert alert-danger" role="alert">
-                <?php if (is_array(session('errors'))) : ?>
-                <?php foreach (session('errors') as $error) : ?>
-                <?= $error ?>
-                <br>
-                <?php endforeach ?>
-                <?php else : ?>
-                <?= session('errors') ?>
+            <div id="notification-area">
+                <?php if (session('error') !== null) : ?>
+                <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
+                <?php elseif (session('errors') !== null) : ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php if (is_array(session('errors'))) : ?>
+                    <?php foreach (session('errors') as $error) : ?>
+                    <?= $error ?>
+                    <br>
+                    <?php endforeach ?>
+                    <?php else : ?>
+                    <?= session('errors') ?>
+                    <?php endif ?>
+                </div>
+                <?php endif ?>
+                <?php if (session('message') !== null) : ?>
+                <div class="alert alert-success" role="alert"><?= session('message') ?><?= \Config\Services::validation()->listErrors() ?></div>
                 <?php endif ?>
             </div>
-            <?php endif ?>
-
-            <?php if (session('message') !== null) : ?>
-            <div class="alert alert-success" role="alert"><?= session('message') ?><?= \Config\Services::validation()->listErrors() ?></div>
-            <?php endif ?>
-
-            <div id="responseMessage"></div>
 
             <div class="container">
                 <form>
@@ -198,6 +211,7 @@ let confirmVerificationCode = () => {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div id="email-update-notification-area"></div>
                 <div class="text-hint mb-3">
                     To change your account email, enter the new email address you want to use. <br />
                     After clicking "Update Email," a verification code will be sent to your new email address. Enter the code in the field provided to finalize the update process.<br /><br />

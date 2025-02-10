@@ -12,11 +12,11 @@
     <p>Hi, <?= auth()->user()->username ?>,</p>
     <p>Welcome to <?= setting('Email.fromName') ?>! We’re thrilled to have you join us. Whether you're hosting epic tournaments or cheering for your favorites, we’ve got everything you need to make competitions legendary.</p>
     <br />
-    <p>🔥 Create Tournaments – Choose from Single, Double, or Knockout elimination styles.</p>
-    <p>🎨 Customize Your Experience – Personalize themes, add images, and even play audio or video for dramatic bracket reveals.</p>
-    <p>🗳️ Engage with Votes – Let others vote for participants to determine winners.</p>
-    <p>🔗 Share & Manage Permissions – Easily share tournaments and control access levels.</p>
-    <p>🥇 Track the Leaderboard – See top competitors and explore public tournaments in the gallery</p>
+    <p>🔥 <b>Create Tournaments</b> – Choose from Single, Double, or Knockout elimination styles.</p>
+    <p>🎨 <b>Customize Your Experience</b> – Personalize themes, add images, and even play audio or video for dramatic bracket reveals.</p>
+    <p>🗳️ <b>Engage with Votes</b> – Let others vote for participants to determine winners.</p>
+    <p>🔗 <b>Share & Manage Permissions</b> – Easily share tournaments and control access levels.</p>
+    <p>🥇 <b>Track the Leaderboard</b> – See top competitors and explore public tournaments in the gallery</p>
     <p>✨️And much more!</p>
     <br />
     <p>🚀 Your journey starts now—<a href="<?= url_to('tournaments/create') ?>" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: inline-block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">Click Here to Create Your First Tournament</a></p>
