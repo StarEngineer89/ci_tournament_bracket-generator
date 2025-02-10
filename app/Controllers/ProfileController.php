@@ -185,6 +185,8 @@ class ProfileController extends BaseController
     }
 
     public function deleteUser(): RedirectResponse {
+        $user_email = auth()->user()->email;
+        $username = auth()->user()->username;
         /**
          * @var mixed
          * Delete all the tournaments by the user
@@ -205,6 +207,20 @@ class ProfileController extends BaseController
         $users = auth()->getProvider();
 
         $users->delete(auth()->user()->id, true);
+
+        /** Send the email */
+        $email = service('email');
+        $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+        $email->setTo($user_email);
+        $email->setSubject(lang('Profile.closeAccountEmailSubject', [getenv('Email.fromName')]));
+        $email->setMessage(view(
+        'email/close-account-email',
+        ['username' => $username, 'sendername' => getenv('Email.fromName')],
+        ['debug' => false]
+        ));
+        if ($email->send(false) === false) {
+            throw new RuntimeException('Cannot send email for user: ' . $user_email . "\n" . $email->printDebugger(['headers']));
+        }
 
         // Success!
         return redirect()->to('logout')->withInput()->with('message', 'You have closed your account successfully!');
