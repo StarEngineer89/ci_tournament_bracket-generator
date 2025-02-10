@@ -29,6 +29,7 @@ class RegisterController extends ShieldRegisterController
      */
     public function registerAction(): RedirectResponse
     {
+        
         if (auth()->loggedIn()) {
             return redirect()->to(config('Auth')->registerRedirect());
         }
@@ -44,6 +45,12 @@ class RegisterController extends ShieldRegisterController
         // Validate here first, since some things,
         // like the password, can only be validated properly here.
         $rules = $this->getValidationRules();
+        $rules['email']['errors'] = [
+            'is_unique' => lang('Auth.errorEmailTaken', [$this->request->getPost('email')])
+        ];
+        $rules['username']['errors'] = [
+            'is_unique' => lang('Auth.errorUsernameTaken')
+        ];
 
         if (! $this->validateData($this->request->getPost(), $rules, [], config('Auth')->DBGroup)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());

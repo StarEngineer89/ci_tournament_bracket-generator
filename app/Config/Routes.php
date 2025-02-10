@@ -117,11 +117,9 @@ $routes->group('api/shared', static function ($routes) {
 
 });
 
-/** Shield routs for authentication */
-service('auth')->routes($routes);
-
 $routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
 $routes->post('login/magic-link', '\App\Controllers\Auth\CustomMagicLinkController::loginAction');
+$routes->post('register', '\App\Controllers\Auth\RegisterController::registerAction');
 
 $routes->get('auth/google', 'GoogleAuthController::login');
 $routes->get('auth/google/callback', 'GoogleAuthController::callback');
@@ -130,3 +128,6 @@ $routes->get('auth/a/abort-verification', 'Auth\RegisterController::abortVerific
 $routes->get('auth/verification-success', function() {
     return view('shield/verification_success');
 });
+
+/** Shield routs for authentication */
+service('auth')->routes($routes);
