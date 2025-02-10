@@ -13,6 +13,7 @@ $routes->post('profile/update-email', 'ProfileController::sendVerification');
 $routes->post('profile/update-email-confirm', 'ProfileController::updateEmailConfirm');
 $routes->get('profile/change-password', 'ProfileController::changePassword', ['as' => 'profile.change-password']);
 $routes->post('profile/update-password', 'ProfileController::updatePassword');
+$routes->get('close-account', 'ProfileController::deleteUser');
 
 $routes->get('/gallery', 'TournamentController::index');
 $routes->get('gallery/(:num)/view', 'TournamentController::view/$1');

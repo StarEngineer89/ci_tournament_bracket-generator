@@ -9,6 +9,8 @@ use CodeIgniter\Shield\Models\UserModel;
 use CodeIgniter\Shield\Authentication\Authenticators\Session;
 use App\Libraries\SendGridEmail;
 use CodeIgniter\Shield\Exceptions\RuntimeException;
+use App\Libraries\TournamentLibrary;
+use CodeIgniter\HTTP\RedirectResponse;
 
 class ProfileController extends BaseController
 {
@@ -180,5 +182,31 @@ class ProfileController extends BaseController
                 'message' => 'Password successfully updated.'
             ]);
         }
+    }
+
+    public function deleteUser(): RedirectResponse {
+        /**
+         * @var mixed
+         * Delete all the tournaments by the user
+         */
+        $tournamentLibrary = new TournamentLibrary();
+        $tournamentModel = model('\App\Models\TournamentModel');
+        $tournaments = $tournamentModel->where('user_id', auth()->user()->id)->findAll();
+        if ($tournaments) {
+            foreach ($tournaments as $tournament) {
+                $tournamentLibrary->deleteTournament($tournament['id']);
+            }
+        }
+        
+        /** Delete the user settings */
+        $userSettingsModel = model('\App\Models\UserSettingModel');
+        $userSettingsModel->where('user_id', auth()->user()->id)->delete();
+
+        $users = auth()->getProvider();
+
+        $users->delete(auth()->user()->id, true);
+
+        // Success!
+        return redirect()->to('logout')->withInput()->with('message', 'You have closed your account successfully!');
     }
 }

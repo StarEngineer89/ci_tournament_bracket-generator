@@ -111,6 +111,10 @@ let confirmVerificationCode = () => {
         }
     });
 }
+
+let deleteAccount = () => {
+    window.location.href = "<?= base_url('close-account')?>"
+}
 </script>
 <?= $this->endSection() ?>
 
@@ -159,8 +163,14 @@ let confirmVerificationCode = () => {
                     </div>
                     <div class="row mb-3">
                         <label for="inputPassword3" class="col-sm-3 col-form-label text-start">Password</label>
-                        <div class="col-sm-3 text-start">
+                        <div class="col-sm-6 text-start">
                             <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="closeAccount" class="col-sm-3 col-form-label text-start">Close Account</label>
+                        <div class="col-sm-6 text-start">
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#closeAccountModal">Close Account</button>
                         </div>
                     </div>
                 </form>
@@ -260,6 +270,34 @@ let confirmVerificationCode = () => {
             </div>
             <div class="modal-footer visually-hidden">
 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="closeAccountModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="closeAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="closeAccountModalLabel">⚠️ Confirm Account Deletion</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h3>Are you sure you want to delete your account?</h3>
+                <p>This action is permanent and cannot be undone.</p>
+                <p>You will lose access to:</p>
+                <p>
+                    • All your tournaments<br />
+                    • Voting records and leaderboard rankings<br />
+                    • Any saved customizations and media<br />
+                </p>
+
+                This action cannot be reversed!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="deleteAccount()">Close Account</button>
             </div>
         </div>
     </div>
