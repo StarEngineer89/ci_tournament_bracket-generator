@@ -38,7 +38,15 @@ class Services extends BaseService
      }
 
       public static function email($config = null, $getShared = true)
-      {  
+      {
+         if (setting('Email.protocol') == 'sendgrid') {
+            $getShared = false;
+         }
+         
+         if ($getShared) {
+            return static::getSharedInstance('email');
+         }
+
          return new SendGridEmailService();
       }
 }

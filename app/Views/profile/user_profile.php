@@ -34,6 +34,9 @@ $(document).ready(function() {
 });
 
 let sendVerificationCode = () => {
+    let resendButton = document.getElementById('resend-code');
+    resendButton.disabled = true;
+
     $.ajax({
         url: '<?= base_url('profile/update-email') ?>',
         type: 'POST',
@@ -47,6 +50,8 @@ let sendVerificationCode = () => {
                 $('.update-email-block').addClass('d-none')
                 $('.confirm-code-block').removeClass('d-none')
             }
+
+            startCooldown(resendButton);
         },
         error: function() {
             $('#responseMessage').html(
@@ -55,6 +60,21 @@ let sendVerificationCode = () => {
         }
     });
 }
+
+let startCooldown = (button) => {
+    let cooldown = 60;
+    let interval = setInterval(() => {
+        if (cooldown <= 0) {
+            clearInterval(interval);
+            button.disabled = false;
+            button.textContent = "Resend Code";
+        } else {
+            button.textContent = `Resend Code (${cooldown}s)`;
+            cooldown--;
+        }
+    }, 1000);
+}
+
 let confirmVerificationCode = () => {
     $.ajax({
         url: '<?= base_url('profile/update-email-confirm') ?>',
@@ -148,13 +168,6 @@ let confirmVerificationCode = () => {
                 <form id="changePasswordForm" action="<?= site_url('profile/update-password') ?>" method="post">
                     <?= csrf_field() ?>
 
-                    <div class="row mb-3 pb-3 border-bottom">
-                        <label for="current_password" class="form-label col-md-4 col-sm-12">Current Password</label>
-                        <div class="col-sm-8">
-                            <input type="password" class="form-control" name="current_password" id="current_password" required>
-                        </div>
-                    </div>
-
                     <div class="row mb-3">
                         <label for="new_password" class="form-label col-md-4 col-sm-12">New Password</label>
                         <div class="col-sm-8">
@@ -188,7 +201,8 @@ let confirmVerificationCode = () => {
                 <div class="text-hint mb-3">
                     To change your account email, enter the new email address you want to use. <br />
                     After clicking "Update Email," a verification code will be sent to your new email address. Enter the code in the field provided to finalize the update process.<br /><br />
-                    Note: Check your spam folder in case the email may have been sent there and you're not seeing it in your primary inbox.
+                    Note: Check your spam folder in case the email may have been sent there and you're not seeing it in your primary inbox.<br />
+                    If you still haven't received the verification code after a few minutes, it's possible you may have entered an invalid email address.
                 </div>
                 <form action="<?= site_url('profile/update-email-confirm') ?>" id="updateEmailForm" method="post">
                     <?= csrf_field() ?>
@@ -214,12 +228,19 @@ let confirmVerificationCode = () => {
                     <div class="confirm-code-block d-none">
                         <div class="row mb-3">
                             <label for="new_email" class="form-label col-md-4 col-sm-12">Verification Code</label>
-                            <div class="col-sm-8">
+                            <div class="col-md-4 col-sm-6">
                                 <input type="text" class="form-control" name="confirm_code" id="confirm_code" required>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <button class="resend-verification-code-link btn btn-primary" id="resend-code" onclick="sendVerificationCode()">Resend Code</button>
                             </div>
                         </div>
 
-                        <button class="btn btn-primary w-100" id="confirmVerificationCodeBtn" onclick="confirmVerificationCode()">Confirm</button>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary w-100" id="confirmVerificationCodeBtn" onclick="confirmVerificationCode()">Confirm</button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

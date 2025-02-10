@@ -45,7 +45,7 @@
                 </nav>
             </div>
         </div>
-        <main role="main">
+        <main role="main" class="main-content">
             <?= $this->renderSection('main') ?>
         </main>
 

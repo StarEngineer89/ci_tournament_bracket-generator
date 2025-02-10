@@ -8,6 +8,7 @@ use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Shield\Models\UserModel;
 use CodeIgniter\Shield\Authentication\Authenticators\Session;
 use App\Libraries\SendGridEmail;
+use CodeIgniter\Shield\Exceptions\RuntimeException;
 
 class ProfileController extends BaseController
 {
@@ -44,16 +45,25 @@ class ProfileController extends BaseController
         }
         
         $userId = auth()->user()->id; // Assuming user is logged in
-        $user_email = auth()->user()->email;
+        $new_email = $this->request->getPost('new_email');
 
         $emailVerificationModel = new \App\Models\EmailVerificationModel();
-        $code = $emailVerificationModel->generateCode($userId, $user_email);
+        $code = $emailVerificationModel->generateCode($userId, $new_email);
 
         // Send email
         $email = service('email');
-        $subject = "Your Verification Code";
-        $message = "<p>Your verification code is: <strong>$code</strong></p>";
-        $result  = $email->send($user_email, $subject, $message);
+        $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+        $email->setTo($new_email);
+        $email->setSubject(lang('Auth.emailUpdateVerificationSubject'));
+        $email->setMessage(view(
+        setting('Auth.views')['new-email-verification'],
+        ['username' => auth()->user()->username, 'sendername' => getenv('Email.fromName'), 'code' => $code, 'newEmail' => $new_email],
+        ['debug' => false]
+        ));
+        
+        if ($email->send(false) === false) {
+            throw new RuntimeException('Cannot send email for user: ' . $new_email . "\n" . $email->printDebugger(['headers']));
+        }
 
         return $this->response->setJSON(['status' => 'success', 'success' => true, 'message' => 'Verification code sent']);
     }
@@ -75,6 +85,7 @@ class ProfileController extends BaseController
 
             // Update email
             $newEmail = $this->request->getPost('new_email');
+            $oldEmail = $user->email;
             $user->email = $newEmail;
             $user->email_verified_at = null; // Mark email as unverified
             $userModel = new UserModel();
@@ -82,6 +93,21 @@ class ProfileController extends BaseController
 
             // Send verification email
             auth()->sendVerificationEmail($user);
+
+            // Send email
+            $email = service('email');
+            $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+            $email->setTo($oldEmail);
+            $email->setSubject(lang('Auth.emailUpdateNotificationSubject', [getenv('Email.fromName')]));
+            $email->setMessage(view(
+            setting('Auth.views')['old-email-notification'],
+            ['username' => auth()->user()->username, 'sendername' => getenv('Email.fromName'), 'oldEmail' => $oldEmail, 'newEmail' => $newEmail],
+            ['debug' => false]
+            ));
+            
+            if ($email->send(false) === false) {
+                throw new RuntimeException('Cannot send email for user: ' . $oldEmail . "\n" . $email->printDebugger(['headers']));
+            }
 
             $emailVerificationModel->where('user_id', $userId)->delete(); // Cleanup
 
@@ -106,7 +132,7 @@ class ProfileController extends BaseController
             // Validate the form input
             $validation = \Config\Services::validation();
             $validation->setRules([
-                'current_password' => 'required',
+                // 'current_password' => 'required',
                 'new_password' => 'required|min_length[8]',
                 'confirm_password' => 'required|matches[new_password]'
             ]);
@@ -122,12 +148,12 @@ class ProfileController extends BaseController
             $user = $auth->user();
             
             // Verify the current password
-            if (!$auth->check(['email' => $user->email, 'password' => $currentPassword])->isOK()) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Current password is incorrect.'
-                ]);
-            }
+            // if (!$auth->check(['email' => $user->email, 'password' => $currentPassword])->isOK()) {
+            //     return $this->response->setJSON([
+            //         'success' => false,
+            //         'message' => 'Current password is incorrect.'
+            //     ]);
+            // }
 
             // Update the password
             $user->setPassword($newPassword);
@@ -137,9 +163,17 @@ class ProfileController extends BaseController
 
             // Send email
             $email = service('email');
-            $subject = "Password Changed";
-            $message = "<p>Your password was changed successfully!</p>";
-            $result  = $email->send($user->email, $subject, $message);
+            $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+            $email->setTo($user->email);
+            $email->setSubject(lang('Auth.passwordChangeEmailSubject'));
+            $email->setMessage(view(
+            setting('Auth.views')['password-changed-email'],
+            ['username' => auth()->user()->username, 'sendername' => getenv('Email.fromName')],
+            ['debug' => false]
+            ));
+            if ($email->send(false) === false) {
+                throw new RuntimeException('Cannot send email for user: ' . $user->email . "\n" . $email->printDebugger(['headers']));
+            }
 
             return $this->response->setJSON([
                 'success' => true,

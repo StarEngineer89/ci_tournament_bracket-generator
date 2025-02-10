@@ -24,8 +24,6 @@
             </div>
             <?php endif ?>
 
-
-
             <form action="<?= url_to('magic-link') ?>" method="post">
                 <?= csrf_field() ?>
 

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+use CodeIgniter\Events\Events;
 use Google_Client;
 use Google_Service_Oauth2;
 use CodeIgniter\Shield\Entities\User;
@@ -41,6 +42,8 @@ class GoogleAuthController extends Controller
 
             $userModel = new UserModel();
             $existingUser = $userModel->findByCredentials(['email' => $googleUser->email]);
+            
+            $users = $this->getUserProvider();
 
             if ($existingUser) {
                 // Login existing user
@@ -51,13 +54,32 @@ class GoogleAuthController extends Controller
                     'email' => $googleUser->email,
                     'username' => $googleUser->name,
                     'password' => bin2hex(random_bytes(16)), // Dummy password
-                    'active' => 1
                 ]);
 
-                $userModel->save($user);
+                $users->save($user);
 
-                $user = $userModel->find($userModel->getInsertID());
-                auth()->login($user);
+                $user = $users->findById($users->getInsertID());
+
+                // Add to default group
+                $users->addToDefaultGroup($user);
+
+                Events::trigger('register', $user);
+
+                /** @var Session $authenticator */
+                $authenticator = auth('session')->getAuthenticator();
+
+                $authenticator->startLogin($user);
+
+                // If an action has been defined for register, start it up.
+                $hasAction = $authenticator->startUpAction('register', $user);
+                if ($hasAction) {
+                    return redirect()->route('auth-action-show');
+                }
+
+                // Set the user active
+                $user->activate();
+
+                $authenticator->completeLogin($user);
             }
 
             if (auth()->user()) {
@@ -68,5 +90,17 @@ class GoogleAuthController extends Controller
         }
 
         return redirect()->to('/login');
+    }
+    
+    /**
+     * Returns the User provider
+     */
+    protected function getUserProvider(): UserModel
+    {
+        $provider = model(setting('Auth.userProvider'));
+
+        assert($provider instanceof UserModel, 'Config Auth.userProvider is not a valid UserProvider.');
+
+        return $provider;
     }
 }

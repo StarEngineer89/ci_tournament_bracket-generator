@@ -54,11 +54,14 @@ class Auth extends ShieldAuth
         'action_email_2fa'            => '\CodeIgniter\Shield\Views\email_2fa_show',
         'action_email_2fa_verify'     => '\CodeIgniter\Shield\Views\email_2fa_verify',
         'action_email_2fa_email'      => '\CodeIgniter\Shield\Views\Email\email_2fa_email',
-        'action_email_activate_show'  => '\CodeIgniter\Shield\Views\email_activate_show',
-        'action_email_activate_email' => '\CodeIgniter\Shield\Views\Email\email_activate_email',
+        'action_email_activate_show'  => '\App\Views\Shield\email_activate_show',
+        'action_email_activate_email' => '\App\Views\Email\email_activate_email',
         'magic-link-login'            => '\App\Views\Shield\magic_link_form',
-        'magic-link-message'          => '\CodeIgniter\Shield\Views\magic_link_message',
-        'magic-link-email'            => '\CodeIgniter\Shield\Views\Email\magic_link_email',
+        'magic-link-message'          => '\App\Views\Shield\magic_link_message',
+        'magic-link-email'            => '\App\Views\Email\magic_link_email',
+        'password-changed-email'       => '\App\Views\Email\password_changed',
+        'new-email-verification'       => '\App\Views\Email\new-email-verification',
+        'old-email-notification'       => '\App\Views\Email\old-email-notification',
     ];
 
     /**
@@ -76,7 +79,7 @@ class Auth extends ShieldAuth
      * to apply any logic you may need.
      */
     public array $redirects = [
-        'register'          => '/',
+        'register'          => 'auth/verification-success',
         'login'             => '/',
         'logout'            => 'login',
         'force_reset'       => '/',
@@ -100,7 +103,8 @@ class Auth extends ShieldAuth
      * @var array<string, class-string<ActionInterface>|null>
      */
     public array $actions = [
-        'register' => null,
+        // 'register' => \CodeIgniter\Shield\Authentication\Actions\EmailActivator::class,
+        'register' => \App\Shield\Authentication\Actions\EmailActivator::class,
         'login'    => null,
     ];
 

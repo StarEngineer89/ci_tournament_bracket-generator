@@ -68,22 +68,26 @@ class CustomMagicLinkController extends MagicLinkController
         /** @var IncomingRequest $request */
         $request = service('request');
 
-        $ipAddress = $request->getIPAddress();
-        $userAgent = (string) $request->getUserAgent();
-        $date      = Time::now()->toDateTimeString();
+        $username = $user->username;
+        $sendername = getenv('Email.fromName');
 
         // Send the user an email with the code
         $email = service('email');
-        if ($email->send($user->email, lang('Auth.magicLinkSubject'), $this->view(
+        $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+        $email->setTo($user->email);
+        $email->setSubject(lang('Auth.magicLinkSubject'));
+        $email->setMessage($this->view(
             setting('Auth.views')['magic-link-email'],
-            ['token' => $token, 'ipAddress' => $ipAddress, 'userAgent' => $userAgent, 'date' => $date],
+            ['token' => $token, 'username' => $username, 'sendername' => $sendername],
             ['debug' => false]
-        )) === false) {
+        ));
+        
+        if ($email->send(false) === false) {
             log_message('error', $email->printDebugger(['headers']));
 
             return redirect()->route('magic-link')->with('error', lang('Auth.unableSendEmailToUser', [$user->email]));
         }
-
+        
         return $this->displayMessage();
     }
 }

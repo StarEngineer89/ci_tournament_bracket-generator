@@ -14,12 +14,6 @@ $routes->post('profile/update-email-confirm', 'ProfileController::updateEmailCon
 $routes->get('profile/change-password', 'ProfileController::changePassword', ['as' => 'profile.change-password']);
 $routes->post('profile/update-password', 'ProfileController::updatePassword');
 
-$routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
-$routes->post('login/magic-link', '\App\Controllers\Auth\CustomMagicLinkController::loginAction');
-
-$routes->get('auth/google', 'GoogleAuthController::login');
-$routes->get('auth/google/callback', 'GoogleAuthController::callback');
-
 $routes->get('/gallery', 'TournamentController::index');
 $routes->get('gallery/(:num)/view', 'TournamentController::view/$1');
 $routes->get('gallery/export', 'TournamentController::exportGallery');
@@ -125,3 +119,13 @@ $routes->group('api/shared', static function ($routes) {
 
 /** Shield routs for authentication */
 service('auth')->routes($routes);
+
+$routes->post('login', '\App\Controllers\Auth\LoginController::loginAction');
+$routes->post('login/magic-link', '\App\Controllers\Auth\CustomMagicLinkController::loginAction');
+
+$routes->get('auth/google', 'GoogleAuthController::login');
+$routes->get('auth/google/callback', 'GoogleAuthController::callback');
+$routes->get('auth/resend-verification', 'RegisterController::resendVerification');
+$routes->get('auth/verification-success', function() {
+    return view('Shield/verification_success');
+});
