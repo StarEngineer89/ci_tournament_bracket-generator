@@ -10,7 +10,7 @@
                 <h5 class="card-title mb-5"><?= lang('Auth.register') ?></h5>
 
                 <?php if (session('error') !== null) : ?>
-                <div class="alert alert-danger" role="alert"><?= session('error') ?><?= "<br/>Use the login link function if you've forgotten your account credentials or try using different credentials if registering for a new account." ?></div>
+                <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
                 <?php elseif (session('errors') !== null) : ?>
                 <div class="alert alert-danger" role="alert">
                     <?php if (is_array(session('errors'))) : ?>
@@ -20,7 +20,6 @@
                     <?php else : ?>
                     <?= session('errors') ?>
                     <?php endif ?>
-                    <?= "<br/>Use the login link function if you've forgotten your account credentials or try using different credentials if registering for a new account." ?>
                 </div>
                 <?php endif ?>
 
