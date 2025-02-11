@@ -48,9 +48,6 @@ class RegisterController extends ShieldRegisterController
         $rules['email']['errors'] = [
             'is_unique' => lang('Auth.errorEmailTaken', [$this->request->getPost('email')])
         ];
-        $rules['username']['errors'] = [
-            'is_unique' => lang('Auth.errorUsernameTaken')
-        ];
 
         if (! $this->validateData($this->request->getPost(), $rules, [], config('Auth')->DBGroup)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());

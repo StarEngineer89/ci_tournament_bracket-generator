@@ -41,4 +41,20 @@ class Validation extends BaseConfig
     // --------------------------------------------------------------------
     // Rules
     // --------------------------------------------------------------------
+    public $registration = [
+        'username' => [
+            'label' => 'Auth.username',
+            'rules' => [
+                'required',
+                'max_length[30]',
+                'min_length[3]',
+                'regex_match[/\A[a-zA-Z0-9\. ]+\z/]', // Allows letters, numbers, dots, and spaces
+                'is_unique[users.username]',
+            ],
+            'errors' => [
+                'regex_match' => lang('Auth.errorUsernameFormat'),
+                'is_unique' => lang('Auth.errorUsernameTaken'),
+            ],
+        ],
+    ];
 }
