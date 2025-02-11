@@ -48,12 +48,12 @@ class Validation extends BaseConfig
                 'required',
                 'max_length[30]',
                 'min_length[3]',
-                'regex_match[/\A[a-zA-Z0-9\. ]+\z/]', // Allows letters, numbers, dots, and spaces
+                'regex_match[/\A[a-zA-Z0-9\.]+\z/ ]', // Allows letters, numbers, dots, and spaces
                 'is_unique[users.username]',
             ],
             'errors' => [
-                'regex_match' => lang('Auth.errorUsernameFormat'),
-                'is_unique' => lang('Auth.errorUsernameTaken'),
+                'regex_match' => 'The Username field is not in the correct format.\n Avoid the use of special characters such as "#", "%", etc.',
+                'is_unique' => 'The username you entered is already registered/taken.',
             ],
         ],
     ];
