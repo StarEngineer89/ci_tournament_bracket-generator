@@ -48,7 +48,7 @@ class Validation extends BaseConfig
                 'required',
                 'max_length[30]',
                 'min_length[3]',
-                'regex_match[/\A[a-zA-Z0-9\.]+\z/ ]', // Allows letters, numbers, dots, and spaces
+                'regex_match[/\A[a-zA-Z0-9\. ]+\z/]', // Allows letters, numbers, dots, and spaces
                 'is_unique[users.username]',
             ],
             'errors' => [
