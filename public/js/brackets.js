@@ -163,7 +163,7 @@ $(document).on('ready', function () {
                     }
 
                     items.change = {
-                                name: "✏️ Change a participant",
+                                name: "✏️ Change participant",
                                 callback: (key, opt, e) => {
                                     const element = opt.$trigger;
                                     $.ajax({
@@ -209,7 +209,7 @@ $(document).on('ready', function () {
                     }
                             
                     items.create = {
-                                name: "➕ Add a participant",
+                                name: "➕ Add participant",
                                 callback: (key, opt, e) => {
                                     var opts = prompt('Participant Name:', 'Guild');
                                     var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;

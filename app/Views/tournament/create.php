@@ -1256,7 +1256,7 @@ var performReuseParticipants = (tournament_id = null) => {
                 <h6>There should be at least 2 or more participants.</h6>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
             </div>
         </div>
     </div>
