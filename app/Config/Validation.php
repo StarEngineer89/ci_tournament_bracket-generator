@@ -52,7 +52,7 @@ class Validation extends BaseConfig
                 'is_unique[users.username]',
             ],
             'errors' => [
-                'regex_match' => 'The Username field is not in the correct format.\n Avoid the use of special characters such as "#", "%", etc.',
+                'regex_match' => 'The Username field is not in the correct format.<br/> Avoid the use of special characters such as "#", "%", etc.',
                 'is_unique' => 'The username you entered is already registered/taken.',
             ],
         ],
