@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <p>Welcome to <b><?= setting('Email.fromName') ?></b>! Before you can start creating or joining tournaments, we need to verify your account. </p>
+    <p>Welcome to <b><?= setting('Email.fromName') ?></b>! Before you can start creating/administering tournaments, we need to verify your account. </p>
     <p>
         🔹 Why verify? <br />
         ✔️ Secure your account <br />

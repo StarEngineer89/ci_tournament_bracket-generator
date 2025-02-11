@@ -43,10 +43,14 @@
                             </button>
                             <?php if (count($notifications)): ?>
                             <ul class="dropdown-menu  dropdown-menu-end">
+                                <li class="d-flex justify-content-end me-3"><a href="javascript:;" class="" data-bs-toggle="modal" data-bs-target="#clearNotificationsModal">Clear All</a></li>
                                 <?php foreach ($notifications as $notification): ?>
                                 <li>
-                                    <p class="dropdown-item p-2">
-                                        <a class="" href="#" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><?= $notification['message'] ?></a>
+                                    <p class="dropdown-item notification border-bottom p-2 pe-5">
+                                        <a class="text-end ms-2 me-4" href="javascript:;" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>">
+                                            <span><?= $notification['message'] ?></span><br />
+                                            <span class="d-block w-100 text-end">By <?= $notification['created_by'] ?> on <?= $notification['created_at'] ?></span>
+                                        </a>
                                         <a class="delete" onclick="deleteNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><i class="fa fa-remove"></i></a>
                                     </p>
                                 </li>
@@ -189,6 +193,25 @@
                     </div>
                     <div class="modal-body">
                         <p class="errorDetails"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="clearNotificationsModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="clearNotificationsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="clearNotificationsModalLabel">⚠️ Confirm Clear All Notifications</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h3>Are you sure you want to clear all notifications?</h3>
+                        <p>This action is permanent and cannot be undone. You will lose all notification history.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="clearNotifications()">Clear All</button>
                     </div>
                 </div>
             </div>

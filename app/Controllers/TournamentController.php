@@ -77,6 +77,7 @@ class TournamentController extends BaseController
         $votingEnabled = false;
         if (auth()->user() && $tournament['user_id'] == auth()->user()->id) {
             $editable = true;
+            $votingEnabled = true;
         }
         
         if($tournament['user_id'] == 0){

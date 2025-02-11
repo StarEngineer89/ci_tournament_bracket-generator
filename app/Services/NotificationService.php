@@ -35,7 +35,7 @@ class NotificationService
      */
     public function getNotifications(int $userId)
     {
-        return $this->notificationModel->where('user_to', $userId)->where('mark_as_read', 0)->findAll();
+        return $this->notificationModel->where('user_to', $userId)->where('mark_as_read', 0)->withUsernames()->findAll();
     }
 
     /**
@@ -58,5 +58,16 @@ class NotificationService
     public function deleteNotification(int $notificationId)
     {
         return $this->notificationModel->delete($notificationId);
+    }
+
+    /**
+     * Delete a notification.
+     *
+     * @param int $notificationId Notification ID
+     * @return bool True on success, false on failure
+     */
+    public function clearNotifications(int $user_id)
+    {
+        return $this->notificationModel->where('user_to', $user_id)->delete();
     }
 }

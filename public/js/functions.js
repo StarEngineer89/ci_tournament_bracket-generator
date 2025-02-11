@@ -140,14 +140,43 @@ let readNotification = (notificationElement) => {
 }
 
 let deleteNotification = (notificationElement) => {
-    const link = $(notificationElement).data('link')
     const notificationId = $(notificationElement).data('id')
 
     $.ajax({
         type: "delete",
         url: `${apiURL}/notifications/delete/${notificationId}`,
         success: function(result) {
-            $(notificationElement).remove()
+            $(notificationElement).parent().remove()
+
+            if ($('.notification-box .notification').length == 0) {
+                $('.notification-box .dropdown-menu').remove()
+            }
+
+            let count = parseInt($('.notification-box span.badge').html())
+            if (count > 1) {
+                $('.notification-box span.badge').html(count - 1)
+            } else {
+                $('.notification-box span.badge').remove()
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+}
+
+let clearNotifications = () => {
+    $.ajax({
+        type: "delete",
+        url: `${apiURL}/notifications/clear`,
+        success: function(result) {
+            $('.notification-box .dropdown-menu').remove()
+            $('.notification-box span.badge').remove()
+            $('#clearNotificationsModal').modal('hide')
         },
         error: function(error) {
             console.log(error);

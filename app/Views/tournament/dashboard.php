@@ -294,7 +294,10 @@
             <div class="modal-body">
                 <div class="confirm-msg mb-3 text-center"></div>
                 <div class="input-wrapper mb-3 d-flex justify-content-center"></div>
-                <h5 class="mt-4 text-center">Are you sure you want to proceed? <span class="text-danger">This action cannot be undone!</span></h5>
+                <h5 class="mt-4 text-center">
+                    Are you sure you want to proceed?<br />
+                    <span class="text-danger">This action cannot be undone!</span>
+                </h5>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
@@ -825,9 +828,9 @@ $(document).ready(function() {
             {
                 "data": null,
                 "render": function(data, type, row, meta) {
-                    let html = `<a href="javascript:;" class="archive" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal">Archive</a>`
+                    let html = `<a href="javascript:;" class="archive" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#archiveConfirmModal"><?= lang('Button.archive') ?></a>`
                     if (row.archive == 1)
-                        html = `<a href="javascript:;" class="restore" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">Restore</a>`
+                        html = `<a href="javascript:;" class="restore" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal"><?= lang('Button.restore') ?></a>`
                     return `
                         <div class="btn-groups list-group">
                         <button class="btn text-start collapse-actions-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActions-${row.id}" aria-expanded="false" aria-controls="collapseActions-${row.id}">
@@ -835,14 +838,14 @@ $(document).ready(function() {
                         </button>
                         <div class="collapse" id="collapseActions-${row.id}">
                             <div class="card card-body p-3">
-                                <a href="javascript:;" class="rename" data-id="${row.id}" onclick="renameTournament(this)">Rename</a>
-                                <a href="javascript:;" class="reset" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
+                                <a href="javascript:;" class="rename" data-id="${row.id}" onclick="renameTournament(this)"><?= lang('Button.rename') ?></a>
+                                <a href="javascript:;" class="reset" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm"><?= lang('Button.reset') ?></a>
                                 ${html}
-                                <a href="javascript:;" class="delete" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
-                                <a href="javascript:;" class="change-status" data-id="${row.id}" data-status="${row.status}" onclick="changeStatus(event)">Change Status</a>
-                                <a href="javascript:;" class="change-settings" data-id="${row.id}" onclick="changeSettings(event)">Settings</a>
-                                <a href="javascript:;" class="share" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
-                                <a href="javascript:;" class="view-log" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+                                <a href="javascript:;" class="delete" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm"><?= lang('Button.delete') ?></a>
+                                <a href="javascript:;" class="change-status" data-id="${row.id}" data-status="${row.status}" onclick="changeStatus(event)"><?= lang('Button.changeStatus') ?></a>
+                                <a href="javascript:;" class="change-settings" data-id="${row.id}" onclick="changeSettings(event)"><?= lang('Button.settings') ?></a>
+                                <a href="javascript:;" class="share" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal"><?= lang('Button.share') ?></a>
+                                <a href="javascript:;" class="view-log" data-id="${row.id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal"><?= lang('Button.viewLog') ?></a>
                             </div>
                         </div>
                     </div>
@@ -1044,7 +1047,7 @@ $(document).ready(function() {
                 action_text = '<h6>You are about to archive the following selected tournament(s):</h6>';
                 action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
             } else if (action === 'bulkRestore') {
-                title = "Confirm to archive"
+                title = "Confirm to restore"
                 action_text = '<h6>You are about to restore the following selected tournament(s):</h6>';
                 action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
             }

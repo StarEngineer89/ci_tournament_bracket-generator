@@ -983,16 +983,16 @@ var performReuseParticipants = (tournament_id = null) => {
 
         <div class="participants-box m-auto">
             <div class="buttons d-flex justify-content-center">
-                <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant">Add Participant</button>
-                <button id="generate" class="btn btn-default">Generate Brackets</button>
+                <button id="add-participant" class="btn btn-default" data-bs-toggle="collapse" data-bs-target="#collapseAddParticipant" aria-expanded="false" aria-controls="collapseAddParticipant"><?= lang('Button.addParticipant') ?></button>
+                <button id="generate" class="btn btn-default"><?= lang('Button.generateBrackets') ?></button>
                 <a class="btn btn-default dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-gear"></i> Additional Options
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal">Clear Participant(s) List</button></li>
-                    <li><button id="checkDuplicationBtn" class="btn btn-default">Check Duplicates</button></li>
-                    <li><button id="checkDuplicationBtn" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectTournamentModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>">Reuse Participants</button></li>
-                    <li><button id="changeBackgroundColor" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectBackgroundColorModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>">Change Background</button></li>
+                    <li><button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal"><?= lang('Button.clearParticipants') ?></button></li>
+                    <li><button id="checkDuplicationBtn" class="btn btn-default"><?= lang('Button.checkDuplicates') ?></button></li>
+                    <li><button id="checkDuplicationBtn" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectTournamentModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>"><?= lang('Button.reuseParticipants') ?></button></li>
+                    <li><button id="changeBackgroundColor" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectBackgroundColorModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>"><?= lang('Button.changeBackground') ?></button></li>
                 </ul>
             </div>
             <div class="collapse" id="collapseAddParticipant">

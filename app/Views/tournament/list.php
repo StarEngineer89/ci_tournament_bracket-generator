@@ -24,14 +24,14 @@
             <i class="fa fa-list-check"></i> Bulk Actions
         </button>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkDelete">Bulk Delete</a></li>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkDelete"><?= lang('Button.bulkDelete') ?></a></li>
             <?php if ($navActive == 'archived') : ?>
-            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkRestore">Bulk Restore</a></li>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkRestore"><?= lang('Button.bulkRestore') ?></a></li>
             <?php else: ?>
-            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkArchive">Bulk Archive</a></li>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkArchive"><?= lang('Button.bulkArchive') ?></a></li>
             <?php endif; ?>
-            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkReset">Bulk Reset</a></li>
-            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkStatusUpdate">Bulk Status Update</a></li>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkReset"><?= lang('Button.bulkReset') ?></a></li>
+            <li><a class="dropdown-item" onclick="confirmBulkAction(this)" data-actionname="bulkStatusUpdate"><?= lang('Button.bulkStatusUpdate') ?></a></li>
         </ul>
     </div>
     <?php endif ?>
@@ -169,7 +169,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Archive this tournament</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -187,7 +187,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteModalLabel"></h1>
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Restore this tournament</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

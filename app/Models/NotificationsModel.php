@@ -43,4 +43,12 @@ class NotificationsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function withUsernames()
+    {
+        $this->select('notifications.*, users.username as created_by');
+        $this->join('users', 'notifications.user_id = users.id', 'LEFT');
+
+        return $this;
+    }
 }

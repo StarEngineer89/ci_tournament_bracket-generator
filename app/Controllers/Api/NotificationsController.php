@@ -44,4 +44,14 @@ class NotificationsController extends BaseController
 
         return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to delete notification']);
     }
+
+    public function clear()
+    {
+        $user_id = auth()->user() ? auth()->user()->id : 0;
+        if ($this->notificationService->clearNotifications($user_id)) {
+            return $this->response->setJSON(['status' => 'success', 'message' => 'All notifications were deleted.']);
+        }
+
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to clear the notifications.']);
+    }
 }

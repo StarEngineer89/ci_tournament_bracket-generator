@@ -516,6 +516,10 @@ class TournamentController extends BaseController
             $tournament['winner_audio_everyone'] = null;
         }
 
+        if (!is_null($this->request->getPost('archive'))) {
+            $tournament['archive'] = $this->request->getPost('archive');
+        }
+
         $tournamentModel->save($tournament);
 
         /** Schedule to update the rounds by cron */

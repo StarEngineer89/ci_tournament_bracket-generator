@@ -152,7 +152,7 @@ $(document).on('ready', function () {
                     let items = {}
                     if (!votingEnabled || ![votingMechanismRoundDurationCode, votingMechanismMaxVoteCode].includes(votingMechanism) || allowHostOverride) {
                         items.mark = {
-                                name: (!isWinner) ? "Mark as Winner" : "Unmark as winner",
+                                name: (!isWinner) ? "🏆 Mark as Winner" : "❌ Unmark as winner",
                                 callback: (key, opt, e) => {
                                     if (!isWinner)
                                         markWinner(key, opt, e)
@@ -163,7 +163,7 @@ $(document).on('ready', function () {
                     }
 
                     items.change = {
-                                name: "Change a participant",
+                                name: "✏️ Change a participant",
                                 callback: (key, opt, e) => {
                                     const element = opt.$trigger;
                                     $.ajax({
@@ -209,7 +209,7 @@ $(document).on('ready', function () {
                     }
                             
                     items.create = {
-                                name: "Add a participant",
+                                name: "➕ Add a participant",
                                 callback: (key, opt, e) => {
                                     var opts = prompt('Participant Name:', 'Guild');
                                     var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
@@ -234,7 +234,7 @@ $(document).on('ready', function () {
                     }
 
                     items.delete = {
-                                name: "Delete Bracket",
+                                name: "🗑️ Delete Bracket",
                                 callback: (key, opt, e) => {
                                     var element_id = opt.$trigger.data('bracket');
                                     let triggerElement = opt.$trigger
