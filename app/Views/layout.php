@@ -49,7 +49,7 @@
                                     <p class="dropdown-item notification border-bottom p-2 pe-5">
                                         <a class="text-end ms-2 me-4" href="javascript:;" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>">
                                             <span><?= $notification['message'] ?></span><br />
-                                            <span class="d-block w-100 text-end">By <?= $notification['created_by'] ?> on <?= $notification['created_at'] ?></span>
+                                            <span class="d-block w-100 text-end">By <?= $notification['created_by'] ?> on <?= convert_to_user_timezone($notification['created_at'], user_timezone(auth()->user()->id)) ?></span>
                                         </a>
                                         <a class="delete" onclick="deleteNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>"><i class="fa fa-remove"></i></a>
                                     </p>
