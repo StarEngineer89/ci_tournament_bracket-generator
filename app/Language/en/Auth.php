@@ -6,7 +6,7 @@ return [
     'abortVerification' => 'Abort Verification',
     'invalidPassword'    => 'Unable to log you in. Please check your credentials.',
     'errorUsernameTaken' => 'The username you entered is already registered/taken.',
-    'errorEmailTaken'    => 'The email address {0} you entered is already registered/taken.',
+    'errorEmailTaken'    => "The email address {0} you entered is already registered/taken.<br/>Use the login link function if you've forgotten your account credentials or try using different credentials if registering for a new account.",
     'magicLinkSubject'   => 'Your Temporary Login Link',
     'magicLinkNote'      => "Note: If you still haven't received the email after a few minutes, double check that you entered a valid email address.<br />You may also wanna check your spam folder in case it went there!",
     'passwordChangeEmailSubject' => "Your Password Has Been Successfully Updated",
