@@ -227,7 +227,7 @@
         </div>
 
         <!-- Cookie Consent Modal -->
-        <div id="cookieConsentModal" style="display:none; position:fixed; bottom:0; width:100%; background-color:#f1f1f1; padding:10px; text-align:center;">
+        <div id="cookieConsentModal" style="display:none; position:fixed; bottom:0; width:100%; background-color:#f1f1f1; padding:10px; text-align:center; z-index: 999">
             <p>This site uses cookies 🍪 to store information for the purpose of enhancing user experience. <br> If you reject cookies, you may experience limitations with functionality.</p>
             <button onclick="acceptCookies()">Accept</button>
             <button onclick="rejectCookies()">Reject</button>
