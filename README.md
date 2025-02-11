@@ -235,3 +235,61 @@ To update this program to the latest version, you can navigate the the directory
 > `cd .\bin`
 
 > `yt-dlp -U`
+
+## Email configuration
+
+Set the configuration variables in `App\Config\Email.php` or `.env` file.
+
+If you send the emails through the smtp protocol, set the following variables in the .
+
+> `public string $fromEmail = "contact@tourncreator.com"`
+
+> `public string $fromName = "Tourn Creator"`
+
+> `public string $protocol = 'smtp'`
+
+> `public string $SMTPHost = '[hostname]'`
+
+> `public string $SMTPUser = '[username]'`
+
+> `public string $SMTPPass = '[password]'`
+
+> `public int $SMTPPort = 25`
+
+or (.env file)
+
+> `Email.fromEmail = "contact@tourncreator.com"`
+
+> `Email.fromName = "Tourn Creator"`
+
+> `Email.protocol = 'smtp'`
+
+> `Email.SMTPHost = '[hostname]'`
+
+> `Email.SMTPUser = your_email@example.com`
+
+> `Email.SMTPPass = your_password`
+
+> `Email.SMTPPort = 25`
+
+If you use the SendGrid API to send the emails,
+
+(in App\Config\Email.php)
+
+> `public string $fromEmail = "contact@tourncreator.com"`
+
+> `public string $fromName = "Tourn Creator"`
+
+> `public string $protocol = sendgrid`
+
+> `public string $SENDGRID_API_KEY = [SendGrid API Key]`
+
+(in .env)
+
+> `Email.fromEmail = "contact@tourncreator.com"`
+
+> `Email.fromName = "Tourn Creator"`
+
+> `Email.protocol = sendgrid`
+
+> `SENDGRID_API_KEY = [SendGrid API Key]`
