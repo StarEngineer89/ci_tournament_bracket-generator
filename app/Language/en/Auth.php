@@ -8,6 +8,7 @@ return [
     'errorUsernameTaken' => 'The username you entered is already registered/taken.',
     'errorUsernameFormat' => 'The Username field is not in the correct format.\n Avoid the use of special characters such as "#", "%", etc.',
     'errorEmailTaken'    => "The email address {0} you entered is already registered/taken.<br/>Use the login link function if you've forgotten your account credentials or try using different credentials if registering for a new account.",
+    'errorUpdateEmailTaken'    => "The email address {0} is already registered/taken. Please use a different email.",
     'magicLinkSubject'   => 'Your Temporary Login Link',
     'magicLinkNote'      => "Note: If you still haven't received the email after a few minutes, double check that you entered a valid email address.<br />You may also wanna check your spam folder in case it went there!",
     'passwordChangeEmailSubject' => "Your Password Has Been Successfully Updated",
@@ -19,5 +20,6 @@ return [
     'verificationSuccessTitle' => "Verification Success",
     'invalidActivateToken'  => 'Invalid or expired verification code.',
     'abortVerificationModalBody' => "You're about to leave the verification step. <br/>Upon confirmation, the registeration process will be voided.",
-    'newVerificationCodeSentMessage' => "A new verification code has been sent to {0}."
+    'newVerificationCodeSentMessage' => "A new verification code has been sent to {0}.",
+    'invalidEmailFormat' => 'Please enter a valid email address.'
 ];

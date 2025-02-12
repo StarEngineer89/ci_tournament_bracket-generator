@@ -39,11 +39,19 @@ class ProfileController extends BaseController
 
         // Validate input
         $validation->setRules([
-            'new_email' => 'required|valid_email|is_unique[auth_identities.secret]',
+            'new_email' => [
+            'label' => 'New Email', // Custom label for error messages
+            'rules' => 'required|valid_email|is_unique[auth_identities.secret]',
+            'errors' => [
+                'required'    => 'The {field} field is required.',
+                'valid_email' => lang('Auth.invalidEmailFormat'),
+                'is_unique'   => lang('Auth.errorUpdateEmailTaken', [$this->request->getPost('new_email')]),
+            ],
+        ],
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            return $this->response->setJSON(['status' => 'failed', 'errors' => $validation->getErrors()]);
         }
         
         $userId = auth()->user()->id; // Assuming user is logged in

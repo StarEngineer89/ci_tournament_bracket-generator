@@ -56,6 +56,10 @@ let sendVerificationCode = (resend = false) => {
             if (response.status == 'success') {
                 $('.update-email-block').addClass('d-none')
                 $('.confirm-code-block').removeClass('d-none')
+            } else {
+                $('#email-update-notification-area').html(
+                    `<div class="alert alert-danger">${response.errors.new_email}</div>`
+                );
             }
 
             startCooldown(resendButton);
