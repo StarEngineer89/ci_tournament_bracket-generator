@@ -228,19 +228,21 @@ class TournamentController extends BaseController
          * Check if vote is available 
          */
         $votingEnabled = false;
+        $votingBtnEnabled = false;
         if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING) {
+            $votingEnabled = true;
             if ($tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED) {
                 if (auth()->user()) {
-                    $votingEnabled = true;
+                    $votingBtnEnabled = true;
                 } else {
                     if ($settings['target'] == SHARE_TO_PUBLIC) {
-                        $votingEnabled = true;
+                        $votingBtnEnabled = true;
                     }
                 }
             }
 
             if ($tournament['voting_accessibility'] == EVALUATION_VOTING_UNRESTRICTED) {
-                $votingEnabled = true;
+                $votingBtnEnabled = true;
             }
         }
 
@@ -253,7 +255,7 @@ class TournamentController extends BaseController
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'editable' => $editable, 'page' => 'view']);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'editable' => $editable, 'page' => 'view']);
     }
 
     public function export()
