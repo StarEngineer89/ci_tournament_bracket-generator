@@ -645,13 +645,13 @@ $(document).ready(function() {
                         </button>
                         <div class="collapse" id="collapseActions-${row.id}">
                             <div class="card card-body p-3">
-                                <a href="javascript:;" class="rename" data-id="${tournament_id}" onclick="renameTournament(this)">Rename</a>
-                                <a href="javascript:;" class="reset" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm">Reset</a>
-                                <a href="javascript:;" class="delete" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm">Delete</a>
-                                <a href="javascript:;" class="change-status" data-id="${tournament_id}" data-status="${row.status}" onclick="changeStatus(event)">Change Status</a>
-                                <a href="javascript:;" class="change-settings" data-id="${tournament_id}" onclick="changeSettings(event)">Settings</a>
-                                <a href="javascript:;" class="share" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal">Share</a>
-                                <a href="javascript:;" class="view-log" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal">View Log</a>
+                                <a href="javascript:;" class="rename" data-id="${tournament_id}" onclick="renameTournament(this)"><?= lang('Button.rename') ?></a>
+                                <a href="javascript:;" class="reset" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#resetConfirm"><?= lang('Button.reset') ?></a>
+                                <a href="javascript:;" class="delete" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#deleteConfirm"><?= lang('Button.delete') ?></a>
+                                <a href="javascript:;" class="change-status" data-id="${tournament_id}" data-status="${row.status}" onclick="changeStatus(event)"><?= lang('Button.changeStatus') ?></a>
+                                <a href="javascript:;" class="change-settings" data-id="${tournament_id}" onclick="changeSettings(event)"><?= lang('Button.settings') ?></a>
+                                <a href="javascript:;" class="share" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#shareModal"><?= lang('Button.share') ?></a>
+                                <a href="javascript:;" class="view-log" data-id="${tournament_id}" data-name="${row.name}" data-bs-toggle="modal" data-bs-target="#viewLogModal"><?= lang('Button.viewLog') ?></a>
                             </div>
                         </div>
                     </div>
