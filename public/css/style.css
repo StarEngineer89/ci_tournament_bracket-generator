@@ -218,6 +218,10 @@
   cursor: pointer;
 }
 
+.alert-btn-container i {
+  font-size: 1.3em;
+}
+
 #descriptionPlaceholder img {
   max-width: 100%;
 }

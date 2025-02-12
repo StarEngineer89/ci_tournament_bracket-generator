@@ -104,24 +104,6 @@ $(document).ready(function() {
 
     $('#liveAlertBtn').click();
 
-    const descriptionPlaceholder = document.getElementById('descriptionPlaceholder')
-    const appendDescription = (description, type) => {
-        const wrapper = document.createElement('div')
-        let editBtn = ''
-        <?php if (auth()->user() && $tournament['user_id'] == auth()->user()->id && (isset($_GET['mode']) && $_GET['mode'] == 'edit')): ?>
-        editBtn = '<button type="button" class="btn-edit" id="editDescriptionBtn" onclick="enableDescriptionEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>'
-        <?php endif ?>
-        wrapper.innerHTML = [
-            `<div class="container border pt-5 pe-3 alert alert-${type} alert-dismissible" id="descriptionAlert" role="alert">`,
-            `   <div class="description" id="description">${description}</div>`,
-            editBtn,
-            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-            '</div>'
-        ].join('')
-
-        descriptionPlaceholder.append(wrapper)
-    }
-
     const warningPlaceholder = document.getElementById('warningPlaceholder')
     const appendWarning = (message, type) => {
         const wrapper = document.createElement('div')
@@ -151,6 +133,24 @@ $(document).ready(function() {
 
 
     <?php if ($tournament['description']): ?>
+    const descriptionPlaceholder = document.getElementById('descriptionPlaceholder')
+    const appendDescription = (description, type) => {
+        const wrapper = document.createElement('div')
+        let editBtn = ''
+        <?php if (auth()->user() && $tournament['user_id'] == auth()->user()->id && (isset($_GET['mode']) && $_GET['mode'] == 'edit')): ?>
+        editBtn = '<button type="button" class="btn-edit" id="editDescriptionBtn" onclick="enableDescriptionEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>'
+        <?php endif ?>
+        wrapper.innerHTML = [
+            `<div class="container border pt-5 pe-3 alert alert-${type} alert-dismissible" id="descriptionAlert" role="alert">`,
+            `   <div class="description" id="description">${description}</div>`,
+            editBtn,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        descriptionPlaceholder.append(wrapper)
+    }
+
     const descriptionTrigger = document.getElementById('toggleDescriptionBtn')
     if (descriptionTrigger) {
         const description = $('#description').html();
@@ -164,11 +164,41 @@ $(document).ready(function() {
             })
         })
     }
-
     $('#toggleDescriptionBtn').click();
+    <?php endif; ?>
+
+    <?php if ($tournament['availability']): ?>
+    const availabilityAlertPlaceholder = document.getElementById('availabilityAlertPlaceholder')
+    const appendAvailabilityAlert = (content, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="container border pt-5 pe-3 alert alert-${type} alert-dismissible" id="availabilityAlert" role="alert">`,
+            `   <div class="availabilityAlert" id="availabilityAlertContent">${content}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        availabilityAlertPlaceholder.append(wrapper)
+    }
+
+    const availabilityAlertTrigger = document.getElementById('toggleVoteWarningBtn')
+    if (availabilityAlertTrigger) {
+        const msg = $('#availabilityAlertMsg').html();
+        availabilityAlertTrigger.addEventListener('click', () => {
+            appendAvailabilityAlert(msg, 'danger')
+            availabilityAlertTrigger.classList.add('d-none')
+
+            const myAlert = document.getElementById('availabilityAlert')
+            myAlert.addEventListener('closed.bs.alert', event => {
+                availabilityAlertTrigger.classList.remove('d-none')
+            })
+        })
+    }
+    $('#toggleVoteWarningBtn').click();
+    <?php endif; ?>
+
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
-    <?php endif; ?>
 
     <?php if(!auth()->user() && isset($editable) && $editable && !$tournament['user_id']) : ?>
     var leaveUrl;
@@ -266,10 +296,15 @@ $(document).ready(function() {
         <?php endif ?>
 
         <div class="container alert-btn-container mb-1 d-flex justify-content-end">
+            <?php $current_time = date('Y-m-d H:i:s') ?>
+            <?php if ($tournament['availability'] && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND && (date('Y-m-d H:i:s', strtotime($tournament['available_start'])) > $current_time || date('Y-m-d H:i:s', strtotime($tournament['available_end'])) < $current_time)): ?>
+            <button type="button" class="btn" id="toggleVoteWarningBtn">
+                <i class="fa-solid fa-calendar"></i>
+            </button>
+            <?php endif ?>
+
             <button type="button" class="btn" id="liveAlertBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
-                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
-                </svg>
+                <i class="fa-classic fa-solid fa-circle-exclamation fa-fw"></i>
             </button>
             <?php if ($tournament['description']): ?>
             <button type="button" class="btn" id="toggleDescriptionBtn">
@@ -286,6 +321,12 @@ $(document).ready(function() {
             <button type="button" class="btn" id="viewQRBtn" onclick="displayQRCode()">
                 <i class="fa fa-qrcode" aria-hidden="true"></i>
             </button>
+        </div>
+
+        <div id="availabilityAlertPlaceholder"></div>
+        <div id="availabilityAlertMsg" class="d-none">
+            The tournament <strong><?= $tournament['name'] ?></strong> will be available starting <?= convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) ?> and ending on <?= convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) ?>. <br />
+            If voting is enabled, the voting period will begin once the tournament availability starts and conclude once the availability ends.
         </div>
 
         <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
