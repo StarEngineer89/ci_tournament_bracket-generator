@@ -146,6 +146,20 @@ class BracketsController extends BaseController
             $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
             if (isset($req->index)) {
                 if (!isset($req->participant))  {
+
+                    $order = ($req->order - 1) * 2 + $req->index;
+                    if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
+                        $order = (($req->order - 1) * 2 + $req->index) * 2;
+                        if ($bracket['is_double']) {
+                            $order += 1;
+                        }
+                    } else {
+                        $single_count = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'roundNo' => $bracket['roundNo'], 'is_double' => 1])->countAllResults();
+                        if ($bracket['is_double']) {
+                            $order = ($req->order - $single_count - 1) * 2 + $req->index;
+                        }    
+                    }
+
                     if ($participant) {
                         $participant_id = $participant['id'];
                     } else {
@@ -154,7 +168,7 @@ class BracketsController extends BaseController
                             'name' => $req->name,
                             'user_id' => $userId,
                             'tournament_id' => $bracket['tournament_id'],
-                            'order' => $bracket['bracketNo'] * 2 - $req->index,
+                            'order' => $order,
                             'image' => null,
                             'active' => 1
                         ]);
@@ -165,7 +179,7 @@ class BracketsController extends BaseController
                     $participant_id = $req->participant;
                 }
 
-                $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'image'=> $participant['image'], 'order' => $req->order];
+                $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'image'=> $participant['image'], 'order' => $order];
 
                 $bracket['teamnames'] = json_encode($teamnames);
 
