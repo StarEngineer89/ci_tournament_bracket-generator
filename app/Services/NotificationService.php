@@ -35,7 +35,7 @@ class NotificationService
      */
     public function getNotifications(int $userId)
     {
-        return $this->notificationModel->where('user_to', $userId)->where('mark_as_read', 0)->withUsernames()->findAll();
+        return $this->notificationModel->where('user_to', $userId)->where('mark_as_read', 0)->withUsernames()->orderBy('created_at', 'desc')->findAll();
     }
 
     /**
