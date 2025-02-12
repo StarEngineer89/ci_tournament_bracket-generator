@@ -13,7 +13,7 @@ return [
     'passwordChangeEmailSubject' => "Your Password Has Been Successfully Updated",
     'emailUpdateVerificationSubject' => "Verify Your New Email",
     'emailUpdateNotificationSubject' => "Your Email Has Been Changed on {0}",
-    'emailActivateBody'     => "We just sent an email to {0} with a code to confirm your email address. Copy that code and paste it below once you receive it to complete your account setup process.<br/><br/>Note: If you don't receive the email within a few minutes, check your spam folder. If you're still having trouble receiving it, ensure you've registered with a valid email.",
+    'emailActivateBody'     => "We just sent an email to {0} with a code to confirm your email address.<br/>Copy that code and paste it below once you receive it to complete your account setup process.<br/><br/>Note: If you don't receive the email within a few minutes, check your spam folder. <br/>If you're still having trouble receiving it, ensure you've registered with a valid email.",
     'emailActivateSubject'  => '✅ Verify Your Account & Join the Tournament Action!',
     'welcomeEmailSubject'  => '🎉 Welcome to {0}! Let the Tournaments Begin!',
     'verificationSuccessTitle' => "Verification Success",
