@@ -395,7 +395,6 @@ $(document).on('ready', function () {
                     teams[team_index].voted = true
                 }
                 
-                var voteBtnAvailable = true
                 if (parseInt(bracket.win_by_host) || teams[team_index].voted) {
                     voteBtnAvailable = false
                 }

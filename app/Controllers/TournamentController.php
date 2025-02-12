@@ -75,9 +75,10 @@ class TournamentController extends BaseController
         /** Check if the tournament is associated with guest user */
         $editable = false;
         $votingEnabled = false;
+        $votingBtnEnabled = false;
         if (auth()->user() && $tournament['user_id'] == auth()->user()->id) {
             $editable = true;
-            $votingEnabled = true;
+            $votingBtnEnabled = true;
         }
         
         if($tournament['user_id'] == 0){
@@ -93,7 +94,7 @@ class TournamentController extends BaseController
 
             if (in_array($cookie_value, $tournamentHistory)) {
                 $editable = true;
-                $votingEnabled = true;
+                $votingBtnEnabled = true;
             }
         }
 
@@ -101,28 +102,29 @@ class TournamentController extends BaseController
          * Check if vote is available 
          */
         if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING) {
+            $votingEnabled = true;
             if ($tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED) {
                 if (auth()->user()) {
-                    $votingEnabled = true;
+                    $votingBtnEnabled = true;
                 } else {
                     $shareSettings = $shareSettingsModel->where(['tournament_id' => $id])->findAll();
                     foreach ($shareSettings as $share) {
                         if ($share['target'] == SHARE_TO_PUBLIC) {
-                            $votingEnabled = true;
+                            $votingBtnEnabled = true;
                         }
                     }
                 }
             }
 
             if ($tournament['voting_accessibility'] == EVALUATION_VOTING_UNRESTRICTED) {
-                $votingEnabled = true;
+                $votingBtnEnabled = true;
             }
         }
 
         /** Check if the availability start */
         $current_date = date('Y-m-d H:i:s');
         if (date('Y-m-d H:i:s', strtotime($tournament['available_start'])) > $current_date || date('Y-m-d H:i:s', strtotime($tournament['available_end'])) < $current_date) {
-            $votingEnabled = false;
+            $votingBtnEnabled = false;
         }
 
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
@@ -166,7 +168,7 @@ class TournamentController extends BaseController
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'page' => 'view']);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'page' => 'view']);
     }
     
     public function viewShared($token)

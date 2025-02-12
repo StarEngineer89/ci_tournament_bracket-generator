@@ -17,7 +17,7 @@
     <div class="row">
         <div class="home-block col-md-12 d-flex align-items-center justify-content-center">
             <p class="home-content">
-                <span>Get started by creating a first tournament!</span><br />
+                <span>Get started by creating a tournament!</span><br />
                 <a class="btn btn-success mt-5" href="<?= base_url('/tournaments/create') ?>">Create Tournament</a>
             </p>
         </div>

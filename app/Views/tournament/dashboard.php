@@ -1042,14 +1042,17 @@ $(document).ready(function() {
                 title = "Confirm to update the status"
                 action_text = '<h6>You are about to change the status of the following selected tournament(s):</h6>';
                 action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+                modal.find('span.text-danger').remove();
             } else if (action === 'bulkArchive') {
                 title = "Confirm to archive"
                 action_text = '<h6>You are about to archive the following selected tournament(s):</h6>';
                 action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+                modal.find('span.text-danger').remove();
             } else if (action === 'bulkRestore') {
                 title = "Confirm to restore"
                 action_text = '<h6>You are about to restore the following selected tournament(s):</h6>';
                 action_text += `<h6>Tournament Names: ${event.relatedTarget.names}</h6>`;
+                modal.find('span.text-danger').remove();
             }
 
             modal.find('.modal-title').text(title);
