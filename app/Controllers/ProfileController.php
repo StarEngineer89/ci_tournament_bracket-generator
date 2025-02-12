@@ -67,7 +67,7 @@ class ProfileController extends BaseController
             throw new RuntimeException('Cannot send email for user: ' . $new_email . "\n" . $email->printDebugger(['headers']));
         }
 
-        return $this->response->setJSON(['status' => 'success', 'success' => true, 'message' => lang('Auth.newVerificationCodeSentMessage', [auth()->user()->email])]);
+        return $this->response->setJSON(['status' => 'success', 'success' => true, 'message' => lang('Auth.newVerificationCodeSentMessage', [$new_email])]);
     }
 
     public function updateEmailConfirm()
