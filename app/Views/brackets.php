@@ -23,6 +23,7 @@ const markWinnerActionCode = '<?= BRACKET_ACTIONCODE_MARK_WINNER ?>';
 const unmarkWinnerActionCode = '<?= BRACKET_ACTIONCODE_UNMARK_WINNER ?>';
 const changeParticipantActionCode = '<?= BRACKET_ACTIONCODE_CHANGE_PARTICIPANT ?>';
 const addParticipantActionCode = '<?= BRACKET_ACTIONCODE_ADD_PARTICIPANT ?>';
+const removeParticipantActionCode = '<?= BRACKET_ACTIONCODE_REMOVE_PARTICIPANT ?>';
 const deleteBracketActionCode = '<?= BRACKET_ACTIONCODE_DELETE ?>';
 var hasEditPermission = <?= ($editable) ? 1 : 0 ?>;
 var hasParticipantImageUpdatePermission = <?= $tournament['pt_image_update_enabled'] ? intval($tournament['pt_image_update_enabled']) : 0 ?>;

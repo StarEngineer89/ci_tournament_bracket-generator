@@ -145,21 +145,20 @@ class BracketsController extends BaseController
         if(isset($req->name) && $req->name){
             $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
             if (isset($req->index)) {
-                if (!isset($req->participant))  {
-
-                    $order = ($req->order - 1) * 2 + $req->index;
-                    if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
-                        $order = (($req->order - 1) * 2 + $req->index) * 2;
-                        if ($bracket['is_double']) {
-                            $order += 1;
-                        }
-                    } else {
-                        $single_count = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'roundNo' => $bracket['roundNo'], 'is_double' => 1])->countAllResults();
-                        if ($bracket['is_double']) {
-                            $order = ($req->order - $single_count - 1) * 2 + $req->index;
-                        }    
+                $order = ($req->order - 1) * 2 + $req->index;
+                if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
+                    $order = (($req->order - 1) * 2 + $req->index) * 2;
+                    if ($bracket['is_double']) {
+                        $order += 1;
                     }
+                } else {
+                    $single_count = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'roundNo' => $bracket['roundNo'], 'is_double' => 1])->countAllResults();
+                    if ($bracket['is_double']) {
+                        $order = ($req->order - $single_count - 1) * 2 + $req->index;
+                    }    
+                }
 
+                if (!isset($req->participant))  {
                     if ($participant) {
                         $participant_id = $participant['id'];
                     } else {
@@ -186,6 +185,12 @@ class BracketsController extends BaseController
                 $result['participant'] = $participant;
             }
 
+            $this->bracketsModel->save($bracket);
+        }
+
+        if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
+            $teamnames[$req->index] = null;
+            $bracket['teamnames'] = json_encode($teamnames);
             $this->bracketsModel->save($bracket);
         }
 

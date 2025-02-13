@@ -233,6 +233,16 @@ $(document).on('ready', function () {
                                 }
                     }
 
+                    items.remove = {
+                                name: "➖️ Remove participant",
+                                callback: (key, opt, e) => {
+                                    const element = opt.$trigger;
+                                    var index = (element.hasClass("teama")) ? 0 : 1;
+                                    
+                                    updateBracket(opt.$trigger, { index: index, action_code: removeParticipantActionCode });
+                                }
+                    }
+
                     items.delete = {
                                 name: "🗑️ Delete Bracket",
                                 callback: (key, opt, e) => {
