@@ -374,6 +374,7 @@ $(document).on('ready', function () {
             }
             
             if (votingEnabled) {
+                var voteBtnAvailable = true
                 var votes = document.createElement('span')
                 votes.classList.add('votes')
                 votes.textContent = teams[team_index].votes ? teams[team_index].votes : 0

@@ -31,7 +31,7 @@ const scoreBracket = parseInt(<?= ($tournament['score_bracket']) ? $tournament['
 const incrementScore = Number(<?= (intval($tournament['increment_score_enabled']) && $tournament['increment_score']) ? $tournament['increment_score'] : 0 ?>);
 const incrementScoreType = '<?= (intval($tournament['increment_score_enabled']) && $tournament['increment_score_type']) ? $tournament['increment_score_type'] : TOURNAMENT_SCORE_INCREMENT_PLUS ?>';
 let votingEnabled = <?= $votingEnabled ? $votingEnabled : 0 ?>;
-let voteBtnAvailable = <?= $votingBtnEnabled ? $votingBtnEnabled : 0 ?>;
+let voteAvailable = <?= $votingBtnEnabled ? $votingBtnEnabled : 0 ?>;
 let votingMechanism = <?= $tournament['voting_mechanism'] ? intval($tournament['voting_mechanism']) : 1 ?>;
 let allowHostOverride = <?= $tournament['allow_host_override'] ? $tournament['allow_host_override'] : 0 ?>;
 let maxVoteCount = <?= $tournament['max_vote_value'] ? $tournament['max_vote_value'] : 0 ?>;
@@ -296,8 +296,7 @@ $(document).ready(function() {
         <?php endif ?>
 
         <div class="container alert-btn-container mb-1 d-flex justify-content-end">
-            <?php $current_time = date('Y-m-d H:i:s') ?>
-            <?php if ($tournament['availability'] && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND && (date('Y-m-d H:i:s', strtotime($tournament['available_start'])) > $current_time || date('Y-m-d H:i:s', strtotime($tournament['available_end'])) < $current_time)): ?>
+            <?php if ($tournament['availability']): ?>
             <button type="button" class="btn" id="toggleVoteWarningBtn">
                 <i class="fa-solid fa-calendar"></i>
             </button>
