@@ -232,17 +232,17 @@ $(document).on('ready', function () {
                                         alert('Please input the name of the participant.');
                                 }
                     }
-
-                    items.remove = {
-                                name: "➖️ Remove participant",
-                                callback: (key, opt, e) => {
-                                    const element = opt.$trigger;
-                                    var index = (element.hasClass("teama")) ? 0 : 1;
+                    if ($triggerElement.attr('data-id')) {
+                        items.remove = {
+                            name: "➖️ Remove participant",
+                            callback: (key, opt, e) => {
+                                const element = opt.$trigger;
+                                var index = (element.hasClass("teama")) ? 0 : 1;
                                     
-                                    updateBracket(opt.$trigger, { index: index, action_code: removeParticipantActionCode });
-                                }
+                                updateBracket(opt.$trigger, { index: index, action_code: removeParticipantActionCode });
+                            }
+                        }
                     }
-
                     items.delete = {
                                 name: "🗑️ Delete Bracket",
                                 callback: (key, opt, e) => {
