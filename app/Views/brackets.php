@@ -186,7 +186,7 @@ $(document).ready(function() {
     if (availabilityAlertTrigger) {
         const msg = $('#availabilityAlertMsg').html();
         availabilityAlertTrigger.addEventListener('click', () => {
-            appendAvailabilityAlert(msg, 'danger')
+            appendAvailabilityAlert(msg, 'dark')
             availabilityAlertTrigger.classList.add('d-none')
 
             const myAlert = document.getElementById('availabilityAlert')

@@ -126,6 +126,7 @@ $routes->get('auth/google', 'GoogleAuthController::login');
 $routes->get('auth/google/callback', 'GoogleAuthController::callback');
 $routes->get('auth/resend-verification', 'Auth\RegisterController::resendVerification');
 $routes->get('auth/a/abort-verification', 'Auth\RegisterController::abortVerification');
+$routes->post('register', 'Auth\RegisterController::registerAction');
 $routes->get('auth/verification-success', function() {
     return view('shield/verification_success');
 });
