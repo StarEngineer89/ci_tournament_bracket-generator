@@ -951,8 +951,7 @@ var performReuseParticipants = (tournament_id = null) => {
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?= base_url('tournaments') ?>">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Create</li>
+                <a href="javascript:;" onclick="history.back()"><i class="fa fa-angle-left"></i> Back</a>
             </ol>
         </nav>
 

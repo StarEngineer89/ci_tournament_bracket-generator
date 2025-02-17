@@ -182,19 +182,65 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
     }
 });
+
+
+const notePlaceholder = document.getElementById('notePlaceholder')
+const appendNoteAlert = (message, type) => {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = [
+        `<div class="container alert alert-${type} alert-dismissible" id="noteAlert" role="alert">`,
+        `   <div>${message}</div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+    ].join('')
+
+    notePlaceholder.append(wrapper)
+}
+
+const noteAlertTrigger = document.getElementById('toggleNoteBtn')
+if (noteAlertTrigger) {
+    const msg = $('#noteMsg').html();
+    noteAlertTrigger.addEventListener('click', () => {
+        appendNoteAlert(msg, 'info')
+        noteAlertTrigger.classList.add('d-none')
+
+        const myAlert = document.getElementById('noteAlert')
+        myAlert.addEventListener('closed.bs.alert', event => {
+            noteAlertTrigger.classList.remove('d-none')
+        })
+    })
+}
+
+$('#toggleNoteBtn').click();
 </script>
 <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
 <div class="card shadow-sm">
     <div class="card- p-3">
-        <div class="text-center mb-5">
-            <h3>Participant Leaderboard</h3>
-            <div class="d-flex  flex-column justify-content-center">
-                <p>Discover the top-performing participants across all tournaments. See who’s dominating the competition and climbing to the top with every victory!</p>
-                <p>Note: By default, the top participants are ranked by the number of tournaments they’ve won.</p>
+        <div class="container">
+            <div class="text-center">
+                <h3>Participant Leaderboard</h3>
+            </div>
+
+            <div class="container alert-btn-container mb-1 d-flex justify-content-end">
+                <button type="button" class="btn" id="toggleNoteBtn">
+                    <i class="fa-solid fa-warning"></i>
+                </button>
+            </div>
+
+            <div id="notePlaceholder"></div>
+            <div id="noteMsg" class="d-none">
+                <p class="text-center">Discover the top-performing participants across all tournaments. See who’s dominating the competition and climbing to the top with every victory!</p>
+                Note:<br />
+                By default, the top participants are ranked by the number of tournaments they’ve won.<br />
+                Registered participants (prefixed with @) who were explicitly added/invited by a host are grouped under a single record, ensuring accurate tracking of their achievements.<br />
+                In contrast, anonymous participants have separate records for each tournament they join. <br />
+                Even if an anonymous participant uses the same name across multiple tournaments, there is no way to verify if they are the same individual or different participants.<br />
+                This is one of the key benefits of registration—it allows for proper verification, ensuring consistency and prioritizing registered participants on the leaderboard!
             </div>
         </div>
+
         <div class="buttons d-flex justify-content-end">
             <a href="<?= base_url('participants/export') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
         </div>

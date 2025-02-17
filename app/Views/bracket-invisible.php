@@ -34,17 +34,9 @@
         </h5>
 
         <div class="alert alert-danger" role="alert">
-            This tournament is not made public by the host.
+            This tournament is not made public by the host(<?= setting('Email.fromEmail') ?>).
         </div>
         <?php endif; ?>
     </div>
 </div>
-<?= $this->endSection() ?>
-
-<?= $this->section('pageScripts') ?>
-<script>
-setTimeout(function() {
-    window.location.href = "/";
-}, 5000); // Redirect after 5 seconds
-</script>
 <?= $this->endSection() ?>
