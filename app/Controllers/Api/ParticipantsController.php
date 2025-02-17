@@ -48,6 +48,7 @@ class ParticipantsController extends BaseController
                     $participant['tournaments_won'] = ($finalBrackets) ? count($finalBrackets) : 0;
                     
                     $tournament_list = [];
+                    /** Get the tournaments list of the participant was the final winner in. */
                     if ($finalBrackets) {
                         foreach ($finalBrackets as $f_bracket) {
                             $tournament = $this->tournamentsModel->find($f_bracket['tournament_id']);
@@ -56,6 +57,9 @@ class ParticipantsController extends BaseController
                             }
                         }
                     }
+
+                    /** Get all the tournaments participated */
+                    // $tournament_ids = $this->bracketsModel->whereLike('teamnames', '')
 
                     $participant['tournaments_list'] = $tournament_list;
 

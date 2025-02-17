@@ -35,10 +35,9 @@ class TournamentAccessPermissionFilter implements FilterInterface
         $session = \Config\Services::session();
 
         if (empty($shareSetting)) {
-            log_message('debug', "This page is not valid.");
             $session->setFlashdata(['error' => "This page is not valid."]);
             
-            return redirect()->route('gallery');
+            return false;
         }
 
         $tournament = $tournamentModel->find($shareSetting['tournament_id']);
@@ -51,14 +50,12 @@ class TournamentAccessPermissionFilter implements FilterInterface
 
         /** Check if the sharing is public to everyone */
         if ($shareSetting && $shareSetting['target'] == SHARE_TO_PUBLIC) {
-            log_message('debug', "tournament was shared to public");
             $session->set(['share_permission' => $shareSetting['permission']]);
             return;
         }
 
         /** Check if the sharing to everyone with the link */
         if ($shareSetting && $shareSetting['target'] == SHARE_TO_EVERYONE) {
-            log_message('debug', "tournament was shared to everyone with the link");
             if (auth()->user()) {
                 $session->set(['share_permission' => $shareSetting['permission']]);
             return;
@@ -67,7 +64,6 @@ class TournamentAccessPermissionFilter implements FilterInterface
 
         /** Check if the sharing to everyone with the link */
         if ($shareSetting && $shareSetting['target'] == SHARE_TO_USERS) {
-            log_message('debug', "tournament was shared to selected users");
             $users = explode(',', $shareSetting['users']);
 
             if (auth()->user() && in_array(auth()->user()->id, $users)) {
@@ -78,7 +74,6 @@ class TournamentAccessPermissionFilter implements FilterInterface
 
         /** If there is a share setting but user not authorized */
         if (auth()->user()) {
-            log_message('debug', "User should logged in");
             $session->setFlashdata(['error' => "You don't have permission to view this tournament!"]);
             $session->setTempdata('beforeLoginUrl', current_url(), 300);
             

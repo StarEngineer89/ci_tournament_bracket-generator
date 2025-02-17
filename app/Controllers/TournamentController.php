@@ -72,6 +72,10 @@ class TournamentController extends BaseController
             return redirect()->to('/tournaments');
         }
 
+        if (!$tournament['visibility']) {
+            return view('bracket-invisible', ['tournament' => $tournament]);
+        }
+
         /** Check if the tournament is associated with guest user */
         $editable = false;
         $votingEnabled = false;
@@ -180,10 +184,7 @@ class TournamentController extends BaseController
 
         $settings = $shareSettingModel->where(['token'=> $token])->first();
         if (!$settings) {
-            $session = \Config\Services::session();
-            $session->setFlashdata(['error' => "This link is incorrect!"]);
-
-            return redirect()->to('/gallery');
+            return view('bracket-invisible');
         }else{
             if($settings['user_id'] == 0 && (time() - strtotime($settings['created_at'])) > 24*60*60){
                 $session = \Config\Services::session();
@@ -201,6 +202,10 @@ class TournamentController extends BaseController
             $session->setFlashdata(['error' => "This tournament is not existing!"]);
 
             return redirect()->to('/gallery');
+        }
+
+        if (!$tournament['visibility']) {
+            return view('bracket-invisible', ['tournament' => $tournament]);
         }
         
         $brackets = $bracketModel->where('tournament_id', $settings['tournament_id'])->findAll();

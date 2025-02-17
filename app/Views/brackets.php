@@ -138,7 +138,7 @@ $(document).ready(function() {
     const appendDescription = (description, type) => {
         const wrapper = document.createElement('div')
         let editBtn = ''
-        <?php if (auth()->user() && $tournament['user_id'] == auth()->user()->id && (isset($_GET['mode']) && $_GET['mode'] == 'edit')): ?>
+        <?php if (auth()->user() && $tournament['user_id'] == auth()->user()->id): ?>
         editBtn = '<button type="button" class="btn-edit" id="editDescriptionBtn" onclick="enableDescriptionEdit(this)"><i class="fa-solid fa-pen-to-square"></i></button>'
         <?php endif ?>
         wrapper.innerHTML = [
@@ -269,8 +269,7 @@ $(document).ready(function() {
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?= base_url('tournaments') ?>">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Brackets</li>
+                <a href="javascript:;" onclick="history.back()"><i class="fa fa-angle-left"></i> Back</a>
             </ol>
         </nav>
         <h5 class="card-title d-flex justify-content-center mb-5">
