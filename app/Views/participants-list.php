@@ -201,7 +201,7 @@ const noteAlertTrigger = document.getElementById('toggleNoteBtn')
 if (noteAlertTrigger) {
     const msg = $('#noteMsg').html();
     noteAlertTrigger.addEventListener('click', () => {
-        appendNoteAlert(msg, 'info')
+        appendNoteAlert(msg, 'success')
         noteAlertTrigger.classList.add('d-none')
 
         const myAlert = document.getElementById('noteAlert')
@@ -221,17 +221,18 @@ $('#toggleNoteBtn').click();
         <div class="container">
             <div class="text-center">
                 <h3>Participant Leaderboard</h3>
+                <p>Discover the top-performing participants across all tournaments. See who’s dominating the competition and climbing to the top with every victory!</p>
             </div>
 
             <div class="container alert-btn-container mb-1 d-flex justify-content-end">
                 <button type="button" class="btn" id="toggleNoteBtn">
-                    <i class="fa-solid fa-warning"></i>
+                    <i class="fa-solid fa-circle-info"></i>
                 </button>
             </div>
 
             <div id="notePlaceholder"></div>
             <div id="noteMsg" class="d-none">
-                <p class="text-center">Discover the top-performing participants across all tournaments. See who’s dominating the competition and climbing to the top with every victory!</p>
+
                 Note:<br />
                 By default, the top participants are ranked by the number of tournaments they’ve won.<br />
                 Registered participants (prefixed with @) who were explicitly added/invited by a host are grouped under a single record, ensuring accurate tracking of their achievements.<br />

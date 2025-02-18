@@ -73,7 +73,9 @@ class TournamentController extends BaseController
         }
 
         if (!$tournament['visibility']) {
-            return view('bracket-invisible', ['tournament' => $tournament]);
+            $users = auth()->getProvider();
+            $created_by = $users->findById($tournament['user_id']);
+            return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);
         }
 
         /** Check if the tournament is associated with guest user */
@@ -205,7 +207,9 @@ class TournamentController extends BaseController
         }
 
         if (!$tournament['visibility']) {
-            return view('bracket-invisible', ['tournament' => $tournament]);
+            $users = auth()->getProvider();
+            $created_by = $users->findById($tournament['user_id']);
+            return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);
         }
         
         $brackets = $bracketModel->where('tournament_id', $settings['tournament_id'])->findAll();

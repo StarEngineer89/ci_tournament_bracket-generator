@@ -34,7 +34,7 @@
         </h5>
 
         <div class="alert alert-danger" role="alert">
-            This tournament is not made public by the host(<?= setting('Email.fromEmail') ?>).
+            This tournament is not made public by the host (<?= $created_by->email ?>).
         </div>
         <?php endif; ?>
     </div>
