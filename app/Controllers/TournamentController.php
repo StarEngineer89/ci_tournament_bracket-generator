@@ -46,10 +46,12 @@ class TournamentController extends BaseController
             }
         }
 
+        $users = auth()->getProvider()->limit(5)->findAll();
+
         $settingsBlock = view('tournament/tournament-settings', []);
         $audioSettingsBlock = view('tournament/audio-setting', []);
 
-        return view('tournament/create', ['audioSettingsBlock' => $audioSettingsBlock, 'settingsBlock' => $settingsBlock, 'userSettings' => $settingsArray]);
+        return view('tournament/create', ['audioSettingsBlock' => $audioSettingsBlock, 'settingsBlock' => $settingsBlock, 'userSettings' => $settingsArray, 'users' => $users]);
     }
 
     public function view($id)
@@ -72,7 +74,7 @@ class TournamentController extends BaseController
             return redirect()->to('/tournaments');
         }
 
-        if (!$tournament['visibility']) {
+        if (!auth()->user() && !$tournament['visibility']) {
             $users = auth()->getProvider();
             $created_by = $users->findById($tournament['user_id']);
             return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);
@@ -206,7 +208,7 @@ class TournamentController extends BaseController
             return redirect()->to('/gallery');
         }
 
-        if (!$tournament['visibility']) {
+        if (!auth()->user() && !$tournament['visibility']) {
             $users = auth()->getProvider();
             $created_by = $users->findById($tournament['user_id']);
             return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);

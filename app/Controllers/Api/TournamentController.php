@@ -230,6 +230,7 @@ class TournamentController extends BaseController
         $tournamentModel = model('\App\Models\TournamentModel');
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
 
+        /** Disable foreign key check for the guest users */
         $db = \Config\Database::connect();
         $dbDriver = $db->DBDriver;
         if (!auth()->user() && $dbDriver === 'MySQLi') {
@@ -364,6 +365,35 @@ class TournamentController extends BaseController
         }
         /** End adding the tournament Id into the cookie for guest users */
         
+        /** Send the notifications to the participants (registered users) */
+        $users = $this->participantModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->findAll();
+        if ($users) {
+            $userProvider = auth()->getProvider();
+            $notificationService = service('notification');
+            foreach ($users as $user) {
+                $user = $userProvider->findById($user['registered_user_id']);
+                $message = "You've been added to tournament $tournamentData->name!";
+                $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
+
+                $email = service('email');
+                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                $email->setTo($user->email);
+                $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
+                $email->setMessage(view(
+                    'email/invite-to-tournament',
+                    ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName')],
+                    ['debug' => false]
+                ));
+                
+                if ($email->send(false) === false) {
+                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                }
+
+                $email->clear();
+            }
+        }
+
+        /** Enable foreign key check */
         if (!auth()->user() && $dbDriver === 'MySQLi') {
             $db->query('SET FOREIGN_KEY_CHECKS = 1;');
         }
@@ -1071,7 +1101,27 @@ class TournamentController extends BaseController
             $participants = $participantsModel->where('tournament_id', $tournament_id)->findAll();
         }
 
+        $users = auth()->getProvider()->findAll();
+        if ($users) {
+            foreach ($users as $user) {
+                $participants[] = $user;
+            }
+        }
+
         return json_encode($participants);
+    }
+
+    public function getUsers()
+    {
+        $query = $this->request->getGet('query');
+        
+        $users = auth()->getProvider();
+        if ($query) {
+            $users = $users->like('username', $query);
+        }
+
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON($users->findAll());
     }
 
     public function saveVote()

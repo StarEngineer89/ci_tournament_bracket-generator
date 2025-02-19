@@ -80,6 +80,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('get-gallery', 'Api\TournamentController::fetch_gallery');
         $routes->post('reuse-participants', 'Api\TournamentController::reuseParticipants');
         $routes->get('(:num)/get-participants', 'Api\TournamentController::getParticipants/$1');
+        $routes->get('get-users', 'Api\TournamentController::getUsers');
         $routes->post('vote', 'Api\TournamentController::saveVote');
     });
 

@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.9.1/dist/themes/classic.min.css">
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.4/css/jquery.atwho.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
@@ -20,6 +21,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
 <!-- Tempus Dominus JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.rawgit.com/ichord/Caret.js/master/dist/jquery.caret.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/at.js/1.5.4/js/jquery.atwho.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 var hash = '<?= uniqid(rand(), TRUE);?>';
 </script>
@@ -97,6 +100,31 @@ $(document).ready(function() {
                 uploadVideo(files[0]);
             }
 
+        }
+    });
+
+    $("#participantNames").atwho({
+        at: "@",
+        searchKey: 'username',
+        data: <?= json_encode($users) ?>,
+        limit: 5, // Show only 5 suggestions
+        displayTpl: "<li data-value='@${id}'>${username}</li>",
+        insertTpl: "@${username},",
+        callbacks: {
+            remoteFilter: function(query, callback) {
+                if (query.length < 1) return; // Don't fetch on empty query
+                $.ajax({
+                    url: apiURL + '/tournaments/get-users', // Your API endpoint
+                    type: "GET",
+                    data: {
+                        query: query
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        callback(data);
+                    }
+                });
+            }
         }
     });
 
@@ -209,6 +237,8 @@ $(document).ready(function() {
             name,
             value
         }) => [name, value]));
+
+        data['hash'] = hash
 
         $.ajax({
             url: apiURL + '/tournaments/save',
@@ -999,14 +1029,15 @@ var performReuseParticipants = (tournament_id = null) => {
                     <form class="row g-3 align-items-center">
                         <div class="col-12">
                             <label class="form-label">Name</label>
-                            <textarea class="form-control form-control-lg" id="participantNames" placeholder="For example: name1,name2,name3"></textarea>
+                            <textarea class="form-control form-control-lg" id="participantNames" placeholder="Enter unique participant names and/or @username to officially invite registered user(s).&#10;Example: name1, name2, @username1, etc..."></textarea>
                             <button type="button" class="btn btn-primary mt-2 float-end" id="addParticipants">Save</button>
                         </div>
                     </form>
                     <div id="namesdHelpBlock" class="form-text">
                         Or, upload a csv file of participant names. <a href="<?= base_url('/uploads/CSV/Samples/sample.csv') ?>">Download sample template file</a>
                         <br />
-                        Note that the first row header, as well as any other columns besides 1st column are ignored.
+                        Note that the first row header, as well as any other columns besides 1st column are ignored.<br />
+                        Also you may include @username to officially invite registered user(s).
                     </div>
 
                     <form class="row row-cols-lg-auto g-3 align-items-center mt-1" enctype="multipart/form-data" method="post">

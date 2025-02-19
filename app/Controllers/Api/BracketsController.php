@@ -130,6 +130,7 @@ class BracketsController extends BaseController
         $req = $this->request->getJSON();
         $result = array();
         $bracket = $this->bracketsModel->find($id);
+        $user_id = (auth()->user()) ? auth()->user()->id : 0;
 
         $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->findAll();
         if (count($nextBracket) == 1) {
@@ -189,9 +190,39 @@ class BracketsController extends BaseController
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
+            $removedParticipant = $teamnames[$req->index];
             $teamnames[$req->index] = null;
             $bracket['teamnames'] = json_encode($teamnames);
             $this->bracketsModel->save($bracket);
+
+            /** Remove the participant, add the notification, and send the email if it's registered user */
+            $removedParticipantData = $this->participantsModel->find($removedParticipant['id']);
+            if ($removedParticipantData['registered_user_id']) {
+                $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
+                $creator = auth()->getProvider()->findById($tournament['user_id']);
+                $tournament = new \App\Entities\Tournament($tournament);
+                
+                $notificationService = service('notification');
+                $message = "You've been removed from tournament $tournament->name!";
+                $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournament->id/view"]);
+
+                $email = service('email');
+                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                $email->setTo($user->email);
+                $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
+                $email->setMessage(view(
+                    'email/removed-from-tournament',
+                    ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                    ['debug' => false]
+                ));
+                
+                if ($email->send(false) === false) {
+                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                }
+
+                $email->clear();
+            }
+            $this->participantsModel->delete($removedParticipant['id']);
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {

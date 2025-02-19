@@ -119,19 +119,27 @@ class ParticipantsController extends BaseController
         
         $participants = []; $inserted_count = 0;
         if ($names) {
+            $userProvider = auth()->getProvider();
             foreach ($names as $name) {
-                $participant = new \App\Entities\Participant([
-                    'name' => $name,
-                    'user_id' => $user_id,
-                    'tournament_id' => $tournament_id,
-                    'active' => 1,
-                    'sessionid' => $hash
-                ]);
+                if ($name) {
+                    $participant = new \App\Entities\Participant([
+                        'name' => $name,
+                        'user_id' => $user_id,
+                        'tournament_id' => $tournament_id,
+                        'active' => 1,
+                        'sessionid' => $hash
+                    ]);
+                    if ($name[0] == '@') {
+                        $name = trim($name, '@');
+                        $user = $userProvider->where('username', $name)->first();
+                        $participant->registered_user_id = $user->id;
+                    }
 
-                $this->participantsModel->insert($participant);
-                $participant->id = $this->participantsModel->getInsertID();
-                $participants[] = $participant;
-                $inserted_count++;
+                    $this->participantsModel->insert($participant);
+                    $participant->id = $this->participantsModel->getInsertID();
+                    $participants[] = $participant;
+                    $inserted_count++;
+                }
             }
         }
 
