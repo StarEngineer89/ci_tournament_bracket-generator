@@ -285,6 +285,7 @@ class TournamentController extends BaseController
             
             return $this->response->setJSON($data);
         }
+        $tournamentData->id = $tournament_id;
 
         if ($this->request->getPost('setting-toggle')) {
             $uploadConfig = new UploadConfig();
