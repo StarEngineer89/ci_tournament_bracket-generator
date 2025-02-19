@@ -804,19 +804,17 @@ class TournamentController extends BaseController
 
     public function share($id)
     {
-        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-
         $data = $this->request->getPost();
         $data['user_id'] = auth()->user()->id;
 
-        $setting = $shareSettingsModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
+        $setting = $this->shareSettingModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
         if ($setting) {
             $data['id'] = $setting['id'];
         }
         
-        $shareSettingsModel->save($data);
+        $this->shareSettingModel->save($data);
 
-        $share = $shareSettingsModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
+        $share = $this->shareSettingModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
 
         $share['private_users'] = null;
         if ($share['target'] == SHARE_TO_USERS) {
@@ -826,19 +824,42 @@ class TournamentController extends BaseController
             $share['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
         }
 
+        $role = 'Viewer';
+        if ($share['permission'] == SHARE_PERMISSION_EDIT) {
+            $role = 'Editor';
+        }
+
         /** Notifiy to the users */
         if (isset($users) && count($users)) {
             
-            $tournamentModel = model('\App\Models\TournamentModel');
-            $tournament = $tournamentModel->find($data['tournament_id']);
-            $tournamentName = $tournament['name'];
+            $tournament = $this->tournamentModel->find($data['tournament_id']);
+            $tournament = new \App\Entities\Tournament($tournament);
         
             foreach ($users as $user) {
-                $msg = "Tournament \"$tournamentName\" was privately shared with you.";
+                $msg = "Tournament \"$tournament->name\" was privately shared with you.";
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;
 
                 $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
                 $this->notificationService->addNotification($notification);
+
+                $shared_to = auth()->getProvider()->findById($user);
+
+                /** Send the email */
+                $email = service('email');
+                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                $email->setTo($shared_to->email);
+                $email->setSubject(lang('Emails.shareTournamentEmailSubject'));
+                $email->setMessage(view(
+                    'email/share-tournament',
+                    ['username' => $shared_to->username, 'tournament' => $tournament, 'role' => $role, 'tournamentCreatorName' => setting('Email.fromName')],
+                    ['debug' => false]
+                ));
+                
+                if ($email->send(false) === false) {
+                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                }
+
+                $email->clear();
             }
         }
 
