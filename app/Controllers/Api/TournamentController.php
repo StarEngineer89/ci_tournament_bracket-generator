@@ -370,12 +370,11 @@ class TournamentController extends BaseController
         $users = $this->participantModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->findAll();
         if ($users) {
             $userProvider = auth()->getProvider();
-            $notificationService = service('notification');
             $userSettingsService = service('userSettings');
             foreach ($users as $user) {
                 $user = $userProvider->findById($user['registered_user_id']);
                 $message = "You've been added to tournament $tournamentData->name!";
-                $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
+                $this->notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
                 if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
                     $email = service('email');
@@ -501,6 +500,15 @@ class TournamentController extends BaseController
         if ($this->request->getPost('availability')) {
             $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
 
+            $availabilityChanged = false;
+            if ($tournament['available_start'] != date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')))) {
+                $availabilityChanged = true;
+            }
+
+            if ($tournament['available_end'] != date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')))) {
+                $availabilityChanged = true;
+            }
+
             if($tournament['availability']){
                 $tournament['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
                 $tournament['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
@@ -509,6 +517,43 @@ class TournamentController extends BaseController
                 $tournament['available_end'] = null;
 
                 $scheduleLibrary->unregisterSchedule($tournament_id);
+            }
+
+            if ($availabilityChanged) {
+                $participantsModel = model('\App\Models\ParticipantModel');
+                $registeredUsers = $participantsModel->where(['tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+
+                if ($registeredUsers) {
+                    $userProvider = auth()->getProvider();
+                    $userSettingService = service('userSettings');
+                        
+                    $creator = $userProvider->findById($tournament['user_id']);
+                    $tournamentEntity = new \App\Entities\Tournament($tournament);
+                    foreach ($registeredUsers as $user_id) {
+                        $user = $userProvider->findById($user_id);
+
+                        $message = "The availability of the tournament [$tournamentEntity->name] was updated!";
+                        $this->notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_AVAILABILITY_UPDATED, 'link' => "tournaments/$tournamentEntity->id/view"]);
+
+                        if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
+                            $email = service('email');
+                            $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                            $email->setTo($user->email);
+                            $email->setSubject(lang('Emails.tournamentAvailabilityUpdateEmailSubject'));
+                            $email->setMessage(view(
+                                'email/tournament-availability-update',
+                                ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'startTime' => $tournament['available_start'], 'endTime' => $tournament['available_end'], 'tournamentCreatorName' => setting('Email.fromName')],
+                                ['debug' => false]
+                            ));
+
+                            if ($email->send(false) === false) {
+                                $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                            }
+
+                            $email->clear();
+                        }
+                    }
+                }
             }
         }
         

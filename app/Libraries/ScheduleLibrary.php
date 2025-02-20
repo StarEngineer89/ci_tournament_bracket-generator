@@ -29,6 +29,7 @@ class ScheduleLibrary
         if ($tournamentSettings['availability']) {
             $startDate = new \DateTime($tournamentSettings['available_start']);
             $endDate = new \DateTime($tournamentSettings['available_end']);
+            $this->registerSchedule($tournament_id, SCHEDULE_NAME_TOURNAMENTSTART, 1, $startDate->format('Y-m-d H:i:s'));
 
             // Calculate the total hours between start and end date
             $tournamentDuration = $endDate->getTimestamp() - $startDate->getTimestamp(); // Total duration in seconds
@@ -41,24 +42,24 @@ class ScheduleLibrary
             for ($i = 1; $i < $maxRounds->roundNo; $i++) {
                 $scheduleTime = $startDate->modify("+$roundDuration minutes")->format('Y-m-d H:i:s');
 
-                $this->registerSchedule($tournament_id, $i, $scheduleTime);
+                $this->registerSchedule($tournament_id, SCHEDULE_NAME_ROUNDUPDATE, $i, $scheduleTime);
             }
 
             $scheduleTime = $endDate->format('Y-m-d H:i:s');
-            $this->registerSchedule($tournament_id, $maxRounds->roundNo, $scheduleTime);
+            $this->registerSchedule($tournament_id, SCHEDULE_NAME_TOURNAMENTEND, $maxRounds->roundNo, $scheduleTime);
         }
         
         return true;
     }
 
-    public function registerSchedule($tournament_id, $round_no, $time) {
-        $schedule = $this->schedulesModel->where(['schedule_name' => SCHEDULE_NAME_ROUNDUPDATE, 'tournament_id' => $tournament_id, 'round_no' => $round_no])->first();
+    public function registerSchedule($tournament_id, $schedule_name, $round_no, $time) {
+        $schedule = $this->schedulesModel->where(['schedule_name' => $schedule_name, 'tournament_id' => $tournament_id, 'round_no' => $round_no])->first();
         if ($schedule) {
             $schedule['schedule_time'] = $time;
             $schedule['result'] = 0;
         } else {
             $schedule = new \App\Entities\Schedule();
-            $schedule->schedule_name = SCHEDULE_NAME_ROUNDUPDATE;
+            $schedule->schedule_name = $schedule_name;
             $schedule->tournament_id = $tournament_id;
             $schedule->round_no = $round_no;
             $schedule->schedule_time = $time;

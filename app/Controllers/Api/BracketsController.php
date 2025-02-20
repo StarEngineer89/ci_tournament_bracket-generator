@@ -131,6 +131,9 @@ class BracketsController extends BaseController
         $result = array();
         $bracket = $this->bracketsModel->find($id);
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
+        
+        $notificationService = service('notification');
+        $userSettingsService = service('userSettings');
 
         $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->findAll();
         if (count($nextBracket) == 1) {
@@ -188,8 +191,6 @@ class BracketsController extends BaseController
                         if($req->name[0] == '@' && $user) {
                             $tournament = new \App\Entities\Tournament($tournament);
 
-                            $notificationService = service('notification');
-                            $userSettingsService = service('userSettings');
                             $message = "You've been added to tournament $tournament->name!";
                             $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament->id/view"]);
 
@@ -301,6 +302,8 @@ class BracketsController extends BaseController
                 }
                 $this->bracketsModel->save($nextBracket);
             }
+
+            /** Add the notification and send the congratulation email if it's the registered user */
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
@@ -326,6 +329,33 @@ class BracketsController extends BaseController
             $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
             $tournament['status'] = TOURNAMENT_STATUS_COMPLETED;
             $this->tournamentsModel->save($tournament);
+
+            $winnerParticipant = $this->participantsModel->find($req->winner);
+            if ($winner = auth()->getProvider()->findById($winnerParticipant['registered_user_id'])) {
+                $tournamentEntity = new \App\Entities\Tournament($tournament);
+                $creator = auth()->getProvider()->findById($tournament['user_id']);
+
+                $message = "Congratulations! You have won the tournament [$tournamentEntity->name]!";
+                $notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $winner->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournamentEntity->id/view"]);
+
+                if (!$userSettingsService->get('email_notification', $winner->id) || $userSettingsService->get('email_notification', $winner->id) == 'on') {
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($winner->email);
+                    $email->setSubject(lang('Emails.tournamentChampionWonEmailSubject'));
+                    $email->setMessage(view(
+                        'email/tournament-champion-won',
+                        ['username' => $winner->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
+
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
+            }
         }
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER && isset($req->is_final) && $req->is_final) {
             $tournamentModel = model('\App\Models\TournamentModel');

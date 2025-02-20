@@ -64,8 +64,69 @@ class RunScheduledTask extends BaseCommand
             foreach($schedules as $schedule) {
                 $schedule_time = new \DateTime($schedule['schedule_time']);
                 $current_time = new \DateTime();
+
+                if (($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART || $schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) && $current_time >= $schedule_time) {
+                    $participantsModel = model('\App\Models\ParticipantModel');
+                    $registeredUsers = $participantsModel->where(['tournament_id' => $schedule['tournament_id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+
+                    if ($registeredUsers) {
+                        $userProvider = auth()->getProvider();
+                        $userSettingService = service('userSettings');
+                        $notificationService = service('notification');
+
+                        $tournamentsModel = model('\App\Models\TournamentModel');
+                        $tournament = $tournamentsModel->find($schedule['tournament_id']);
+                        $tournament = new \App\Entities\Tournament($tournament);
+                        foreach ($registeredUsers as $user_id) {
+                            $user = $userProvider->findById($user_id);
+
+                            if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
+                                $message = "The [$tournament->name] was started!";
+                                $notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_STARTED, 'link' => "tournaments/$tournament->id/view"]);
+                            }
+                            if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) {
+                                $message = "The [$tournament->name] was completed!";
+                                $notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournament->id/view"]);
+                            }
+
+                            if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
+                                $creator = $userProvider->findById($tournament->user_id);
+                                $email = service('email');
+                                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                                $email->setTo($user->email);
+                                if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
+                                    $email->setSubject(lang('Emails.tournamentStartedEmailSubject'));
+                                    $email->setMessage(view(
+                                        'email/tournament-started',
+                                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'role' => 'Participant', 'tournamentCreatorName' => setting('Email.fromName')],
+                                        ['debug' => false]
+                                    ));
+                                }
+
+                                if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) {
+                                    $email->setSubject(lang('Emails.tournamentCompletedEmailSubject'));
+                                    $email->setMessage(view(
+                                        'email/tournament-completed',
+                                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                                        ['debug' => false]
+                                    ));
+                                }
+
+                                if ($email->send(false) === false) {
+                                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                                }
+
+                                $email->clear();
+                            }
+                        }
+                    }
+
+                    if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
+                        $schedulesModel->update($schedule['id'], ['result' => 1]);
+                    }
+                }
                 
-                if ($schedule['schedule_name'] == SCHEDULE_NAME_ROUNDUPDATE && $current_time >= $schedule_time) {
+                if (($schedule['schedule_name'] == SCHEDULE_NAME_ROUNDUPDATE || $schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) && $current_time >= $schedule_time) {
                     $voteLibrary->finalizeRound($schedule['tournament_id'], $schedule['round_no']);
 
                     $schedulesModel->update($schedule['id'], ['result' => 1]);
