@@ -240,57 +240,58 @@ $(document).on('ready', function () {
                                     });
                                 }
                     }
-                            
-                    items.create = {
-                                name: "➕ Add participant",
-                                callback: (key, opt, e) => {
-                                    var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
-                                    var originalInput = document.getElementById('newParticipantNameInput')
-                                    if (originalInput) {
-                                        originalInput.parentElement.remove()
-                                    }
-
-                                    var inputElement = document.createElement('input')
-                                    inputElement.setAttribute('class', "form-control form-control-sm")
-                                    inputElement.setAttribute('id', "newParticipantNameInput")
-                                    inputElement.focus()
-                                    $(inputElement).atwho({
-                                        at: "@",
-                                        searchKey: 'username',
-                                        data: initialUsers,
-                                        limit: 5, // Show only 5 suggestions
-                                        displayTpl: "<li data-value='@${id}'>${username}</li>",
-                                        insertTpl: "@${username}",
-                                        callbacks: {
-                                            remoteFilter: function(query, callback) {
-                                                if (query.length < 1) return; // Don't fetch on empty query
-                                                $.ajax({
-                                                    url: apiURL + '/tournaments/get-users', // Your API endpoint
-                                                    type: "GET",
-                                                    data: {
-                                                        query: query
-                                                    },
-                                                    dataType: "json",
-                                                    success: function(data) {
-                                                        callback(data);
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    });
-
-                                    var buttonElement = document.createElement('button')
-                                    buttonElement.setAttribute('class', 'btn btn-primary')
-                                    buttonElement.setAttribute('onclick', `saveNewParticipant($('#newParticipantNameInput'), ${index})`)
-                                    buttonElement.textContent = 'Save'
-
-                                    var elementGroup = document.createElement('div')
-                                    elementGroup.setAttribute('class', 'input-group input-group-sm')
-                                    elementGroup.appendChild(inputElement)
-                                    elementGroup.appendChild(buttonElement)
-
-                                    opt.$trigger.append(elementGroup)
+                    if (!$triggerElement.attr('data-id')) {
+                        items.create = {
+                            name: "➕ Add participant",
+                            callback: (key, opt, e) => {
+                                var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
+                                var originalInput = document.getElementById('newParticipantNameInput')
+                                if (originalInput) {
+                                    originalInput.parentElement.remove()
                                 }
+
+                                var inputElement = document.createElement('input')
+                                inputElement.setAttribute('class', "form-control form-control-sm")
+                                inputElement.setAttribute('id', "newParticipantNameInput")
+                                inputElement.focus()
+                                $(inputElement).atwho({
+                                    at: "@",
+                                    searchKey: 'username',
+                                    data: initialUsers,
+                                    limit: 5, // Show only 5 suggestions
+                                    displayTpl: "<li data-value='@${id}'>${username}</li>",
+                                    insertTpl: "@${username}",
+                                    callbacks: {
+                                        remoteFilter: function (query, callback) {
+                                            if (query.length < 1) return; // Don't fetch on empty query
+                                            $.ajax({
+                                                url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                                type: "GET",
+                                                data: {
+                                                    query: query
+                                                },
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    callback(data);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+
+                                var buttonElement = document.createElement('button')
+                                buttonElement.setAttribute('class', 'btn btn-primary')
+                                buttonElement.setAttribute('onclick', `saveNewParticipant($('#newParticipantNameInput'), ${index})`)
+                                buttonElement.textContent = 'Save'
+
+                                var elementGroup = document.createElement('div')
+                                elementGroup.setAttribute('class', 'input-group input-group-sm')
+                                elementGroup.appendChild(inputElement)
+                                elementGroup.appendChild(buttonElement)
+
+                                opt.$trigger.append(elementGroup)
+                            }
+                        }
                     }
                     if ($triggerElement.attr('data-id')) {
                         items.remove = {
