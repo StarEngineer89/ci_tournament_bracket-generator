@@ -377,7 +377,7 @@ class TournamentController extends BaseController
                 $message = "You've been added to tournament $tournamentData->name!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
-                if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
                     $email = service('email');
                     $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
                     $email->setTo($user->email);
@@ -848,7 +848,7 @@ class TournamentController extends BaseController
                 $shared_to = auth()->getProvider()->findById($user);
 
                 /** Send the email */
-                if ($userSettingsService->get('email_notification', $shared_to->id) == 'on') {
+                if (!$userSettingsService->get('email_notification', $shared_to->id) || $userSettingsService->get('email_notification', $shared_to->id) == 'on') {
                     $email = service('email');
                     $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
                     $email->setTo($shared_to->email);

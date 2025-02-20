@@ -47,7 +47,7 @@
                                     <div class="form-check form-switch form-check-reverse">
                                         <?php $userSettingService = service('userSettings') ?>
                                         <?php $emailNotificationSetting = $userSettingService->get('email_notification') ?>
-                                        <input class="form-check-input" type="checkbox" id="emailNotificationSwitch" onchange="changeEmailNotificationSetting(this)" <?= ($emailNotificationSetting == 'on') ? "checked": '' ?>>
+                                        <input class="form-check-input" type="checkbox" id="emailNotificationSwitch" onchange="changeEmailNotificationSetting(this)" <?= (!$emailNotificationSetting || $emailNotificationSetting == 'on') ? "checked": '' ?>>
                                         <label class="form-check-label" for="emailNotificationSwitch">Email Notifications</label>
                                     </div>
                                     <a href="javascript:;" class="" data-bs-toggle="modal" data-bs-target="#clearNotificationsModal">Clear All</a>

@@ -193,7 +193,7 @@ class BracketsController extends BaseController
                             $message = "You've been added to tournament $tournament->name!";
                             $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament->id/view"]);
 
-                            if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                            if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
                                 $email = service('email');
                                 $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
                                 $email->setTo($user->email);
@@ -244,7 +244,7 @@ class BracketsController extends BaseController
                 $message = "You've been removed from tournament $tournament->name!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournament->id/view"]);
 
-                if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
                     $email = service('email');
                     $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
                     $email->setTo($user->email);
