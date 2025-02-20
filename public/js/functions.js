@@ -256,6 +256,20 @@ let saveGeneralSettings = () => {
   });
 }
 
+let changeEmailNotificationSetting = (element) => {
+    $.ajax({
+        url: apiURL + '/usersettings/save',
+        type: 'POST',
+        data: {'email_notification': element.value},
+        success: function (response) {
+            console.log(element.value)
+        },
+        error: function() {
+            alert('An error occurred while saving the settings');
+        }
+    });
+}
+
 $(document).ready(function () {
     const timezoneSelect = $('#timezone');
     const timezones = moment.tz.names();

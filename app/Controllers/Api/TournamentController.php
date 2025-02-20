@@ -371,26 +371,29 @@ class TournamentController extends BaseController
         if ($users) {
             $userProvider = auth()->getProvider();
             $notificationService = service('notification');
+            $userSettingsService = service('userSettings');
             foreach ($users as $user) {
                 $user = $userProvider->findById($user['registered_user_id']);
                 $message = "You've been added to tournament $tournamentData->name!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
-                $email = service('email');
-                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                $email->setTo($user->email);
-                $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
-                $email->setMessage(view(
-                    'email/invite-to-tournament',
-                    ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName')],
-                    ['debug' => false]
-                ));
-                
-                if ($email->send(false) === false) {
-                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                }
+                if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($user->email);
+                    $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
+                    $email->setMessage(view(
+                        'email/invite-to-tournament',
+                        ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
 
-                $email->clear();
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
             }
         }
 
@@ -831,7 +834,7 @@ class TournamentController extends BaseController
 
         /** Notifiy to the users */
         if (isset($users) && count($users)) {
-            
+            $userSettingsService = service('userSettings');
             $tournament = $this->tournamentModel->find($data['tournament_id']);
             $tournament = new \App\Entities\Tournament($tournament);
         
@@ -845,21 +848,23 @@ class TournamentController extends BaseController
                 $shared_to = auth()->getProvider()->findById($user);
 
                 /** Send the email */
-                $email = service('email');
-                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                $email->setTo($shared_to->email);
-                $email->setSubject(lang('Emails.shareTournamentEmailSubject'));
-                $email->setMessage(view(
-                    'email/share-tournament',
-                    ['username' => $shared_to->username, 'tournament' => $tournament, 'role' => $role, 'tournamentCreatorName' => setting('Email.fromName')],
-                    ['debug' => false]
-                ));
-                
-                if ($email->send(false) === false) {
-                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                }
+                if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($shared_to->email);
+                    $email->setSubject(lang('Emails.shareTournamentEmailSubject'));
+                    $email->setMessage(view(
+                        'email/share-tournament',
+                        ['username' => $shared_to->username, 'tournament' => $tournament, 'role' => $role, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
 
-                $email->clear();
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
             }
         }
 

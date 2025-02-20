@@ -43,7 +43,15 @@
                             </button>
                             <?php if (count($notifications)): ?>
                             <ul class="dropdown-menu  dropdown-menu-end">
-                                <li class="d-flex justify-content-end me-3"><a href="javascript:;" class="" data-bs-toggle="modal" data-bs-target="#clearNotificationsModal">Clear All</a></li>
+                                <li class="d-flex justify-content-between ms-3 me-3">
+                                    <div class="form-check form-switch form-check-reverse">
+                                        <?php $userSettingService = service('userSettings') ?>
+                                        <?php $emailNotificationSetting = $userSettingService->get('email_notification') ?>
+                                        <input class="form-check-input" type="checkbox" id="emailNotificationSwitch" onchange="changeEmailNotificationSetting(this)" <?= ($emailNotificationSetting == 'on') ? "checked": '' ?>>
+                                        <label class="form-check-label" for="emailNotificationSwitch">Email Notifications</label>
+                                    </div>
+                                    <a href="javascript:;" class="" data-bs-toggle="modal" data-bs-target="#clearNotificationsModal">Clear All</a>
+                                </li>
                                 <?php foreach ($notifications as $notification): ?>
                                 <li>
                                     <p class="dropdown-item notification border-bottom p-2 pe-5">

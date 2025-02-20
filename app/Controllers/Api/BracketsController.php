@@ -189,24 +189,27 @@ class BracketsController extends BaseController
                             $tournament = new \App\Entities\Tournament($tournament);
 
                             $notificationService = service('notification');
+                            $userSettingsService = service('userSettings');
                             $message = "You've been added to tournament $tournament->name!";
                             $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament->id/view"]);
-                            
-                            $email = service('email');
-                            $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                            $email->setTo($user->email);
-                            $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
-                            $email->setMessage(view(
-                                'email/invite-to-tournament',
-                                ['username' => $user->username, 'tournament' => $tournament, 'tournamentCreatorName' => setting('Email.fromName')],
-                                ['debug' => false]
-                            ));
-                            
-                            if ($email->send(false) === false) {
-                                $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                            }
 
-                            $email->clear();
+                            if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                                $email = service('email');
+                                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                                $email->setTo($user->email);
+                                $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
+                                $email->setMessage(view(
+                                    'email/invite-to-tournament',
+                                    ['username' => $user->username, 'tournament' => $tournament, 'tournamentCreatorName' => setting('Email.fromName')],
+                                    ['debug' => false]
+                                ));
+
+                                if ($email->send(false) === false) {
+                                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                                }
+
+                                $email->clear();
+                            }
                         }
                     }  
                 } else {
@@ -237,24 +240,27 @@ class BracketsController extends BaseController
                 $tournament = new \App\Entities\Tournament($tournament);
                 
                 $notificationService = service('notification');
+                $userSettingsService = service('userSettings');
                 $message = "You've been removed from tournament $tournament->name!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournament->id/view"]);
 
-                $email = service('email');
-                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                $email->setTo($user->email);
-                $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
-                $email->setMessage(view(
-                    'email/removed-from-tournament',
-                    ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
-                    ['debug' => false]
-                ));
-                
-                if ($email->send(false) === false) {
-                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                }
+                if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($user->email);
+                    $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
+                    $email->setMessage(view(
+                        'email/removed-from-tournament',
+                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
 
-                $email->clear();
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
             }
             $this->participantsModel->delete($removedParticipant['id']);
         }

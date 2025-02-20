@@ -5,6 +5,7 @@ namespace Config;
 use CodeIgniter\Config\BaseService;
 use App\Services\NotificationService;
 use App\Services\SendGridEmailService;
+use App\Services\UserSettingsService;
 
 /**
  * Services Configuration file.
@@ -21,21 +22,26 @@ use App\Services\SendGridEmailService;
  */
 class Services extends BaseService
 {
-    /*
-     * public static function example($getShared = true)
-     * {
-     *     if ($getShared) {
-     *         return static::getSharedInstance('example');
-     *     }
-     *
-     *     return new \CodeIgniter\Example();
-     * }
-     */
+      /*
+      * public static function example($getShared = true)
+      * {
+      *     if ($getShared) {
+      *         return static::getSharedInstance('example');
+      *     }
+      *
+      *     return new \CodeIgniter\Example();
+      * }
+      */
 
-     public static function notification(): NotificationService
-     {
+      public static function userSettings(): UserSettingsService
+      {
+         return new UserSettingsService();
+      }
+
+      public static function notification(): NotificationService
+      {
         return new NotificationService();
-     }
+      }
 
       public static function email($config = null, $getShared = true)
       {
