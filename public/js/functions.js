@@ -257,10 +257,11 @@ let saveGeneralSettings = () => {
 }
 
 let changeEmailNotificationSetting = (element) => {
+    let value = element.checked ? 'on' : 'off'
     $.ajax({
         url: apiURL + '/usersettings/save',
         type: 'POST',
-        data: {'email_notification': element.value},
+        data: {'email_notification': value},
         success: function (response) {
             console.log(element.value)
         },
