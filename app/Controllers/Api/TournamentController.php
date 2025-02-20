@@ -848,7 +848,7 @@ class TournamentController extends BaseController
                 $shared_to = auth()->getProvider()->findById($user);
 
                 /** Send the email */
-                if ($userSettingsService->get('email_notification', $user->id) == 'on') {
+                if ($userSettingsService->get('email_notification', $shared_to->id) == 'on') {
                     $email = service('email');
                     $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
                     $email->setTo($shared_to->email);
