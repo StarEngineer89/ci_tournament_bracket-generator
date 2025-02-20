@@ -1118,18 +1118,25 @@ class TournamentController extends BaseController
     {
         $participantsModel = model('\App\Models\ParticipantModel');
         $participants = [];
+        $registeredParticipants = [];
 
         if ($tournament_id) {
             $participants = $participantsModel->where('tournament_id', $tournament_id)->findAll();
+            $registeredParticipants = $participantsModel->where('tournament_id', $tournament_id)->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
         }
 
-        $users = auth()->getProvider()->findAll();
-        if ($users) {
-            foreach ($users as $user) {
-                $participants[] = $user;
+        if ($registeredParticipants) {
+            $registeredUsers = auth()->getProvider()->whereNotIn('id', $registeredParticipants)->findAll();
+        } else {
+            $registeredUsers = auth()->getProvider()->findAll();
+        }
+
+        if ($registeredUsers) {
+            foreach ($registeredUsers as $user) {
+                $participants[] = ['id' => 0, 'name' => "@$user->username"];
             }
         }
-
+        
         return json_encode($participants);
     }
 

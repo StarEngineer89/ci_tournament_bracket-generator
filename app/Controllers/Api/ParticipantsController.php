@@ -132,7 +132,9 @@ class ParticipantsController extends BaseController
                     if ($name[0] == '@') {
                         $name = trim($name, '@');
                         $user = $userProvider->where('username', $name)->first();
-                        $participant->registered_user_id = $user->id;
+                        if ($user) {
+                            $participant->registered_user_id = $user->id;
+                        }
                     }
 
                     $this->participantsModel->insert($participant);

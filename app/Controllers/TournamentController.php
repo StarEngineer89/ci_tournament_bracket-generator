@@ -171,12 +171,16 @@ class TournamentController extends BaseController
                 }
             }
 
-            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
+            $users = auth()->getProvider()->limit(5)->findAll();
+
+            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'users' => $users, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        
+        $users = auth()->getProvider()->limit(5)->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'page' => 'view']);
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'page' => 'view']);
     }
     
     public function viewShared($token)
@@ -266,7 +270,9 @@ class TournamentController extends BaseController
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
 
-        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'editable' => $editable, 'page' => 'view']);
+        $users = auth()->getProvider()->limit(5)->findAll();
+
+        return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'editable' => $editable, 'page' => 'view']);
     }
 
     public function export()

@@ -171,10 +171,15 @@ $(document).on('ready', function () {
                                         url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
                                         success: function (result) {
                                             var select = document.createElement('select');
-                                            select.setAttribute('class', "form-select");
+                                            select.setAttribute('class', "form-control");
                                             var index = (element.hasClass("teama")) ? 0 : 1;
 
-                                            select.setAttribute('onChange', "changeParticipant($(this), '" + element.data('bracket') + "', " + index + ")");
+                                            var inputGroup = document.getElementById('changeParticipantInputGroup')
+                                            if (inputGroup) {
+                                                inputGroup.remove()
+                                            }
+                                            
+                                            select.setAttribute('onChange', `changeParticipant($(this), ${index})`);
 
                                             result = JSON.parse(result);
                                             if (result.length > 0) {
@@ -196,6 +201,34 @@ $(document).on('ready', function () {
                                             } else {
                                                 alert("There is no participants to be selected");
                                             }
+
+                                            $(select).select2()
+
+                                            $('.select2-search input').atwho({
+                                                at: "@",
+                                                searchKey: 'username',
+                                                data: initialUsers,
+                                                limit: 5, // Show only 5 suggestions
+                                                displayTpl: "<li data-value='@${id}'>${username}</li>",
+                                                insertTpl: "@${username},",
+                                                callbacks: {
+                                                    remoteFilter: function (query, callback) {
+                                                        console.log('quesry')
+                                                        if (query.length < 1) return; // Don't fetch on empty query
+                                                        $.ajax({
+                                                            url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                                            type: "GET",
+                                                            data: {
+                                                                query: query
+                                                            },
+                                                            dataType: "json",
+                                                            success: function(data) {
+                                                                callback(data);
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            });
                                         },
                                         error: function (error) {
                                             console.log(error);
@@ -211,25 +244,52 @@ $(document).on('ready', function () {
                     items.create = {
                                 name: "➕ Add participant",
                                 callback: (key, opt, e) => {
-                                    var opts = prompt('Participant Name:', 'Guild');
                                     var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
+                                    var originalInput = document.getElementById('newParticipantNameInput')
+                                    if (originalInput) {
+                                        originalInput.parentElement.remove()
+                                    }
 
-                                    if (!_.isNaN(opts)) {
-                                        let duplicated = false;
-                                        let force_add = false;
-
-                                        $('.bracketbox span[data-round=' + opt.$trigger.data("round") + ']').each((i, ele) => {
-                                            if ($(ele).find('.name').text() == opts) {
-                                                duplicated = true;
-                                                force_add = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
+                                    var inputElement = document.createElement('input')
+                                    inputElement.setAttribute('class', "form-control form-control-sm")
+                                    inputElement.setAttribute('id', "newParticipantNameInput")
+                                    inputElement.focus()
+                                    $(inputElement).atwho({
+                                        at: "@",
+                                        searchKey: 'username',
+                                        data: initialUsers,
+                                        limit: 5, // Show only 5 suggestions
+                                        displayTpl: "<li data-value='@${id}'>${username}</li>",
+                                        insertTpl: "@${username}",
+                                        callbacks: {
+                                            remoteFilter: function(query, callback) {
+                                                if (query.length < 1) return; // Don't fetch on empty query
+                                                $.ajax({
+                                                    url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                                    type: "GET",
+                                                    data: {
+                                                        query: query
+                                                    },
+                                                    dataType: "json",
+                                                    success: function(data) {
+                                                        callback(data);
+                                                    }
+                                                });
                                             }
-                                        });
-
-                                        if (!duplicated || force_add) {//(opt.$trigger.data("order") - 1) * 2 + index + 1
-                                            updateBracket(opt.$trigger, { name: opts, index: index, action_code: addParticipantActionCode, order: opt.$trigger.data("order") });
                                         }
-                                    } else
-                                        alert('Please input the name of the participant.');
+                                    });
+
+                                    var buttonElement = document.createElement('button')
+                                    buttonElement.setAttribute('class', 'btn btn-primary')
+                                    buttonElement.setAttribute('onclick', `saveNewParticipant($('#newParticipantNameInput'), ${index})`)
+                                    buttonElement.textContent = 'Save'
+
+                                    var elementGroup = document.createElement('div')
+                                    elementGroup.setAttribute('class', 'input-group input-group-sm')
+                                    elementGroup.appendChild(inputElement)
+                                    elementGroup.appendChild(buttonElement)
+
+                                    opt.$trigger.append(elementGroup)
                                 }
                     }
                     if ($triggerElement.attr('data-id')) {
@@ -551,6 +611,28 @@ $(document).on('ready', function () {
         });
     }
     
+    let saveNewParticipant = (element, index) => {
+        var name = element.val()
+        var participantElement = element.parent().parent()
+
+        if (!_.isNaN(name)) {
+            let duplicated = false;
+            let force_add = false;
+
+            $('.bracketbox span[data-round=' + participantElement.data("round") + ']').each((i, ele) => {
+                if ($(ele).find('.name').text() == name) {
+                    duplicated = true;
+                    force_add = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
+                }
+            });
+
+            if (!duplicated || force_add) {
+                updateBracket(participantElement, { name: name, index: index, action_code: addParticipantActionCode, order: participantElement.data("order") });
+            }
+        } else
+            alert('Please input the name of the participant.');
+    }
+    
     function updateBracket(element, data) {
         $("#overlay").fadeIn(300);
 
@@ -689,9 +771,10 @@ $(document).on('ready', function () {
         });
     }
 
-function changeParticipant(ele, bracket_id, index) {
+function changeParticipant(ele, index) {
     let ability = true;
-    $('.bracketbox span[data-round=' + ele.parent().data("round") + ']').each((i, e) => {
+    let parentElement = ele.parent()
+    $('.bracketbox span[data-round=' + parentElement.data("round") + ']').each((i, e) => {
         if (e.dataset.id == ele.val()) {
             let confirm_result = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
 
@@ -703,9 +786,9 @@ function changeParticipant(ele, bracket_id, index) {
     });
 
     if (ability) {
-        let participant_order = ele.parent().data('p_order')
+        let participant_order = parentElement.data('p_order')
         if (!participant_order) {
-            participant_order = (parseInt(ele.parent().data('order')) - 1) * 2 + index + 1
+            participant_order = (parseInt(parentElement.data('order')) - 1) * 2 + index + 1
         }
 
         editing_mode = false;
