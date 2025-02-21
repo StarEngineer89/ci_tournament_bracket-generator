@@ -51,8 +51,7 @@ let initialUsers = <?= json_encode($users) ?>;
 const is_temp_tournament = false;
 
 const UUID = getOrCreateDeviceId()
-</script>
-<script type="text/javascript">
+
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
 
 if (!location.href.includes('shared')) {
@@ -175,6 +174,13 @@ $(document).ready(function() {
     $('#toggleDescriptionBtn').click();
     <?php endif; ?>
 
+    <?php $currentTime = new \DateTime() ?>
+    <?php $startTime = new \DateTime($tournament['available_start']) ?>
+    <?php $endTime = new DateTime($tournament['available_end']) ?>
+    <?php $interval = $startTime->diff($endTime); ?>
+    <?php $intervalStart = $currentTime->diff($startTime); ?>
+    <?php $intervalEnd = $currentTime->diff($endTime); ?>
+
     <?php if ($tournament['availability']): ?>
     const availabilityAlertPlaceholder = document.getElementById('availabilityAlertPlaceholder')
     const appendAvailabilityAlert = (content, type) => {
@@ -203,6 +209,71 @@ $(document).ready(function() {
         })
     }
     $('#toggleVoteWarningBtn').click();
+
+    const countTimerAlertPlaceholder = document.getElementById('countTimerAlertPlaceholder')
+    const appendCountTimerAlert = (content, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="container border pt-5 pe-3 alert alert-${type} alert-dismissible" id="countTimerAlert" role="alert">`,
+            `   <div class="countTimerAlert" id="countTimerAlertContent">${content}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        countTimerAlertPlaceholder.append(wrapper)
+    }
+
+    const countTimerAlertTrigger = document.getElementById('countTimerNoteBtn')
+    if (countTimerAlertTrigger) {
+        const msg = $('#countTimerAlertMsg').html();
+        countTimerAlertTrigger.addEventListener('click', () => {
+            appendCountTimerAlert(msg, 'dark')
+            countTimerAlertTrigger.classList.add('d-none')
+
+            const myAlert = document.getElementById('countTimerAlert')
+            myAlert.addEventListener('closed.bs.alert', event => {
+                countTimerAlertTrigger.classList.remove('d-none')
+            })
+        })
+    }
+    $('#countTimerNoteBtn').click();
+
+    // Update the countdown timer
+    let remainingTime = 0;
+    <?php if ($currentTime < $startTime): ?>
+    remainingTime = <?= strtotime($tournament['available_start']) - strtotime(date('Y-m-d H:i:s')) ?>;
+    <?php endif; ?>
+
+    <?php if ($currentTime >= $startTime && $currentTime < $endTime): ?>
+    remainingTime = <?= strtotime($tournament['available_end']) - strtotime(datetime: date('Y-m-d H:i:s')) ?>;
+    <?php endif; ?>
+
+    function updateCountdown() {
+        if (remainingTime <= 0) {
+            <?php if ($currentTime < $startTime): ?>
+            document.getElementById("availabilityTimer").innerHTML = "Tournament has started!";
+            <?php endif; ?>
+
+            <?php if ($currentTime >= $startTime): ?>
+            document.getElementById("availabilityTimer").innerHTML = "Tournament has ended!";
+            <?php endif; ?>
+            return;
+        }
+
+        let days = Math.floor(remainingTime / (60 * 60 * 24));
+        let hours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
+        let minutes = Math.floor((remainingTime % (60 * 60)) / 60);
+        let seconds = remainingTime % 60;
+
+        document.getElementById("availabilityTimer").innerHTML =
+            `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+        remainingTime--;
+
+        setTimeout(updateCountdown, 1000);
+    }
+
+    updateCountdown();
     <?php endif; ?>
 
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
@@ -304,6 +375,9 @@ $(document).ready(function() {
 
         <div class="container alert-btn-container mb-1 d-flex justify-content-end">
             <?php if ($tournament['availability']): ?>
+            <button type="button" class="btn" id="countTimerNoteBtn">
+                <i class="fa-solid fa-clock"></i>
+            </button>
             <button type="button" class="btn" id="toggleVoteWarningBtn">
                 <i class="fa-solid fa-calendar"></i>
             </button>
@@ -328,6 +402,24 @@ $(document).ready(function() {
                 <i class="fa fa-qrcode" aria-hidden="true"></i>
             </button>
         </div>
+
+        <?php if ($tournament['availability']): ?>
+        <div id="countTimerAlertPlaceholder"></div>
+        <div id="countTimerAlertMsg" class="d-none">
+            <span class="me-5"><strong>Tournament Duration: </strong><?= $tournament['available_start'] ?> - <?= $tournament['available_end'] ?> (<?= "{$interval->d} Days {$interval->h} Hours" ?>)</span>
+            <?php if ($currentTime < $startTime): ?>
+            <span class="ms-3"><strong>Time remaining untile start: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
+            <?php endif; ?>
+
+            <?php if ($currentTime > $startTime && $currentTime < $endTime): ?>
+            <span class="ms-3"><strong>Time remaining untile end: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
+            <?php endif; ?>
+
+            <?php if ($currentTime > $endTime): ?>
+            <strong>Completed</strong>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
 
         <div id="availabilityAlertPlaceholder"></div>
         <div id="availabilityAlertMsg" class="d-none">
