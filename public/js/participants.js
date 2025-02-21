@@ -171,6 +171,31 @@ function renderParticipants(participantsArray) {
                     nameBox.classList.add('name-input', 'form-control');
                     nameBox.value = name;
 
+                    $(nameBox).atwho({
+                        at: "@",
+                        searchKey: 'username',
+                        data: users,
+                        limit: 5, // Show only 5 suggestions
+                        displayTpl: "<li data-value='@${id}'>${username}</li>",
+                        insertTpl: "@${username},",
+                        callbacks: {
+                            remoteFilter: function(query, callback) {
+                                if (query.length < 1) return; // Don't fetch on empty query
+                                $.ajax({
+                                    url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                    type: "GET",
+                                    data: {
+                                        query: query
+                                    },
+                                    dataType: "json",
+                                    success: function(data) {
+                                        callback(data);
+                                    }
+                                });
+                            }
+                        }
+                    });
+
                     const inputBox = document.createElement('div');
                     inputBox.appendChild(nameBox);
                     inputBox.classList.add('col');

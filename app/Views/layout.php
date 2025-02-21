@@ -41,17 +41,19 @@
                                 </span>
                                 <?php endif ?>
                             </button>
-                            <?php if (count($notifications)): ?>
                             <ul class="dropdown-menu  dropdown-menu-end">
-                                <li class="d-flex justify-content-between ms-3 me-3">
+                                <li class="d-flex justify-content-between border-bottom ps-3 pe-3">
                                     <div class="form-check form-switch form-check-reverse">
                                         <?php $userSettingService = service('userSettings') ?>
                                         <?php $emailNotificationSetting = $userSettingService->get('email_notification') ?>
                                         <input class="form-check-input" type="checkbox" id="emailNotificationSwitch" onchange="changeEmailNotificationSetting(this)" <?= (!$emailNotificationSetting || $emailNotificationSetting == 'on') ? "checked": '' ?>>
                                         <label class="form-check-label" for="emailNotificationSwitch">Email Notifications</label>
                                     </div>
+                                    <?php if (count($notifications)): ?>
                                     <a href="javascript:;" class="" data-bs-toggle="modal" data-bs-target="#clearNotificationsModal">Clear All</a>
+                                    <?php endif; ?>
                                 </li>
+                                <?php if (count($notifications)): ?>
                                 <?php foreach ($notifications as $notification): ?>
                                 <li>
                                     <p class="dropdown-item notification border-bottom p-2 pe-5">
@@ -63,8 +65,12 @@
                                     </p>
                                 </li>
                                 <?php endforeach ?>
+                                <?php else: ?>
+                                <li>
+                                    <p class="dropdown-item notification p-2 pe-5">No Notifications</p>
+                                </li>
+                                <?php endif ?>
                             </ul>
-                            <?php endif ?>
                         </div>
 
                         <div class="d-flex order-md-4 position-relative profile">

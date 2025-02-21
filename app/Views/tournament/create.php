@@ -50,6 +50,8 @@ const deviceId = getOrCreateDeviceId();
 
 const itemList = document.getElementById('newList');
 
+let users = <?= json_encode($users) ?>
+
 $(window).on('load', function() {
     $("#preview").fadeIn();
 });
@@ -106,7 +108,7 @@ $(document).ready(function() {
     $("#participantNames").atwho({
         at: "@",
         searchKey: 'username',
-        data: <?= json_encode($users) ?>,
+        data: users,
         limit: 5, // Show only 5 suggestions
         displayTpl: "<li data-value='@${id}'>${username}</li>",
         insertTpl: "@${username},",
@@ -1107,7 +1109,7 @@ var performReuseParticipants = (tournament_id = null) => {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5>The following name(s) already exists.</h1>
+                <h5>The following participant(s) appear to be duplicated.</h1>
                     <h6 class="text-danger"><span class="names"></span></h6>
             </div>
             <div class="modal-footer">
@@ -1309,7 +1311,7 @@ var performReuseParticipants = (tournament_id = null) => {
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Discard</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
                 <button type="button" class="btn btn-danger" id="removeDuplicationsConfirmBtn">Remove</button>
             </div>
         </div>

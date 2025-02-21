@@ -901,6 +901,9 @@
   z-index: 999;
 }
 
+.notification-box .dropdown-menu {
+  min-width: 350px;
+}
 .notification-box .delete {
   margin-left: 10px;
   color: #dc3545;

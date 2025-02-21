@@ -408,11 +408,11 @@ $(document).ready(function() {
         <div id="countTimerAlertMsg" class="d-none">
             <span class="me-5"><strong>Tournament Duration: </strong><?= $tournament['available_start'] ?> - <?= $tournament['available_end'] ?> (<?= "{$interval->d} Days {$interval->h} Hours" ?>)</span>
             <?php if ($currentTime < $startTime): ?>
-            <span class="ms-3"><strong>Time remaining untile start: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
+            <span class="ms-3"><strong>Time remaining until start: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
             <?php endif; ?>
 
             <?php if ($currentTime > $startTime && $currentTime < $endTime): ?>
-            <span class="ms-3"><strong>Time remaining untile end: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
+            <span class="ms-3"><strong>Time remaining until end: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
             <?php endif; ?>
 
             <?php if ($currentTime > $endTime): ?>

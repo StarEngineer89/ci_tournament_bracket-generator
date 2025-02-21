@@ -149,7 +149,12 @@ let deleteNotification = (notificationElement) => {
             $(notificationElement).parent().remove()
 
             if ($('.notification-box .notification').length == 0) {
-                $('.notification-box .dropdown-menu').remove()
+                let liElement = document.createElement('li')
+                let pElement = document.createElement('p')
+                pElement.setAttribute('class', "dropdown-item notification p-2 pe-5")
+                pElement.textContent = 'No Notifications'
+                liElement.append(pElement)
+                $('.notification-box .dropdown-menu').append(liElement)
             }
 
             let count = parseInt($('.notification-box span.badge').html())
