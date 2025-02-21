@@ -10,7 +10,7 @@
 
 <body>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>The <strong><?= $tournament->name ?></strong> (<?= base_url("tournament/$tournament->id/view") ?>) hosted by <?= $creator->name ?> (<?= $creator->email ?>) has officially ended! Check the progress by visiting the tournament! </p>
+    <p>The <strong><?= $tournament->name ?></strong> (<?= base_url("tournaments/$tournament->id/view") ?>) hosted by <?= $creator->name ?> (<?= $creator->email ?>) has officially ended! Check the progress by visiting the tournament! </p>
 
     <p>Stay tuned for future tournaments, and until next time—keep the competitive spirit alive! </p>
 

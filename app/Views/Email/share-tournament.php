@@ -10,7 +10,7 @@
 
 <body>
     <p>Hi <?= esc($username) ?>,</p>
-    <p><strong><?= $tournament->name ?></strong> (<?= base_url("tournament/$tournament->id/view") ?>) has been shared with you! Get ready to join the action and experience the competition. !</p>
+    <p><strong><?= $tournament->name ?></strong> (<?= base_url("tournaments/$tournament->id/view") ?>) has been shared with you! Get ready to join the action and experience the competition. !</p>
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
     🔹 <strong>Shared By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
