@@ -22,7 +22,7 @@
         </tbody>
     </table>
     <br />
-    <p>This link will remain valid for the next 60 minutes. If you did not request this login, please disregard this email. </p>
+    <p>This link will remain valid for the next 60 minutes. If you did not request this <a href="<?= base_url('login') ?>">login</a>, please disregard this email. </p>
     <br />
     <p>Best regards,</p>
     <p><?= esc($sendername) ?></p>
