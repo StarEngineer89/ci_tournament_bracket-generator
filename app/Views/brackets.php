@@ -254,7 +254,7 @@ $(document).ready(function() {
             document.getElementById("availabilityTimer").innerHTML = "Tournament has started!";
             <?php endif; ?>
 
-            <?php if ($currentTime >= $startTime): ?>
+            <?php if ($currentTime >= $startTime && $currentTime < $endTime): ?>
             document.getElementById("availabilityTimer").innerHTML = "Tournament has ended!";
             <?php endif; ?>
             return;
