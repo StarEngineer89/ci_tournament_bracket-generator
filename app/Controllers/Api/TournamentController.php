@@ -990,15 +990,21 @@ class TournamentController extends BaseController
                         $description = "Participant \"$participants[0]\" added in bracket #$params->bracket_no in $roundName";
                     }
 
+                    if ($row['action'] == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
+                        $type = 'Remove Participant';
+                        $description = "Participant \"$participants[0]\" removed from bracket #$params->bracket_no in $roundName";
+                    }
+
                     if ($row['action'] == BRACKET_ACTIONCODE_DELETE) {
                         $type = 'Delete Bracket';
                         $description = "Bracket #$params->bracket_no containing participants [\"$participants[0]\", \"$participants[1]\"] in $roundName deleted";
                     }
 
-                    if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {
-                        $type = 'Voting';
-                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no voted in $roundName";
+                    if ($row['action'] == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
+                        $type = 'Change Participant';
+                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no of $roundName was removed";
                     }
+
                 }
 
                 $data[] = [

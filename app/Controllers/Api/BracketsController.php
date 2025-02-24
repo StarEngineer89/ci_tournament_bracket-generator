@@ -263,7 +263,6 @@ class BracketsController extends BaseController
                     $email->clear();
                 }
             }
-            $this->participantsModel->delete($removedParticipant['id']);
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
@@ -415,6 +414,10 @@ class BracketsController extends BaseController
 
             if ($req->action_code == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
                 $data['participants'] = [$req->name];
+            }
+
+            if ($req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
+                $data['participants'] = [$removedParticipant['name']];
             }
 
             $insert_data['params'] = json_encode($data);
