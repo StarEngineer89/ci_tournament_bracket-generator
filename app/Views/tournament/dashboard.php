@@ -264,6 +264,7 @@
                                         <option value="Unmark Winner">Unmark Winner</option>
                                         <option value="Change Participant">Change Participant</option>
                                         <option value="Add Participant">Add Participant</option>
+                                        <option value="Remove Participant">Remove Participant</option>
                                         <option value="Delete Bracket">Delete Bracket</option>
                                         <option value="Reset">Reset</option>
                                         <option value="Voting">Voting</option>
