@@ -111,6 +111,35 @@ $(document).ready(function() {
 
     $('#liveAlertBtn').click();
 
+    const settingInfoAlertPlaceholder = document.getElementById('settingInfoAlertPlaceholder')
+    const appendSettingInfoAlert = (message, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="container alert alert-${type} alert-dismissible" id="settingInfoAlert" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        settingInfoAlertPlaceholder.append(wrapper)
+    }
+
+    const settingInfoAlertTrigger = document.getElementById('settingInfoAlertBtn')
+    if (settingInfoAlertTrigger) {
+        const msg = $('#settingInfoAlertMsg').html();
+        settingInfoAlertTrigger.addEventListener('click', () => {
+            appendSettingInfoAlert(msg, 'success')
+            settingInfoAlertTrigger.classList.add('d-none')
+
+            const myAlert = document.getElementById('settingInfoAlert')
+            myAlert.addEventListener('closed.bs.alert', event => {
+                settingInfoAlertTrigger.classList.remove('d-none')
+            })
+        })
+    }
+
+    $('#settingInfoAlertBtn').click();
+
     const warningPlaceholder = document.getElementById('warningPlaceholder')
     const appendWarning = (message, type) => {
         const wrapper = document.createElement('div')
@@ -347,7 +376,7 @@ $(document).ready(function() {
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <a href="<?= previous_url() ?>"><i class="fa fa-angle-left"></i> Back</a>
+                <a href="<?= $_SERVER['HTTP_REFERER'] ?? site_url('/') ?>"><i class="fa fa-angle-left"></i> Back</a>
             </ol>
         </nav>
         <h5 class="card-title d-flex justify-content-center mb-5">
@@ -386,6 +415,11 @@ $(document).ready(function() {
             <button type="button" class="btn" id="liveAlertBtn">
                 <i class="fa-classic fa-solid fa-circle-exclamation fa-fw"></i>
             </button>
+
+            <button type="button" class="btn" id="settingInfoAlertBtn">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+
             <?php if ($tournament['description']): ?>
             <button type="button" class="btn" id="toggleDescriptionBtn">
                 <i class="fa-solid fa-book"></i>
@@ -443,6 +477,33 @@ $(document).ready(function() {
             </div>
         </div>
         <?php endif;?>
+
+        <div id="settingInfoAlertPlaceholder"></div>
+        <div id="settingInfoAlertMsg" class="d-none">
+            <strong>Tournament Properties:</strong> <br />
+            <strong>Elimination Type:</strong> <?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? "Single" : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? "Double" : "Knockout") ?><br />
+            <strong>Evaluation Method:</strong> <?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? "Manual" : "Voting" ?><br />
+            <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING): ?>
+            &nbsp;&nbsp;<strong>Voting Accessibility:</strong> <?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? "Restricted" : "Unrestricted" ?><br />
+            &nbsp;&nbsp;<strong>Voting Mechanism:</strong> <?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? "Max Votes" : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? "Round Duration" : "Open-Ended") ?><br />
+            &nbsp;&nbsp;<strong>Retain vote count across rounds:</strong> <?= $tournament['voting_retain'] ? "On" : "Off" ?><br />
+            &nbsp;&nbsp;<strong>Allow Host override:</strong> <?= $tournament['allow_host_override'] ? "On" : "Off" ?><br />
+            <?php endif; ?>
+            <strong>Participant Image Customization Access:</strong> <?= $tournament['pt_image_update_enabled'] ? "On" : "Off" ?><br />
+            <strong>Audio for Final Winner:</strong> <?= $tournament['win_audio_enabled'] ? "On" : "Off" ?><br />
+            <?php if ($tournament['winner_audio_everyone']): ?>
+            &nbsp;&nbsp;<strong>Play for everyone:</strong> <?= $tournament['winner_audio_everyone'] ? "On" : "Off" ?><br />
+            <?php endif; ?>
+            <strong>Enable Scoring:</strong> <?= $tournament['score_enabled'] ? "On" : "Off" ?><br />
+            <?php if ($tournament['score_enabled']): ?>
+            &nbsp;&nbsp;<strong>Score per bracket per round:</strong> <?= $tournament['score_bracket'] ?><br />
+            <?php endif; ?>
+            &nbsp;&nbsp;<strong>Increment Score:</strong> <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?><br />
+            <?php if ($tournament['increment_score_enabled']): ?>
+            &nbsp;&nbsp;&nbsp;&nbsp;<strong>Increment Type:</strong> <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;<strong>Increment Value:</strong> <?= $tournament['increment_score'] ?><br />
+            <?php endif; ?>
+        </div>
 
         <div id="liveAlertPlaceholder"></div>
         <div id="liveAlertMsg" class="d-none">

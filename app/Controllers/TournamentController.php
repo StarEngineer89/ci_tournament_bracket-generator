@@ -181,6 +181,14 @@ class TournamentController extends BaseController
         }
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        $tournament['win_audio_enabled'] = 0;
+        if ($audioSettings) {
+            foreach ($audioSettings as $aSetting) {
+                if ($aSetting['type'] == AUDIO_TYPE_FINAL_WINNER) {
+                    $tournament['win_audio_enabled'] = 1;
+                }
+            }
+        }
         
         $users = auth()->getProvider()->limit(5)->findAll();
 
@@ -263,6 +271,12 @@ class TournamentController extends BaseController
             if ($tournament['voting_accessibility'] == EVALUATION_VOTING_UNRESTRICTED) {
                 $votingBtnEnabled = true;
             }
+
+            
+            if ($tournament['status'] == TOURNAMENT_STATUS_COMPLETED) {
+                $votingBtnEnabled = false;
+            }
+
         }
 
         if (!$brackets) {
@@ -273,6 +287,14 @@ class TournamentController extends BaseController
         }
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        $tournament['win_audio_enabled'] = 0;
+        if ($audioSettings) {
+            foreach ($audioSettings as $aSetting) {
+                if ($aSetting['type'] == AUDIO_TYPE_FINAL_WINNER) {
+                    $tournament['win_audio_enabled'] = 1;
+                }
+            }
+        }
 
         $users = auth()->getProvider()->limit(5)->findAll();
 

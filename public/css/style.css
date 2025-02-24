@@ -226,7 +226,7 @@
   max-width: 100%;
 }
 
-#viewQRBtn {
+.alert-btn-container {
   padding: 5px;
 }
 #viewQRBtn i {

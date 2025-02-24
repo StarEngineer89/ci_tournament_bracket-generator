@@ -1304,7 +1304,7 @@ var performReuseParticipants = (tournament_id = null) => {
             </div>
             <div class="modal-body">
                 <p>
-                <h6>The following duplicate participants were found.<br /><span class="names"></span></h6>
+                <h6>The following duplicate participants were found.<br /><span class="names text-danger"></span></h6>
                 </p>
                 <p class="mt-3">Are you sure you want to proceed?
                 <h6 class="text-danger">This action cannot be undone!</h6>

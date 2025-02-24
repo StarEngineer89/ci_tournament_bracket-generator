@@ -822,7 +822,11 @@ function adjustBracketsStyles(obj) {
             
         }
     })
-      });
+  });
+    
+    if ($('.center-wrapper')) {
+        $('.center-wrapper').css("min-height", $('#left_wrapper').height() / 2)
+    }
 }
 
 function chooseImage(e, element_id){
