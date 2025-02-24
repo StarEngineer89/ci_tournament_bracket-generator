@@ -983,7 +983,7 @@ var performReuseParticipants = (tournament_id = null) => {
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <a href="javascript:;" onclick="history.back()"><i class="fa fa-angle-left"></i> Back</a>
+                <a href="<?= previous_url() ?>"><i class="fa fa-angle-left"></i> Back</a>
             </ol>
         </nav>
 

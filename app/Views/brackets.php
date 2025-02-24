@@ -347,7 +347,7 @@ $(document).ready(function() {
     <div class="card-body">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <a href="javascript:;" onclick="history.back()"><i class="fa fa-angle-left"></i> Back</a>
+                <a href="<?= previous_url() ?>"><i class="fa fa-angle-left"></i> Back</a>
             </ol>
         </nav>
         <h5 class="card-title d-flex justify-content-center mb-5">
