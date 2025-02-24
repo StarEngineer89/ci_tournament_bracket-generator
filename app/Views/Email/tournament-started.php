@@ -10,7 +10,7 @@
 
 <body>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>The <strong><?= $tournament->name ?></strong> (<?= base_url("tournaments/$tournament->id/view") ?>) hosted by <?= $creator->name ?> (<?= $creator->email ?>) has officially started, and you're in the action! Get ready to track the progress. </p>
+    <p>The <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> hosted by <?= $creator->name ?> (<?= $creator->email ?>) has officially started, and you're in the action! Get ready to track the progress. </p>
 
     🔹 <strong>Your Role</strong>: <?= $role ?>
 

@@ -10,7 +10,7 @@
 
 <body>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>You've been invited to join the tournament <strong><?= $tournament->name ?></strong> (<?= base_url("tournaments/$tournament->id/view") ?>)!</p>
+    <p>You've been invited to join the tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>!</p>
 
     <p>Get ready to compete and showcase your skills.</p>
 

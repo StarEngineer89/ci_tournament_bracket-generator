@@ -10,7 +10,7 @@
 
 <body>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>We wanted to inform you that you have been removed from the tournament <strong><?= $tournament->name ?></strong> (<?= base_url("tournaments/$tournament->id/view") ?>)!</p>
+    <p>We wanted to inform you that you have been removed from the tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>!</p>
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
     🔹 <strong>Removed By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />

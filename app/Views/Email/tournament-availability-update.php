@@ -10,7 +10,7 @@
 
 <body>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>The availability of tournament <strong><?= $tournament->name ?></strong> (<?= base_url("tournaments/$tournament->id/view") ?>) hosted by <?= $creator->username ?> (<?= $creator->email ?>) has been updated to the following new START/END Date/Time.</p>
+    <p>The availability of tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> hosted by <?= $creator->username ?> (<?= $creator->email ?>) has been updated to the following new START/END Date/Time.</p>
 
     🔹 <strong>Duration</strong>: <?= $startTime ?> - <?= $endTime ?>
 
