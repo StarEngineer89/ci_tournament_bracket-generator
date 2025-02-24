@@ -19,10 +19,23 @@ $(document).ready(function() {
                     `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
                 );
                 if (response.success) {
+                    $('#responseMessage').html()
+                    $('#notification-area').html(
+                        `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
+                    );
                     $('#changePasswordForm')[0].reset(); // Reset form if successful
+                    $('#changePasswordModal').modal('hide')
                 }
 
-                $('#changePasswordModal').modal('hide')
+                // Clear notification after 10 seconds
+                setTimeout(function() {
+                    $('#notification-area').fadeOut('slow', function() {
+                        $(this).empty().show(); // Empty and show to reset for future messages
+                    });
+                    $('#responseMessage').fadeOut('slow', function() {
+                        $(this).empty().show(); // Empty and show to reset for future messages
+                    });
+                }, 10000);
             },
             error: function() {
                 $('#responseMessage').html(
@@ -31,13 +44,6 @@ $(document).ready(function() {
             }
         });
     });
-
-    // Clear notification after 10 seconds
-    setTimeout(function() {
-        $('#notification-area').fadeOut('slow', function() {
-            $(this).empty().show(); // Empty and show to reset for future messages
-        });
-    }, 10000);
 });
 
 let sendVerificationCode = (resend = false) => {
@@ -107,6 +113,13 @@ let confirmVerificationCode = () => {
                 $('.update-email-block').addClass('d-none')
                 $('.confirm-code-block').removeClass('d-none')
             }
+
+            // Clear notification after 10 seconds
+            setTimeout(function() {
+                $('#notification-area').fadeOut('slow', function() {
+                    $(this).empty().show(); // Empty and show to reset for future messages
+                });
+            }, 10000);
         },
         error: function() {
             $('#notification-area').html(
@@ -192,13 +205,14 @@ let deleteAccount = () => {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="mb-2" id="responseMessage"></div>
                 <form id="changePasswordForm" action="<?= site_url('profile/update-password') ?>" method="post">
                     <?= csrf_field() ?>
 
                     <div class="row mb-3">
                         <label for="new_password" class="form-label col-md-4 col-sm-12">New Password</label>
                         <div class="col-sm-8">
-                            <input type="password" class="form-control" name="new_password" id="new_password" required>
+                            <input type="password" class="form-control" name="password" id="new_password" required>
                         </div>
                     </div>
 

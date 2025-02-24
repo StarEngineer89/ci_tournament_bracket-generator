@@ -135,17 +135,16 @@ class ProfileController extends BaseController
     public function updatePassword()
     {
         if ($this->request->isAJAX()) {
-            $currentPassword = $this->request->getPost('current_password');
-            $newPassword = $this->request->getPost('new_password');
+            $newPassword = $this->request->getPost('password');
             $confirmPassword = $this->request->getPost('confirm_password');
 
             // Validate the form input
             $validation = \Config\Services::validation();
-            $validation->setRules([
-                // 'current_password' => 'required',
-                'new_password' => 'required|min_length[8]',
-                'confirm_password' => 'required|matches[new_password]'
-            ]);
+            // $validation->setRules([
+            //     'new_password' => 'required|min_length[8]',
+            //     'confirm_password' => 'required|matches[new_password]'
+            // ]);
+            $validation->setRules(config('Validation')->passwordReset);
 
             if (!$validation->withRequest($this->request)->run()) {
                 return $this->response->setJSON([

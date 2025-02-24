@@ -77,4 +77,25 @@ class Validation extends BaseConfig
             'rules' => 'required|matches[password]',
         ],
     ];
+
+    public $passwordReset = [
+        'password' => [
+            'label' => 'Auth.password',
+            'rules' => 'required|max_byte[72]|strong_password[]',
+            'errors' => [
+                'required'    => 'Auth.passwordRequired',
+                'max_byte'    => 'Auth.errorPasswordTooLongBytes',
+                'strong_password' => 'Auth.passwordShouldbeStrong',
+            ]
+        ],
+        'confirm_password' => [
+            'label' => 'Auth.passwordConfirm',
+            'rules' => 'required|matches[password]',
+            'errors' => [
+                'required' => 'Auth.passwordConfirmRequired',
+                'matches'  => 'Auth.passwordMismatched',
+            ]
+        ],
+    ];
+
 }

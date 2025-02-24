@@ -21,5 +21,9 @@ return [
     'invalidActivateToken'  => 'Invalid or expired verification code.',
     'abortVerificationModalBody' => "You're about to leave the verification step. <br/>Upon confirmation, the registeration process will be voided.",
     'newVerificationCodeSentMessage' => "A new verification code has been sent to {0}.",
-    'invalidEmailFormat' => 'Please enter a valid email address.'
+    'invalidEmailFormat' => 'Please enter a valid email address.',
+    'passwordRequired' => 'Password field is required.',
+    'passwordShouldbeStrong' => 'Password must be strong (include uppercase, lowercase, number, and symbol).',
+    'passwordConfirmRequired' => 'Password confirmation is required.',
+    'passwordMismatched' => 'Passwords do not match.',
 ];
