@@ -135,6 +135,10 @@ class TournamentController extends BaseController
             $votingBtnEnabled = false;
         }
 
+        if ($tournament['status'] == TOURNAMENT_STATUS_COMPLETED) {
+            $votingBtnEnabled = false;
+        }
+
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
         
         if (!$brackets) {
