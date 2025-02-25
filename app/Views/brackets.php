@@ -135,6 +135,9 @@ $(document).ready(function() {
             myAlert.addEventListener('closed.bs.alert', event => {
                 settingInfoAlertTrigger.classList.remove('d-none')
             })
+
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
         })
     }
 
@@ -202,9 +205,6 @@ $(document).ready(function() {
     }
     $('#toggleDescriptionBtn').click();
     <?php endif; ?>
-
-    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
-    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 
     <?php $currentTime = new \DateTime() ?>
     <?php $startTime = new \DateTime($tournament['available_start']) ?>
@@ -532,7 +532,7 @@ $(document).ready(function() {
                         <strong>Voting Accessibility</strong>
                         <span>
                             <?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? "Restricted" : "Unrestricted" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? lang('Descriptions.tournamentVotingRestrictedgDesc') : lang('Descriptions.tournamentVotingUnrestrictedDesc') ?>">
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? lang('Descriptions.tournamentVotingRestrictedgDesc') : lang('Descriptions.tournamentVotingUnrestrictedDesc') ?>'>
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                             </a>
                         </span>
@@ -553,7 +553,7 @@ $(document).ready(function() {
                         <strong>Max Votes</strong>
                         <span>
                             <?= $tournament['max_vote_value'] ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="Max vote limit per round.">
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                             </a>
                         </span>
@@ -646,7 +646,10 @@ $(document).ready(function() {
                     <p class="property-info d-flex justify-content-between mb-1 ps-4">
                         <strong>Increment Type</strong>
                         <span>
-                            <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? lang('Descriptions.tournamentIncrementScoreTypePlusDesc') : lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
                         </span>
                     </p>
 

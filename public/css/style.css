@@ -76,7 +76,6 @@
   background: #fff;
 }
 .profile:hover .profile-menu{
-  display: block;
   top: 100%;
 }
 .profile-menu.dropdown-menu {

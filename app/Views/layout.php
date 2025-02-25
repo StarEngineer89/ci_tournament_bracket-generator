@@ -74,7 +74,7 @@
                         </div>
 
                         <div class="d-flex order-md-4 position-relative profile">
-                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?= auth()->user()->username ?>'s profile
                             </button>
                             <ul class="profile-menu dropdown-menu">
@@ -91,7 +91,7 @@
                         <a class="btn btn-primary order-md-4 me-sm-2" href="<?= base_url('register') ?>">Signup</a>
                         <?php endif; ?>
 
-                        <button class="navbar-toggler order-md-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler order-md-5 ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
 

@@ -145,6 +145,7 @@
                 <div class="col-3">
                     <input type="number" name="max_vote_value" id="maxVotes" class="form-control" min="0">
                 </div>
+                <div class="evaluation-vote-max-limit form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?></div>
             </div>
         </div>
 
@@ -202,15 +203,8 @@
         </div>
         <div class="enable-increamentscoreoption-hint form-text">
             <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
-            <p class="plus">
-                For example, if winning participants attain 100 points in their bracket in round 1, and an increment of 200 is specified, then in round 2, winning participants will attain 300 points, and in round 3 winning participants will attain 500 points, etc.
-                In this case, the cumulative result would be accumulated each round as follows:
-                100 + 300 + ...
-            </p>
-            <p class="multiply d-none">
-                For example, if winning participants attain 100 points in their bracket in round 1, and a multiplier of 1.5 is specified, then in round 2, winning participants will attain 150 points (100 * 1.5 => 150), and in round 3 winning participants will attain 225 points (150 * 1.5 => 225), etc.
-                In this case, the cumulative result would be accumulated each round as follows: 100 (round1) + 250 (round1 + round2) + 475 (round1 + round2 + round3) + ...
-            </p>
+            <p class="plus"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></p>
+            <p class="multiply d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></p>
         </div>
     </div>
 </div>
