@@ -203,6 +203,9 @@ $(document).ready(function() {
     $('#toggleDescriptionBtn').click();
     <?php endif; ?>
 
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+
     <?php $currentTime = new \DateTime() ?>
     <?php $startTime = new \DateTime($tournament['available_start']) ?>
     <?php $endTime = new DateTime($tournament['available_end']) ?>
@@ -480,28 +483,181 @@ $(document).ready(function() {
 
         <div id="settingInfoAlertPlaceholder"></div>
         <div id="settingInfoAlertMsg" class="d-none">
-            <strong>Tournament Properties:</strong> <br />
-            <strong>Elimination Type:</strong> <?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? "Single" : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? "Double" : "Knockout") ?><br />
-            <strong>Evaluation Method:</strong> <?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? "Manual" : "Voting" ?><br />
-            <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING): ?>
-            &nbsp;&nbsp;<strong>Voting Accessibility:</strong> <?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? "Restricted" : "Unrestricted" ?><br />
-            &nbsp;&nbsp;<strong>Voting Mechanism:</strong> <?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? "Max Votes" : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? "Round Duration" : "Open-Ended") ?><br />
-            &nbsp;&nbsp;<strong>Retain vote count across rounds:</strong> <?= $tournament['voting_retain'] ? "On" : "Off" ?><br />
-            &nbsp;&nbsp;<strong>Allow Host override:</strong> <?= $tournament['allow_host_override'] ? "On" : "Off" ?><br />
-            <?php endif; ?>
-            <strong>Participant Image Customization Access:</strong> <?= $tournament['pt_image_update_enabled'] ? "On" : "Off" ?><br />
-            <strong>Audio for Final Winner:</strong> <?= $tournament['win_audio_enabled'] ? "On" : "Off" ?><br />
-            <?php if ($tournament['winner_audio_everyone']): ?>
-            &nbsp;&nbsp;<strong>Play for everyone:</strong> <?= $tournament['winner_audio_everyone'] ? "On" : "Off" ?><br />
-            <?php endif; ?>
-            <strong>Enable Scoring:</strong> <?= $tournament['score_enabled'] ? "On" : "Off" ?><br />
-            <?php if ($tournament['score_enabled']): ?>
-            &nbsp;&nbsp;<strong>Score per bracket per round:</strong> <?= $tournament['score_bracket'] ?><br />
-            <?php endif; ?>
-            &nbsp;&nbsp;<strong>Increment Score:</strong> <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?><br />
-            <?php if ($tournament['increment_score_enabled']): ?>
-            &nbsp;&nbsp;&nbsp;&nbsp;<strong>Increment Type:</strong> <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?><br />
-            &nbsp;&nbsp;&nbsp;&nbsp;<strong>Increment Value:</strong> <?= $tournament['increment_score'] ?><br />
+            <div class="row">
+                <div class="col-md-7 col-sm-12 m-auto">
+                    <p class="text-center"><strong>Tournament Properties:</strong></p>
+
+                    <p class="property-info d-flex justify-content-between mb-1">
+                        <strong>Elimination Type</strong>
+                        <span>
+                            <?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? "Single" : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? "Double" : "Knockout") ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? lang('Descriptions.tournamentSingleTypeDesc') : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? lang('Descriptions.tournamentDoubleTypeDesc') : lang('Descriptions.tournamentKockoutTypeDesc')) ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <p class="property-info d-flex justify-content-between mb-1">
+                        <strong>Visibility</strong>
+                        <span>
+                            <?= $tournament['visibility'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVisibilityDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <p class="property-info d-flex justify-content-between mb-1">
+                        <strong>Availability </strong>
+                        <span>
+                            <?= $tournament['availability'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAvailabilityDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <p class="property-info d-flex justify-content-between mb-1">
+                        <strong>Evaluation Method</strong>
+                        <span>
+                            <?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? "Manual" : "Voting" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentEvaluationManualDesc') : lang('Descriptions.tournamentEvaluationVotingDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING): ?>
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Voting Accessibility</strong>
+                        <span>
+                            <?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? "Restricted" : "Unrestricted" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? lang('Descriptions.tournamentVotingRestrictedgDesc') : lang('Descriptions.tournamentVotingUnrestrictedDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Voting Mechanism</strong>
+                        <span>
+                            <?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? "Max Votes" : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? "Round Duration" : "Open-Ended") ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? lang('Descriptions.tournamentVotingMaxVotesDesc') : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? lang('Descriptions.tournamentVotingRoundDurationDesc') : lang('Descriptions.tournamentVotingOpenEndedDesc')) ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <?php if ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE): ?>
+                    <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                        <strong>Max Votes</strong>
+                        <span>
+                            <?= $tournament['max_vote_value'] ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="Max vote limit per round.">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+                    <?php endif; ?>
+
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Retain vote count across rounds</strong>
+                        <span>
+                            <?= $tournament['voting_retain'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentRetainVoteCountDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Allow Host override</strong>
+                        <span>
+                            <?= $tournament['allow_host_override'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+                    <?php endif; ?>
+
+                    <p class="property-info d-flex justify-content-between mb-1">
+                        <strong>Participant Image Customization Access</strong>
+                        <span>
+                            <?= $tournament['pt_image_update_enabled'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <p class="property-info d-flex justify-content-between mb-1">
+                        <strong>Audio for Final Winner</strong>
+                        <span>
+                            <?= $tournament['win_audio_enabled'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="An audio plays upon the Final Winner's selection.">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <?php if ($tournament['winner_audio_everyone']): ?>
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Play for everyone</strong>
+                        <span>
+                            <?= $tournament['winner_audio_everyone'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentPlayForEveryoneDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+                    <?php endif; ?>
+
+                    <p class="property-info d-flex justify-content-between mb-1">
+                        <strong>Enable Scoring</strong>
+                        <span>
+                            <?= $tournament['score_enabled'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentEnableScoringDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <?php if ($tournament['score_enabled']): ?>
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Score per bracket per round</strong>
+                        <span>
+                            <?= $tournament['score_bracket'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
+                    </p>
+                    <?php endif; ?>
+
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Increment Score</strong>
+                        <span>
+                            <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?>
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentIncrementScoreDesc') ?>">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </a>
+                        </span>
+                    </p>
+
+                    <?php if ($tournament['increment_score_enabled']): ?>
+                    <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                        <strong>Increment Type</strong>
+                        <span>
+                            <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
+                    </p>
+
+                    <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                        <strong>Increment Value</strong>
+                        <span>
+                            <?= $tournament['increment_score'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
+                    </p>
+                </div>
+            </div>
             <?php endif; ?>
         </div>
 

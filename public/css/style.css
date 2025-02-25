@@ -1279,3 +1279,9 @@
 .animate .heading {
   opacity: 1;
 }
+
+.property-info i {
+  top: -3px;
+  position: relative;
+  font-size: .8em;
+}

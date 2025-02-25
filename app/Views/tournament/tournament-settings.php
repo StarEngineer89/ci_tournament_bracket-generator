@@ -11,9 +11,9 @@
         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
     </select>
-    <div class="single-type-hint form-text">During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.</div>
-    <div class="double-type-hint form-text d-none">A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.</div>
-    <div class="knockout-type-hint form-text d-none">A Knockout Bracket/Stage is a typical single-elimination bracket. It showcases a mirrored tree of participants converging to the final stage, in the center, in which the winner is determined.</div>
+    <div class="single-type-hint form-text"><?= lang('Descriptions.tournamentSingleTypeDesc') ?></div>
+    <div class="double-type-hint form-text d-none"><?= lang('Descriptions.tournamentDoubleTypeDesc') ?></div>
+    <div class="knockout-type-hint form-text d-none"><?= lang('Descriptions.tournamentKockoutTypeDesc') ?></div>
     <div class="elimination-type-hint form-text mt-2">
         Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
     </div>
@@ -29,11 +29,11 @@
         <option value="<?= TOURNAMENT_THEME_MODERNMETAL ?>">Modern Metal</option>
     </select>
     <div class="tournament-theme-settings-hints">
-        <div class="theme-classic-hint form-text ps-md-3">A clean and simple bracket design, perfect for any tournament.</div>
-        <div class="theme-champion-hint form-text mb-1 ps-md-3 d-none">Bring a touch of luxury and prestige to your tournament.</div>
-        <div class="theme-darkroyale-hint form-text mb-1 ps-md-3 d-none">A sleek and intense theme for high-stakes competition.</div>
-        <div class="theme-gridiron-hint form-text mb-1 ps-md-3 d-none">Inspired by the football field, ideal for sports-themed tournaments.</div>
-        <div class="theme-modernmetal-hint form-text mb-1 ps-md-3 d-none">A bold and industrial look, adding strength to your tournament bracket.</div>
+        <div class="theme-classic-hint form-text ps-md-3"><?= lang('Descriptions.tournamentThemeClassicDesc') ?></div>
+        <div class="theme-champion-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeChampionDesc') ?></div>
+        <div class="theme-darkroyale-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeDarkroyaleDesc') ?></div>
+        <div class="theme-gridiron-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeGridironDesc') ?></div>
+        <div class="theme-modernmetal-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeModernmetaleDesc') ?></div>
     </div>
 </div>
 
@@ -48,7 +48,7 @@
         <label class="form-check-label" for="enableVisibility">
             <h6>Visibility</h6>
         </label>
-        <div class="visibility-hint form-text">If enabled, the tournament will be visible publicly on the Tournament Gallery. Tournaments listed on the Tournament Gallery may be viewed by spectators/guests as read-only mode, except otherwise allowed through voting.</div>
+        <div class="visibility-hint form-text"><?= lang('Descriptions.tournamentVisibilityDesc') ?></div>
     </div>
 </div>
 
@@ -59,7 +59,7 @@
             <h6>Availability</h6>
         </label>
         <div class="availability-option">
-            <div class="availability-hint form-text">Specify tournament availability window.</div>
+            <div class="availability-hint form-text"><?= lang('Descriptions.tournamentAvailabilityDesc') ?></div>
 
             <div class="row mt-3">
                 <div class="col-6">
@@ -100,12 +100,9 @@
                 <option value="<?= EVALUATION_METHOD_VOTING  ?>">Voting</option>
             </select>
         </div>
-        <div class="evaluation-method-hint form-text ps-3">Determine how tournament bracket participants advance through the rounds.</div>
-        <div class="evaluation-method-manual-hint form-text mb-1 ps-3">Tournament host elects the winning bracket participants of each round.</div>
-        <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none">
-            Winning participants are determined through a consensus. The voting period remains open and concludes once the tournament availability window ends.
-            Voting is determined by the action (+) available on each participant in the tournament.
-        </div>
+        <div class="evaluation-method-hint form-text ps-3">Determines how tournament bracket participants advance through the rounds.</div>
+        <div class="evaluation-method-manual-hint form-text mb-1 ps-3"><?= lang('Descriptions.tournamentEvaluationManualDesc') ?></div>
+        <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentEvaluationVotingDesc') ?></div>
     </div>
 
     <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
@@ -119,16 +116,8 @@
                     <option value="<?= EVALUATION_VOTING_UNRESTRICTED  ?>">Unrestricted</option>
                 </select>
             </div>
-            <div class="evaluation-vote-restricted form-text mb-1 ps-3">
-                Only users whom the tournament link is shared with (from Share setting) may vote. Tournament links may be shared publicly for nonregistered (guest) users who prefer to vote anonymously. Enabling visibility setting (i.e. making tournament accessible on the gallery) overrides this restriction option.
-                <br />
-                Note: All votes by registered and/or anonymous (guest) users are tracked in the "View Log" action available to the host on the Tournament Dashboard. This may be helpful for tracking purposes and monitoring potential spam.
-            </div>
-            <div class="evaluation-vote-unrestricted form-text mb-1 ps-3 d-none">
-                Tournament voting is open for all. Spectators (anonymous guests) may vote as well if tournament visibility on the Gallery is enabled.
-                <br />
-                Note: All votes by registered and/or anonymous (guest) users are tracked in the "View Log" action available to the host on the Tournament Dashboard. This may be helpful for tracking purposes and monitoring potential spam.
-            </div>
+            <div class="evaluation-vote-restricted form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingRestrictedgDesc') ?></div>
+            <div class="evaluation-vote-unrestricted form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingUnrestrictedDesc') ?></div>
         </div>
 
         <div class="row g-3 align-items-center">
@@ -145,21 +134,9 @@
             <div class="evaluation-vote-round-availability-required form-text mb-1 ps-3 d-none">
                 * Availability must be enabled to use this setting!
             </div>
-            <div class="evaluation-vote-round form-text mb-1 ps-3">
-                Winning participants automatically advance when the duration is reached and the voting period ends each round. Duration is determined by dividing the tournament availability window equally amongst all the rounds.
-                In case of a tie in votes (for example, suppose both participants in the same bracket in the same round attain 100 votes) then the system will automatically mark a participant amongst the two as winner of the bracket randomly.
-
-                <br />
-                Note: This option can only be activated if Availability setting is enabled.
-            </div>
-            <div class="evaluation-vote-max form-text mb-1 ps-3 d-none">
-                Winning participants automatically advance when the vote limit is reached each round. Specify the max votes limit per bracket participant below.
-            </div>
-            <div class="evaluation-open-ended form-text mb-1 ps-3 d-none">
-                Winning participants advance through a combination of votes and manual intervention by tournament host to mark the winner.
-                This is ideal if the tournament availability duration is not set/unknown.
-                For example, if participant1 attains 100 votes and participant2 attains 30 votes in bracket 1 in round 1 but the tournament is slowly advancing, then the host could determine that's enough votes to mark the winners for the next stage.
-            </div>
+            <div class="evaluation-vote-round form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
+            <div class="evaluation-vote-max form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingMaxVotesDesc') ?></div>
+            <div class="evaluation-open-ended form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingOpenEndedDesc') ?></div>
 
             <div class="row mb-2 max-vote-setting d-none">
                 <div class="col-auto">
@@ -174,19 +151,12 @@
         <div class="mt-2">
             <input type="checkbox" class="form-check-input" name="voting_retain" id="retainVotesCheckbox">
             <label class="form-check-label" for="retainVotesCheckbox">Retain vote count across rounds</label>
-            <div class="retain-votes-checkbox-hint form-text ps-3">
-                By default, the vote count will reset for each round.
-                By enabling this option, the vote count is preserved and will instead accumulate each round.
-
-                Note: For double tournaments, the vote is retained cumulatively from both brackets in a round the participant is in. For example, if participant1 was in bracket1 and bracket 3 in a double tournament, and participant1 gained 3 votes in bracket1 and 5 votes in bracket2 and advanced to the next round, the vote will be aggregated as 3 + 5 = 8 in next round.
-            </div>
+            <div class="retain-votes-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentRetainVoteCountDesc') ?></div>
         </div>
         <div class="mt-2 allow-host-override-setting">
             <input type="checkbox" class="form-check-input" name="allow_host_override" id="allowHostOverride">
             <label class="form-check-label" for="allowHostOverride">Allow Host override</label>
-            <div class="retain-votes-checkbox-hint form-text ps-3">
-                If this setting is enabled, the tournament host can intervene and manually mark the winners of each bracket in each round, regardless of the vote count
-            </div>
+            <div class="retain-votes-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?></div>
         </div>
     </div>
 </div>
@@ -197,7 +167,7 @@
         <label class="form-check-label" for="enableScoreOption">
             <h6>Enable Scoring</h6>
         </label>
-        <div class="enable-scoreoption-hint form-text">If enabled, a score associated with each bracket will be accumulated towards a final score. You may specify the points a participant could gain below.</div>
+        <div class="enable-scoreoption-hint form-text"><?= lang('Descriptions.tournamentEnableScoringDesc') ?></div>
     </div>
     <div class="ps-2" id="scoreOptions">
         <div class="row mb-2">
@@ -231,7 +201,7 @@
             </div>
         </div>
         <div class="enable-increamentscoreoption-hint form-text">
-            <p>Specify an increment the score should increase by for each round.</p>
+            <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
             <p class="plus">
                 For example, if winning participants attain 100 points in their bracket in round 1, and an increment of 200 is specified, then in round 2, winning participants will attain 300 points, and in round 3 winning participants will attain 500 points, etc.
                 In this case, the cumulative result would be accumulated each round as follows:
@@ -251,8 +221,8 @@
         <label class="form-check-label" for="enableShuffle">
             <h6>Shuffle Participants</h6>
         </label>
-        <div class="enable-shuffling-hint form-text">If enabled, the contestant brackets will be generated with the participants shuffled.</div>
-        <div class="disable-shuffling-hint form-text d-none">If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.</div>
+        <div class="enable-shuffling-hint form-text"><?= lang('Descriptions.tournamentShuffleParticipantsEnabledDesc') ?></div>
+        <div class="disable-shuffling-hint form-text d-none"><?= lang('Descriptions.tournamentShuffleParticipantsDisabledDesc') ?></div>
     </div>
 </div>
 
@@ -262,10 +232,6 @@
         <label class="form-check-label" for="ptImageUpdatePermission">
             <h6>Participant Image Customization Access</h6>
         </label>
-        <div class="form-text">
-            Enabling this setting allows all users, including guests/visitors with access to the tournament, to update participant images without requiring general edit permissions on the tournament link.<br />
-            This feature provides flexibility in customizing participant images while maintaining control over other aspects of the tournament bracket.<br />
-            Note: Edit permissions on a shared url override this setting; so in other words, if this setting is disabled but you shared a link with users that is configured with edit permissions on the tournament brackets, they will be able to update the participant images regardless of this setting.
-        </div>
+        <div class="form-text"><?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?></div>
     </div>
 </div>

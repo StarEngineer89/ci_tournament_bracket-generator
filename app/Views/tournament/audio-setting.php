@@ -72,7 +72,7 @@
                 <label for="winnerAudioForEveryone" class="form-check-label ms-1">Play for everyone</label>
             </div>
             <div class="col-md-12 pl-2 winnerAudioForEveryone-hint form-text">
-                <p>If enabled, the audio will play once final winner is selected for everyone, meaning any device that has the tournament opened at the time the final winner is determined, will play the audio synchronously as well.</p>
+                <p><?= lang('Descriptions.tournamentPlayForEveryoneDesc') ?></p>
             </div>
         </div>
         <input type="hidden" name="audioType[1]" value="1">
