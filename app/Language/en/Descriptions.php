@@ -29,5 +29,7 @@ return [
             Note: Edit permissions on a shared url override this setting; so in other words, if this setting is disabled but the tournament host shared a link with users that is configured with edit permissions on the tournament brackets, they will be able to update the participant images regardless of this setting.",
     'tournamentPlayForEveryoneDesc' => "If enabled, the audio will play once final winner is selected for everyone, meaning any device that has the tournament opened at the time the final winner is determined, will play the audio synchronously as well.",
     'tournamentIncrementScoreDesc' => "An increment the score should increase by for each round.",
+    'tournamentAudioFinalWinnerDesc' => "An audio plays upon the Final Winner's selection.",
+
 
 ];

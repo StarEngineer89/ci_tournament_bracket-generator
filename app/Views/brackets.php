@@ -595,7 +595,7 @@ $(document).ready(function() {
                         <strong>Audio for Final Winner</strong>
                         <span>
                             <?= $tournament['win_audio_enabled'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="An audio plays upon the Final Winner's selection.">
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAudioFinalWinnerDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                             </a>
                         </span>
