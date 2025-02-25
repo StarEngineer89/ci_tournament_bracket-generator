@@ -19,7 +19,8 @@
         "norkunas/youtube-dl-php": "^2.6",
         "phpoffice/phpspreadsheet": "^2.1",
         "psr/http-message": "^2.0",
-        "sendgrid/sendgrid": "^8.1"
+        "sendgrid/sendgrid": "^8.1",
+        "textalk/websocket": "^1.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",

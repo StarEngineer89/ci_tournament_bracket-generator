@@ -1,5 +1,80 @@
+var ws;
+$(document).on('ready', function () {
+    try {
+        ws = new WebSocket('ws://' + location.hostname + ':8089');
+        ws.onopen = function(e) {
+            console.log("Connection established!");
+            if ($('#brackets').length) {
+                loadBrackets();
+            }
+        };
 
- setCookie = (name, value, days) => {
+        ws.onmessage = function(e) {
+            console.log(e.data);
+
+            let data = e.data.split(',')
+            if (data[0] == "updateNotifications") {
+                $.ajax({
+                    type: "get",
+                    url: apiURL + '/notifications/get-notifications',
+                    contentType: "application/json",
+                    success: function (result) {
+                        if (result.status == 'success') {
+                            let notifications = result.notifications
+                            let notificationBtn = $('.notification-box > button').first()
+
+                            if (notifications) {
+                                if ($('.notification-box > button badge').length) {
+                                    $('.notification-box > button badge').html(notifications.length)
+                                } else {
+                                    notificationBtn.append(`<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${notifications.length}</span>`)
+                                }
+
+                                $('.notification-box .dropdown-menu .notification').remove()
+                                notifications.forEach((notification, i) => {
+                                    $('.notification-box .dropdown-menu').append(`
+                                        <li class="notification">
+                                            <p class="dropdown-item border-bottom p-2 pe-5">
+                                                <a class="text-end ms-2 me-4" href="javascript:;" onclick="readNotification(this)" data-link="${notification.link}" data-id="${notification.id}">
+                                                    <span>${notification.message}</span><br />
+                                                    <span class="d-block w-100 text-end">By ${notification.created_by} on ${notification.created_at}</span>
+                                                </a>
+                                                <a class="delete" onclick="deleteNotification(this)" data-id="${notification.id}"><i class="fa fa-remove"></i></a>
+                                            </p>
+                                        </li>
+                                        `)
+                                })
+                            }
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                }).done(() => {
+                    setTimeout(function () {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+
+                
+            }
+
+            if ($('#brackets').length) {
+                if (data[1] == tournament_id) {
+                    if (data[0] == "winnerChange") {
+                        loadBrackets('initConfetti');
+                    } else {
+                        loadBrackets();
+                    }
+                }
+            }
+        };
+    }catch(exception){
+        alert("Websocket is not running now. The result will not be updated real time.");
+    }
+});
+
+setCookie = (name, value, days) => {
     const d = new Date();
     d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
     const expires = "expires=" + d.toUTCString();

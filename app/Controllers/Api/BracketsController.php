@@ -560,12 +560,23 @@ class BracketsController extends BaseController
         if (count($list) > 0) {
             foreach ($list as $item) {
                 $participant = $this->participantsModel->find($item['id']);
-                if ($participant) {
-                    $participant['order'] = $item['order'];
-                    $participant['tournament_id'] = $this->request->getPost('tournament_id');
-                } else {
-                    $participant = new \App\Entities\Participant(['name' => $item['name'], 'tournament_id' => $this->request->getPost('tournament_id'), 'order' => $item['order'], 'user_id' => auth()->user()->id]);
+
+                if (!$participant) {
+                    $participant = ['name' => $item['name'], 'user_id' => auth()->user()->id];
                 }
+
+                $participant['order'] = $item['order'];
+                $participant['tournament_id'] = $this->request->getPost('tournament_id');
+
+                if ($item['name'][0] == '@') {
+                    $name = trim($item['name'], '@');
+                    $user = auth()->getProvider()->where('username', $name)->first();
+                    if ($user) {
+                        $participant['registered_user_id'] = $user->id;
+                    }
+                }
+
+                $participant = new \App\Entities\Participant($participant);
 
                 $this->participantsModel->save($participant);
 

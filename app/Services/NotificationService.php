@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\NotificationsModel;
+use App\Libraries\WebSocketClient;
 
 class NotificationService
 {
@@ -22,6 +23,8 @@ class NotificationService
     public function addNotification(array $data)
     {
         if ($this->notificationModel->insert($data)) {
+            $wsClient = new WebSocketClient();
+            $response = $wsClient->sendMessage("updateNotifications");
             return $this->notificationModel->getInsertID();
         }
         return false;

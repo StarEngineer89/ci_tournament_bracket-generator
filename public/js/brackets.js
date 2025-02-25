@@ -2,36 +2,6 @@ let brackets = [];
 
 let eleminationType = "Single";
 let editing_mode = false;
-var ws;
-
-$(document).on('ready', function () {
-    
-    $("#overlay").fadeIn(300);
-    try{
-        ws = new WebSocket('ws://'+location.hostname+':8089');
-        ws.onopen = function(e) {
-            console.log("Connection established!");
-            loadBrackets();
-        };
-
-        ws.onmessage = function(e) {
-            console.log(e.data);
-
-            let data = e.data.split(',')
-            if (data[1] == tournament_id) {
-                if (data[0] == "winnerChange") {
-                    loadBrackets('initConfetti');
-                } else {
-                    loadBrackets();
-                }
-            }
-        };
-    }catch(exception){
-        alert("Websocket is not running now. The result will not be updated real time.");
-        loadBrackets();
-    }
-    
-});
 
     /*
      * Inject our brackets

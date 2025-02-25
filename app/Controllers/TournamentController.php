@@ -131,8 +131,10 @@ class TournamentController extends BaseController
 
         /** Check if the availability start */
         $current_date = date('Y-m-d H:i:s');
-        if (date('Y-m-d H:i:s', strtotime($tournament['available_start'])) > $current_date || date('Y-m-d H:i:s', strtotime($tournament['available_end'])) < $current_date) {
-            $votingBtnEnabled = false;
+        if ($tournament['availability']) {
+            if (date('Y-m-d H:i:s', strtotime($tournament['available_start'])) > $current_date || date('Y-m-d H:i:s', strtotime($tournament['available_end'])) < $current_date) {
+                $votingBtnEnabled = false;
+            }
         }
 
         if ($tournament['status'] == TOURNAMENT_STATUS_COMPLETED) {

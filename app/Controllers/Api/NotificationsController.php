@@ -15,6 +15,24 @@ class NotificationsController extends BaseController
         $this->notificationService = new NotificationService();
     }
 
+    public function getAll() {
+        if (!auth()->user()) {
+            return $this->response->setJSON(['status' => 'error', 'message' => "User was not logged in."]);
+        }
+
+        $notifications = $this->notificationService->getNotifications(auth()->user()->id);
+
+        if ($notifications) {
+            foreach ($notifications as $notification) {
+                $notification['link'] = base_url($notification['link']);
+                $notification['created_by'] = $notification['created_by'] ?? 'Guest';
+                $notification['created_at'] = convert_to_user_timezone($notification['created_at'], user_timezone(auth()->user()->id));
+            }
+        }
+
+        return $this->response->setJSON(['status' => 'success', 'notifications' => $notifications]);
+    }
+
     /**
      * Mark a notification as read.
      *

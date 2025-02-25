@@ -177,7 +177,7 @@ function renderParticipants(participantsArray) {
                         data: users,
                         limit: 5, // Show only 5 suggestions
                         displayTpl: "<li data-value='@${id}'>${username}</li>",
-                        insertTpl: "@${username},",
+                        insertTpl: "@${username}",
                         callbacks: {
                             remoteFilter: function(query, callback) {
                                 if (query.length < 1) return; // Don't fetch on empty query

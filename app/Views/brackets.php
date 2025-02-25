@@ -206,6 +206,7 @@ $(document).ready(function() {
     $('#toggleDescriptionBtn').click();
     <?php endif; ?>
 
+    <?php if ($tournament['availability']): ?>
     <?php $currentTime = new \DateTime() ?>
     <?php $startTime = new \DateTime($tournament['available_start']) ?>
     <?php $endTime = new DateTime($tournament['available_end']) ?>
@@ -213,7 +214,6 @@ $(document).ready(function() {
     <?php $intervalStart = $currentTime->diff($startTime); ?>
     <?php $intervalEnd = $currentTime->diff($endTime); ?>
 
-    <?php if ($tournament['availability']): ?>
     const availabilityAlertPlaceholder = document.getElementById('availabilityAlertPlaceholder')
     const appendAvailabilityAlert = (content, type) => {
         const wrapper = document.createElement('div')

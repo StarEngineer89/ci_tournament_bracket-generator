@@ -7,13 +7,11 @@
 
 <div class="buttons d-flex justify-content-end">
     <?php if ($navActive == 'shared'): ?>
-    <div class="buttons d-flex justify-content-end mb-3">
-        <input type="radio" class="btn-check" name="share-type" id="shared-by" value="by" autocomplete="off" <?= ($shareType != 'wh') ? 'checked' : '' ?>>
-        <label class="btn" for="shared-by">Shared by me</label>
+    <input type="radio" class="btn-check" name="share-type" id="shared-by" value="by" autocomplete="off" <?= ($shareType != 'wh') ? 'checked' : '' ?>>
+    <label class="btn" for="shared-by">Shared by me</label>
 
-        <input type="radio" class="btn-check" name="share-type" id="shared-with" value="wh" autocomplete="off" <?= ($shareType == 'wh') ? 'checked' : '' ?>>
-        <label class="btn" for="shared-with">Shared with me</label>
-    </div>
+    <input type="radio" class="btn-check" name="share-type" id="shared-with" value="wh" autocomplete="off" <?= ($shareType == 'wh') ? 'checked' : '' ?>>
+    <label class="btn" for="shared-with">Shared with me</label>
     <?php else: ?>
     <?php if ($navActive == 'all') : ?>
     <a class="btn btn-success" href="<?php echo base_url('/tournaments/create') ?>"><i class="fa-sharp fa-solid fa-plus"></i> Create</a>

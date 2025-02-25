@@ -158,6 +158,14 @@ class ParticipantsController extends BaseController
             $participant['name'] = $this->request->getPost('name');
         }
 
+        if ($participant['name'][0] == '@') {
+            $name = trim($participant['name'], '@');
+            $user = auth()->getProvider()->where('username', $name)->first();
+            if ($user) {
+                $participant['registered_user_id'] = $user->id;
+            }
+        }
+
         $uploadConfig = new UploadConfig();
         
 		$file = $this->request->getFile('image');

@@ -37,7 +37,6 @@
                                 <?php if (count($notifications)): ?>
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                     <?= count($notifications) ?>
-                                    <span class="visually-hidden">unread messages</span>
                                 </span>
                                 <?php endif ?>
                             </button>
@@ -55,8 +54,8 @@
                                 </li>
                                 <?php if (count($notifications)): ?>
                                 <?php foreach ($notifications as $notification): ?>
-                                <li>
-                                    <p class="dropdown-item notification border-bottom p-2 pe-5">
+                                <li class="notification">
+                                    <p class="dropdown-item border-bottom p-2 pe-5">
                                         <a class="text-end ms-2 me-4" href="javascript:;" onclick="readNotification(this)" data-link="<?= base_url($notification['link']) ?>" data-id="<?= $notification['id'] ?>">
                                             <span><?= $notification['message'] ?></span><br />
                                             <span class="d-block w-100 text-end">By <?= $notification['created_by'] ?? 'Guest' ?> on <?= convert_to_user_timezone($notification['created_at'], user_timezone(auth()->user()->id)) ?></span>
@@ -66,8 +65,8 @@
                                 </li>
                                 <?php endforeach ?>
                                 <?php else: ?>
-                                <li>
-                                    <p class="dropdown-item notification p-2 pe-5">No Notifications</p>
+                                <li class="notification">
+                                    <p class="dropdown-item p-2 pe-5">No Notifications</p>
                                 </li>
                                 <?php endif ?>
                             </ul>

@@ -85,6 +85,7 @@ $routes->group('api', static function ($routes) {
     });
 
     $routes->group('notifications', static function ($routes) {
+        $routes->get('get-notifications', 'Api\NotificationsController::getAll');
         $routes->put('mark-as-read/(:num)', 'Api\NotificationsController::markAsRead/$1');
         $routes->delete('delete/(:num)', 'Api\NotificationsController::delete/$1');
         $routes->delete('clear', 'Api\NotificationsController::clear');
