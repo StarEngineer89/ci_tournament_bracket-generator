@@ -258,11 +258,16 @@ let editing_mode = false;
                                 buttonElement.setAttribute('class', 'btn btn-primary')
                                 buttonElement.setAttribute('onclick', `saveNewParticipant($('#newParticipantNameInput'), ${index})`)
                                 buttonElement.textContent = 'Save'
+                                
+                                var cancelBtn = document.createElement('a')
+                                cancelBtn.textContent = 'Cancel'
+                                cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
 
                                 var elementGroup = document.createElement('div')
                                 elementGroup.setAttribute('class', 'input-group input-group-sm')
                                 elementGroup.appendChild(inputElement)
                                 elementGroup.appendChild(buttonElement)
+                                elementGroup.append(cancelBtn)
 
                                 opt.$trigger.append(elementGroup)
                             }
