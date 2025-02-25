@@ -659,9 +659,9 @@ $(document).ready(function() {
                             <?= $tournament['increment_score'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
                         </span>
                     </p>
+                    <?php endif; ?>
                 </div>
             </div>
-            <?php endif; ?>
         </div>
 
         <div id="liveAlertPlaceholder"></div>

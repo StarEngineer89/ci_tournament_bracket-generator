@@ -136,6 +136,7 @@ function renderParticipants(participantsArray) {
         item.setAttribute('id', participant.id);
         item.setAttribute('class', "list-group-item");
         item.setAttribute('data-id', participant.id);
+        item.setAttribute('data-name', participant.name);
         let item_html = `<span class="p-name col text-center">` + participant.name + '</span>';
         if(participant.image) {
             item_html = `<div class="p-image"><img src="${participant.image}" class="col-auto" height="30px" id="pimage_${participant.id}" data-pid="${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
@@ -202,11 +203,17 @@ function renderParticipants(participantsArray) {
 
                     const buttonBox = document.createElement('div');
                     const button = document.createElement('button');
-                    button.setAttribute('onClick', `saveParticipant(event, ${element_id})`);
                     button.classList.add('btn', 'btn-primary');
                     button.textContent = "Save";
+                    button.setAttribute('onClick', `saveParticipant(event, ${element_id})`);
                     buttonBox.appendChild(button);
                     buttonBox.classList.add('col-auto');
+
+                    const cancelBtn = document.createElement('button')
+                    cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
+                    cancelBtn.textContent = 'Cancel'
+                    cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+                    buttonBox.appendChild(cancelBtn)
 
                     const html = document.createElement('div');
                     //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
@@ -214,7 +221,14 @@ function renderParticipants(participantsArray) {
                     html.appendChild(buttonBox);
                     html.classList.add('row', 'g-3', 'align-items-center');
 
+                    originalHtml = opt.$trigger.html()
+
                     opt.$trigger.html(html);
+                    
+                    const originalObj = document.createElement('div')
+                    originalObj.classList.add('original', 'd-none')
+                    originalObj.innerHTML = originalHtml
+                    opt.$trigger.append(originalObj)
                 }
             },
             delete: {
@@ -425,6 +439,11 @@ function generateBrackets(list) {
             $("#overlay").fadeOut(300);
         }, 500);
     });
+}
+
+var cancelEditing = (element) => {
+    const orignal = $(element).parents('.list-group-item').find('.original').html()
+    $(element).parents('.list-group-item').html(orignal)
 }
 
 var addParticipants = (data) => {

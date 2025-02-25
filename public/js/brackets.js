@@ -167,6 +167,11 @@ let editing_mode = false;
                                                 element.contents().remove();
                                                 element.append(select);
 
+                                                var cancelBtn = document.createElement('a')
+                                                cancelBtn.textContent = 'Cancel'
+                                                cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+                                                element.append(cancelBtn)
+
                                                 editing_mode = true;
                                             } else {
                                                 alert("There is no participants to be selected");
@@ -870,6 +875,10 @@ function removeImage(e, element_id){
             $("#overlay").fadeOut(300);
         }, 500);
     });
+}
+
+function cancelEditing(element) {
+    loadBrackets()
 }
 
 let submitVote = (event) => {
