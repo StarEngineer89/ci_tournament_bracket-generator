@@ -58,10 +58,7 @@
                     </div>
 
                     <div class="d-grid col-12 col-md-8 mx-auto m-3">
-                        <!-- <a href="<?= base_url('auth/google') ?>" class="btn btn-primary btn-google">
-                            <i class="fa fa-google"></i> Sign in with Google
-                        </a> -->
-                        <button class="gsi-material-button" onclick="googleAuth()">
+                        <button class="gsi-material-button">
                             <div class="gsi-material-button-state"></div>
                             <div class="gsi-material-button-content-wrapper">
                                 <div class="gsi-material-button-icon">
