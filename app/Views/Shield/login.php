@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="d-grid col-12 col-md-8 mx-auto m-3">
-                        <button class="gsi-material-button">
+                        <button type="button" class="gsi-material-button">
                             <div class="gsi-material-button-state"></div>
                             <div class="gsi-material-button-content-wrapper">
                                 <div class="gsi-material-button-icon">
