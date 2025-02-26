@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="d-grid col-12 col-md-8 mx-auto m-3">
-                        <button type="button" class="gsi-material-button">
+                        <button type="button" class="gsi-material-button" onclick="googleAuth()">
                             <div class="gsi-material-button-state"></div>
                             <div class="gsi-material-button-content-wrapper">
                                 <div class="gsi-material-button-icon">
@@ -81,7 +81,7 @@
                     <?php endif ?>
 
                     <?php if (setting('Auth.allowRegistration')) : ?>
-                    <p class="text-center"><?= lang('Auth.needAccount') ?> <a href="<?= url_to('register') ?>"><?= lang('Auth.register') ?></a></p>
+                    <p class="text-center"><?= lang('AbuttonedAccount') ?> <a href="<?= url_to('register') ?>"><?= lang('Auth.register') ?></a></p>
                     <?php endif ?>
 
                 </form>
