@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <div class="logo" style="text-align: center;">
+        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+    </div>
     <p>Hi <?= esc($username) ?>,</p>
     <p><strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> has been shared with you! Get ready to join the action and experience the competition. !</p>
 

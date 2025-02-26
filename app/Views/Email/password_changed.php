@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <div class="logo" style="text-align: center;">
+        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+    </div>
     <p>Hi, <?= esc($username) ?>,</p>
     <p>We’re confirming that your password has been successfully updated for your <?= esc($sendername) ?> account.</p>
     <p>If you made this change, no further action is needed. 🎉</p>

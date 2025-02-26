@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <div class="logo" style="text-align: center;">
+        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+    </div>
     <p>Welcome to <b><?= setting('Email.fromName') ?></b>! Before you can start creating/administering tournaments, we need to verify your account. </p>
     <p>
         🔹 Why verify? <br />

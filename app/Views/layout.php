@@ -26,7 +26,7 @@
             <div class="header p-2 border-bottom sticky-top">
                 <div class="container-fluid">
                     <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative d-flex">
-                        <a class="navbar-brand me-auto pe-5" href="<?= base_url() ?>"><img src="/favicon.ico" class="logo" /></a>
+                        <a class="navbar-brand me-auto pe-3" href="<?= base_url() ?>"><img src="/images/logo.jpg" class="logo" /></a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>
                         <div class="notification-box me-3 order-md-3">
@@ -95,17 +95,17 @@
                         </button>
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav d-flex ms-auto mb-2 mb-lg-0">
-                                <li class="nav-item">
+                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                                <li class="nav-item d-flex align-items-center">
                                     <a class="nav-link  <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">Home</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item d-flex align-items-center">
                                     <a class="nav-link <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item d-flex align-items-center">
                                     <a class="nav-link <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item d-flex align-items-center">
                                     <a class="nav-link  <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">Participant Leaderboard</a>
                                 </li>
                             </ul>

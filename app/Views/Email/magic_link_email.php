@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <div class="logo" style="text-align: center;">
+        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+    </div>
     <p>Dear <?= esc($username) ?>,</p>
     <p>We received a request to log into your account. To ensure your security, we have sent you a temporary login link that will grant access to your account.</p>
     <p>Please click the link below to log in:</p>

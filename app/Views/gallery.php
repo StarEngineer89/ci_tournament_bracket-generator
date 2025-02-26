@@ -23,6 +23,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
             d.search_tournament = $('#tournamentSearchInputBox').val();
             d.type = $('#typeFilter').val();
+            d.evaluation_method = $('#evaluationFilter').val();
             d.status = $('#stautsFilter').val();
             d.created_by = $('#userByFilter').val();
         },
@@ -43,6 +44,10 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         }).nodes();
 
         $('#typeFilter').on('change', function() {
+            tournamentsTable.ajax.reload()
+        });
+
+        $('#evaluationFilter').on('change', function() {
             tournamentsTable.ajax.reload()
         });
 
@@ -127,6 +132,17 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
 
                 if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
                     type = "Knockout"
+                }
+
+                return type;
+            }
+        },
+        {
+            "data": "evaluation_method",
+            "render": function(data, type, row, meta) {
+                var type = 'Manual'
+                if (row.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>") {
+                    type = "Voting"
                 }
 
                 return type;
@@ -249,6 +265,14 @@ function handleKeyPress(event) {
                                 <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
                                 <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
                                 <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+                            </select>
+                        </th>
+                        <th scope="col">
+                            <label for="evaluationFilter">Evaluation Method:</label>
+                            <select id="evaluationFilter" class="form-select form-select-sm">
+                                <option value="">All Types</option>
+                                <option value="<?= EVALUATION_METHOD_MANUAL ?>">Manual</option>
+                                <option value="<?= EVALUATION_METHOD_VOTING ?>">Voting</option>
                             </select>
                         </th>
                         <th scope="col">

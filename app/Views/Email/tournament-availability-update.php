@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <div class="logo" style="text-align: center;">
+        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+    </div>
     <p>Hi <?= esc($username) ?>,</p>
     <p>The availability of tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> hosted by <?= $creator ? "$creator->name ($creator->email)" : 'Guest' ?> has been updated to the following new START/END Date/Time.</p>
 

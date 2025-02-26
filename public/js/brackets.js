@@ -448,6 +448,7 @@ let editing_mode = false;
                     teams[team_index].voted = true
                 }
                 
+                let voteBtnAvailable = voteActionAvailable
                 if (parseInt(bracket.win_by_host) || teams[team_index].voted) {
                     voteBtnAvailable = false
                 }

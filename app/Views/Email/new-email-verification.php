@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <div class="logo" style="text-align: center;">
+        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+    </div>
     <p>Hi, <?= esc($username) ?>,</p>
     <p>We received a request to change the email associated with your <?= esc($sendername) ?> account to <?= esc($newEmail) ?>. Before we update your account, please verify your new email by entering the code provided below:</p>
     <br />

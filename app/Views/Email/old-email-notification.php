@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <div class="logo" style="text-align: center;">
+        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+    </div>
     <p>Hi, <?= esc($username) ?>,</p>
     <p>We want to let you know that your <?= esc($sendername) ?> account email has been updated.</p>
     <p>📧 <b>Old Email:</b> <?= esc($oldEmail) ?> </p>

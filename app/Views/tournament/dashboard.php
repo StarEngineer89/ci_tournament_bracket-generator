@@ -459,6 +459,7 @@ $(document).ready(function() {
             "data": function(d) {
                 d.search_tournament = $('#tournamentSearchInputBox').val();
                 d.type = $('#typeFilter').val();
+                d.evaluation_method = $('#evaluationFilter').val();
                 d.status = $('#stautsFilter').val();
                 d.accessibility = $('#accessibilityFilter').val();
                 d.created_by = $('#userByFilter').val();
@@ -482,6 +483,10 @@ $(document).ready(function() {
             initCollapseActions(datatableRows)
 
             $('#typeFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#evaluationFilter').on('change', function() {
                 tournamentsTable.ajax.reload()
             });
 
@@ -577,6 +582,17 @@ $(document).ready(function() {
 
                     if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
                         type = "Knockout"
+                    }
+
+                    return type;
+                }
+            },
+            {
+                "data": "evaluation_method",
+                "render": function(data, type, row, meta) {
+                    var type = 'Manual'
+                    if (row.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>") {
+                        type = "Voting"
                     }
 
                     return type;
@@ -683,6 +699,7 @@ $(document).ready(function() {
                 d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
                 d.search_tournament = $('#tournamentSearchInputBox').val();
                 d.type = $('#typeFilter').val();
+                d.evaluation_method = $('#evaluationFilter').val();
                 d.status = $('#stautsFilter').val();
             }
         },
@@ -707,6 +724,10 @@ $(document).ready(function() {
             });
 
             $('#typeFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#evaluationFilter').on('change', function() {
                 tournamentsTable.ajax.reload()
             });
 
@@ -777,6 +798,17 @@ $(document).ready(function() {
 
                     if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
                         type = "Knockout"
+                    }
+
+                    return type;
+                }
+            },
+            {
+                "data": "evaluation_method",
+                "render": function(data, type, row, meta) {
+                    var type = 'Manual'
+                    if (row.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>") {
+                        type = "Voting"
                     }
 
                     return type;

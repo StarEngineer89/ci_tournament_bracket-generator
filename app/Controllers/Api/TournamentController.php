@@ -37,6 +37,7 @@ class TournamentController extends BaseController
         $tournaments = $this->tournamentModel;
         $searchable = $this->request->getPost('search_tournament');
         $type = $this->request->getPost('type');
+        $evaluation_method = $this->request->getPost('evaluation_method');
         $status = $this->request->getPost('status');
         $created_by = $this->request->getPost('created_by');
         $accessibility = $this->request->getPost('accessibility');
@@ -51,6 +52,10 @@ class TournamentController extends BaseController
 
             if ($type) {
                 $tournaments->like(['tournaments.type' => $type]);
+            }
+
+            if ($evaluation_method) {
+                $tournaments->where('evaluation_method', $evaluation_method);
             }
 
             if ($status) {
@@ -120,6 +125,10 @@ class TournamentController extends BaseController
                 $tournaments->where('type', $type);
             }
 
+            if ($evaluation_method) {
+                $tournaments->where('evaluation_method', $evaluation_method);
+            }
+
             if ($status) {
                 $tournaments->where('status', $status);
             }
@@ -165,6 +174,7 @@ class TournamentController extends BaseController
     public function fetch_gallery()
     {
         $type = $this->request->getPost('type');
+        $evaluation_method = $this->request->getPost('evaluation_method');
         $status = $this->request->getPost('status');
         $created_by = $this->request->getPost('created_by');
 
@@ -179,6 +189,10 @@ class TournamentController extends BaseController
         
         if ($type) {
             $tournaments->where('type', $type);
+        }
+
+        if ($evaluation_method) {
+            $tournaments->where('evaluation_method', $evaluation_method);
         }
 
         if ($status) {

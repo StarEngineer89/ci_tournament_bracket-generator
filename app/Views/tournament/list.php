@@ -58,6 +58,14 @@
                     </select>
                 </th>
                 <th scope="col">
+                    <label for="evaluationFilter">Evaluation Method:</label>
+                    <select id="evaluationFilter" class="form-select form-select-sm">
+                        <option value="">All Types</option>
+                        <option value="<?= EVALUATION_METHOD_MANUAL ?>">Manual</option>
+                        <option value="<?= EVALUATION_METHOD_VOTING ?>">Voting</option>
+                    </select>
+                </th>
+                <th scope="col">
                     <label for="statusFilter">Status:</label>
                     <select id="stautsFilter" class="form-select form-select-sm">
                         <option value="">All Status</option>
@@ -101,6 +109,14 @@
                     </select>
                 </th>
                 <th scope="col">
+                    <label for="evaluationFilter">Evaluation Method:</label>
+                    <select id="evaluationFilter" class="form-select form-select-sm">
+                        <option value="">All Types</option>
+                        <option value="<?= EVALUATION_METHOD_MANUAL ?>">Manual</option>
+                        <option value="<?= EVALUATION_METHOD_VOTING ?>">Voting</option>
+                    </select>
+                </th>
+                <th scope="col">
                     <label for="statusFilter">Status:</label>
                     <select id="stautsFilter" class="form-select form-select-sm">
                         <option value="">All Status</option>
@@ -132,6 +148,14 @@
                         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
                         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
                         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+                    </select>
+                </th>
+                <th scope="col">
+                    <label for="evaluationFilter">Evaluation Method:</label>
+                    <select id="evaluationFilter" class="form-select form-select-sm">
+                        <option value="">All Types</option>
+                        <option value="<?= EVALUATION_METHOD_MANUAL ?>">Manual</option>
+                        <option value="<?= EVALUATION_METHOD_VOTING ?>">Voting</option>
                     </select>
                 </th>
                 <th scope="col">
