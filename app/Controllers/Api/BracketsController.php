@@ -335,7 +335,7 @@ class BracketsController extends BaseController
                 $creator = auth()->getProvider()->findById($tournament['user_id']);
 
                 $message = "Congratulations! You have won the tournament [$tournamentEntity->name]!";
-                $notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $winner->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournamentEntity->id/view"]);
+                $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $winner->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournamentEntity->id/view"]);
 
                 if (!$userSettingsService->get('email_notification', $winner->id) || $userSettingsService->get('email_notification', $winner->id) == 'on') {
                     $email = service('email');

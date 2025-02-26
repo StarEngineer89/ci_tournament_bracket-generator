@@ -32,6 +32,7 @@ $(document).on('ready', function () {
 
                                 $('.notification-box .dropdown-menu .notification').remove()
                                 notifications.forEach((notification, i) => {
+                                    $('.notification-box .clear-notifications').show()
                                     $('.notification-box .dropdown-menu').append(`
                                         <li class="notification">
                                             <p class="dropdown-item border-bottom p-2 pe-5">
@@ -254,8 +255,9 @@ let clearNotifications = () => {
         type: "delete",
         url: `${apiURL}/notifications/clear`,
         success: function(result) {
-            $('.notification-box .dropdown-menu').remove()
+            $('.notification-box .dropdown-menu .notification').remove()
             $('.notification-box span.badge').remove()
+            $('.notification-box .clear-notifications').hide()
             $('#clearNotificationsModal').modal('hide')
         },
         error: function(error) {

@@ -169,6 +169,7 @@ let editing_mode = false;
 
                                                 var cancelBtn = document.createElement('a')
                                                 cancelBtn.textContent = 'Cancel'
+                                                cancelBtn.classList.add('btn', 'btn-sm', 'btn-secondary')
                                                 cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
                                                 element.append(cancelBtn)
 
@@ -261,6 +262,7 @@ let editing_mode = false;
                                 
                                 var cancelBtn = document.createElement('a')
                                 cancelBtn.textContent = 'Cancel'
+                                cancelBtn.classList.add('btn', 'btn-secondary')
                                 cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
 
                                 var elementGroup = document.createElement('div')

@@ -22,11 +22,30 @@ class NotificationService
      */
     public function addNotification(array $data)
     {
+        /** Disable foreign key check for the guest users */
+        $db = \Config\Database::connect();
+        $dbDriver = $db->DBDriver;
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
+            $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+        }
+
         if ($this->notificationModel->insert($data)) {
             $wsClient = new WebSocketClient();
             $response = $wsClient->sendMessage("updateNotifications");
+
+            /** Enable foreign key check */
+            if (!auth()->user() && $dbDriver === 'MySQLi') {
+                $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+            }
+            
             return $this->notificationModel->getInsertID();
         }
+
+        /** Enable foreign key check */
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
+            $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+        }
+
         return false;
     }
 

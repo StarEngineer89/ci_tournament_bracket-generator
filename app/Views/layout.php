@@ -49,7 +49,7 @@
                                         <label class="form-check-label" for="emailNotificationSwitch">Email Notifications</label>
                                     </div>
                                     <?php if (count($notifications)): ?>
-                                    <a href="javascript:;" class="" data-bs-toggle="modal" data-bs-target="#clearNotificationsModal">Clear All</a>
+                                    <a href="javascript:;" class="clear-notifications" data-bs-toggle="modal" data-bs-target="#clearNotificationsModal">Clear All</a>
                                     <?php endif; ?>
                                 </li>
                                 <?php if (count($notifications)): ?>

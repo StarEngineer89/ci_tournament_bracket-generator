@@ -10,7 +10,7 @@
 
 <body>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>🏅 Congratulations! You have won the tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> hosted by <?= $creator->name ?> (<?= $creator->email ?>) and claimed the top spot! Your hard work, strategy, and skill have led you to victory.</p>
+    <p>🏅 Congratulations! You have won the tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> hosted by <?= $creator ? "$creator->name ($creator->email)" : 'Guest' ?> and claimed the top spot! Your hard work, strategy, and skill have led you to victory.</p>
 
     🔹 <a href="<?= base_url('participants') ?>">Check your stats on the leaderboard!</a>
 
