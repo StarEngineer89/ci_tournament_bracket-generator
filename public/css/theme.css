@@ -124,6 +124,11 @@
     background-color: var(--bg-cs-nav-hover-background-color);
 }
 
+.bg-cs .brackets>div .bracket-team,
+.bg-cs .brackets>div .final>span {
+    border-color: #838383;
+}
+
 .bg-cs .brackets div.bracketbox .bracket-border-line {
     border-color: var(--bg-cs-bracket-border-color);
     border-width: 2px;

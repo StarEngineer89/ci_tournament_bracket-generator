@@ -391,7 +391,7 @@
 }
 .brackets span.score {
   font-size: 0.85em;
-  padding: 0 5px;
+  padding: 1px 5px 0;
   background: #fad684;
   line-height: 26px;
   text-align: center;

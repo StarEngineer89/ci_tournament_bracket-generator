@@ -515,15 +515,16 @@ class TournamentController extends BaseController
             $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
 
             $availabilityChanged = false;
-            if ($tournament['available_start'] != date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')))) {
-                $availabilityChanged = true;
-            }
-
-            if ($tournament['available_end'] != date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')))) {
-                $availabilityChanged = true;
-            }
 
             if($tournament['availability']){
+                if ($tournament['available_start'] != date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')))) {
+                    $availabilityChanged = true;
+                }
+
+                if ($tournament['available_end'] != date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')))) {
+                    $availabilityChanged = true;
+                }
+
                 $tournament['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
                 $tournament['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
             } else {
@@ -533,6 +534,9 @@ class TournamentController extends BaseController
                 $scheduleLibrary->unregisterSchedule($tournament_id);
             }
 
+            /** Send the notification to the registered user participants
+             *  Notify the availability duration was updated
+             */
             if ($availabilityChanged) {
                 $participantsModel = model('\App\Models\ParticipantModel');
                 $registeredUsers = $participantsModel->where(['tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');

@@ -331,7 +331,7 @@ class BracketsController extends BaseController
             $this->tournamentsModel->save($tournament);
 
             $winnerParticipant = $this->participantsModel->find($req->winner);
-            if ($winner = auth()->getProvider()->findById($winnerParticipant['registered_user_id'])) {
+            if ($winnerParticipant['registered_user_id'] && $winner = auth()->getProvider()->findById($winnerParticipant['registered_user_id'])) {
                 $tournamentEntity = new \App\Entities\Tournament($tournament);
                 $creator = auth()->getProvider()->findById($tournament['user_id']);
 
