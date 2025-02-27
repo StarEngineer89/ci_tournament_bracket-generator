@@ -1188,6 +1188,10 @@ let adjustRoundCountdown = () => {
 }
 
 let roundCountDown = (obj, current) => {
+    if (!obj.getElementsByClassName('start').length || !obj.getElementsByClassName('end').length) {
+        return false;
+    }
+    
     start = new Date(obj.getElementsByClassName('start')[0].textContent)
     end = new Date(obj.getElementsByClassName('end')[0].textContent)
 
@@ -1197,7 +1201,6 @@ let roundCountDown = (obj, current) => {
 
     if (current > end) {
         obj.innerHTML = `<strong>Completed</strong>`
-        adjustRoundCountdown()
 
         return false
     }
