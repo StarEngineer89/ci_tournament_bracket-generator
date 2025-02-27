@@ -572,6 +572,10 @@ class TournamentController extends BaseController
                         }
                     }
                 }
+
+                if ($tournament['available_end'] > date('Y-m-d H:i:s')) {
+                    $tournament['status'] = TOURNAMENT_STATUS_INPROGRESS;
+                }
             }
         }
         

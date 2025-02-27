@@ -38,7 +38,11 @@ class BracketsController extends BaseController
 
         $uuid = $this->request->getGet('uuid');
 
+        $schedulesModel = model('\App\Models\SchedulesModel');
+        $schedules = $schedulesModel->where('tournament_id', $id)->findAll();
+
         $rounds = array();
+        $roundSettings = [];
         if (count($brackets) > 0) {
             foreach ($brackets as $bracket) {
                 /** Get the counts of votes and assign to the teamnames */
@@ -107,9 +111,17 @@ class BracketsController extends BaseController
                 $bracket['teamnames'] = json_encode($teams);
                 
                 /** Get round name */
-                $roundSetting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
-                if ($roundSetting) {
-                    $bracket['round_name'] = $roundSetting['round_name'];
+                if (!isset($roundSettings[$bracket['roundNo']])) {
+                    $roundSettings[$bracket['roundNo']] = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
+                }
+
+                if ($roundSettings[$bracket['roundNo']]) {
+                    $bracket['round_name'] = $roundSettings[$bracket['roundNo']]['round_name'];
+                }
+
+                if ($tournament_settings['availability'] && $tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
+                    $bracket['start'] = $schedules[$bracket['roundNo'] - 1]['schedule_time'];
+                    $bracket['end'] = $schedules[$bracket['roundNo']]['schedule_time'];
                 }
 
                 /** Add final bracket id in knockout brackets */

@@ -22,6 +22,8 @@ apiURL = "<?= base_url('api/shared') ?>";
 <?php else : ?>
 apiURL = "<?= base_url('api') ?>";
 <?php endif; ?>
+
+const tournament = <?= json_encode($tournament) ?>;
 const tournament_id = <?= $tournament['id'] ?>;
 const tournament_type = <?= intval($tournament['type']) ?>;
 const KNOCKOUT_TOURNAMENT_TYPE = <?= TOURNAMENT_TYPE_KNOCKOUT ?>;
@@ -297,8 +299,7 @@ $(document).ready(function() {
         let minutes = Math.floor((remainingTime % (60 * 60)) / 60);
         let seconds = remainingTime % 60;
 
-        document.getElementById("availabilityTimer").innerHTML =
-            `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        document.getElementById("availabilityTimer").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
         remainingTime--;
 
@@ -441,15 +442,20 @@ $(document).ready(function() {
         </div>
 
         <?php if ($tournament['availability']): ?>
-        <div id="countTimerAlertPlaceholder"></div>
+        <div id="countTimerAlertPlaceholder" class="text-center"></div>
         <div id="countTimerAlertMsg" class="d-none">
-            <span class="me-5"><strong>Tournament Duration: </strong><?= $tournament['available_start'] ?> - <?= $tournament['available_end'] ?> (<?= "{$interval->d} Days {$interval->h} Hours" ?>)</span>
+            <span class="me-5"><strong>
+                    Duration: </strong><span class="start"><?= $tournament['available_start'] ?></span> - <span class="end"><?= $tournament['available_end'] ?></span><br />
+                (<?= "{$interval->d} Days {$interval->h} Hours" ?>)
+            </span>
+            <br />
+
             <?php if ($currentTime < $startTime): ?>
-            <span class="ms-3"><strong>Time remaining until start: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
+            <span class="ms-3"><strong>The tournament starts in </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
             <?php endif; ?>
 
             <?php if ($currentTime > $startTime && $currentTime < $endTime): ?>
-            <span class="ms-3"><strong>Time remaining until end: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
+            <span class="ms-3"><strong>The tournament will be completed in </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
             <?php endif; ?>
 
             <?php if ($currentTime > $endTime): ?>

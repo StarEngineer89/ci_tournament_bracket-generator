@@ -45,6 +45,15 @@ let editing_mode = false;
             roundName.html(`<span class="round-name">${round_name}</span> ${editIcon}`)
             round.append(roundName)
 
+            if (parseInt(tournament.availability) && tournament.voting_mechanism == votingMechanismRoundDurationCode) {
+                let roundDuration = $(`<div class="round-duration-wrapper text-center p-2 m-2 d-none"></div>`)
+                let roundStart = `<strong>Start:</strong> <span class="start">${grouped[g][0].start}</span>`
+                let roundEnd = `<strong>End :</strong> <span class="end">${grouped[g][0].end}</span>`
+
+                roundDuration.html(`${roundStart}<br/>${roundEnd}`)
+                round.append(roundDuration)
+            }
+
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
 
             _.each(grouped[g], function (gg) {
@@ -325,7 +334,7 @@ let editing_mode = false;
                 }
             });
         }
-        
+
         return group
     }
     
@@ -583,6 +592,8 @@ let editing_mode = false;
                 if (confetti) {
                     initConfetti()
                 }
+
+                adjustRoundCountdown()
             },
             error: function (error) {
                 console.log(error);
@@ -1165,4 +1176,50 @@ let displayQRCode = () => {
     });
     
     $('#displayQRCodeModal').modal('show')
+}
+
+let adjustRoundCountdown = () => {
+    current = new Date();
+
+    [...document.getElementsByClassName('round-duration-wrapper')].forEach(obj => {
+        roundCountDown(obj, current)
+        obj.classList.remove('d-none')
+    })
+}
+
+let roundCountDown = (obj, current) => {
+    start = new Date(obj.getElementsByClassName('start')[0].textContent)
+    end = new Date(obj.getElementsByClassName('end')[0].textContent)
+
+    if (current < start) {
+        return false
+    }
+
+    if (current > end) {
+        obj.innerHTML = `<strong>Completed</strong>`
+        adjustRoundCountdown()
+
+        return false
+    }
+
+    let remainingTime = (end - current) / 1000
+    let days, hours, minutes, seconds;
+
+    const updateTimer = () => {
+        days = Math.floor(remainingTime / (60 * 60 * 24));
+        hours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
+        minutes = Math.floor((remainingTime % (60 * 60)) / 60);
+        seconds = parseInt(remainingTime % 60);
+
+        obj.innerHTML = `<strong>Remain : </strong>${days}d ${hours}h ${minutes}m ${seconds}s<br/><span>&nbsp;</span>`
+
+        if (remainingTime <= 0) {
+            adjustRoundCountdown()
+        }
+        
+        remainingTime--;
+        setTimeout(updateTimer, 1000);
+    }
+
+    updateTimer()
 }
