@@ -50,7 +50,7 @@ let editing_mode = false;
                 let roundStart = `<strong>Start:</strong> <span class="start">${grouped[g][0].start}</span>`
                 let roundEnd = `<strong>End :</strong> <span class="end">${grouped[g][0].end}</span>`
 
-                roundDuration.html(`${roundStart}<br/>${roundEnd}`)
+                roundDuration.html(`${roundStart}<br/>${roundEnd}<br/><span class="remaining">&nbsp;</span>`)
                 round.append(roundDuration)
             }
 
@@ -1191,7 +1191,7 @@ let roundCountDown = (obj, current) => {
     if (!obj.getElementsByClassName('start').length || !obj.getElementsByClassName('end').length) {
         return false;
     }
-    
+
     start = new Date(obj.getElementsByClassName('start')[0].textContent)
     end = new Date(obj.getElementsByClassName('end')[0].textContent)
 
@@ -1200,8 +1200,6 @@ let roundCountDown = (obj, current) => {
     }
 
     if (current > end) {
-        obj.innerHTML = `<strong>Completed</strong>`
-
         return false
     }
 
@@ -1214,7 +1212,7 @@ let roundCountDown = (obj, current) => {
         minutes = Math.floor((remainingTime % (60 * 60)) / 60);
         seconds = parseInt(remainingTime % 60);
 
-        obj.innerHTML = `<strong>Remain : </strong>${days}d ${hours}h ${minutes}m ${seconds}s<br/><span>&nbsp;</span>`
+        obj.getElementsByClassName('remaining')[0].innerHTML = `<strong>Remaining : </strong>${days}d ${hours}h ${minutes}m ${seconds}s<br/><span>&nbsp;</span>`
 
         if (remainingTime <= 0) {
             adjustRoundCountdown()

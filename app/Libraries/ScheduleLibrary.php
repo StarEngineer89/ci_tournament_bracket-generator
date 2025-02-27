@@ -34,15 +34,12 @@ class ScheduleLibrary
             // Calculate the total hours between start and end date
             $tournamentDuration = $endDate->getTimestamp() - $startDate->getTimestamp(); // Total duration in seconds
             $totalHours = $tournamentDuration / 3600; // Convert seconds to hours
-            log_message('debug', $totalHours);
+            
             // Divide hours by max rounds
             $roundDuration = ($maxRounds && $maxRounds->roundNo) ? $totalHours / $maxRounds->roundNo : $totalHours;
-            log_message('debug', $roundDuration);
             $roundDuration = intval($roundDuration * 60);
-            log_message('debug', $roundDuration);
             for ($i = 1; $i < $maxRounds->roundNo; $i++) {
                 $scheduleTime = $startDate->modify("+$roundDuration minutes")->format('Y-m-d H:i:s');
-                log_message('debug', $scheduleTime);
                 $this->registerSchedule($tournament_id, SCHEDULE_NAME_ROUNDUPDATE, $i, $scheduleTime);
             }
 
