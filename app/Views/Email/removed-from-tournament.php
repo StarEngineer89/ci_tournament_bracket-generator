@@ -10,10 +10,10 @@
 
 <body>
     <div class="logo" style="text-align: center;">
-        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+        <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>We wanted to inform you that you have been removed from the tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>!</p>
+    <p>We wanted to inform you that you have been removed from the tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>"!</p>
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
     🔹 <strong>Removed By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />

@@ -550,7 +550,7 @@ class TournamentController extends BaseController
                     foreach ($registeredUsers as $user_id) {
                         $user = $userProvider->findById($user_id);
 
-                        $message = "The availability of the tournament [$tournamentEntity->name] was updated!";
+                        $message = "The availability of the tournament \"$tournamentEntity->name\" was updated!";
                         $this->notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_AVAILABILITY_UPDATED, 'link' => "tournaments/$tournamentEntity->id/view"]);
 
                         if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
@@ -906,7 +906,7 @@ class TournamentController extends BaseController
             $tournament = new \App\Entities\Tournament($tournament);
         
             foreach ($users as $user) {
-                $msg = "Tournament \"$tournament->name\" was privately shared with you.";
+                $msg = "The tournament \"$tournament->name\" was privately shared with you.";
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;
 
                 $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];

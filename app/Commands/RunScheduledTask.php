@@ -83,11 +83,11 @@ class RunScheduledTask extends BaseCommand
                             $user = $userProvider->findById($user_id);
 
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
-                                $message = "The [$tournament->name] was started!";
+                                $message = "The tournament \"$tournament->name\" was started!";
                                 $notificationService->addNotification(['user_id' => $host_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_STARTED, 'link' => "tournaments/$tournament->id/view"]);
                             }
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) {
-                                $message = "The [$tournament->name] was completed!";
+                                $message = "The tournament \"$tournament->name\" was completed!";
                                 $notificationService->addNotification(['user_id' => $host_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournament->id/view"]);
                             }
 

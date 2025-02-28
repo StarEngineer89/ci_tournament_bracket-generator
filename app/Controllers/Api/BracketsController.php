@@ -206,7 +206,7 @@ class BracketsController extends BaseController
                     if($req->name[0] == '@' && $user) {
                         $tournament = new \App\Entities\Tournament($tournament);
 
-                        $message = "You've been added to tournament $tournament->name!";
+                        $message = "You've been added to tournament \"$tournament->name\"!";
                         $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament->id/view"]);
 
                         if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
@@ -262,7 +262,7 @@ class BracketsController extends BaseController
 
                     $notificationService = service('notification');
                     $userSettingsService = service('userSettings');
-                    $message = "You've been removed from tournament $tournament->name!";
+                    $message = "You've been removed from tournament \"$tournament->name\"!";
                     $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournament->id/view"]);
 
                     if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
@@ -355,7 +355,7 @@ class BracketsController extends BaseController
                 $tournamentEntity = new \App\Entities\Tournament($tournament);
                 $creator = auth()->getProvider()->findById($tournament['user_id']);
 
-                $message = "Congratulations! You have won the tournament [$tournamentEntity->name]!";
+                $message = "Congratulations! You have won the tournament \"$tournamentEntity->name\"!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $winner->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournamentEntity->id/view"]);
 
                 if (!$userSettingsService->get('email_notification', $winner->id) || $userSettingsService->get('email_notification', $winner->id) == 'on') {
@@ -515,7 +515,7 @@ class BracketsController extends BaseController
                         $creator = auth()->getProvider()->findById($tournament['user_id']);
                         $tournamentEntity = new \App\Entities\Tournament($tournament);
 
-                        $message = "You've been removed from tournament $tournamentEntity->name!";
+                        $message = "You've been removed from tournament \"$tournamentEntity->name\"!";
                         $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournamentEntity->id/view"]);
 
                         if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {

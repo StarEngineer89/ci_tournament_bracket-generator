@@ -10,10 +10,10 @@
 
 <body>
     <div class="logo" style="text-align: center;">
-        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+        <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>The <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> hosted by <?= $creator ? "$creator->name ($creator->email)" : 'Guest' ?> has officially started, and you're in the action! Get ready to track the progress. </p>
+    <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" hosted by <?= $creator ? "$creator->name ($creator->email)" : 'Guest' ?> has officially started, and you're in the action! Get ready to track the progress. </p>
 
     🔹 <strong>Your Role</strong>: <?= $role ?>
 

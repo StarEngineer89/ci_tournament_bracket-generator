@@ -10,7 +10,7 @@
 
 <body>
     <div class="logo" style="text-align: center;">
-        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+        <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi, <?= esc($username) ?>,</p>
     <p>We’re confirming that your password has been successfully updated for your <?= esc($sendername) ?> account.</p>

@@ -10,10 +10,10 @@
 
 <body>
     <div class="logo" style="text-align: center;">
-        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+        <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p><strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong> has been shared with you! Get ready to join the action and experience the competition. !</p>
+    <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" has been shared with you! Get ready to join the action and experience the competition. !</p>
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
     🔹 <strong>Shared By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />

@@ -10,7 +10,7 @@
 
 <body>
     <div class="logo" style="text-align: center;">
-        <img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;">
+        <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi, <?= auth()->user()->username ?>,</p>
     <p>Welcome to <?= setting('Email.fromName') ?>! We’re thrilled to have you join us. Whether you're hosting epic tournaments or cheering for your favorites, we’ve got everything you need to make competitions legendary.</p>
