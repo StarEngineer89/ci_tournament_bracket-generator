@@ -21,7 +21,7 @@
     <p>If you believe this was a mistake or have any questions, try contacting the tournament organizer. <?= $creator ? "($creator->email)" : '' ?> </p>
 
     <p>Best regards,</p>
-    <p>🏆 <?= esc($tournamentCreatorName) ?>Team</p>
+    <p>🏆 <?= esc($tournamentCreatorName) ?> Team</p>
     <br />
     <p>Disclaimer: To opt out of these emails, <a href="<?= base_url('login') ?>">login</a> and adjust the notification setting from the "bell" icon.
     </p>

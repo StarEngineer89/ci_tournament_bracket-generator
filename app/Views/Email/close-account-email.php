@@ -23,7 +23,7 @@
     <p>We’re sad to see you go, but if you ever decide to return, we’ll be here!</p>
     <br />
     <p>Best regards,</p>
-    <p>🏆 <?= esc($sendername) ?>Team</p>
+    <p>🏆 <?= esc($sendername) ?> Team</p>
 </body>
 
 </html>

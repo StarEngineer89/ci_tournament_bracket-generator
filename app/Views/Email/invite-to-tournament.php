@@ -26,7 +26,7 @@
     <p>See you in the brackets!</p>
 
     <p>Best regards,</p>
-    <p>🏆 <?= esc($tournamentCreatorName) ?>Team</p>
+    <p>🏆 <?= esc($tournamentCreatorName) ?> Team</p>
     <br />
     <p>Disclaimer: To opt out of these emails, <a href="<?= base_url('login') ?>">login</a> and adjust the notification setting from the "bell" icon.</p>
 </body>
