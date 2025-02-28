@@ -181,7 +181,7 @@ let editing_mode = false;
                                                 saveBtn.setAttribute('onclick', `changeParticipant($('#participantSelector'), ${index})`)
                                                 saveBtn.textContent = 'Save'
                                                 
-                                                var cancelBtn = document.createElement('a')
+                                                var cancelBtn = document.createElement('button')
                                                 cancelBtn.textContent = 'Cancel'
                                                 cancelBtn.setAttribute('class', 'btn btn-secondary p-1')
                                                 cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
@@ -283,7 +283,7 @@ let editing_mode = false;
                                 buttonElement.setAttribute('onclick', `saveNewParticipant($('#newParticipantNameInput'), ${index})`)
                                 buttonElement.textContent = 'Save'
                                 
-                                var cancelBtn = document.createElement('a')
+                                var cancelBtn = document.createElement('button')
                                 cancelBtn.textContent = 'Cancel'
                                 cancelBtn.classList.add('btn', 'btn-secondary')
                                 cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
