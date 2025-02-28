@@ -487,6 +487,7 @@ class BracketsController extends BaseController
                 }
             }
         }
+        
         $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
         $tournament_model->save($tournament);
 
@@ -522,8 +523,20 @@ class BracketsController extends BaseController
         $data['participants'] = $participants_in_bracket;
         $insert_data['params'] = json_encode($data);
 
+        /** Disable foreign key check for the guest users */
+        $db = \Config\Database::connect();
+        $dbDriver = $db->DBDriver;
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
+            $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+        }
+
         /** Record a delete action log */
         $logActionsModel->insert($insert_data);
+
+        /** Enable foreign key check */
+        if (!auth()->user() && $dbDriver === 'MySQLi') {
+            $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+        }
 
         return json_encode(array('result' => 'success'));
     }
