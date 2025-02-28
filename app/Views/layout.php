@@ -257,7 +257,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script src="<?= base_url('js') ?>/underscore-min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+        <script src="/js/moment-timezone-with-data.min.js"></script>
         <script src="/js/functions.js"></script>
         <script type="text/javascript">
         let apiURL = "<?= base_url('api') ?>";
