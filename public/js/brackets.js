@@ -31,6 +31,15 @@ let editing_mode = false;
                 round = $('<div class="round r' + g + '" style="min-width: 350px"></div>');
             }
             
+            if (parseInt(tournament.availability) && tournament.evaluation_method == evaluationMethodVotingCode && tournament.voting_mechanism == votingMechanismRoundDurationCode) {
+                let roundDuration = $(`<div class="round-duration-wrapper text-center p-2 m-2 d-none"></div>`)
+                let roundStart = `<strong>Start:</strong> <span class="start">${grouped[g][0].start}</span>`
+                let roundEnd = `<strong>End :</strong> <span class="end">${grouped[g][0].end}</span>`
+
+                roundDuration.html(`${roundStart}<br/>${roundEnd}<br/><span class="remaining">&nbsp;</span>`)
+                round.append(roundDuration)
+            }
+
             let editIcon = ''
             if (hasEditPermission) {
                 editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
@@ -44,15 +53,6 @@ let editing_mode = false;
 
             roundName.html(`<span class="round-name">${round_name}</span> ${editIcon}`)
             round.append(roundName)
-
-            if (parseInt(tournament.availability) && tournament.voting_mechanism == votingMechanismRoundDurationCode) {
-                let roundDuration = $(`<div class="round-duration-wrapper text-center p-2 m-2 d-none"></div>`)
-                let roundStart = `<strong>Start:</strong> <span class="start">${grouped[g][0].start}</span>`
-                let roundEnd = `<strong>End :</strong> <span class="end">${grouped[g][0].end}</span>`
-
-                roundDuration.html(`${roundStart}<br/>${roundEnd}<br/><span class="remaining">&nbsp;</span>`)
-                round.append(roundDuration)
-            }
 
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
 

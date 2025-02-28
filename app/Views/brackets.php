@@ -47,6 +47,7 @@ let maxVoteCount = <?= $tournament['max_vote_value'] ? $tournament['max_vote_val
 const votingMechanismRoundDurationCode = <?= EVALUATION_VOTING_MECHANISM_ROUND?>;
 const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE?>;
 const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
+const evaluationMethodVotingCode = "<?= EVALUATION_METHOD_VOTING ?>";
 let winnerAudioPlayingForEveryone = <?= $tournament['winner_audio_everyone'] ? $tournament['winner_audio_everyone'] : 0 ?>;
 let initialUsers = <?= json_encode($users) ?>;
 
