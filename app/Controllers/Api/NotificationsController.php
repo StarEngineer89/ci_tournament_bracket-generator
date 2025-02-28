@@ -22,15 +22,18 @@ class NotificationsController extends BaseController
 
         $notifications = $this->notificationService->getNotifications(auth()->user()->id);
 
+        $newList = [];
         if ($notifications) {
             foreach ($notifications as $notification) {
                 $notification['link'] = base_url($notification['link']);
                 $notification['created_by'] = $notification['created_by'] ?? 'Guest';
                 $notification['created_at'] = convert_to_user_timezone($notification['created_at'], user_timezone(auth()->user()->id));
+
+                $newList[] = $notification;
             }
         }
 
-        return $this->response->setJSON(['status' => 'success', 'notifications' => $notifications]);
+        return $this->response->setJSON(['status' => 'success', 'notifications' => $newList]);
     }
 
     /**

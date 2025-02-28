@@ -861,6 +861,16 @@
   margin-left: 0;
 }
 
+.brackets .select2-container .select2-selection {
+  height: 35px;
+}
+.brackets .select2-container .select2-selection .select2-selection__rendered {
+  line-height: 35px;
+}
+.brackets .select2-container .select2-selection .select2-selection__arrow {
+  height: 35px;
+}
+
 #shareHistoryModal .share-settings .input-group{
   flex-wrap: nowrap;
 }

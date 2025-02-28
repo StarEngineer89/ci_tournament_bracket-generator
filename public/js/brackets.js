@@ -150,15 +150,11 @@ let editing_mode = false;
                                         url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
                                         success: function (result) {
                                             var select = document.createElement('select');
+                                            select.setAttribute('id', "participantSelector");
                                             select.setAttribute('class', "form-control");
                                             var index = (element.hasClass("teama")) ? 0 : 1;
 
-                                            var inputGroup = document.getElementById('changeParticipantInputGroup')
-                                            if (inputGroup) {
-                                                inputGroup.remove()
-                                            }
-                                            
-                                            select.setAttribute('onChange', `changeParticipant($(this), ${index})`);
+                                            // select.setAttribute('onChange', `changeParticipant($(this), ${index})`);
 
                                             result = JSON.parse(result);
                                             if (result.length > 0) {
@@ -176,18 +172,32 @@ let editing_mode = false;
                                                 element.contents().remove();
                                                 element.append(select);
 
+                                                var saveBtn = document.createElement('button')
+                                                saveBtn.setAttribute('class', 'btn btn-primary p-1')
+                                                saveBtn.setAttribute('onclick', `changeParticipant($('#participantSelector'), ${index})`)
+                                                saveBtn.textContent = 'Save'
+                                                
                                                 var cancelBtn = document.createElement('a')
                                                 cancelBtn.textContent = 'Cancel'
-                                                cancelBtn.classList.add('btn', 'btn-sm', 'btn-secondary')
+                                                cancelBtn.setAttribute('class', 'btn btn-secondary p-1')
                                                 cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
-                                                element.append(cancelBtn)
+                                                
+                                                var elementGroup = document.createElement('div')
+                                                elementGroup.setAttribute('class', 'input-group')
+                                                elementGroup.appendChild(select)
+                                                elementGroup.appendChild(saveBtn)
+                                                elementGroup.append(cancelBtn)
+
+                                                element.append(elementGroup)
 
                                                 editing_mode = true;
                                             } else {
                                                 alert("There is no participants to be selected");
                                             }
 
-                                            $(select).select2()
+                                            $(select).select2({
+                                                width: 115
+                                            })
 
                                             $('.select2-search input').atwho({
                                                 at: "@",
@@ -609,7 +619,7 @@ let editing_mode = false;
         var name = element.val()
         var participantElement = element.parent().parent()
 
-        if (!_.isNaN(name)) {
+        if (name) {
             let duplicated = false;
             let force_add = false;
 
@@ -767,7 +777,7 @@ let editing_mode = false;
 
 function changeParticipant(ele, index) {
     let ability = true;
-    let parentElement = ele.parent()
+    let parentElement = ele.parent().parent()
     $('.bracketbox span[data-round=' + parentElement.data("round") + ']').each((i, e) => {
         if (e.dataset.id == ele.val()) {
             let confirm_result = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
@@ -780,14 +790,14 @@ function changeParticipant(ele, index) {
     });
 
     if (ability) {
-        let participant_order = parentElement.data('p_order')
+        let participant_order = parentElement.data('order')
         if (!participant_order) {
             participant_order = (parseInt(parentElement.data('order')) - 1) * 2 + index + 1
         }
 
         editing_mode = false;
 
-        updateBracket(ele.parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order });
+        updateBracket(ele.parent().parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order });
     }
 }
 
@@ -1215,11 +1225,12 @@ let roundCountDown = (obj, current) => {
         obj.getElementsByClassName('remaining')[0].innerHTML = `<strong>Remaining : </strong>${days}d ${hours}h ${minutes}m ${seconds}s<br/><span>&nbsp;</span>`
 
         if (remainingTime <= 0) {
+            obj.getElementsByClassName('remaining')[0].innerHTML = ' '
             adjustRoundCountdown()
+        } else {
+            remainingTime--;
+            setTimeout(updateTimer, 1000);
         }
-        
-        remainingTime--;
-        setTimeout(updateTimer, 1000);
     }
 
     updateTimer()
