@@ -149,6 +149,13 @@ let editing_mode = false;
                                         type: "GET",
                                         url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
                                         success: function (result) {
+                                            let originalWrapper = document.createElement('div')
+                                            originalWrapper.classList.add('original-wrapper', 'd-none')
+                                            originalWrapper.innerHTML = element.html()
+
+                                            element.contents().remove();
+                                            element.append(originalWrapper)
+
                                             var select = document.createElement('select');
                                             select.setAttribute('id', "participantSelector");
                                             select.setAttribute('class', "form-control");
@@ -169,9 +176,6 @@ let editing_mode = false;
                                                     select.appendChild(option);
                                                 });
 
-                                                element.contents().remove();
-                                                element.append(select);
-
                                                 var saveBtn = document.createElement('button')
                                                 saveBtn.setAttribute('class', 'btn btn-primary p-1')
                                                 saveBtn.setAttribute('onclick', `changeParticipant($('#participantSelector'), ${index})`)
@@ -184,8 +188,8 @@ let editing_mode = false;
                                                 
                                                 var elementGroup = document.createElement('div')
                                                 elementGroup.setAttribute('class', 'input-group')
-                                                elementGroup.appendChild(select)
-                                                elementGroup.appendChild(saveBtn)
+                                                elementGroup.append(select)
+                                                elementGroup.append(saveBtn)
                                                 elementGroup.append(cancelBtn)
 
                                                 element.append(elementGroup)
@@ -648,7 +652,7 @@ let editing_mode = false;
             dataType: "JSON",
             success: function (result) {
                 ws.send(['updated!', tournament_id]);
-                loadBrackets();
+                loadBrackets()
             },
             error: function (error) {
                 console.log(error);
@@ -907,7 +911,12 @@ function removeImage(e, element_id){
 }
 
 function cancelEditing(element) {
-    loadBrackets()
+    let origin = element.parentElement.parentElement.getElementsByClassName('original-wrapper')[0]
+    if (origin) {
+        element.parentElement.parentElement.innerHTML = origin.innerHTML
+    } else {
+        element.parentElement.parentElement.innerHTML = ''
+    }
 }
 
 let submitVote = (event) => {
