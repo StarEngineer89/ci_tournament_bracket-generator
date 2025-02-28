@@ -387,7 +387,7 @@ class TournamentController extends BaseController
             $userSettingsService = service('userSettings');
             foreach ($users as $user) {
                 $user = $userProvider->findById($user['registered_user_id']);
-                $message = "You've been added to tournament $tournamentData->name!";
+                $message = "You've been added to tournament \"$tournamentData->name\"!";
                 $this->notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
                 if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {

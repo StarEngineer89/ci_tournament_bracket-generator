@@ -13,7 +13,7 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>You've been invited to join the tournament <strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>!</p>
+    <p>You've been invited to join the tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>"!</p>
 
     <p>Get ready to compete and showcase your skills.</p>
 
