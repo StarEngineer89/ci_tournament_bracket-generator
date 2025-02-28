@@ -59,6 +59,8 @@ class RunScheduledTask extends BaseCommand
         $voteLibrary = new \App\Libraries\VoteLibrary();
         $schedulesModel = model('\App\Models\SchedulesModel');
         $schedules = $schedulesModel->where(['result' => 0])->findAll();
+
+        $host_id = auth()->user() ? auth()->user()->id : 0;
         
         if ($schedules) {
             foreach($schedules as $schedule) {
@@ -82,11 +84,11 @@ class RunScheduledTask extends BaseCommand
 
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
                                 $message = "The [$tournament->name] was started!";
-                                $notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_STARTED, 'link' => "tournaments/$tournament->id/view"]);
+                                $notificationService->addNotification(['user_id' => $host_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_STARTED, 'link' => "tournaments/$tournament->id/view"]);
                             }
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) {
                                 $message = "The [$tournament->name] was completed!";
-                                $notificationService->addNotification(['user_id' => auth()->user()->id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournament->id/view"]);
+                                $notificationService->addNotification(['user_id' => $host_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournament->id/view"]);
                             }
 
                             if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
