@@ -466,7 +466,8 @@ $(document).ready(function() {
 
         <div id="availabilityAlertPlaceholder"></div>
         <div id="availabilityAlertMsg" class="d-none">
-            The tournament <strong><?= $tournament['name'] ?></strong> will be available starting <?= auth()->user() ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?> and ending on <?= auth()->user() ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?>. <br />
+            <?php $created_by = $tournament['created_by'] ?>
+            The tournament <strong><?= $tournament['name'] ?></strong> hosted by <strong><?= $created_by ? "$created_by->username ($created_by->email)" : 'Guest' ?></strong> will be available starting <?= auth()->user() ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?> and ending on <?= auth()->user() ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?>. <br />
             If voting is enabled, the voting period will begin once the tournament availability starts and conclude once the availability ends.
         </div>
         <?php endif; ?>

@@ -67,6 +67,11 @@ class TournamentController extends BaseController
 
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
+        $users = auth()->getProvider();
+        $created_by = $users->findById($tournament['user_id']);
+
+        $tournament['created_by'] = $created_by;
+        
         if (!$tournament) {
             $session = \Config\Services::session();
             $session->setFlashdata(['error' => "This tournament doesn't exist!"]);
@@ -75,8 +80,6 @@ class TournamentController extends BaseController
         }
 
         if (!auth()->user() && !$tournament['visibility']) {
-            $users = auth()->getProvider();
-            $created_by = $users->findById($tournament['user_id']);
             return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);
         }
 
@@ -226,9 +229,12 @@ class TournamentController extends BaseController
             return redirect()->to('/gallery');
         }
 
+        $users = auth()->getProvider();
+        $created_by = $users->findById($tournament['user_id']);
+
+        $tournament['created_by'] = $created_by;
+        
         if (!auth()->user() && !$tournament['visibility']) {
-            $users = auth()->getProvider();
-            $created_by = $users->findById($tournament['user_id']);
             return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);
         }
         
