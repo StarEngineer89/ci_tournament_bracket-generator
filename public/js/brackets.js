@@ -1201,24 +1201,58 @@ let displayQRCode = () => {
 }
 
 let adjustRoundCountdown = () => {
-    current = new Date();
-
     const popoverTriggerList = document.querySelectorAll('.timerTrigger');
     [...document.getElementsByClassName('round-duration-wrapper')].forEach((obj, i) => {
-        roundCountDown(obj, current);
-
-        if (popoverTriggerList[i]) {
-            let existingPopover = bootstrap.Popover.getInstance(popoverTriggerList[i]);
-            if (existingPopover) {
-                existingPopover.dispose();
-            }
-
-            new bootstrap.Popover(popoverTriggerList[i], {
-                html: true,
-                trigger: 'focus',
-                content: obj.innerHTML.trim()
-            });
+        if (!popoverTriggerList[i]) {
+            console.warn(`Popover trigger not found for index ${i}`);
+            return;
         }
+
+        let endTime = new Date(obj.getElementsByClassName('end')[0].textContent);
+        let remainingTime;
+        
+        // Function to update the countdown timer
+        function updateCountdown() {
+            let now = new Date();
+            remainingTime = (endTime - now) / 1000;
+            
+            if (remainingTime <= 0) {
+                obj.getElementsByClassName('remaining')[0].innerHTML = "Completed!";
+                return obj.innerHTML;
+            } else {
+                let days = Math.floor(remainingTime / (60 * 60 * 24));
+                let hours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
+                let minutes = Math.floor((remainingTime % (60 * 60)) / 60);
+                let seconds = parseInt(remainingTime % 60);
+
+                let timeString = `${days}d ${hours}h ${minutes}m ${seconds}s`
+
+                obj.getElementsByClassName('remaining')[0].innerHTML = `<strong>Remaining : </strong>${timeString}<br/><span>&nbsp;</span>`
+
+                return obj.innerHTML; // Return for popover
+            }
+        }
+
+        // Initialize popover with dynamic content update
+        let popover = new bootstrap.Popover(popoverTriggerList[i], {
+            html: true,
+            trigger: 'focus',
+            content: function () {
+                return `<div id="popover-timer-${i}">${updateCountdown()}</div>`; // Set live timer
+            }
+        });
+
+        // Update popover content every second
+        setInterval(() => {
+            let popoverElement = document.getElementById(`popover-timer-${i}`);
+            if (popoverElement) {
+                popoverElement.innerHTML = updateCountdown();
+
+                if (remainingTime <= 0 && obj.getElementsByClassName('remaining')[0].innerHTML != "Completed!") {
+                    adjustRoundCountdown();
+                }
+            }
+        }, 1000);
     });
 }
 
