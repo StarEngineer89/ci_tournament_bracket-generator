@@ -32,6 +32,7 @@ var hash = '<?= uniqid(rand(), TRUE);?>';
 <script type="text/javascript">
 let eleminationType;
 let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
+let tournament = <?= json_encode($tournament) ?>;
 var user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>;
 let shuffle_duration = 10;
 let audio = document.getElementById("myAudio");
@@ -43,6 +44,11 @@ let filteredNames
 let videoPlayer = document.getElementById('videoPlayer');
 let videoStartTime = 0;
 let video_duration = 10;
+let tournamentTypeConsts = {
+    's': '<?= TOURNAMENT_TYPE_SINGLE ?>',
+    'd': '<?= TOURNAMENT_TYPE_DOUBLE ?>',
+    'k': '<?= TOURNAMENT_TYPE_KNOCKOUT ?>'
+};
 
 var enable_confirmPopup = false;
 
@@ -338,7 +344,13 @@ $(document).ready(function() {
     }
 
     $('#generate').on('click', function() {
-        if (itemList.children.length < 2) {
+        let minParticipantCounts = 2
+        if (tournament.type == tournamentTypeConsts.k) {
+            minParticipantCounts = 4
+        }
+
+        if (itemList.children.length < minParticipantCounts) {
+            $('#generateErrorModal .count').html(minParticipantCounts)
             $('#generateErrorModal').modal('show')
             return false;
         }
@@ -1285,7 +1297,7 @@ var performReuseParticipants = (tournament_id = null) => {
             </div>
             <div class="modal-body">
                 <h6>Please populate the participant list first before generating the brackets.</h6>
-                <h6>There should be at least 2 or more participants.</h6>
+                <h6>There should be at least <span class="count">2</span> or more participants.</h6>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>

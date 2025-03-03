@@ -564,7 +564,6 @@ let editing_mode = false;
                         let center_wrapper = document.createElement('div')
                         center_wrapper.classList.add('center-wrapper', 'align-self-center')
                         center_wrapper.style.minWidth = '350px'
-                        center_wrapper.style.minHeight = '350px'
                         let bracketDiv = document.createElement('div')
                         bracketDiv.classList.add('knockout-final', 'd-flex', 'align-items-end', 'justify-content-center')
 
@@ -809,35 +808,36 @@ function changeParticipant(ele, index) {
 }
 
 function adjustBracketsStyles(obj) {
-  const rows = obj.querySelectorAll(".brackets div.groups div.bracketbox-list");
-  const baseHeight = 30;
-  const baseMargin = 40;
-  
-  rows.forEach((row, index) => {
-    const multiplier = Math.pow(2, index + 1);
-    const height = baseHeight * multiplier;
-    const margin = baseHeight * Math.pow(2, index) + baseMargin / 2;
-      
-    row.querySelectorAll('.bracketbox').forEach((bracket, index) => {
-        
-        if (bracket.classList.contains('final') || bracket.classList.contains('knockout-semi-final')) {
-            bracket.style.height = `0`;
-            bracket.style.margin = `${margin}px 0 0`;
-        } else {
-            bracket.style.height = `${height}px`;
-            if (row.querySelectorAll('.bracketbox').length > index + 1) {
-                bracket.style.margin = `${margin}px 0 ${height}px`;
-            } else {
-                bracket.style.margin = `${margin}px 0`;
-            }
-            
-        }
-    })
-  });
+    const rows = obj.querySelectorAll(".brackets div.groups div.bracketbox-list");
+    const baseHeight = 30;
+    const baseMargin = 40;
     
-    // if ($('.center-wrapper')) {
-    //     $('.center-wrapper').css("min-height", $('#left_wrapper').height() / 2)
-    // }
+        let extraMarginTop = 0;
+        if (rows[0].querySelectorAll('.bracketbox').length == 1) {
+            extraMarginTop = 70
+        }
+    
+    rows.forEach((row, index) => {
+        const multiplier = Math.pow(2, index + 1);
+        const height = baseHeight * multiplier;
+        const margin = baseHeight * Math.pow(2, index) + baseMargin / 2;
+        
+        row.querySelectorAll('.bracketbox').forEach((bracket, index) => {
+            
+            if (bracket.classList.contains('final') || bracket.classList.contains('knockout-semi-final')) {
+                bracket.style.height = `0`;
+                bracket.style.margin = `${margin + extraMarginTop}px 0 0`;
+            } else {
+                bracket.style.height = `${height}px`;
+                if (row.querySelectorAll('.bracketbox').length > index + 1) {
+                    bracket.style.margin = `${margin + extraMarginTop}px 0 ${height}px`;
+                } else {
+                    bracket.style.margin = `${margin + extraMarginTop}px 0`;
+                }
+                
+            }
+        })
+    });
 }
 
 function chooseImage(e, element_id){
@@ -1254,43 +1254,4 @@ let adjustRoundCountdown = () => {
             }
         }, 1000);
     });
-}
-
-let roundCountDown = (obj, current) => {
-    if (!obj.getElementsByClassName('start').length || !obj.getElementsByClassName('end').length) {
-        return false;
-    }
-
-    start = new Date(obj.getElementsByClassName('start')[0].textContent)
-    end = new Date(obj.getElementsByClassName('end')[0].textContent)
-
-    if (current < start) {
-        return false
-    }
-
-    if (current > end) {
-        return false
-    }
-
-    let remainingTime = (end - current) / 1000
-    let days, hours, minutes, seconds;
-
-    const updateTimer = () => {
-        days = Math.floor(remainingTime / (60 * 60 * 24));
-        hours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
-        minutes = Math.floor((remainingTime % (60 * 60)) / 60);
-        seconds = parseInt(remainingTime % 60);
-
-        obj.getElementsByClassName('remaining')[0].innerHTML = `<strong>Remaining : </strong>${days}d ${hours}h ${minutes}m ${seconds}s<br/><span>&nbsp;</span>`
-
-        if (remainingTime <= 0) {
-            obj.getElementsByClassName('remaining')[0].innerHTML = ' '
-            adjustRoundCountdown()
-        } else {
-            remainingTime--;
-            setTimeout(updateTimer, 1000);
-        }
-    }
-
-    updateTimer()
 }

@@ -354,10 +354,6 @@
   clear: both;
 }
 
-.brackets .round > div {
-  margin: 40px 0;
-}
-
 .bg-cs .brackets .round-name-wrapper .btn {
   color: #fff
 }
@@ -801,7 +797,6 @@
   position: relative;
   top: initial;
   left: initial;
-  margin-top: 50px;
   margin-bottom: 20px;
   width: 100%;
 }
