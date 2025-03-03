@@ -69,7 +69,7 @@ class TournamentController extends BaseController
 
         if (!$tournament) {
             $session = \Config\Services::session();
-            $session->setFlashdata(['error' => "This tournament is not existing!"]);
+            $session->setFlashdata(['error' => "This tournament doesn't exist!"]);
 
             return redirect()->to('/tournaments');
         }
@@ -221,7 +221,7 @@ class TournamentController extends BaseController
         $tournament = $tournamentModel->find($settings['tournament_id']);
         if (!$tournament) {
             $session = \Config\Services::session();
-            $session->setFlashdata(['error' => "This tournament is not existing!"]);
+            $session->setFlashdata(['error' => "This tournament doesn't exist!"]);
 
             return redirect()->to('/gallery');
         }
