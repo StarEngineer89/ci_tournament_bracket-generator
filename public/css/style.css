@@ -362,6 +362,15 @@
   color: #fff
 }
 
+.brackets .round-name-wrapper {
+  position: relative;
+}
+
+.brackets .round-name-wrapper .timerTrigger {
+  position: absolute;
+  right: 10px;
+}
+
 .brackets div.bracketbox {
   position: relative;
   width: 100%;

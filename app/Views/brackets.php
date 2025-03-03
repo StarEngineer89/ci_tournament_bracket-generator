@@ -688,6 +688,7 @@ $(document).ready(function() {
             <?= $tournament['description'] ?>
         </div>
 
+        <div id="roundTimerPlaceholder"></div>
         <div id="brackets" class="brackets d-flex p-5"></div>
     </div>
 </div>

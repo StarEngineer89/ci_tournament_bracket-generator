@@ -31,6 +31,7 @@ let editing_mode = false;
                 round = $('<div class="round r' + g + '" style="min-width: 350px"></div>');
             }
             
+            let timerIcon = ''
             if (parseInt(tournament.availability) && tournament.evaluation_method == evaluationMethodVotingCode && tournament.voting_mechanism == votingMechanismRoundDurationCode) {
                 let roundDuration = $(`<div class="round-duration-wrapper text-center p-2 m-2 d-none"></div>`)
                 let roundStart = `<strong>Start:</strong> <span class="start">${grouped[g][0].start}</span>`
@@ -38,6 +39,8 @@ let editing_mode = false;
 
                 roundDuration.html(`${roundStart}<br/>${roundEnd}<br/><span class="remaining">&nbsp;</span>`)
                 round.append(roundDuration)
+
+                timerIcon = '<button type="button" class="timerTrigger btn btn-light p-0" data-bs-toggle="popover" data-bs-placement="top"><span class="fa-solid fa-clock"></span></button>'
             }
 
             let editIcon = ''
@@ -51,7 +54,7 @@ let editing_mode = false;
                 round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}: Grand Final`
             }
 
-            roundName.html(`<span class="round-name">${round_name}</span> ${editIcon}`)
+            roundName.html(`<span class="round-name">${round_name}</span> ${editIcon} ${timerIcon}`)
             round.append(roundName)
 
             var bracketBoxList = $('<div class="bracketbox-list"></div>')
@@ -1017,7 +1020,7 @@ let enableChangeRoundName = (event) => {
 }
 
 let cancelChangeRoundName = (event, name) => {
-    let html = `<span class="round-name">${name}</span> <span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
+    let html = `<span class="round-name">${name}</span> <span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span><a class="timerTrigger"><span class="fa-solid fa-clock"></span></a>`
     event.currentTarget.parentElement.parentElement.innerHTML = html
 }
 
@@ -1200,10 +1203,23 @@ let displayQRCode = () => {
 let adjustRoundCountdown = () => {
     current = new Date();
 
-    [...document.getElementsByClassName('round-duration-wrapper')].forEach(obj => {
-        roundCountDown(obj, current)
-        obj.classList.remove('d-none')
-    })
+    const popoverTriggerList = document.querySelectorAll('.timerTrigger');
+    [...document.getElementsByClassName('round-duration-wrapper')].forEach((obj, i) => {
+        roundCountDown(obj, current);
+
+        if (popoverTriggerList[i]) {
+            let existingPopover = bootstrap.Popover.getInstance(popoverTriggerList[i]);
+            if (existingPopover) {
+                existingPopover.dispose();
+            }
+
+            new bootstrap.Popover(popoverTriggerList[i], {
+                html: true,
+                trigger: 'focus',
+                content: obj.innerHTML.trim()
+            });
+        }
+    });
 }
 
 let roundCountDown = (obj, current) => {
