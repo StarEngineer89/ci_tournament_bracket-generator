@@ -31,8 +31,8 @@ var hash = '<?= uniqid(rand(), TRUE);?>';
 <!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
 let eleminationType;
+let tournament = <?= (isset($tournament)) ? json_encode($tournament) : null ?>
 let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
-let tournament = <?= json_encode($tournament) ?>;
 var user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>;
 let shuffle_duration = 10;
 let audio = document.getElementById("myAudio");
@@ -345,7 +345,7 @@ $(document).ready(function() {
 
     $('#generate').on('click', function() {
         let minParticipantCounts = 2
-        if (tournament.type == tournamentTypeConsts.k) {
+        if (tournament && tournament.type == tournamentTypeConsts.k) {
             minParticipantCounts = 4
         }
 

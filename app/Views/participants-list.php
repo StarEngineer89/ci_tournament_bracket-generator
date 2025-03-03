@@ -150,18 +150,32 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             "render": function(data, type, row, meta) {
                 if (row.tournaments_list) {
                     let listHtml = ''
+                    let moreHtml = ''
                     row.tournaments_list.forEach((tournament, i) => {
+                        if (!tournamentList.includes(tournament.name)) {
+                            tournamentList.push(tournament.name)
+                        }
+
+                        if (i > 3) {
+                            moreHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                            return
+                        }
+
+                        if (i == 3) {
+                            listHtml += ' ...<br/><a href="javascript:;" onclick="readMore()">Read More</a>'
+                            moreHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                            return
+                        }
+
                         listHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
                         if (i < row.tournaments_list.length - 1) {
                             listHtml += ', '
                         }
 
-                        if (!tournamentList.includes(tournament.name)) {
-                            tournamentList.push(tournament.name)
-                        }
+
                     })
 
-                    return listHtml
+                    return `<span class="list">${listHtml}</span><span class="more d-none">${moreHtml}</span>`
                 }
 
                 return ``;
