@@ -67,16 +67,34 @@ class ParticipantsController extends BaseController
                         }
 
                         $tournament_ids = $this->participantsModel->where('registered_user_id', $participant['registered_user_id'])->findColumn('tournament_id');
-                        $registered_users[$registered_user_id]['tournaments_list'] = $this->tournamentsModel->whereIn('id', $tournament_ids)->select(['id', 'name'])->findAll();
+                        if ($this->request->getPost('tournament')) {
+                            $registered_users[$registered_user_id]['tournaments_list'] = $this->tournamentsModel->whereIn('id', $tournament_ids)->like('name', $this->request->getPost('tournament'))->select(['id', 'name'])->findAll();
+                        } else {
+                            $registered_users[$registered_user_id]['tournaments_list'] = $this->tournamentsModel->whereIn('id', $tournament_ids)->select(['id', 'name'])->findAll();
+                        }
                     } else {
-                        $participant['tournaments_list'] = $this->tournamentsModel->where('id', $participant['tournament_id'])->select(['id', 'name'])->findAll();
-                        $newList[] = $participant;
+                        if ($this->request->getPost('tournament')) {
+                            $participant['tournaments_list'] = $this->tournamentsModel->where('id', $participant['tournament_id'])->like('name', $this->request->getPost('tournament'))->select(['id', 'name'])->findAll();
+                            if ($participant['tournaments_list']) {
+                                $newList[] = $participant;
+                            }
+                        } else {
+                            $participant['tournaments_list'] = $this->tournamentsModel->where('id', $participant['tournament_id'])->select(['id', 'name'])->findAll();
+                            $newList[] = $participant;
+                        }
                     }
                 }
 
                 if ($registered_users) {
                     foreach ($registered_users as $user) {
-                        array_push($newList, $user);
+                        if ($this->request->getPost('tournament')) {
+                            if ($user['tournaments_list']) {
+                                array_push($newList, $user);
+                            }
+                        } else {
+                            array_push($newList, $user);
+                        }
+                        
                     }
                 }
 
