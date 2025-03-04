@@ -564,6 +564,7 @@ let editing_mode = false;
                         let center_wrapper = document.createElement('div')
                         center_wrapper.classList.add('center-wrapper', 'align-self-center')
                         center_wrapper.style.minWidth = '350px'
+                        center_wrapper.style.minHeight = '300px'
                         let bracketDiv = document.createElement('div')
                         bracketDiv.classList.add('knockout-final', 'd-flex', 'align-items-end', 'justify-content-center')
 

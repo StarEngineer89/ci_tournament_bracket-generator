@@ -422,14 +422,23 @@ function generateBrackets(list) {
         type: "post",
         url: apiURL + '/brackets/generate',
         data: { 'type': eleminationType, 'tournament_id': tournament_id, 'user_id': user_id, 'list': list },
-        dataType: "JSON",
         beforeSend: function() {
             $('#generateProcessing').addClass('d-none')
-            $('#beforeProcessing').addClass('generateProcessing')
+            // $('#beforeProcessing').addClass('generateProcessing')
             $('#beforeProcessing').removeClass('d-none')
         },
         success: function (result) {
-            if (result.result == 'success') window.location.href = '/tournaments/' + tournament_id + '/view';
+            if (result.result == 'success') {
+                window.location.href = '/tournaments/' + tournament_id + '/view' 
+            } else {
+                $('#generateProcessing').addClass('d-none')
+                $('#beforeProcessing').addClass('d-none')
+
+                $('#errorModal .errorDetails').html(result.message)
+                $("#errorModal").modal('show');
+
+                return false
+            }
         },
         error: function (error) {
             console.log(error);

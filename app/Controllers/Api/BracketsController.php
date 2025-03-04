@@ -627,6 +627,17 @@ class BracketsController extends BaseController
         $list = $this->request->getPost('list');
         $participant_names_string = '';
 
+        $min_count = 2;
+        if ($this->request->getPost('type') == TOURNAMENT_TYPE_KNOCKOUT) {
+            $min_count = 4;
+        }
+
+        if (count($list) < $min_count) {
+            $message = "There should be at least $min_count or more participants.";
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                              ->setJSON(['status' => 'error', 'message' => $message]);
+        }
+
         if (count($list) > 0) {
             foreach ($list as $item) {
                 $participant = $this->participantsModel->find($item['id']);
@@ -687,8 +698,7 @@ class BracketsController extends BaseController
                 $scheduleLibrary->scheduleRoundUpdate($tournament['id']);
             }
         }
-
-        return json_encode(array('result' => 'success', 'brackets' => $brackets, 'request' => $this->request->getPost()));
+        return $this->response->setJSON(['result' => 'success', 'brackets' => $brackets, 'request' => $this->request->getPost()]);
     }
 
     public function switchBrackets()

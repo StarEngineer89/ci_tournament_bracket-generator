@@ -251,6 +251,18 @@ $(document).ready(function() {
 
         data['hash'] = hash
 
+        let min_participants = 2
+        if (data.type == tournamentTypeConsts.k) {
+            min_participants = 4
+        }
+
+        if (itemList.children.length < min_participants) {
+            $('#tournamentSettings').modal('hide')
+            $('#generateErrorModal .count').html(min_participants)
+            $('#generateErrorModal').modal('show')
+            return false;
+        }
+
         $.ajax({
             url: apiURL + '/tournaments/save',
             type: "POST",
