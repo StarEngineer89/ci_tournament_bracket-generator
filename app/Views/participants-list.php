@@ -151,31 +151,38 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                 if (row.tournaments_list) {
                     let listHtml = ''
                     let moreHtml = ''
+                    let shortner = '...'
                     row.tournaments_list.forEach((tournament, i) => {
                         if (!tournamentList.includes(tournament.name)) {
                             tournamentList.push(tournament.name)
                         }
 
-                        if (i > 3) {
+                        if (i >= 3) {
                             moreHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
-                            return
-                        }
 
-                        if (i == 3) {
-                            listHtml += ' ...<br/><a href="javascript:;" onclick="readMore()">Read More</a>'
-                            moreHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                            if (i < row.tournaments_list.length - 1) {
+                                if (moreHtml) {
+                                    moreHtml += ', '
+                                }
+                            }
+
                             return
                         }
 
                         listHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
                         if (i < row.tournaments_list.length - 1) {
                             listHtml += ', '
+                            if (moreHtml) {
+                                moreHtml += ', '
+                            }
                         }
-
-
                     })
 
-                    return `<span class="list">${listHtml}</span><span class="more d-none">${moreHtml}</span>`
+                    if (row.tournaments_list.length > 3) {
+                        return `<span class="list">${listHtml}</span><span class="more d-none">${moreHtml}</span><br/><span class="shortner float-start">${shortner}</span><a href="javascript:;" onclick="readMoreList(this)" class="read-more-btn more float-end">Read More</a>`
+                    } else {
+                        return `<span class="list">${listHtml}</span>`
+                    }
                 }
 
                 return ``;
@@ -196,6 +203,26 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
     }
 });
 
+const readMoreList = (element) => {
+    let tdElement = element.parentElement
+    let list = tdElement.querySelectorAll('.list')[0].innerHTML.trim()
+    let more = tdElement.querySelectorAll('.more')[0].innerHTML.trim()
+
+    if (tdElement.querySelectorAll('.read-more-btn')[0].classList.contains('more')) {
+        tdElement.querySelectorAll('.list')[0].innerHTML = list + more
+        tdElement.querySelectorAll('.read-more-btn')[0].classList.remove('more')
+        tdElement.querySelectorAll('.read-more-btn')[0].classList.add('less')
+        tdElement.querySelectorAll('.read-more-btn')[0].innerHTML = 'Read Less'
+        tdElement.querySelectorAll('.shortner')[0].classList.add('d-none')
+    } else {
+        let lessList = list.replaceAll(more, '')
+        tdElement.querySelectorAll('.list')[0].innerHTML = lessList
+        tdElement.querySelectorAll('.read-more-btn')[0].classList.add('more')
+        tdElement.querySelectorAll('.read-more-btn')[0].classList.remove('less')
+        tdElement.querySelectorAll('.read-more-btn')[0].innerHTML = 'Read More'
+        tdElement.querySelectorAll('.shortner')[0].classList.remove('d-none')
+    }
+}
 
 const notePlaceholder = document.getElementById('notePlaceholder')
 const appendNoteAlert = (message, type) => {
