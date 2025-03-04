@@ -31,7 +31,10 @@ var hash = '<?= uniqid(rand(), TRUE);?>';
 <!-- <script src="/js/player.js"></script> -->
 <script type="text/javascript">
 let eleminationType;
-let tournament = <?= (isset($tournament)) ? json_encode($tournament) : null ?>;
+let tournament = null;
+<?php if (isset($tournament)): ?>
+tournament = <?= json_encode($tournament) ?>;
+<?php endif; ?>
 let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
 var user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>;
 let shuffle_duration = 10;
