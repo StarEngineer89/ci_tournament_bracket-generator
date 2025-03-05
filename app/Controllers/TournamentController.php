@@ -63,7 +63,14 @@ class TournamentController extends BaseController
 
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
 
+        $session = \Config\Services::session();
+        
         $tournament = $tournamentModel->find($id);
+
+        if (!$tournament) {
+            $session->setFlashdata(['error' => "This page is not valid."]);
+            return view('/errors/html/error_404', ['message' => "This page is not valid"]);
+        }
 
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
