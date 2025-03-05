@@ -11,11 +11,22 @@
         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
     </select>
-    <div class="single-type-hint form-text"><?= lang('Descriptions.tournamentSingleTypeDesc') ?></div>
-    <div class="double-type-hint form-text d-none"><?= lang('Descriptions.tournamentDoubleTypeDesc') ?></div>
-    <div class="knockout-type-hint form-text d-none"><?= lang('Descriptions.tournamentKockoutTypeDesc') ?></div>
-    <div class="elimination-type-hint form-text mt-2">
-        Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+    <div class="read-more-container">
+        <div class="single-type-hint form-text text-content">
+            <?= lang('Descriptions.tournamentSingleTypeDesc') ?>
+            <br />
+            Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+        </div>
+        <div class="double-type-hint form-text d-none">
+            <?= lang('Descriptions.tournamentDoubleTypeDesc') ?>
+            <br />
+            Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+        </div>
+        <div class="knockout-type-hint form-text d-none">
+            <?= lang('Descriptions.tournamentKockoutTypeDesc') ?>
+            <br />
+            Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+        </div>
     </div>
 </div>
 
@@ -100,9 +111,11 @@
                 <option value="<?= EVALUATION_METHOD_VOTING  ?>">Voting</option>
             </select>
         </div>
-        <div class="evaluation-method-hint form-text ps-3">Determines how tournament bracket participants advance through the rounds.</div>
-        <div class="evaluation-method-manual-hint form-text mb-1 ps-3"><?= lang('Descriptions.tournamentEvaluationManualDesc') ?></div>
-        <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentEvaluationVotingDesc') ?></div>
+        <div class="read-more-container">
+            <div class="evaluation-method-hint form-text ps-3">Determines how tournament bracket participants advance through the rounds.</div>
+            <div class="evaluation-method-manual-hint form-text text-content mb-1 ps-3"><?= lang('Descriptions.tournamentEvaluationManualDesc') ?></div>
+            <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentEvaluationVotingDesc') ?></div>
+        </div>
     </div>
 
     <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
@@ -116,8 +129,10 @@
                     <option value="<?= EVALUATION_VOTING_UNRESTRICTED  ?>">Unrestricted</option>
                 </select>
             </div>
-            <div class="evaluation-vote-restricted form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingRestrictedgDesc') ?></div>
-            <div class="evaluation-vote-unrestricted form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingUnrestrictedDesc') ?></div>
+            <div class="read-more-container">
+                <div class="evaluation-vote-restricted form-text text-content mb-1 ps-3"><?= lang('Descriptions.tournamentVotingRestrictedgDesc') ?></div>
+                <div class="evaluation-vote-unrestricted form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingUnrestrictedDesc') ?></div>
+            </div>
         </div>
 
         <div class="row g-3 align-items-center">
@@ -131,28 +146,32 @@
                     <option value="<?= EVALUATION_VOTING_MECHANISM_OPENEND  ?>">Open-Ended</option>
                 </select>
             </div>
-            <div class="evaluation-vote-round-availability-required form-text mb-1 ps-3 d-none">
-                * Availability must be enabled to use this setting!
-            </div>
-            <div class="evaluation-vote-round form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
-            <div class="evaluation-vote-max form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingMaxVotesDesc') ?></div>
-            <div class="evaluation-open-ended form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingOpenEndedDesc') ?></div>
+            <div class="read-more-container">
+                <div class="evaluation-vote-round-availability-required form-text mb-1 ps-3 d-none">
+                    * Availability must be enabled to use this setting!
+                </div>
+                <div class="evaluation-vote-round form-text text-content mb-1 ps-3"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
+                <div class="evaluation-vote-max form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingMaxVotesDesc') ?></div>
+                <div class="evaluation-open-ended form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingOpenEndedDesc') ?></div>
 
-            <div class="row mb-2 max-vote-setting d-none">
-                <div class="col-auto">
-                    <label for="maxVotes" class="col-form-label">Max Votes <span class="text-danger">*</span> :</label>
+                <div class="row mb-2 max-vote-setting d-none">
+                    <div class="col-auto">
+                        <label for="maxVotes" class="col-form-label">Max Votes <span class="text-danger">*</span> :</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" name="max_vote_value" id="maxVotes" class="form-control" min="0">
+                    </div>
+                    <div class="evaluation-vote-max-limit form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?></div>
                 </div>
-                <div class="col-3">
-                    <input type="number" name="max_vote_value" id="maxVotes" class="form-control" min="0">
-                </div>
-                <div class="evaluation-vote-max-limit form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?></div>
             </div>
         </div>
 
         <div class="mt-2">
             <input type="checkbox" class="form-check-input" name="voting_retain" id="retainVotesCheckbox">
             <label class="form-check-label" for="retainVotesCheckbox">Retain vote count across rounds</label>
-            <div class="retain-votes-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentRetainVoteCountDesc') ?></div>
+            <div class="read-more-container">
+                <div class="retain-votes-checkbox-hint form-text text-content ps-3"><?= lang('Descriptions.tournamentRetainVoteCountDesc') ?></div>
+            </div>
         </div>
         <div class="mt-2 allow-host-override-setting">
             <input type="checkbox" class="form-check-input" name="allow_host_override" id="allowHostOverride">
@@ -226,6 +245,8 @@
         <label class="form-check-label" for="ptImageUpdatePermission">
             <h6>Participant Image Customization Access</h6>
         </label>
-        <div class="form-text"><?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?></div>
+        <div class="read-more-container">
+            <div class="form-text text-content"><?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?></div>
+        </div>
     </div>
 </div>

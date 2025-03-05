@@ -1024,9 +1024,13 @@ class TournamentController extends BaseController
 
                     if ($row['action'] == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
                         $type = 'Change Participant';
-                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no of $roundName was removed";
+                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no of $roundName was changed to $participants[1]";
                     }
 
+                    if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {
+                        $type = 'Voteing';
+                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no of $roundName was voted";
+                    }
                 }
 
                 $data[] = [

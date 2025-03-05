@@ -204,10 +204,10 @@ class BracketsController extends BaseController
                     
                     /** Send the email to the registered user */
                     if($req->name[0] == '@' && $user) {
-                        $tournament = new \App\Entities\Tournament($tournament);
+                        $tournamentObj = new \App\Entities\Tournament($tournament);
 
-                        $message = "You've been added to tournament \"$tournament->name\"!";
-                        $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament->id/view"]);
+                        $message = "You've been added to tournament \"$tournamentObj->name\"!";
+                        $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournamentObj->id/view"]);
 
                         if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
                             $email = service('email');
@@ -216,7 +216,7 @@ class BracketsController extends BaseController
                             $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
                             $email->setMessage(view(
                                 'email/invite-to-tournament',
-                                ['username' => $user->username, 'tournament' => $tournament, 'tournamentCreatorName' => setting('Email.fromName')],
+                                ['username' => $user->username, 'tournament' => $tournamentObj, 'tournamentCreatorName' => setting('Email.fromName')],
                                 ['debug' => false]
                             ));
 
@@ -258,12 +258,12 @@ class BracketsController extends BaseController
                 if (!$participantIsExists) {
                     $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
                     $creator = auth()->getProvider()->findById($tournament['user_id']);
-                    $tournament = new \App\Entities\Tournament($tournament);
+                    $tournamentObj = new \App\Entities\Tournament($tournament);
 
                     $notificationService = service('notification');
                     $userSettingsService = service('userSettings');
-                    $message = "You've been removed from tournament \"$tournament->name\"!";
-                    $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournament->id/view"]);
+                    $message = "You've been removed from tournament \"$tournamentObj->name\"!";
+                    $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournamentObj->id/view"]);
 
                     if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
                         $email = service('email');
@@ -272,7 +272,7 @@ class BracketsController extends BaseController
                         $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
                         $email->setMessage(view(
                             'email/removed-from-tournament',
-                            ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                            ['username' => $user->username, 'tournament' => $tournamentObj, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
                             ['debug' => false]
                         ));
 
@@ -333,7 +333,7 @@ class BracketsController extends BaseController
 
             if ($nextBracket) {
                 $participant = $this->participantsModel->find($req->participant);
-                $teamnames = json_decode($nextBracket['teamnames']);
+                $teamnames = json_decode($nextBracket['teamnames'], true);
                 $teamnames[$req->index] = null;
                 $nextBracket['teamnames'] = json_encode($teamnames);
                 $nextBracket['winner'] = null;
@@ -377,6 +377,7 @@ class BracketsController extends BaseController
                 }
             }
         }
+
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER && isset($req->is_final) && $req->is_final) {
             $tournamentModel = model('\App\Models\TournamentModel');
             $tournament = $tournamentModel->find($bracket['tournament_id']);
@@ -385,7 +386,6 @@ class BracketsController extends BaseController
         }
 
         /** Update tournament searchable data  */
-        $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
         
         $participant_names_string = '';
@@ -428,9 +428,8 @@ class BracketsController extends BaseController
                 $data['participants'] = [$participant['name']];
             }
 
-            $original = json_decode($bracket['teamnames']);
             if ($req->action_code == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
-                $data['participants'] = $original[$req->index] ? [$original[$req->index]->name, $req->name] : [null, $req->name];
+                $data['participants'] = $original[$req->index] ? [$original[$req->index]['name'], $req->name] : [null, $req->name];
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
@@ -438,7 +437,7 @@ class BracketsController extends BaseController
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
-                $data['participants'] = [$removedParticipant['name']];
+                $data['participants'] = [$removedParticipantData['name']];
             }
 
             $insert_data['params'] = json_encode($data);

@@ -145,7 +145,10 @@
                 <form id="privateUserTagsInputForm" method="post" class="form-horizontal">
                     <div class="private-users input-group row gy-2 gx-3 align-items-center mb-3">
                         <label for="userTagsInput" class="form-label col-form-label col-sm-4">Share with</label>
-                        <div class="col-sm-8"><input type="text" id="userTagsInput" name="private-users" class="form-control" placeholder="Enter registered username(s)" required /></div>
+                        <div class="col-sm-8">
+                            <input type="text" id="userTagsInput" name="private-users" class="form-control" placeholder="Enter registered username(s)" required />
+                            <div class="hint form-text">Enter registered username(s) - (no need to prefix @ symbol)</div>
+                        </div>
                     </div>
                 </form>
                 <div class="input-group row gy-2 gx-3 align-items-center mb-3">
@@ -923,6 +926,15 @@ $(document).ready(function() {
         var checked = $('.item-checkbox:checked').length === $('.item-checkbox').length;
         $('#selectAllCheckbox').prop('checked', checked);
     });
+
+    const tournamentSettingsModal = document.getElementById('tournamentSettings');
+    if (tournamentSettingsModal) {
+        tournamentSettingsModal.addEventListener('shown.bs.modal', event => {
+            tournamentSettingsModal.querySelectorAll(".read-more-container").forEach(container => {
+                adjustReadMore(container)
+            })
+        })
+    }
 
     const resetModal = document.getElementById('resetConfirm');
     if (resetModal) {

@@ -621,6 +621,15 @@ $(document).ready(function() {
         });
     })
 
+    const tournamentSettingsModal = document.getElementById('tournamentSettings');
+    if (tournamentSettingsModal) {
+        tournamentSettingsModal.addEventListener('shown.bs.modal', event => {
+            tournamentSettingsModal.querySelectorAll(".read-more-container").forEach(container => {
+                adjustReadMore(container)
+            })
+        })
+    }
+
     const selectBackgroundColorModal = document.getElementById('selectBackgroundColorModal');
     if (selectBackgroundColorModal) {
         selectBackgroundColorModal.addEventListener('show.bs.modal', event => {
@@ -675,6 +684,7 @@ $(document).ready(function() {
     })
 
 });
+
 document.addEventListener('DOMContentLoaded', (event) => {
     const pickr = Pickr.create({
         el: '#color-picker-button',
@@ -730,6 +740,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         $('#bgColorInput').val(pickr.getColor().toRGBA().toString())
         $('.pcr-app').removeClass('visible')
     })
+
 });
 
 var csvUpload = (element) => {

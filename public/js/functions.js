@@ -551,17 +551,22 @@ const dismissEdit = () => {
 var changeEliminationType = (element) => {
     let parent = $(element).parent();
     parent.find('.form-text').addClass('d-none');
-    $('.elimination-type-hint').removeClass('d-none');
+    parent.find('.form-text').removeClass('text-content');
 
     if ($(element).val() == 1) {
         parent.find('.single-type-hint').removeClass('d-none');
+        parent.find('.single-type-hint').addClass('text-content');
     }
     if ($(element).val() == 2) {
         parent.find('.double-type-hint').removeClass('d-none');
+        parent.find('.double-type-hint').addClass('text-content');
     }
     if ($(element).val() == 3) {
         parent.find('.knockout-type-hint').removeClass('d-none');
+        parent.find('.knockout-type-hint').addClass('text-content');
     }
+
+    adjustReadMore(parent.find('.read-more-container')[0])
 }
 
 let toggleVisibility = (checkbox) => {
@@ -593,6 +598,7 @@ let toggleAvailability = (checkbox) => {
 }
 
 var changeEvaluationMethod = (element) => {
+    $(element).parent().parent().find('.form-text').removeClass('text-content')
     // EVALUATION_METHOD_MANUAL = m
     // EVALUATION_METHOD_VOTING = v
     if ($(element).val() == "m") {
@@ -600,6 +606,8 @@ var changeEvaluationMethod = (element) => {
         $('.evaluation-method-manual-hint').removeClass('d-none')
         $('.evaluation-method-voting-hint').addClass('d-none')
         $('#enableAvailability').prop('required', false)
+
+        $('.evaluation-method-manual-hint').addClass('text-content')
     } else {
         $('.voting-settings-panel').removeClass('d-none')
         $('.evaluation-method-manual-hint').addClass('d-none')
@@ -607,6 +615,12 @@ var changeEvaluationMethod = (element) => {
         if ($('#votingMechanism').val() == 1) {
             $('#enableAvailability').prop('required', true)
         }
+
+        $('.evaluation-method-voting-hint').addClass('text-content')
+
+        document.querySelectorAll("#tournamentSettings .voting-settings-panel .read-more-container").forEach(container => {
+            adjustReadMore(container)
+        })
     }
 }
 
@@ -615,14 +629,21 @@ var changeVotingAccessbility = (element) => {
     // EVALUATION_VOTING_UNRESTRICTED = 0
     if (parseInt($(element).val()) == 1) {
         $('.evaluation-vote-restricted').removeClass('d-none')
+        $('.evaluation-vote-restricted').addClass('text-content')
         $('.evaluation-vote-unrestricted').addClass('d-none')
+        $('.evaluation-vote-unrestricted').removeClass('text-content')
     } else {
         $('.evaluation-vote-restricted').addClass('d-none')
+        $('.evaluation-vote-restricted').removeClass('text-content')
         $('.evaluation-vote-unrestricted').removeClass('d-none')
+        $('.evaluation-vote-unrestricted').addClass('text-content')
     }
+
+    adjustReadMore($(element).parent().parent().find('.read-more-container')[0])
 }
 
 var changeVotingMechanism = (element) => {
+    $(element).parent().parent().find('.form-text').removeClass('text-content')
     // EVALUATION_VOTING_MECHANISM_ROUND = 1
     // EVALUATION_VOTING_MECHANISM_MAXVOTE = 2
     // EVALUATION_VOTING_MECHANISM_OPENEND = 3
@@ -641,6 +662,8 @@ var changeVotingMechanism = (element) => {
             $('.evaluation-vote-round-availability-required').removeClass('d-none')
             $('#enableAvailability').prop('required', true)
         }
+
+        $('.evaluation-vote-round').addClass('text-content')
     }
     if (parseInt($(element).val()) == 2) {
         $('.max-vote-setting').removeClass('d-none')
@@ -652,6 +675,8 @@ var changeVotingMechanism = (element) => {
         $('#votingMechanism').removeClass('is-invalid')
         $('.allow-host-override-setting').removeClass('d-none')
         $('#enableAvailability').prop('required', false)
+
+        $('.evaluation-vote-max').addClass('text-content')
     }
 
     if (parseInt($(element).val()) == 3) {
@@ -664,7 +689,11 @@ var changeVotingMechanism = (element) => {
         $('#votingMechanism').removeClass('is-invalid')
         $('.evaluation-vote-round-availability-required').addClass('d-none')
         $('#enableAvailability').prop('required', false)
+
+        $('.evaluation-open-ended').addClass('text-content')
     }
+
+    adjustReadMore($(element).parent().parent().find('.read-more-container')[0])
 }
 
 var changeTournamentTheme = (element) => {
@@ -684,5 +713,33 @@ var changeTournamentTheme = (element) => {
     }
     if ($(element).val() == "mm") {
         $('.theme-modernmetal-hint').removeClass('d-none')
+    }
+}
+
+var adjustReadMore = (container) => {
+    if (container.querySelector(".read-more-btn")) {
+        container.querySelector(".read-more-btn").remove();
+    }
+
+    let textElement = container.querySelector(".text-content");
+
+    // Check if text is overflowing (more than 3 lines)
+    function isOverflowing(element) {
+        return element.scrollHeight > element.clientHeight;
+    }
+
+    if (isOverflowing(textElement)) {
+        let readMoreButton = $('<button type="button" class="read-more-btn float-end pe-3">Show More</button>')[0]
+        container.append(readMoreButton)
+
+        readMoreButton.addEventListener("click", function () {
+            if (textElement.classList.contains("expanded")) {
+                textElement.classList.remove("expanded");
+                readMoreButton.textContent = "Show More";
+            } else {
+                textElement.classList.add("expanded");
+                readMoreButton.textContent = "Show Less";
+            }
+        });
     }
 }

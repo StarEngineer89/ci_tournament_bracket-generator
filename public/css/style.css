@@ -1406,3 +1406,33 @@
   position: relative;
   font-size: .8em;
 }
+
+.read-more-container {
+  position: relative;
+  /* Adjust as needed */
+}
+
+.text-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Show only 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.expanded {
+  -webkit-line-clamp: unset;
+  display: block;
+}
+
+.read-more-btn {
+  display: inline;
+  /* Initially hidden */
+  color: blue;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 5px;
+  font-size: 14px;
+}

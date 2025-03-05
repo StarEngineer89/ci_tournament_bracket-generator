@@ -785,6 +785,12 @@ let editing_mode = false;
 function changeParticipant(ele, index) {
     let ability = true;
     let parentElement = ele.parent().parent()
+
+    if (parentElement.data('id') == ele.val()) {
+        confirm(" No changes were made")
+        return false
+    }
+
     $('.bracketbox span[data-round=' + parentElement.data("round") + ']').each((i, e) => {
         if (e.dataset.id == ele.val()) {
             let confirm_result = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
@@ -1021,8 +1027,9 @@ let enableChangeRoundName = (event) => {
 }
 
 let cancelChangeRoundName = (event, name) => {
-    let html = `<span class="round-name">${name}</span> <span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span><a class="timerTrigger"><span class="fa-solid fa-clock"></span></a>`
+    let html = `<span class="round-name">${name}</span> <span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span><button type="button" class="timerTrigger btn btn-light p-0" data-bs-toggle="popover" data-bs-placement="top"><span class="fa-solid fa-clock"></span></button>`
     event.currentTarget.parentElement.parentElement.innerHTML = html
+    adjustRoundCountdown()
 }
 
 let saveRoundName = (event) => {
