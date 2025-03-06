@@ -329,7 +329,7 @@ $(document).ready(function() {
     var leaveUrl;
     $(document).on('click', function(e) {
 
-        if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
+        if (e.target.tagName == 'A' || (e.target.parentElement && e.target.parentElement.tagName == 'A')) {
             if (e.target.href && e.target.href.includes('login')) {
                 return true
             }
