@@ -411,6 +411,7 @@ function saveParticipant(e, element_id) {
                 } else {
                     participant = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${result.data.id}" data-pid="${result.data.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
                 }
+                $(e.target).parents('.list-group-item').data('name', result.data.name)
                 $(e.target).parents('.list-group-item').html(participant);
             },
             error: function (error) {
