@@ -128,7 +128,6 @@ class BracketsController extends BaseController
                 /** Add final bracket id in knockout brackets */
                 if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['final_match']) {
                     $nextBracket = $this->bracketsModel->where(['tournament_id' => $id, 'knockout_final' => 1])->first();
-                    $bracket['next_id'] = $nextBracket['id'];
                 }
                 
                 $rounds[] = $bracket;

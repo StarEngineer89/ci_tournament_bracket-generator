@@ -578,7 +578,7 @@ let editing_mode = false;
                         var svg = drawChampionTextSVG()
                         $(trophy).append(`<div class="champion-text animate">${svg}</div>`)
 
-                        if (knockout_final.winner) {
+                        if (knockout_final && knockout_final.winner) {
                             trophy.classList.remove('d-none')
                         }
 
