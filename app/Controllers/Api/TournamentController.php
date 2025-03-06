@@ -17,6 +17,7 @@ class TournamentController extends BaseController
     protected $notificationService;
     protected $tournamentModel;
     protected $participantModel;
+    protected $bracketModel;
     protected $shareSettingModel;
 
     public function __construct()
@@ -24,6 +25,7 @@ class TournamentController extends BaseController
         $this->notificationService = new NotificationService();
         $this->tournamentModel = model('\App\Models\TournamentModel');
         $this->participantModel = model('\App\Models\ParticipantModel');
+        $this->bracketModel = model('\App\Models\BracketModel');
         $this->shareSettingModel = model('\App\Models\ShareSettingsModel');
     }
     
@@ -527,6 +529,10 @@ class TournamentController extends BaseController
 
                 $tournament['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
                 $tournament['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
+
+                $maxRound = $this->bracketModel->where('tournament_id', $tournament_id)->selectMax('roundNo')->first() ?? 1;
+                $scheduleLibrary->registerSchedule($tournament_id, SCHEDULE_NAME_TOURNAMENTSTART, 1, $tournament['available_start']);
+                $scheduleLibrary->registerSchedule($tournament_id, SCHEDULE_NAME_TOURNAMENTEND, $maxRound, $tournament['available_end']);
             } else {
                 $tournament['available_start'] = null;
                 $tournament['available_end'] = null;

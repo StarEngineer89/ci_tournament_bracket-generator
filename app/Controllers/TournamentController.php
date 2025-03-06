@@ -56,6 +56,7 @@ class TournamentController extends BaseController
 
     public function view($id)
     {
+        log_message('debug', date('Y-m-d H:i:s'));
         $tournamentModel = model('\App\Models\TournamentModel');
         $bracketModel = model('\App\Models\BracketModel');
         $audioSettingModel = model('\App\Models\AudioSettingModel');
@@ -68,8 +69,8 @@ class TournamentController extends BaseController
         $tournament = $tournamentModel->find($id);
 
         if (!$tournament) {
-            $session->setFlashdata(['error' => "This page is not valid."]);
-            return view('/errors/html/error_404', ['message' => "This page is not valid"]);
+            $session->setFlashdata(['error' => "This Tournament doesn't exist!"]);
+            return view('/errors/html/error_404', ['message' => "This Tournament doesn't exist!"]);
         }
 
         $user_id = auth()->user() ? auth()->user()->id : 0;
@@ -214,6 +215,8 @@ class TournamentController extends BaseController
         $bracketModel = model('\App\Models\BracketModel');
         $audioSettingModel = model('\App\Models\AudioSettingModel');
 
+        $session = \Config\Services::session();
+
         $settings = $shareSettingModel->where(['token'=> $token])->first();
         if (!$settings) {
             return view('bracket-invisible');
@@ -230,10 +233,8 @@ class TournamentController extends BaseController
 
         $tournament = $tournamentModel->find($settings['tournament_id']);
         if (!$tournament) {
-            $session = \Config\Services::session();
-            $session->setFlashdata(['error' => "This tournament doesn't exist!"]);
-
-            return redirect()->to('/gallery');
+            $session->setFlashdata(['error' => "This Tournament doesn't exist!"]);
+            return view('/errors/html/error_404', ['message' => "This Tournament doesn't exist!"]);
         }
 
         $users = auth()->getProvider();

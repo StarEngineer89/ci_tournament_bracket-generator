@@ -179,7 +179,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                     })
 
                     if (row.tournaments_list.length > 3) {
-                        return `<span class="list">${listHtml}</span><span class="more d-none">${moreHtml}</span><br/><span class="shortner float-start">${shortner}</span><a href="javascript:;" onclick="readMoreList(this)" class="read-more-btn more float-end">Read More</a>`
+                        return `<span class="list">${listHtml}</span><span class="more d-none">${moreHtml}</span><br/><span class="shortner float-start">${shortner}</span><a href="javascript:;" onclick="readMoreList(this)" class="read-more-btn more float-end">Show More</a>`
                     } else {
                         return `<span class="list">${listHtml}</span>`
                     }
@@ -212,14 +212,14 @@ const readMoreList = (element) => {
         tdElement.querySelectorAll('.list')[0].innerHTML = list + more
         tdElement.querySelectorAll('.read-more-btn')[0].classList.remove('more')
         tdElement.querySelectorAll('.read-more-btn')[0].classList.add('less')
-        tdElement.querySelectorAll('.read-more-btn')[0].innerHTML = 'Read Less'
+        tdElement.querySelectorAll('.read-more-btn')[0].innerHTML = 'Show Less'
         tdElement.querySelectorAll('.shortner')[0].classList.add('d-none')
     } else {
         let lessList = list.replaceAll(more, '')
         tdElement.querySelectorAll('.list')[0].innerHTML = lessList
         tdElement.querySelectorAll('.read-more-btn')[0].classList.add('more')
         tdElement.querySelectorAll('.read-more-btn')[0].classList.remove('less')
-        tdElement.querySelectorAll('.read-more-btn')[0].innerHTML = 'Read More'
+        tdElement.querySelectorAll('.read-more-btn')[0].innerHTML = 'Show More'
         tdElement.querySelectorAll('.shortner')[0].classList.remove('d-none')
     }
 }

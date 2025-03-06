@@ -50,6 +50,7 @@ const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
 const evaluationMethodVotingCode = "<?= EVALUATION_METHOD_VOTING ?>";
 let winnerAudioPlayingForEveryone = <?= $tournament['winner_audio_everyone'] ? $tournament['winner_audio_everyone'] : 0 ?>;
 let initialUsers = <?= json_encode($users) ?>;
+let timezone = "<?= config('app')->appTimezone ?>"
 
 const is_temp_tournament = false;
 
@@ -275,24 +276,35 @@ $(document).ready(function() {
 
     // Update the countdown timer
     let remainingTime = 0;
-    <?php if ($currentTime < $startTime): ?>
-    remainingTime = <?= strtotime($tournament['available_start']) - strtotime(date('Y-m-d H:i:s')) ?>;
-    <?php endif; ?>
+    let tournament_start = new Date(tournament.available_start.replace(/-/g, "/"))
+    let tournament_end = new Date(tournament.available_end.replace(/-/g, "/"))
+    let currentTime = new Date(new Date().toLocaleString("en-US", {
+        timeZone: timezone
+    }))
 
-    <?php if ($currentTime >= $startTime && $currentTime < $endTime): ?>
-    remainingTime = <?= strtotime($tournament['available_end']) - strtotime(datetime: date('Y-m-d H:i:s')) ?>;
-    <?php endif; ?>
+    if (currentTime < tournament_start) {
+        remainingTime = Math.round((tournament_start.getTime() - currentTime.getTime()) / 1000)
+    }
+
+    if (currentTime >= tournament_start && currentTime < tournament_end) {
+        remainingTime = Math.round((tournament_end.getTime() - currentTime.getTime()) / 1000)
+    }
 
     function updateCountdown() {
-        if (remainingTime <= 0) {
-            <?php if ($currentTime < $startTime): ?>
-            document.getElementById("availabilityTimer").innerHTML = "Tournament has started!";
-            <?php endif; ?>
+        currentTime = new Date(new Date().toLocaleString("en-US", {
+            timeZone: timezone
+        }))
 
-            <?php if ($currentTime >= $startTime && $currentTime < $endTime): ?>
-            document.getElementById("availabilityTimer").innerHTML = "Tournament has ended!";
-            <?php endif; ?>
-            return;
+        if (remainingTime <= 0) {
+            if (currentTime > tournament_start) {
+                remainingTime = Math.round((tournament_end.getTime() - currentTime.getTime()) / 1000)
+                document.getElementById('availabilityTimer').parentElement.innerHTML = `<strong>The tournament has started!</strong><br /><strong>Remaining: </strong><span class="timer" id="availabilityTimer"></span>`
+            }
+
+            if (currentTime > tournament_end) {
+                document.getElementById("availabilityTimer").parentElement.innerHTML = "<strong>Tournament has ended!</strong>";
+                return;
+            }
         }
 
         let days = Math.floor(remainingTime / (60 * 60 * 24));
@@ -452,15 +464,15 @@ $(document).ready(function() {
             <br />
 
             <?php if ($currentTime < $startTime): ?>
-            <span class="ms-3"><strong>The tournament starts in </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
+            <span class="pt-2"><strong>The tournament starts in </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
             <?php endif; ?>
 
             <?php if ($currentTime > $startTime && $currentTime < $endTime): ?>
-            <span class="ms-3"><strong>The tournament will be completed in </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
+            <span class="pt-2"><strong>The tournament has started!</strong><br /><strong>Remaining: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
             <?php endif; ?>
 
             <?php if ($currentTime > $endTime): ?>
-            <strong>Completed</strong>
+            <span class="pt-2"><strong>The tournament has completed!</strong></span>
             <?php endif; ?>
         </div>
 
