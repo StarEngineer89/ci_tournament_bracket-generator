@@ -330,7 +330,7 @@ $(document).ready(function() {
     $(document).on('click', function(e) {
 
         if (e.target.tagName == 'A' || e.target.parentElement.tagName == 'A') {
-            if (e.target.href.includes('login')) {
+            if (e.target.href && e.target.href.includes('login')) {
                 return true
             }
 
@@ -511,9 +511,9 @@ $(document).ready(function() {
                         <strong>Elimination Type</strong>
                         <span>
                             <?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? "Single" : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? "Double" : "Knockout") ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? lang('Descriptions.tournamentSingleTypeDesc') : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? lang('Descriptions.tournamentDoubleTypeDesc') : lang('Descriptions.tournamentKockoutTypeDesc')) ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? lang('Descriptions.tournamentSingleTypeDesc') : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? lang('Descriptions.tournamentDoubleTypeDesc') : lang('Descriptions.tournamentKockoutTypeDesc')) ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -521,9 +521,9 @@ $(document).ready(function() {
                         <strong>Visibility</strong>
                         <span>
                             <?= $tournament['visibility'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVisibilityDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVisibilityDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -531,9 +531,9 @@ $(document).ready(function() {
                         <strong>Availability </strong>
                         <span>
                             <?= $tournament['availability'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAvailabilityDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAvailabilityDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -541,9 +541,9 @@ $(document).ready(function() {
                         <strong>Evaluation Method</strong>
                         <span>
                             <?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? "Manual" : "Voting" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentEvaluationManualDesc') : lang('Descriptions.tournamentEvaluationVotingDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentEvaluationManualDesc') : lang('Descriptions.tournamentEvaluationVotingDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -552,9 +552,9 @@ $(document).ready(function() {
                         <strong>Voting Accessibility</strong>
                         <span>
                             <?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? "Restricted" : "Unrestricted" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? lang('Descriptions.tournamentVotingRestrictedgDesc') : lang('Descriptions.tournamentVotingUnrestrictedDesc') ?>'>
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? lang('Descriptions.tournamentVotingRestrictedgDesc') : lang('Descriptions.tournamentVotingUnrestrictedDesc') ?>'>
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -562,9 +562,9 @@ $(document).ready(function() {
                         <strong>Voting Mechanism</strong>
                         <span>
                             <?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? "Max Votes" : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? "Round Duration" : "Open-Ended") ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? lang('Descriptions.tournamentVotingMaxVotesDesc') : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? lang('Descriptions.tournamentVotingRoundDurationDesc') : lang('Descriptions.tournamentVotingOpenEndedDesc')) ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? lang('Descriptions.tournamentVotingMaxVotesDesc') : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? lang('Descriptions.tournamentVotingRoundDurationDesc') : lang('Descriptions.tournamentVotingOpenEndedDesc')) ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -573,9 +573,9 @@ $(document).ready(function() {
                         <strong>Max Votes</strong>
                         <span>
                             <?= $tournament['max_vote_value'] ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
                     <?php endif; ?>
@@ -584,9 +584,9 @@ $(document).ready(function() {
                         <strong>Retain vote count across rounds</strong>
                         <span>
                             <?= $tournament['voting_retain'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentRetainVoteCountDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentRetainVoteCountDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -594,9 +594,9 @@ $(document).ready(function() {
                         <strong>Allow Host override</strong>
                         <span>
                             <?= $tournament['allow_host_override'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
                     <?php endif; ?>
@@ -605,9 +605,9 @@ $(document).ready(function() {
                         <strong>Participant Image Customization Access</strong>
                         <span>
                             <?= $tournament['pt_image_update_enabled'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -615,9 +615,9 @@ $(document).ready(function() {
                         <strong>Audio for Final Winner</strong>
                         <span>
                             <?= $tournament['win_audio_enabled'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAudioFinalWinnerDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAudioFinalWinnerDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -626,9 +626,9 @@ $(document).ready(function() {
                         <strong>Play for everyone</strong>
                         <span>
                             <?= $tournament['winner_audio_everyone'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentPlayForEveryoneDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentPlayForEveryoneDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
                     <?php endif; ?>
@@ -637,9 +637,9 @@ $(document).ready(function() {
                         <strong>Enable Scoring</strong>
                         <span>
                             <?= $tournament['score_enabled'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentEnableScoringDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentEnableScoringDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -656,9 +656,9 @@ $(document).ready(function() {
                         <strong>Increment Score</strong>
                         <span>
                             <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentIncrementScoreDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentIncrementScoreDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 
@@ -667,9 +667,9 @@ $(document).ready(function() {
                         <strong>Increment Type</strong>
                         <span>
                             <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>
-                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? lang('Descriptions.tournamentIncrementScoreTypePlusDesc') : lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?>">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? lang('Descriptions.tournamentIncrementScoreTypePlusDesc') : lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?>">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </a>
+                            </button>
                         </span>
                     </p>
 

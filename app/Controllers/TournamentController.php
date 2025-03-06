@@ -56,7 +56,6 @@ class TournamentController extends BaseController
 
     public function view($id)
     {
-        log_message('debug', date('Y-m-d H:i:s'));
         $tournamentModel = model('\App\Models\TournamentModel');
         $bracketModel = model('\App\Models\BracketModel');
         $audioSettingModel = model('\App\Models\AudioSettingModel');
