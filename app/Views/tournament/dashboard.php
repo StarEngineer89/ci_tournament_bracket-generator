@@ -1531,6 +1531,7 @@ const changeSettings = (event) => {
                     $('.double-type-hint').removeClass('d-none')
                     $('.single-type-hint').addClass('d-none')
                 }
+                changeEliminationType($('#eliminationType'))
 
                 if (result.tournamentSettings.theme) {
                     $('#tournamentTheme').val(result.tournamentSettings.theme)

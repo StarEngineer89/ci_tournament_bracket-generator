@@ -373,6 +373,13 @@ function removeImage(e, element_id){
 function saveParticipant(e, element_id) {
     const name = $(e.target).parents('.list-group-item').find('.name-input').val();
 
+    let parentElement = $(e.target).parent().parent().parent()
+
+    if (parentElement.data('name') == name) {
+        confirm(" No changes were made")
+        return false
+    }
+
     let ability = true;
     $('.p-name').each((i, e) => {
         if (e.textContent.trim() == name) {

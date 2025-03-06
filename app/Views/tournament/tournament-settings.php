@@ -14,17 +14,17 @@
     <div class="read-more-container">
         <div class="single-type-hint form-text text-content">
             <?= lang('Descriptions.tournamentSingleTypeDesc') ?>
-            <br />
-            Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+            <div class="elimination-type-update-note mt-2"></div>
         </div>
         <div class="double-type-hint form-text d-none">
             <?= lang('Descriptions.tournamentDoubleTypeDesc') ?>
-            <br />
-            Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+            <div class="elimination-type-update-note mt-2"></div>
         </div>
         <div class="knockout-type-hint form-text d-none">
             <?= lang('Descriptions.tournamentKockoutTypeDesc') ?>
-            <br />
+            <div class="elimination-type-update-note mt-2"></div>
+        </div>
+        <div class="elimination-type-hint d-none">
             Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
         </div>
     </div>

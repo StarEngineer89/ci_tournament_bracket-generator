@@ -552,6 +552,7 @@ var changeEliminationType = (element) => {
     let parent = $(element).parent();
     parent.find('.form-text').addClass('d-none');
     parent.find('.form-text').removeClass('text-content');
+    parent.find('.elimination-type-update-note').html('')
 
     if ($(element).val() == 1) {
         parent.find('.single-type-hint').removeClass('d-none');
@@ -564,6 +565,10 @@ var changeEliminationType = (element) => {
     if ($(element).val() == 3) {
         parent.find('.knockout-type-hint').removeClass('d-none');
         parent.find('.knockout-type-hint').addClass('text-content');
+    }
+
+    if (typeof actionLogsTable != 'undefined') {
+        parent.find('.text-content').append(parent.find('.elimination-type-hint').html())
     }
 
     adjustReadMore(parent.find('.read-more-container')[0])
