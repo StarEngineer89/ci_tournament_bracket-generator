@@ -246,15 +246,17 @@ class BracketsController extends BaseController
             $bracket['teamnames'] = json_encode($teamnames);
             $this->bracketsModel->save($bracket);
 
-            /** Remove the participant, add the notification, and send the email if it's registered user */
             $removedParticipantData = $this->participantsModel->find($removedParticipant['id']);
-            if ($removedParticipantData['registered_user_id']) {
-                /** Check if the participant exists in other brackets */   
-                helper('bracket');
-                $participantIsExists = checkParticipantExistingInTournament($tournament['id'], $removedParticipant['id']);
+            /** Check if the participant exists in other brackets */   
+            helper('bracket');
+            $participantIsExists = checkParticipantExistingInTournament($tournament['id'], $removedParticipant['id']);
 
-                /** Send the notification and email if the participant was removed from all the brackets */
-                if (!$participantIsExists) {
+            /** Remove the participant and send the email add the notification if it was removed from all the brackets */
+            if (!$participantIsExists) {
+                $this->participantsModel->where('id', $removedParticipant['id'])->delete();
+                
+                /** Send the notification and email if the participant was removed if it's registered user */
+                if ($removedParticipantData['registered_user_id']) {
                     $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
                     $creator = auth()->getProvider()->findById($tournament['user_id']);
                     $tournamentObj = new \App\Entities\Tournament($tournament);

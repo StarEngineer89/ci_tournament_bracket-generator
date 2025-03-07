@@ -210,13 +210,67 @@ $(document).ready(function() {
     $('#toggleDescriptionBtn').click();
     <?php endif; ?>
 
+
     <?php if ($tournament['availability']): ?>
-    <?php $currentTime = new \DateTime() ?>
-    <?php $startTime = new \DateTime($tournament['available_start']) ?>
-    <?php $endTime = new DateTime($tournament['available_end']) ?>
-    <?php $interval = $startTime->diff($endTime); ?>
-    <?php $intervalStart = $currentTime->diff($startTime); ?>
-    <?php $intervalEnd = $currentTime->diff($endTime); ?>
+    // Update the countdown timer
+    let remainingTime = 0;
+    let tournament_start = new Date(tournament.available_start.replace(/-/g, "/"))
+    let tournament_end = new Date(tournament.available_end.replace(/-/g, "/"))
+    let currentTime = new Date(new Date().toLocaleString("en-US", {
+        timeZone: timezone
+    }))
+
+    if (currentTime < tournament_start) {
+        remainingTime = Math.round((tournament_start.getTime() - currentTime.getTime()) / 1000)
+    }
+
+    if (currentTime >= tournament_start && currentTime < tournament_end) {
+        remainingTime = Math.round((tournament_end.getTime() - currentTime.getTime()) / 1000)
+    }
+
+    function updateCountdown() {
+        currentTime = new Date(new Date().toLocaleString("en-US", {
+            timeZone: timezone
+        }))
+
+        if (currentTime < tournament_start) {
+            document.getElementById('availabilityTimer').parentElement.innerHTML = `<strong>The tournament will start in </strong><span class="timer" id="availabilityTimer"></span>`
+
+        }
+
+        if (currentTime > tournament_start) {
+            document.getElementById('availabilityTimer').parentElement.innerHTML = `<strong>The tournament has started!</strong><br /><strong>Remaining: </strong><span class="timer" id="availabilityTimer"></span>`
+        }
+
+        if (currentTime > tournament_end) {
+            document.getElementById("availabilityTimer").parentElement.innerHTML = '<strong>Tournament has ended!</strong><span class="timer" id="availabilityTimer"></span>'
+            voteActionAvailable = false
+            loadBrackets()
+
+            return;
+        }
+
+        if (remainingTime <= 0) {
+            if (currentTime > tournament_start) {
+                remainingTime = Math.round((tournament_end.getTime() - currentTime.getTime()) / 1000)
+                voteActionAvailable = true
+                loadBrackets()
+            }
+        }
+
+        let days = Math.floor(remainingTime / (60 * 60 * 24));
+        let hours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
+        let minutes = Math.floor((remainingTime % (60 * 60)) / 60);
+        let seconds = remainingTime % 60;
+
+        document.getElementById("availabilityTimer").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+        remainingTime--;
+
+        setTimeout(updateCountdown, 1000);
+    }
+
+    updateCountdown()
 
     const availabilityAlertPlaceholder = document.getElementById('availabilityAlertPlaceholder')
     const appendAvailabilityAlert = (content, type) => {
@@ -261,8 +315,24 @@ $(document).ready(function() {
 
     const countTimerAlertTrigger = document.getElementById('countTimerNoteBtn')
     if (countTimerAlertTrigger) {
-        const msg = $('#countTimerAlertMsg').html();
         countTimerAlertTrigger.addEventListener('click', () => {
+            currentTime = new Date(new Date().toLocaleString("en-US", {
+                timeZone: timezone
+            }))
+
+            if (currentTime < tournament_start) {
+                document.getElementById('availabilityTimer').parentElement.innerHTML = `<strong>The tournament will start in </strong><span class="timer" id="availabilityTimer"></span>`
+            }
+
+            if (currentTime >= tournament_start && currentTime < tournament_end) {
+                document.getElementById('availabilityTimer').parentElement.innerHTML = `<strong>The tournament has started!</strong><br /><strong>Remaining: </strong><span class="timer" id="availabilityTimer"></span>`
+            }
+
+            if (currentTime > tournament_end) {
+                document.getElementById('availabilityTimer').parentElement.innerHTML = `<strong>The tournament has ended!</strong><span class="timer" id="availabilityTimer"></span>`
+            }
+
+            const msg = $('#countTimerAlertMsg').html();
             appendCountTimerAlert(msg, 'dark')
             countTimerAlertTrigger.classList.add('d-none')
 
@@ -273,53 +343,6 @@ $(document).ready(function() {
         })
     }
     $('#countTimerNoteBtn').click();
-
-    // Update the countdown timer
-    let remainingTime = 0;
-    let tournament_start = new Date(tournament.available_start.replace(/-/g, "/"))
-    let tournament_end = new Date(tournament.available_end.replace(/-/g, "/"))
-    let currentTime = new Date(new Date().toLocaleString("en-US", {
-        timeZone: timezone
-    }))
-
-    if (currentTime < tournament_start) {
-        remainingTime = Math.round((tournament_start.getTime() - currentTime.getTime()) / 1000)
-    }
-
-    if (currentTime >= tournament_start && currentTime < tournament_end) {
-        remainingTime = Math.round((tournament_end.getTime() - currentTime.getTime()) / 1000)
-    }
-
-    function updateCountdown() {
-        currentTime = new Date(new Date().toLocaleString("en-US", {
-            timeZone: timezone
-        }))
-
-        if (remainingTime <= 0) {
-            if (currentTime > tournament_start) {
-                remainingTime = Math.round((tournament_end.getTime() - currentTime.getTime()) / 1000)
-                document.getElementById('availabilityTimer').parentElement.innerHTML = `<strong>The tournament has started!</strong><br /><strong>Remaining: </strong><span class="timer" id="availabilityTimer"></span>`
-            }
-
-            if (currentTime > tournament_end) {
-                document.getElementById("availabilityTimer").parentElement.innerHTML = "<strong>Tournament has ended!</strong>";
-                return;
-            }
-        }
-
-        let days = Math.floor(remainingTime / (60 * 60 * 24));
-        let hours = Math.floor((remainingTime % (60 * 60 * 24)) / (60 * 60));
-        let minutes = Math.floor((remainingTime % (60 * 60)) / 60);
-        let seconds = remainingTime % 60;
-
-        document.getElementById("availabilityTimer").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-        remainingTime--;
-
-        setTimeout(updateCountdown, 1000);
-    }
-
-    updateCountdown();
     <?php endif; ?>
 
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
@@ -457,23 +480,17 @@ $(document).ready(function() {
         <?php if ($tournament['availability']): ?>
         <div id="countTimerAlertPlaceholder" class="text-center"></div>
         <div id="countTimerAlertMsg" class="d-none">
-            <span class="me-5"><strong>
-                    Duration: </strong><span class="start"><?= $tournament['available_start'] ?></span> - <span class="end"><?= $tournament['available_end'] ?></span><br />
+            <?php $startTime = new \DateTime($tournament['available_start']) ?>
+            <?php $endTime = new DateTime($tournament['available_end']) ?>
+            <?php $interval = $startTime->diff($endTime); ?>
+
+            <span class="me-5">
+                <strong>Duration: </strong><span class="start"><?= $tournament['available_start'] ?></span> - <span class="end"><?= $tournament['available_end'] ?></span>
+                <br />
                 (<?= "{$interval->d} Days {$interval->h} Hours" ?>)
             </span>
             <br />
-
-            <?php if ($currentTime < $startTime): ?>
-            <span class="pt-2"><strong>The tournament starts in </strong><span class="timer" id="availabilityTimer"><?= "{$intervalStart->d} Days {$intervalStart->h}h {$intervalStart->m}m  {$intervalStart->s}s" ?></span></span>
-            <?php endif; ?>
-
-            <?php if ($currentTime > $startTime && $currentTime < $endTime): ?>
-            <span class="pt-2"><strong>The tournament has started!</strong><br /><strong>Remaining: </strong><span class="timer" id="availabilityTimer"><?= "{$intervalEnd->d} Days {$intervalEnd->h}h {$intervalEnd->m}m  {$intervalEnd->s}s" ?></span></span>
-            <?php endif; ?>
-
-            <?php if ($currentTime > $endTime): ?>
-            <span class="pt-2"><strong>The tournament has completed!</strong></span>
-            <?php endif; ?>
+            <span class="status pt-2"><span class="timer" id="availabilityTimer"></span></span>
         </div>
 
         <div id="availabilityAlertPlaceholder"></div>
