@@ -159,6 +159,14 @@ If you want to change the port to custom one, update the `ws.php` file in projec
 
 ## Set Up Windows Task Scheduler
 
+If the tournament availability is enabled, you will need to start/complete the tournament and update the rounds on the scheduled time.
+
+To do this actions, you can schedule the tasks by using Task Scheduler app on Windows or set the cron job on Linux system.
+
+These will run the command to check if there is the scheduled tasks from the database to start, update, or complete the tournaments and rounds.
+
+For example, if you set the trigger to 15 minutes, it will run the specified command on every 15 minutes.
+
 On Windows
 
 1. Open Task Scheduler:
@@ -182,6 +190,10 @@ On Windows
    - Add a trigger by clicking `New`.
 
    - Set the trigger to run daily, weekly, or as per your scheduling needs.
+
+     > On Settings part, select `Daily`
+
+     > On Advanced settings, check `Repeat task every:` 15 minutes, and `for a duration of:` 1 day
 
 5. Actions Tab:
 
