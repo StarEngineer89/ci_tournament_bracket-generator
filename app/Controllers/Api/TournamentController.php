@@ -205,9 +205,8 @@ class TournamentController extends BaseController
             $tournaments->where('user_id', $created_by);
         }
 
-        // log_message('debug', json_encode($tournaments->findAll()));
         $tournaments = $tournaments->findAll();
-        // log_message('debug', json_encode($tournaments));
+
         $newTournaments = array();
         $existingHistory = $this->request->getCookie('guest_tournaments');
         $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
@@ -743,7 +742,6 @@ class TournamentController extends BaseController
         foreach ($collection->getVideos() as $video) {
             if ($video->getError() !== null) {
                 echo "Error downloading video: {$video->getError()}.";
-                log_message('debug', $video->getError());
             }
         }
 
@@ -1186,7 +1184,8 @@ class TournamentController extends BaseController
                     'tournament_id' => 0,
                     'order' => $participant['order'],
                     'active' => 1,
-                    'sessionid' => $this->request->getPost('hash')
+                    'sessionid' => $this->request->getPost('hash'),
+                    'registered_user_id' => $participant['registered_user_id']
                 ]);
 
                 $participantsModel->save($newParticipant);
