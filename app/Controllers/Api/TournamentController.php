@@ -750,8 +750,46 @@ class TournamentController extends BaseController
 
     public function delete($id)
     {
+        $tournament = $this->tournamentModel->find($id);
+        $auth_user_id = auth()->user() ? auth()->user()->id : 0;
+        $registeredUsers = $this->participantModel->where(['tournament_id' => $id])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+
         $tournamentLibrary = new TournamentLibrary();
         $tournamentLibrary->deleteTournament($id);
+
+        /** Send the notification and emails to the registered users */
+        if ($registeredUsers) {
+            $userProvider = auth()->getProvider();
+            $userSettingService = service('userSettings');
+            $notificationService = service('notification');
+
+            $tournamentEntity = new \App\Entities\Tournament($tournament);
+            foreach ($registeredUsers as $user_id) {
+                $user = $userProvider->findById($user_id);
+
+                $message = lang('Notifications.tournamentDeleted', [$tournamentEntity->name]);
+                $notificationService->addNotification(['user_id' => $auth_user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_DELETE, 'link' => "tournaments/$tournamentEntity->id/view"]);
+
+                if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
+                    $creator = $userProvider->findById($tournamentEntity->user_id);
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($user->email);
+                    $email->setSubject(lang('Emails.tournamentDeleteEmailSubject'));
+                    $email->setMessage(view(
+                        'email/tournament-delete',
+                        ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
+
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
+            }
+        }
 
         return json_encode(['msg' => "Tournament was deleted successfully."]);
     }
@@ -881,9 +919,9 @@ class TournamentController extends BaseController
         $data = $this->request->getPost();
         $data['user_id'] = auth()->user()->id;
 
-        $setting = $this->shareSettingModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
-        if ($setting) {
-            $data['id'] = $setting['id'];
+        $shareSetting = $this->shareSettingModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
+        if ($shareSetting) {
+            $data['id'] = $shareSetting['id'];
         }
         
         $this->shareSettingModel->save($data);
@@ -907,13 +945,24 @@ class TournamentController extends BaseController
         if (isset($users) && count($users)) {
             $userSettingsService = service('userSettings');
             $tournament = $this->tournamentModel->find($data['tournament_id']);
-            $tournament = new \App\Entities\Tournament($tournament);
+            $tournamentEntity = new \App\Entities\Tournament($tournament);
         
             foreach ($users as $user) {
-                $msg = "The tournament \"$tournament->name\" was privately shared with you.";
+                if ($shareSetting) {
+                    $msg = lang('Notifications.tournamentShareUpdated', [$tournamentEntity->name]);
+                    $notificationType = NOTIFICATION_TYPE_FOR_SHARE_UPDATED;
+                    $emailSubject = lang('Emails.tournamentShareResetEmailSubject');
+                    $emailTemplate = 'email/tournament-share-reset';
+                } else {
+                    $msg = lang('Notifications.tournamentShared', [$tournamentEntity->name]);
+                    $notificationType = NOTIFICATION_TYPE_FOR_SHARE;
+                    $emailSubject = lang('Emails.tournamentShareEmailSubject');
+                    $emailTemplate = 'email/tournament-share';
+                }
+                
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;
 
-                $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
+                $notification = ['message' => $msg, 'type' => $notificationType, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
                 $this->notificationService->addNotification($notification);
 
                 $shared_to = auth()->getProvider()->findById($user);
@@ -923,10 +972,10 @@ class TournamentController extends BaseController
                     $email = service('email');
                     $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
                     $email->setTo($shared_to->email);
-                    $email->setSubject(lang('Emails.shareTournamentEmailSubject'));
+                    $email->setSubject($emailSubject);
                     $email->setMessage(view(
-                        'email/share-tournament',
-                        ['username' => $shared_to->username, 'tournament' => $tournament, 'role' => $role, 'tournamentCreatorName' => setting('Email.fromName')],
+                        $emailTemplate,
+                        ['username' => $shared_to->username, 'tournament' => $tournamentEntity, 'share' => $share, 'role' => $role, 'tournamentCreatorName' => setting('Email.fromName')],
                         ['debug' => false]
                     ));
 
@@ -943,11 +992,49 @@ class TournamentController extends BaseController
     }
 
     public function purgechShareSettings($share_id) {
-        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-        $share = $shareSettingsModel->find($share_id);
+        $share = $this->shareSettingModel->find($share_id);
+        if ($share['target'] == SHARE_TO_USERS) {
+            $users = explode(',', $share['users']);
+        }
 
-        $shareSettingsModel->delete([$share_id]);
-        $shares = $shareSettingsModel->where(['tournament_id'=> $share['tournament_id']])->findAll();
+        $this->shareSettingModel->delete([$share_id]);
+        $shares = $this->shareSettingModel->where(['tournament_id'=> $share['tournament_id']])->findAll();
+
+        /** Notifiy to the users */
+        if (isset($users) && count($users)) {
+            $userSettingsService = service('userSettings');
+            $tournament = $this->tournamentModel->find($share['tournament_id']);
+            $tournamentEntity = new \App\Entities\Tournament($tournament);
+        
+            foreach ($users as $user) {
+                $shared_by = (auth()->user()) ? auth()->user()->id : 0;
+
+                $msg = lang('Notifications.tournamentSharePurged', [$tournamentEntity->name]);
+                $notification = ['message' => $msg, 'type' => NOTIFICATION_TYPE_FOR_SHARE_PURGED, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
+                $this->notificationService->addNotification($notification);
+
+                $shared_to = auth()->getProvider()->findById($user);
+
+                /** Send the email */
+                if (!$userSettingsService->get('email_notification', $shared_to->id) || $userSettingsService->get('email_notification', $shared_to->id) == 'on') {
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($shared_to->email);
+                    $email->setSubject(lang('Emails.tournamentSharePurgedEmailSubject'));
+                    $email->setMessage(view(
+                        'email/tournament-share-purged',
+                        ['username' => $shared_to->username, 'tournament' => $tournamentEntity, 'share' => $share, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
+
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
+            }
+        }
 
         return json_encode(['status'=> 'success', 'shares'=> $shares, 'tournament_id' => $share['tournament_id']]);
     }

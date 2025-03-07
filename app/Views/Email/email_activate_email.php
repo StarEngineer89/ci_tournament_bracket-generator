@@ -12,9 +12,9 @@
     <div class="logo" style="text-align: center;">
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
-    <p>Welcome to <b><?= setting('Email.fromName') ?></b>! Before you can start creating/administering tournaments, we need to verify your account. </p>
+    <p>Welcome to <b><a href="<?= base_url() ?>"><?= setting('Email.fromName') ?></a></b>! Before you can start creating/administering tournaments, we need to verify your account. </p>
     <p>
-        🔹 Why verify? <br />
+        🔹 <b>Why verify?</b> <br />
         ✔️ Secure your account <br />
         ✔️ Access all features, including custom tournaments, historical logging, and more!<br />
         ✔️ Confirms you're not a bot 🤖

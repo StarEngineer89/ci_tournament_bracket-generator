@@ -13,15 +13,15 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" has been shared with you! Get ready to join the action and experience the competition. !</p>
+    <p>Your access to the tournament "<strong><a href="<?= base_url("tournaments/shared/{$share['token']}") ?>"><?= $tournament->name ?></a></strong>" has been removed.</p>
+
+    <p>This tournament was previously shared with you, but the organizer has revoked the permissions. </p>
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
-    🔹 <strong>Shared By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
-    🔹 <strong>Your Role</strong>: <?= $role ?>
+    🔹 <strong>Updated By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
+    🔹 <strong>Access Status</strong>: ❌ Removed
 
-    <p>You may view, vote, and/or participate depending on the permissions granted.</p>
-
-    <p>If you weren’t expecting this invitation, feel free to ignore it.</p>
+    <p>If you believe this was a mistake or have any questions, please contact the tournament organizer/host.</p>
 
     <p>Best regards,</p>
     <p>🏆 <?= esc($tournamentCreatorName) ?> Team</p>

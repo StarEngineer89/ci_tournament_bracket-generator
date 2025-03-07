@@ -482,8 +482,7 @@ class BracketsController extends BaseController
         /**
          * Update tournament searchable data
          */
-        $tournament_model = model('\App\Models\TournamentModel');
-        $tournament = $tournament_model->find($bracket['tournament_id']);
+        $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
         
         $participant_names_string = '';
@@ -498,7 +497,7 @@ class BracketsController extends BaseController
         }
         
         $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
-        $tournament_model->save($tournament);
+        $this->tournamentsModel->save($tournament);
 
         /** Check if the participant exists in other brackets and send the notification */   
         helper('bracket');
@@ -592,10 +591,9 @@ class BracketsController extends BaseController
         /**
          * Update tournament searchable data
          */
-        $tournament_model = model('\App\Models\TournamentModel');
-        $tournament = $tournament_model->find($tournament_id);
+        $tournament = $this->tournamentsModel->find($tournament_id);
         $tournament['searchable'] = $tournament['name'];
-        $tournament_model->save($tournament);
+        $this->tournamentsModel->save($tournament);
 
         /** Remove vote history */
         $this->votesModel->where(['tournament_id' => $tournament_id])->delete();
@@ -605,11 +603,8 @@ class BracketsController extends BaseController
          */
         $logActionsModel = model('\App\Models\LogActionsModel');
         $insert_data = ['tournament_id' => $tournament['id'], 'action' => BRACKET_ACTIONCODE_CLEAR];
-        if (auth()->user()) {
-            $insert_data['user_id'] = auth()->user()->id;
-        } else {
-            $insert_data['user_id'] = 0;
-        }
+        $insert_data['user_id'] = auth()->user() ? auth()->user()->id : 0;
+
         $data = [];
         $insert_data['params'] = json_encode($data);
 
@@ -618,6 +613,41 @@ class BracketsController extends BaseController
         /** Clear Schedules */
         $schedulesModel = model('\App\Models\SchedulesModel');
         $schedulesModel->where(['tournament_id' => $tournament_id])->delete();
+
+        /** Send the notification and emails to the registered users */
+        $registeredUsers = $this->participantsModel->where(['tournament_id' => $tournament_id])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+        if ($registeredUsers) {
+            $userProvider = auth()->getProvider();
+            $userSettingService = service('userSettings');
+            $notificationService = service('notification');
+
+            $tournamentEntity = new \App\Entities\Tournament($tournament);
+            foreach ($registeredUsers as $user_id) {
+                $user = $userProvider->findById($user_id);
+
+                $message = lang('Notifications.tournamentReset', [$tournamentEntity->name]);
+                $notificationService->addNotification(['user_id' => $insert_data['user_id'], 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_RESET, 'link' => "tournaments/$tournamentEntity->id/view"]);
+
+                if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
+                    $creator = $userProvider->findById($tournamentEntity->user_id);
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($user->email);
+                    $email->setSubject(lang('Emails.tournamentResetEmailSubject'));
+                    $email->setMessage(view(
+                        'email/tournament-reset',
+                        ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
+
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
+            }
+        }
 
         return json_encode(array('result' => 'success'));
     }
