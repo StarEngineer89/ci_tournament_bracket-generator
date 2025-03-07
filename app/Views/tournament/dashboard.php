@@ -241,7 +241,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteModalLabel">History of Actions</h1>
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Tournament [<span class="tournament-name"></span>] - History of Actions</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1849,6 +1849,8 @@ function drawActionHistoryTable(tournament_id) {
         url: `${apiURL}/tournaments/${tournament_id}/getActionHistory`,
         success: function(result) {
             result = JSON.parse(result);
+            viewLogModal.querySelector('.tournament-name').innerHTML = result.tournament.name
+
             let tbody = $('.action-history tbody');
             let rows = '<td colspan="4">History was not found.</td>';
             let names = []
@@ -1879,7 +1881,7 @@ function drawActionHistoryTable(tournament_id) {
             actionLogsTable.clear()
             actionLogsTable.rows.add(rows).draw()
             // tbody.html(rows);
-            $('#viewLogModal .btn-export-logs').attr('href', '<?= base_url("tournaments/export-logs?tid=") ?>' + result.tournament_id)
+            $('#viewLogModal .btn-export-logs').attr('href', '<?= base_url("tournaments/export-logs?tid=") ?>' + result.tournament.id)
         },
         error: function(error) {
             console.log(error);

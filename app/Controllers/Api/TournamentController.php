@@ -973,8 +973,11 @@ class TournamentController extends BaseController
     {
         $logActionsModel = model('\App\Models\LogActionsModel');
         $roundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
+        $tournamentModel = model('\App\Models\TournamentModel');
 
         $history = $logActionsModel->getLogs()->where('tournament_id', $tournament_id)->findAll();
+
+        $tournament = $tournamentModel->find($tournament_id);
 
         $data = [];
         $type = null;
@@ -983,8 +986,6 @@ class TournamentController extends BaseController
             foreach ($history as $row) {
                 
                 if ($row['action'] == BRACKET_ACTIONCODE_CLEAR) {
-                    $tournamentModel = model('\App\Models\TournamentModel');
-                    $tournament = $tournamentModel->find($tournament_id);
                     $tournamentName = $tournament['name'];
                     $type = 'Reset';
                     $description = "Tournament \"$tournamentName\" was reset.";
@@ -1034,7 +1035,7 @@ class TournamentController extends BaseController
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {
-                        $type = 'Voteing';
+                        $type = 'Vote';
                         $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no of $roundName was voted";
                     }
                 }
@@ -1049,7 +1050,7 @@ class TournamentController extends BaseController
             }
         }
 
-        return json_encode(['result' => 'success', 'history' => $data, 'tournament_id' => $tournament_id]);
+        return json_encode(['result' => 'success', 'history' => $data, 'tournament' => $tournament]);
     }
 
     public function fetchUsersList()
