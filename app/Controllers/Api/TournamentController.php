@@ -79,7 +79,7 @@ class TournamentController extends BaseController
                 $access_tokens = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
-                        $user_ids = explode(',', $tempRow['users']);
+                        $user_ids = $tempRow['users'] ? explode(',', $tempRow['users']) : null;
                         
                         $add_in_list = false;
                         if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
@@ -96,7 +96,7 @@ class TournamentController extends BaseController
                         }
 
                         if ($add_in_list && !in_array($tempRow['token'], $access_tokens)) {
-                            $tempRow['access_time'] = convert_to_user_timezone($tempRow['access_time'], user_timezone(auth()->user()->id));
+                            $tempRow['access_time'] = $tempRow['access_time'] ? convert_to_user_timezone($tempRow['access_time'], user_timezone(auth()->user()->id)) : null;
                             $tournaments[$tempRow['tournament_id']] = $tempRow;
                             $access_tokens[] = $tempRow['token'];
                         }
