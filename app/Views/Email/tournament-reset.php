@@ -15,7 +15,7 @@
     <p>Hi <?= esc($username) ?>,</p>
     <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" you were participating in has been reset. This means all progress, match results, and bracket advancements have been cleared. </p>
 
-    🔹 <strong>Reset By:</strong>: <?= $creator ? "$creator->name ($creator->email)" : 'Guest' ?>
+    🔹 <strong>Reset By:</strong>: <?= $creator ? "$creator->username ($creator->email)" : 'Guest' ?>
 
     <p>If you have any questions, please reach out to the tournament host.</p>
 

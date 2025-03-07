@@ -14,7 +14,7 @@
     </div>
     <p>Welcome to <b><a href="<?= base_url() ?>"><?= setting('Email.fromName') ?></a></b>! Before you can start creating/administering tournaments, we need to verify your account. </p>
     <p>
-        🔹 <b>Why verify?</b> <br />
+        <b>Why verify?</b> <br />
         ✔️ Secure your account <br />
         ✔️ Access all features, including custom tournaments, historical logging, and more!<br />
         ✔️ Confirms you're not a bot 🤖
