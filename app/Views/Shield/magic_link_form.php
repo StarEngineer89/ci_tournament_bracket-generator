@@ -34,7 +34,7 @@
                     <p class="single-type-hint form-text ps-3 mt-2">
                         Enter your email to receive a temporary login link to access your account (if it exists). <br /><br />
                         Note: Check your spam folder in case the email may have been sent there and you're not seeing it in your primary inbox.<br />
-                        If you're still not seeing the email after a few minutes, you may have used Google signin to register or possibly never created an account using the entered email!
+                        If you're still not seeing the email after a few minutes, you may have possibly never created an account using the entered email!
                     </p>
                 </div>
 

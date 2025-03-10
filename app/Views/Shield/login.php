@@ -81,7 +81,7 @@
                     <?php endif ?>
 
                     <?php if (setting('Auth.allowRegistration')) : ?>
-                    <p class="text-center"><?= lang('AbuttonedAccount') ?> <a href="<?= url_to('register') ?>"><?= lang('Auth.register') ?></a></p>
+                    <p class="text-center"><?= lang('Auth.needAccount') ?> <a href="<?= url_to('register') ?>"><?= lang('Auth.register') ?></a></p>
                     <?php endif ?>
 
                 </form>

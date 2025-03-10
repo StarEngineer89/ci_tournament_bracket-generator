@@ -11,5 +11,5 @@ return [
     'tournamentAvailabilityUpdateEmailSubject' => "🗓 Tournament Availability Update",
     'tournamentChampionWonEmailSubject' => "🏆 Congratulations Champion!",
     'tournamentResetEmailSubject' => "🔄 Tournament Reset Notification",
-    'tournamentDeleteEmailSubject' => "❌ Tournament  Deleted!",
+    'tournamentDeleteEmailSubject' => "❌ Tournament Deleted!",
 ];

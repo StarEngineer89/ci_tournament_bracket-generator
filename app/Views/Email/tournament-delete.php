@@ -15,7 +15,7 @@
     <p>Hi <?= esc($username) ?>,</p>
     <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" you were participating in has been deleted and is no longer accessible.</p>
 
-    🔹 <strong>Deleted By:</strong>: <?= $creator ? "$creator->username ($creator->email)" : 'Guest' ?>
+    🔹 <strong>Deleted By:</strong> <?= $creator ? "$creator->username ($creator->email)" : 'Guest' ?>
 
     <p>This action is permanent, and all related data has been removed. If you have any questions, please reach out to the tournament organizer/host. </p>
 
