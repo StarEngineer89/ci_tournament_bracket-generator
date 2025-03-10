@@ -104,7 +104,6 @@ let confirmVerificationCode = () => {
         url: '<?= base_url('profile/update-email-confirm') ?>',
         type: 'POST',
         data: $('#updateEmailForm').serialize(),
-        dataType: 'json',
         success: function(response) {
             $('#notification-area').html(
                 `<div class="alert ${response.success ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
@@ -112,6 +111,10 @@ let confirmVerificationCode = () => {
             if (response.status == 'success') {
                 $('.update-email-block').addClass('d-none')
                 $('.confirm-code-block').removeClass('d-none')
+            } else {
+                $('#email-update-notification-area').html(
+                    `<div class="alert alert-danger">${response.errors.new_email}</div>`
+                );
             }
 
             // Clear notification after 10 seconds

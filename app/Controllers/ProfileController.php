@@ -121,9 +121,9 @@ class ProfileController extends BaseController
 
             $emailVerificationModel->where('user_id', $userId)->delete(); // Cleanup
 
-            return redirect()->back()->with('message', 'Email updated. Please verify the new email address.');
+            return $this->response->setJSON(['success' => true, 'message' => 'Email updated. Please verify the new email address.']);
         } else {
-            return $this->response->setJSON(['status' => 'failed', 'success' => true, 'message' => lang('Auth.invalidActivateToken')]);
+            return $this->response->setJSON(['success' => false, 'message' => lang('Auth.invalidActivateToken')]);
         }
     }
 

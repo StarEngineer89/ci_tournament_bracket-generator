@@ -586,6 +586,7 @@ class BracketsController extends BaseController
 
     public function clearBrackets($tournament_id)
     {
+        $user_id = auth()->user() ? auth()->user()->id : 0;
         $this->bracketsModel->where(['tournament_id' => $tournament_id, 'user_id' => auth()->user()->id])->delete();
         
         /**
