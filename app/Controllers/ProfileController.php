@@ -123,7 +123,7 @@ class ProfileController extends BaseController
 
             return redirect()->back()->with('message', 'Email updated. Please verify the new email address.');
         } else {
-            return redirect()->back()->with('message', lang('Auth.invalidActivateToken'));
+            return $this->response->setJSON(['status' => 'failed', 'success' => true, 'message' => lang('Auth.invalidActivateToken')]);
         }
     }
 

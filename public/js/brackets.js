@@ -321,16 +321,7 @@ let editing_mode = false;
                                         type: "delete",
                                         url: apiURL + '/brackets/delete/' + element_id,
                                         success: function (result) {
-                                            // var orders = _.uniq(_.map(document.querySelectorAll("[data-next='" + triggerElement.data('next') + "']"), function (ele) { return ele.dataset.order }));
-                                            // var index = orders.findIndex((value) => { return value == triggerElement.data('order') });
-                                            // document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]')[index].innerHTML = '&nbsp;';
-                                            document.querySelectorAll('[data-order="' + triggerElement.data('order') + '"]').forEach((ele, i) => {
-                                                ele.innerHTML = '';
-                                                ele.classList.remove("winner");
-                                            })
-                                            document.querySelectorAll('[data-order="' + triggerElement.data('next') + '"]').forEach((ele, i) => {
-                                                // ele.innerHTML = '';
-                                            })
+                                            loadBrackets()
 
                                             // triggerElement.parent().parent().remove();
                                             ws.send(['Deleted Brackets!', tournament_id]);

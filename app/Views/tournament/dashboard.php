@@ -270,7 +270,7 @@
                                         <option value="Remove Participant">Remove Participant</option>
                                         <option value="Delete Bracket">Delete Bracket</option>
                                         <option value="Reset">Reset</option>
-                                        <option value="Voting">Voting</option>
+                                        <option value="Vote">Vote</option>
                                     </select>
                                 </th>
                                 <th scope="col">Description</th>
