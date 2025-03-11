@@ -18,7 +18,7 @@
     <p>This tournament was previously shared with you, but the organizer has revoked the permissions. </p>
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
-    🔹 <strong>Updated By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
+    🔹 <strong>Revoked By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
     🔹 <strong>Access Status</strong>: ❌ Removed
 
     <p>If you believe this was a mistake or have any questions, please contact the tournament organizer/host.</p>

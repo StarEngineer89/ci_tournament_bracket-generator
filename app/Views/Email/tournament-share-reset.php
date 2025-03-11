@@ -13,11 +13,13 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>The tournament "<strong><a href="<?= base_url("tournaments/shared/{$share['token']}") ?>"><?= $tournament->name ?></a></strong>" has been shared with you!</p>
+    <p>The sharing permissions for the tournament "<strong><a href="<?= base_url("tournaments/shared/{$share['token']}") ?>"><?= $tournament->name ?></a></strong>" privately shared with you have been updated.</p>
+
+    <p><b>Here’s what changed:</b></p>
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
-    🔹 <strong>Shared By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
-    🔹 <strong>Your Role</strong>: <?= $role ?>
+    🔹 <strong>Updated By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
+    🔹 <strong>New Role</strong>: <?= $role ?>
 
     <p>You may now have different access to view or conduct certain actions based on the updated permissions.</p>
 

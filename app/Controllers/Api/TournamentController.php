@@ -948,7 +948,7 @@ class TournamentController extends BaseController
             $tournamentEntity = new \App\Entities\Tournament($tournament);
         
             foreach ($users as $user) {
-                if ($shareSetting) {
+                if ($shareSetting && $shareSetting['target'] == SHARE_TO_USERS) {
                     $msg = lang('Notifications.tournamentShareUpdated', [$tournamentEntity->name]);
                     $notificationType = NOTIFICATION_TYPE_FOR_SHARE_UPDATED;
                     $emailSubject = lang('Emails.tournamentShareResetEmailSubject');
