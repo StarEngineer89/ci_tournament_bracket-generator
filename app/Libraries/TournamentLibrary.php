@@ -36,6 +36,7 @@ class TournamentLibrary
         $this->logActionsModel->where(['tournament_id' => $tournament_id])->delete();
         $this->votesModel->where(['tournament_id' => $tournament_id])->delete();
 
+        $registeredUsers = $this->participantsModel->where(['tournament_id' => $tournament_id])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
         $participants = $this->participantsModel->where(['tournament_id' => $tournament_id])->findAll();
         if ($participants) {
             foreach ($participants as $participant) {
@@ -60,8 +61,46 @@ class TournamentLibrary
         $this->bracketsModel->where(['tournament_id' => $tournament_id])->delete();
         
         $this->schedulesModel->where(['tournament_id' => $tournament_id])->delete();
-        
+
+        $tournament = $this->tournamentsModel->find($tournament_id);
         $this->tournamentsModel->where('id', $tournament_id)->delete();
+
+        /** Send the notification and emails to the registered users */
+        $auth_user_id = auth()->user() ? auth()->user()->id : 0;
+        log_message('debug', json_encode($registeredUsers));
+        if ($registeredUsers) {
+            $userProvider = auth()->getProvider();
+            $userSettingService = service('userSettings');
+            $notificationService = service('notification');
+
+            $tournamentEntity = new \App\Entities\Tournament($tournament);
+            foreach ($registeredUsers as $user_id) {
+                log_message('debug', $user_id);
+                $user = $userProvider->findById($user_id);
+
+                $message = lang('Notifications.tournamentDeleted', [$tournamentEntity->name]);
+                $notificationService->addNotification(['user_id' => $auth_user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_DELETE, 'link' => "tournaments/$tournamentEntity->id/view"]);
+
+                if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
+                    $creator = $userProvider->findById($tournamentEntity->user_id);
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($user->email);
+                    $email->setSubject(lang('Emails.tournamentDeleteEmailSubject'));
+                    $email->setMessage(view(
+                        'email/tournament-delete',
+                        ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
+
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
+            }
+        }
         
         return true;
     }

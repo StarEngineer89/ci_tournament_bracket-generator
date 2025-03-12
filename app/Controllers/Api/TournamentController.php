@@ -750,46 +750,8 @@ class TournamentController extends BaseController
 
     public function delete($id)
     {
-        $tournament = $this->tournamentModel->find($id);
-        $auth_user_id = auth()->user() ? auth()->user()->id : 0;
-        $registeredUsers = $this->participantModel->where(['tournament_id' => $id])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
-
         $tournamentLibrary = new TournamentLibrary();
         $tournamentLibrary->deleteTournament($id);
-
-        /** Send the notification and emails to the registered users */
-        if ($registeredUsers) {
-            $userProvider = auth()->getProvider();
-            $userSettingService = service('userSettings');
-            $notificationService = service('notification');
-
-            $tournamentEntity = new \App\Entities\Tournament($tournament);
-            foreach ($registeredUsers as $user_id) {
-                $user = $userProvider->findById($user_id);
-
-                $message = lang('Notifications.tournamentDeleted', [$tournamentEntity->name]);
-                $notificationService->addNotification(['user_id' => $auth_user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_DELETE, 'link' => "tournaments/$tournamentEntity->id/view"]);
-
-                if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
-                    $creator = $userProvider->findById($tournamentEntity->user_id);
-                    $email = service('email');
-                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                    $email->setTo($user->email);
-                    $email->setSubject(lang('Emails.tournamentDeleteEmailSubject'));
-                    $email->setMessage(view(
-                        'email/tournament-delete',
-                        ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
-                        ['debug' => false]
-                    ));
-
-                    if ($email->send(false) === false) {
-                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                    }
-
-                    $email->clear();
-                }
-            }
-        }
 
         return json_encode(['msg' => "Tournament was deleted successfully."]);
     }
@@ -1157,10 +1119,8 @@ class TournamentController extends BaseController
 
         $tournamentLibrary = new TournamentLibrary();
 
-        $tournamentModel = model('\App\Models\TournamentModel');
-
         /** Alert Message */
-        $tournaments = $tournamentModel->whereIn('id', $ids)->findAll();
+        $tournaments = $this->tournamentModel->whereIn('id', $ids)->findAll();
         $tournament_names = '';
         foreach ($tournaments as $index => $tournament) {
             if ($index == (count($tournaments) - 1)) {
@@ -1178,19 +1138,53 @@ class TournamentController extends BaseController
     public function bulkReset()
     {
         $ids = $this->request->getPost('id');
-        $bracketModel = model('\App\Models\BracketModel');
+        $user_id = auth()->user() ? auth()->user()->id : 0;
 
-        $bracketModel->whereIn('tournament_id', $ids)->delete();
+        $userProvider = auth()->getProvider();
+        $userSettingService = service('userSettings');
+        $notificationService = service('notification');
+
+        $this->bracketModel->whereIn('tournament_id', $ids)->delete();
 
         /** Alert Message */
-        $tournamentModel = model('\App\Models\TournamentModel');
-        $tournaments = $tournamentModel->whereIn('id', $ids)->findAll();
+        $tournaments = $this->tournamentModel->whereIn('id', $ids)->findAll();
         $tournament_names = '';
         foreach ($tournaments as $index => $tournament) {
             if ($index == (count($tournaments) - 1)) {
                 $tournament_names .= $tournament['name'];
             } else {
                 $tournament_names .= $tournament['name'] .',';
+            }
+            
+            /** Send the notification and emails to the registered users */
+            $registeredUsers = $this->participantModel->where(['tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+            if ($registeredUsers) {
+                $tournamentEntity = new \App\Entities\Tournament($tournament);
+                foreach ($registeredUsers as $user_id) {
+                    $user = $userProvider->findById($user_id);
+
+                    $message = lang('Notifications.tournamentReset', [$tournamentEntity->name]);
+                    $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_RESET, 'link' => "tournaments/$tournamentEntity->id/view"]);
+
+                    if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
+                        $creator = $userProvider->findById($tournamentEntity->user_id);
+                        $email = service('email');
+                        $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                        $email->setTo($user->email);
+                        $email->setSubject(lang('Emails.tournamentResetEmailSubject'));
+                        $email->setMessage(view(
+                            'email/tournament-reset',
+                            ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                            ['debug' => false]
+                        ));
+
+                        if ($email->send(false) === false) {
+                            $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                        }
+
+                        $email->clear();
+                    }
+                }
             }
         }
 
