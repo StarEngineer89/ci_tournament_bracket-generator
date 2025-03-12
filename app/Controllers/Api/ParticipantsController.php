@@ -54,7 +54,7 @@ class ParticipantsController extends BaseController
                         foreach ($finalBrackets as $f_bracket) {
                             $won_tournament = $this->tournamentsModel->find($f_bracket['tournament_id']);
                             $participant['won_tournaments'][] = $won_tournament;
-                            $won_tournament_names[] = $won_tournament['name'];
+                            $won_tournament_names[] = strtolower($won_tournament['name']);
                         }
                     }
 
