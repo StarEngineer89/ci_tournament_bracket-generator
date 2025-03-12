@@ -319,9 +319,11 @@ class TournamentController extends BaseController
     public function export()
     {
         $tournamentModel = model('\App\Models\TournamentModel');
+        $participantModel = model('\App\Models\ParticipantModel');
+        $shareSettingsModel = model('App\Models\ShareSettingsModel');
+        $userModel = model('CodeIgniter\Shield\Models\UserModel');
         
         if ($this->request->getGet('filter') == 'shared') {
-            $shareSettingsModel = model('\App\Models\ShareSettingsModel');
             $tournaments = $shareSettingsModel->tournamentDetails();
             
             if ($this->request->getGet('query')) {
@@ -330,13 +332,17 @@ class TournamentController extends BaseController
             }
             
             if ($this->request->getGet('type') == 'wh') {
-                $tempRows = $tournaments->where('target', SHARE_TO_EVERYONE)->orWhere('target', SHARE_TO_PUBLIC)->orLike('users', strval(auth()->user()->id))->findAll();
+                $tournaments->groupStart();
+                $tournaments->whereIn('share_settings.target', [SHARE_TO_EVERYONE, SHARE_TO_PUBLIC]);
+                $tournaments->orLike('share_settings.users', strval(auth()->user()->id));
+                $tournaments->groupEnd();
+                $tempRows = $tournaments->findAll();
                 
                 $tournaments = [];
                 $access_tokens = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
-                        $user_ids = explode(',', $tempRow['users']);
+                        $user_ids = $tempRow['users'] ? explode(',', $tempRow['users']) : null;
                         
                         $add_in_list = false;
                         if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
@@ -348,15 +354,17 @@ class TournamentController extends BaseController
                         }
 
                         /** Omit the record from Shared with me if the share was created by himself */
-                        if ($tempRow['user_id'] == auth()->user()->id || $tempRow['deleted_at']) {
+                        if ($tempRow['deleted_at']) {
                             $add_in_list = false;
                         }
 
                         if ($add_in_list && !in_array($tempRow['token'], $access_tokens)) {
-                            $tournaments[] = $tempRow;
+                            $tempRow['access_time'] = $tempRow['access_time'] ? convert_to_user_timezone($tempRow['access_time'], user_timezone(auth()->user()->id)) : null;
+                            $tournaments[$tempRow['tournament_id']] = $tempRow;
                             $access_tokens[] = $tempRow['token'];
                         }
                     }
+                    log_message('debug', json_encode($tournaments));
                 }
             } else {
                 $tempRows = $tournaments->where('share_settings.user_id', auth()->user()->id)->findAll();
@@ -393,10 +401,14 @@ class TournamentController extends BaseController
         $output = fopen('php://output', 'w');
 
         // Add the CSV column headers
-        if ($this->request->getGet('filter') == 'shared' && $this->request->getGet('type') == 'wh') {
-            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Accessbility', 'Shared By', 'Shared Time', 'URL']);
+        if ($this->request->getGet('filter') == 'shared') {
+            if ($this->request->getGet('type') == 'wh') {
+                fputcsv($output, ['ID', 'Name', 'Type', 'Evaluation Method', 'Status', 'Accessbility', 'Shared By', 'Shared Time', 'URL']);
+            } else {
+                fputcsv($output, ['ID', 'Name', 'Type', 'Evaluation Method', 'Status', 'Created Time', 'URL']);
+            }
         } else {
-            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Created Time', 'URL']);
+            fputcsv($output, ['ID', 'Name', 'Type', 'Evaluation Method', 'Status', 'Participants', 'Availability Start', 'Availability End', 'Public URL', 'Created By', 'Created Time', 'URL']);
         }
 
         // Fetch the data and write it to the CSV
@@ -405,35 +417,66 @@ class TournamentController extends BaseController
             $type = $tournament['type'] == 1 ? 'Single' : 'Double';
 
             $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
+            $tournament['evaluation_method'] = ($tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL) ? "Manual" : "Voting";
 
-            if ($this->request->getGet('filter') == 'shared' && $this->request->getGet('type') == 'wh') {
-                if ($tournament['permission'] == SHARE_PERMISSION_EDIT) {
-                    $tournament['permission'] = 'Can Edit';
-                }
-
-                if ($tournament['permission'] == SHARE_PERMISSION_VIEW) {
-                    $tournament['permission'] = 'Can View';
-                }
-
-                $url = base_url('tournaments/shared/' . $tournament['token']);
+            if ($this->request->getGet('filter') == 'shared') {
                 $createdTime = convert_to_user_timezone($tournament['access_time'], user_timezone(auth()->user()->id));
-                fputcsv($output, [
-                    $tournamentId,
-                    $tournament['name'],
-                    $type,
-                    $statusLabel,
-                    $tournament['permission'],
-                    $tournament['username'],
-                    $createdTime,
-                    $url
-                ]);
+                
+                if ($this->request->getGet('type') == 'wh') {
+                    if ($tournament['permission'] == SHARE_PERMISSION_EDIT) {
+                        $tournament['permission'] = 'Can Edit';
+                    }
+
+                    if ($tournament['permission'] == SHARE_PERMISSION_VIEW) {
+                        $tournament['permission'] = 'Can View';
+                    }
+
+                    $url = base_url('tournaments/shared/' . $tournament['token']);
+                    fputcsv($output, [
+                        $tournamentId,
+                        $tournament['name'],
+                        $type,
+                        $tournament['evaluation_method'],
+                        $statusLabel,
+                        $tournament['permission'],
+                        $tournament['username'],
+                        $createdTime,
+                        $url
+                    ]);
+                } else {
+                    fputcsv($output, [
+                        $tournamentId,
+                        $tournament['name'],
+                        $type,
+                        $tournament['evaluation_method'],
+                        $statusLabel,
+                        $createdTime,
+                        base_url('tournaments/' . $tournamentId . '/view')
+                    ]);
+                }
             } else {
+                $participants = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
+                $availability_start = $tournament['available_start'];
+                $availability_end = $tournament['available_end'];
+
+                $sharedTournament = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
+                $public_url = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
                 $createdTime = convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id));
+                
+                $user = $userModel->find($tournament['user_id']);
+                $username = ($user) ? $user->username : 'Guest';
+
                 fputcsv($output, [
                     $tournamentId,
                     $tournament['name'],
                     $type,
+                    $tournament['evaluation_method'],
                     $statusLabel,
+                    $participants,
+                    $availability_start,
+                    $availability_end,
+                    $public_url,
+                    $username,
                     $createdTime,
                     base_url('tournaments/' . $tournamentId . '/view')
                 ]);
@@ -446,7 +489,10 @@ class TournamentController extends BaseController
 
     public function exportGallery(){
         $tournamentModel = model('\App\Models\TournamentModel');
+        $participantModel = model('\App\Models\ParticipantModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
+        $shareSettingsModel = model('App\Models\ShareSettingsModel');
+
         $tournaments = $tournamentModel->where(['visibility' => 1]);
         $tournaments = $tournaments->findAll();
         $filename = 'tournaments_' . date('Ymd') . '.csv';
@@ -457,17 +503,20 @@ class TournamentController extends BaseController
         $output = fopen('php://output', 'w');
 
         // Add the CSV column headers
-        if ($this->request->getGet('filter') == 'shared' && $this->request->getGet('type') == 'wh') {
-            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Accessbility', 'Shared By', 'Shared Time', 'URL']);
-        } else {
-            fputcsv($output, ['ID', 'Name', 'Type', 'Status', 'Created By', 'Created Time', 'URL']);
-        }
+        fputcsv($output, ['ID', 'Name', 'Type', 'Evaluation Method', 'Status', 'Participants', 'Availability Start', 'Availability End', 'Public URL', 'Created By', 'Created Time', 'URL']);
 
         // Fetch the data and write it to the CSV
         foreach ($tournaments as $tournament) {
             $statusLabel = TOURNAMENT_STATUS_LABELS[$tournament['status']];
             $type = $tournament['type'] == 1 ? 'Single' : 'Double';
+            $evaluation_method = $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? "Manual" : "Voting";
+            $participants = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
+            $availability_start = $tournament['available_start'];
+            $availability_end = $tournament['available_end'];
 
+            $sharedTournament = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
+            $public_url = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
+            
             $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
 
             $user = $userModel->find($tournament['user_id']);
@@ -478,7 +527,12 @@ class TournamentController extends BaseController
                 $tournamentId,
                 $tournament['name'],
                 $type,
+                $evaluation_method,
                 $statusLabel,
+                $participants,
+                $availability_start,
+                $availability_end,
+                $public_url,
                 $username,
                 $createdTime,
                 base_url('gallery/' . $tournamentId . '/view')
