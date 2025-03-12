@@ -13,7 +13,7 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi, <?= esc($username) ?>,</p>
-    <p>We received a request to change the email associated with your <?= esc($sendername) ?> account to <?= esc($newEmail) ?>. Before we update your account, please verify your new email by entering the code provided below:</p>
+    <p>We received a request to change the email associated with your <a href="<?= base_url() ?>"><?= esc($sendername) ?></a> account to <?= esc($newEmail) ?>. Before we update your account, please verify your new email by entering the code provided below:</p>
     <br />
     <p>🔹 <b>Your Verification Code:</b> <?= esc($code) ?></p><br />
     <p>If you didn’t request this change, please ignore this email—your current email will remain unchanged.</p><br />

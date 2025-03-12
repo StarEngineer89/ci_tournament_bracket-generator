@@ -13,15 +13,16 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi, <?= esc($username) ?>,</p>
-    <p>We want to let you know that your <?= esc($sendername) ?> account email has been updated.</p>
+    <p>We want to let you know that your <a href="<?= base_url() ?>"><?= esc($sendername) ?></a> account email has been updated.</p>
     <p>📧 <b>Old Email:</b> <?= esc($oldEmail) ?> </p>
     <p>📧 <b>New Email:</b> <?= esc($newEmail) ?> </p>
     <p>If you made this change, no further action is needed.</p><br />
     <p>🔹 <b>Didn’t request this change?</b></p>
-    <p>If you didn’t authorize this update, please log in to your account and change your email immediately from your profile settings</p>
-    <a href="<?= url_to('login') ?>" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: inline-block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;"><?= lang('Auth.login') ?></a>
+    <p>If you did not authorize this update, please <a href="<?= base_url('contact') ?>">contact us</a> immediately to secure your account.</p>
     <br />
-    <p><?= esc($sendername) ?> Team</p>
+    <p>Best regards,</p>
+
+    <p>🏆 <?= esc($sendername) ?> Team</p>
 </body>
 
 </html>

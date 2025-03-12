@@ -13,7 +13,7 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>This is to confirm that your <?= esc($sendername) ?> account has been permanently deleted.</p><br />
+    <p>This is to confirm that your <a href="<?= base_url() ?>"><?= esc($sendername) ?></a> account has been permanently deleted.</p><br />
     <p>📌 <b>What this means:</b></p>
     <p> • You can no longer access your tournaments or history.</p>
     <p> • Any shared tournaments or votes associated with your account are no longer valid. </p>

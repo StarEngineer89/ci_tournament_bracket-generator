@@ -13,7 +13,7 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi, <?= esc($username) ?>,</p>
-    <p>We’re confirming that your password has been successfully updated for your <?= esc($sendername) ?> account.</p>
+    <p>We’re confirming that your password has been successfully updated for your <a href="<?= base_url() ?>"><?= esc($sendername) ?></a> account.</p>
     <p>If you made this change, no further action is needed. 🎉</p>
     <p>🔹 <b>Didn’t request this change?</b></p>
     <p>If you didn’t update your password, please log in to your account and change it immediately from your profile settings.</p>
