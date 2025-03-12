@@ -102,10 +102,6 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             clearTimeout(timeout); // Clear the timeout
             $('#beforeProcessing').addClass('d-none')
         });
-
-        document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
-            var tooltip = new bootstrap.Tooltip(element)
-        })
     },
     "columns": [{
             "data": null,
@@ -209,6 +205,12 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         $(row).attr('data-id', data.id); // Adds a data-id attribute with the row's ID
     }
 });
+
+tournamentsTable.on('draw.dt', function() {
+    document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+        var tooltip = new bootstrap.Tooltip(element)
+    })
+})
 
 function copyClipboard(url_id) {
     // Get the text field

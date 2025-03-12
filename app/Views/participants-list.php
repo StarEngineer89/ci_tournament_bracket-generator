@@ -149,7 +149,15 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             }
         },
         {
-            "data": "name",
+            "data": null,
+            "render": function(data, type, row, meta) {
+                if (row.email) {
+                    return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email}">${row.name}</span>`
+                } else {
+                    return `<span>${row.name}</span>`
+                }
+
+            },
             "createdCell": function(td, cellData, rowData, row, col) {
                 $(td).attr('data-label', 'name');
             }
@@ -263,6 +271,11 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
     }
 });
 
+participantsTable.on('draw.dt', function() {
+    document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+        var tooltip = new bootstrap.Tooltip(element)
+    })
+})
 const readMoreList = (element) => {
     let tdElement = element.parentElement
     let list = tdElement.querySelectorAll('.list')[0].innerHTML.trim()

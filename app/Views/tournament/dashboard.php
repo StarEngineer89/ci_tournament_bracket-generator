@@ -550,10 +550,6 @@ $(document).ready(function() {
                 clearTimeout(timeout); // Clear the timeout
                 $('#beforeProcessing').addClass('d-none')
             });
-
-            document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
-                var tooltip = new bootstrap.Tooltip(element)
-            })
         },
         "columns": [{
                 "data": null,
@@ -897,6 +893,12 @@ $(document).ready(function() {
         }
     });
     <?php endif ?>
+
+    tournamentsTable.on('draw.dt', function() {
+        document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+            var tooltip = new bootstrap.Tooltip(element)
+        })
+    })
 
     actionLogsTable = $('#logActionsTable').DataTable({
         "order": [
