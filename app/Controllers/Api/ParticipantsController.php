@@ -59,7 +59,7 @@ class ParticipantsController extends BaseController
                     }
 
                     if ($this->request->getPost('won_tournament')) {
-                        if (empty(array_filter($won_tournament_names, fn($str) => strpos($str, $this->request->getPost('won_tournament')) !== false))) {
+                        if (empty(array_filter($won_tournament_names, fn($str) => stripos($str, $this->request->getPost('won_tournament')) !== false))) {
                             continue;
                         }
                     }
