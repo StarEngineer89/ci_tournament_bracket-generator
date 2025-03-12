@@ -47,7 +47,23 @@ class ParticipantsController extends BaseController
 
                     $finalBrackets = $this->bracketsModel->where(['winner' => $participant['id'], 'final_match' => 1])->findAll();
                     $participant['tournaments_won'] = ($finalBrackets) ? count($finalBrackets) : 0;
+                    $participant['won_tournaments'] = [];
                     
+                    $won_tournament_names = [];
+                    if ($finalBrackets) {
+                        foreach ($finalBrackets as $f_bracket) {
+                            $won_tournament = $this->tournamentsModel->find($f_bracket['tournament_id']);
+                            $participant['won_tournaments'][] = $won_tournament;
+                            $won_tournament_names[] = $won_tournament['name'];
+                        }
+                    }
+
+                    if ($this->request->getPost('won_tournament')) {
+                        if (empty(array_filter($won_tournament_names, fn($str) => strpos($str, $this->request->getPost('won_tournament')) !== false))) {
+                            continue;
+                        }
+                    }
+
                     $scores = $this->calculateScores($participant['id'], $brackets);
                     $participant['top_score'] = $scores['top_score'];
                     $participant['accumulated_score'] = $scores['total_score'];
@@ -57,21 +73,27 @@ class ParticipantsController extends BaseController
 
                     if ($participant['name'][0] == '@' && $participant['registered_user_id']) {
                         $registered_user_id = $participant['registered_user_id'];
+                        $tournament_ids = $this->participantsModel->where('registered_user_id', $registered_user_id)->findColumn('tournament_id');
+                        if ($this->request->getPost('tournament')) {
+                            if (!$this->tournamentsModel->whereIn('id', $tournament_ids)->like('name', $this->request->getPost('tournament'))->select(['id', 'name'])->findAll()) {
+                                continue;
+                            }
+                        }
+                        
                         if (isset($registered_users[$registered_user_id])) {
                             $registered_users[$registered_user_id]['brackets_won'] += $participant['brackets_won'];
                             $registered_users[$registered_user_id]['tournaments_won'] += $participant['tournaments_won'];
                             $registered_users[$registered_user_id]['accumulated_score'] += $participant['accumulated_score'];
                             $registered_users[$registered_user_id]['votes'] += $participant['votes'];
+                            
+                            if (count($participant['won_tournaments'])) {
+                                $registered_users[$registered_user_id]['won_tournaments'] = array_merge($registered_users[$registered_user_id]['won_tournaments'], $participant['won_tournaments']);
+                            }
                         } else {
                             $registered_users[$registered_user_id] = $participant;
                         }
 
-                        $tournament_ids = $this->participantsModel->where('registered_user_id', $participant['registered_user_id'])->findColumn('tournament_id');
-                        if ($this->request->getPost('tournament')) {
-                            $registered_users[$registered_user_id]['tournaments_list'] = $this->tournamentsModel->whereIn('id', $tournament_ids)->like('name', $this->request->getPost('tournament'))->select(['id', 'name'])->findAll();
-                        } else {
-                            $registered_users[$registered_user_id]['tournaments_list'] = $this->tournamentsModel->whereIn('id', $tournament_ids)->select(['id', 'name'])->findAll();
-                        }
+                        $registered_users[$registered_user_id]['tournaments_list'] = $this->tournamentsModel->whereIn('id', $tournament_ids)->select(['id', 'name'])->findAll();
                     } else {
                         if ($this->request->getPost('tournament')) {
                             $participant['tournaments_list'] = $this->tournamentsModel->where('id', $participant['tournament_id'])->like('name', $this->request->getPost('tournament'))->select(['id', 'name'])->findAll();

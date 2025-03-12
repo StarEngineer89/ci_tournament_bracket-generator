@@ -113,13 +113,16 @@ let confirmVerificationCode = () => {
                 $('.confirm-code-block').removeClass('d-none')
             } else {
                 $('#email-update-notification-area').html(
-                    `<div class="alert alert-danger">${response.errors.new_email}</div>`
+                    `<div class="alert alert-danger">${response.message}</div>`
                 );
             }
 
             // Clear notification after 10 seconds
             setTimeout(function() {
                 $('#notification-area').fadeOut('slow', function() {
+                    $(this).empty().show(); // Empty and show to reset for future messages
+                });
+                $('#email-update-notification-area').fadeOut('slow', function() {
                     $(this).empty().show(); // Empty and show to reset for future messages
                 });
             }, 10000);
@@ -283,7 +286,7 @@ let deleteAccount = () => {
 
                         <div class="row">
                             <div class="col-md-12">
-                                <button class="btn btn-primary w-100" id="confirmVerificationCodeBtn" onclick="confirmVerificationCode()">Confirm</button>
+                                <button type="button" class="btn btn-primary w-100" id="confirmVerificationCodeBtn" onclick="confirmVerificationCode()">Confirm</button>
                             </div>
                         </div>
                     </div>

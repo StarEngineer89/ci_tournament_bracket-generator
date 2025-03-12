@@ -35,6 +35,7 @@ var participantsTable = null;
 var participantsTableRows;
 var participantNames = [];
 var tournamentList = [];
+var tournamentWonList = [];
 
 participantsTable = $('#participantLeaderboardTable').DataTable({
     "searching": true,
@@ -46,6 +47,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         "data": function(d) {
             d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
             d.participant = $('#pt-names').val();
+            d.won_tournament = $('#tournamentWonFilter').val();
             d.tournament = $('#tournamentFilter').val();
         }
     },
@@ -56,7 +58,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
     scrollX: true,
     "columnDefs": [{
         "orderable": false,
-        "targets": [1, 4]
+        "targets": [1, 4, 5]
     }],
     // Add custom initComplete to initialize select all checkbox
     "initComplete": function(settings, json) {
@@ -72,6 +74,21 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         })
         $('#pt-names').autocomplete({
             source: participantNames,
+            minLength: 0,
+            scroll: true,
+            change: function(event, ui) {
+                participantsTable.ajax.reload()
+            },
+            close: function(event, ui) {
+                participantsTable.ajax.reload()
+            }
+        }).focus(function() {
+            $(this).autocomplete("search", "");
+        })
+
+        // tournamentWonFilter
+        $('#tournamentWonFilter').autocomplete({
+            source: tournamentWonList,
             minLength: 0,
             scroll: true,
             change: function(event, ui) {
@@ -144,6 +161,49 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         {
             "data": "tournaments_won",
             "className": "text-center"
+        },
+        {
+            "data": null,
+            "render": function(data, type, row, meta) {
+                if (row.won_tournaments) {
+                    let listHtml = ''
+                    let moreHtml = ''
+                    let shortner = '...'
+                    row.won_tournaments.forEach((tournament, i) => {
+                        if (!tournamentWonList.includes(tournament.name)) {
+                            tournamentWonList.push(tournament.name)
+                        }
+
+                        if (i >= 3) {
+                            moreHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+
+                            if (i < row.won_tournaments.length - 1) {
+                                if (moreHtml) {
+                                    moreHtml += ', '
+                                }
+                            }
+
+                            return
+                        }
+
+                        listHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                        if (i < row.won_tournaments.length - 1) {
+                            listHtml += ', '
+                            if (moreHtml) {
+                                moreHtml += ', '
+                            }
+                        }
+                    })
+
+                    if (row.won_tournaments.length > 3) {
+                        return `<span class="list">${listHtml}</span><span class="more d-none">${moreHtml}</span><br/><span class="shortner float-start">${shortner}</span><a href="javascript:;" onclick="readMoreList(this)" class="read-more-btn more float-end">Show More</a>`
+                    } else {
+                        return `<span class="list">${listHtml}</span>`
+                    }
+                }
+
+                return ``;
+            }
         },
         {
             "data": null,
@@ -296,6 +356,10 @@ $('#toggleNoteBtn').click();
                         </th>
                         <th scope="col" class="text-center">Brackets Won</th>
                         <th scope="col" class="text-center">Tournaments Won</th>
+                        <th scope="col">
+                            <label for="tournamentFilter">Won Tournaments</label>
+                            <input type="text" id="tournamentWonFilter" class="form-control form-control-sm" />
+                        </th>
                         <th scope="col">
                             <label for="tournamentFilter">Participated Tournaments</label>
                             <input type="text" id="tournamentFilter" class="form-control form-control-sm" />
