@@ -23,9 +23,9 @@
     <body class="<?= (isset($page) && $page == 'view' && isset($tournament) && $tournament['theme']) ? 'bg-' . $tournament['theme'] : 'bg-light' ?>">
 
         <main role="main">
-            <div class="header p-2 border-bottom sticky-top">
+            <div class="header border-bottom sticky-top">
                 <div class="container-fluid">
-                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative d-flex">
+                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative d-flex p-0">
                         <a class="navbar-brand me-auto pe-3" href="<?= base_url() ?>"><img src="/images/logo.jpg" class="logo" /></a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>

@@ -16,9 +16,9 @@
 
     <body class="bg-light">
 
-        <div class="header p-2 border-bottom sticky-top">
+        <div class="header border-bottom sticky-top">
             <div class="container-fluid">
-                <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary">
+                <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary p-0">
                     <a class="navbar-brand" href="<?= base_url() ?>"><img src="/images/logo.jpg" class="logo" /></a>
 
                     <button class="navbar-toggler order-md-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

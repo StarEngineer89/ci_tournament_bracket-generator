@@ -10,7 +10,7 @@
 
 <?= $this->section('main') ?>
 <div class="container-fluid align-middle">
-    <div class="home-title row d-flex justify-content-center text-center p-5">
+    <div class="home-title row d-flex justify-content-center text-center p-3">
         <h1 class="p-3"><strong>Welcome to TournCreator</strong></h1>
         <h5>Where Competition Meets Creativity!</h5>
     </div>
