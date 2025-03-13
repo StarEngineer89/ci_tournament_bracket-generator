@@ -220,7 +220,7 @@
   background-color: #F3ECEA;
 }
 .home-block {
-  min-height: 300px;
+  min-height: 270px;
 }
 .home-block:nth-child(1) {
   background-color: #282A35;
@@ -236,8 +236,10 @@
 }
 
 .home-block .title {
-  font-size: 1.3em;
+  font-size: 1.2em;
   font-weight: 600;
+  max-width: 500px;
+  display: inline-block;
 }
 
 .home-block .btn {

@@ -12,7 +12,7 @@
 <div class="container-fluid align-middle">
     <div class="home-title row d-flex justify-content-center text-center p-3">
         <h1 class="p-3"><strong>Welcome to TournCreator</strong></h1>
-        <h5>Where Competition Meets Creativity!</h5>
+        <p>Where Competition Meets Creativity!</p>
     </div>
 
     <div class="row">
@@ -21,7 +21,7 @@
                 <p class="title text-center">
                     Build Epic Brackets with a Click, all for free!<br />
                 </p>
-                <div class="text-start">
+                <div>
                     Choose from various elimination types, customize themes, and decide how winners are determined — manually or through voting.<br />
                     Make your tournaments truly immersive with audio/video playback for dramatic matchups and thrilling finales.<br />
                     Plus, enjoy sleek animations that bring your brackets to life!
@@ -31,21 +31,23 @@
         </div>
         <div class="home-block col-md-12 d-flex align-items-center justify-content-center text-center">
             <p class="home-content">
-                <span class="title text-center">Here to spectate? Visit the Tournament Gallery!</span><br />
-                <a class="btn btn-danger mt-5" href="<?= base_url('/gallery?filter=glr') ?>">Teleport to Gallery</a>
+                <span class="title text-center">Here to spectate?</span><br />
+                <span>Visit the Tournament Gallery!</span><br />
+                <a class="btn btn-danger mt-3" href="<?= base_url('/gallery?filter=glr') ?>">Teleport to Gallery</a>
             </p>
         </div>
         <div class="home-block col-md-12 d-flex align-items-center justify-content-center text-center">
             <p class="home-content">
-                <span class="title text-center">Feeling the hype? Checkout the top contestants on the Participant Leaderboard!</span><br />
-                <a class="btn btn-info light mt-5" href="<?= base_url('/participants') ?>">Check Leaderboard</a>
+                <span class="title text-center">Feeling the hype?</span><br />
+                <span>Checkout the top contestants on the Participant Leaderboard!</span><br />
+                <a class="btn btn-info light mt-3" href="<?= base_url('/participants') ?>">Check Leaderboard</a>
             </p>
         </div>
         <div class="home-block col-md-12 d-flex align-items-center justify-content-center text-center">
             <p class="home-content">
                 <span class="title text-center">Want to manage/customize your tournaments?</span><br />
                 <span>Signup/Signin now to access your own dedicated Tournament Dashboard!</span><br />
-                <a class="btn btn-warning mt-5" href="<?= base_url('/tournaments') ?>">My Tournament Dashboard</a>
+                <a class="btn btn-warning mt-3" href="<?= base_url('/tournaments') ?>">My Tournament Dashboard</a>
             </p>
         </div>
     </div>
