@@ -289,12 +289,12 @@ class TournamentController extends BaseController
         if ($this->request->getPost('availability')) {
             $data['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
             $data['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
+
+            if ($data['available_start'] > date('Y-m-d H:i:s')) {
+                $data['status'] = TOURNAMENT_STATUS_NOTSTARTED;
+            }
         }
 
-        if ($data['available_start'] > date('Y-m-d H:i:s')) {
-            $data['status'] = TOURNAMENT_STATUS_NOTSTARTED;
-        }
-        
         $tournamentData = new \App\Entities\Tournament($data);
 
         $tournament_id = $tournamentModel->insert($tournamentData);
