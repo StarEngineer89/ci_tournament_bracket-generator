@@ -72,42 +72,50 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                 participantNames.push(element.textContent.trim())
             }
         })
+
+        let selected_ptName = '';
         $('#pt-names').autocomplete({
             source: participantNames,
             minLength: 0,
             scroll: true,
             close: function(event, ui) {
-                participantsTable.ajax.reload()
+                if (selected_ptName !== event.target.value) {
+                    selected_ptName = event.target.value
+                    participantsTable.ajax.reload()
+                }
+
             }
         }).focus(function() {
             $(this).autocomplete("search", "");
         })
 
         // tournamentWonFilter
+        let selected_wonTournament = '';
         $('#tournamentWonFilter').autocomplete({
             source: tournamentWonList,
             minLength: 0,
             scroll: true,
-            change: function(event, ui) {
-                participantsTable.ajax.reload()
-            },
             close: function(event, ui) {
-                participantsTable.ajax.reload()
+                if (selected_wonTournament !== event.target.value) {
+                    selected_wonTournament = event.target.value
+                    participantsTable.ajax.reload()
+                }
             }
         }).focus(function() {
             $(this).autocomplete("search", "");
         })
 
         // tournamentFilter
+        let selected_tournament = '';
         $('#tournamentFilter').autocomplete({
             source: tournamentList,
             minLength: 0,
             scroll: true,
-            change: function(event, ui) {
-                participantsTable.ajax.reload()
-            },
             close: function(event, ui) {
-                participantsTable.ajax.reload()
+                if (selected_tournament !== event.target.value) {
+                    selected_tournament = event.target.value
+                    participantsTable.ajax.reload()
+                }
             }
         }).focus(function() {
             $(this).autocomplete("search", "");
