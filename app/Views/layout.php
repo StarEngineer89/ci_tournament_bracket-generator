@@ -134,7 +134,6 @@
                             <h4>Pages</h4>
                             <ul class="link-group">
                                 <li><a href="/">Home</a></li>
-                                <li><a href="/">About</a></li>
                                 <li><a href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a></li>
                                 <li><a href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a></li>
                                 <li>
@@ -158,7 +157,7 @@
 
             <div class="footer-copy border-top p-3">
                 <div class="container text-center">
-                    copyright ©️ 2024
+                    copyright ©️ 2025
                 </div>
             </div>
         </main>
