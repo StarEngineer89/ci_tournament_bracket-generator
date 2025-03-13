@@ -112,7 +112,7 @@
                                     <a class="nav-link <?php if(current_url()==base_url('contact')){echo "active";}?>" href="<?= base_url('contact') ?>">About, FAQ, and Contact</a>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">Terms of Use page</a>
+                                    <a class="nav-link <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">Terms of Service page</a>
                                 </li>
                             </ul>
                         </div>
@@ -144,7 +144,7 @@
                                     <a href="<?= base_url('contact') ?>">About, FAQ, and Contact</a>
                                 </li>
                                 <li>
-                                    <a href="<?= base_url('terms') ?>">Terms of Use page</a>
+                                    <a href="<?= base_url('terms') ?>">Terms of Service page</a>
                                 </li>
                             </ul>
                         </div>

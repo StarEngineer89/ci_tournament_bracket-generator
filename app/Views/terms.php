@@ -18,7 +18,7 @@
     <div class="row mt-3">
         <div class="col-12">
             <p>Welcome to <strong>TournCreator</strong>!</p>
-            <p>These Terms of Use ("Terms") govern your access to and use of <strong>TournCreator</strong> ("the Platform"), including all features, services, and content available through our website. <br />
+            <p>These Terms of Service ("Terms") govern your access to and use of <strong>TournCreator</strong> ("the Platform"), including all features, services, and content available through our website. <br />
                 By using the Platform, you <strong>agree to these Terms</strong> — so please read them carefully.</p>
 
             <p><strong>1. Acceptance of Terms</strong></p>
@@ -74,7 +74,7 @@
             <p class="mb-1 ps-2">Please make sure you provide as much details as possible to ensure your request is clear for us.</p>
 
             <br />
-            <p class="text-center">By using this site, you acknowledge and agree to these Terms of Use.</p>
+            <p class="text-center">By using this site, you acknowledge and agree to these Terms of Service.</p>
         </div>
     </div>
 </div>
