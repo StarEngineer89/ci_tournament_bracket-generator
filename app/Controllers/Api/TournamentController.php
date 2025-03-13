@@ -290,6 +290,10 @@ class TournamentController extends BaseController
             $data['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
             $data['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
         }
+
+        if ($data['available_start'] > date('Y-m-d H:i:s')) {
+            $data['status'] = TOURNAMENT_STATUS_NOTSTARTED;
+        }
         
         $tournamentData = new \App\Entities\Tournament($data);
 
@@ -451,6 +455,8 @@ class TournamentController extends BaseController
     {
         $tournamentModel = model('\App\Models\TournamentModel');
         $tournament = $tournamentModel->find(intval($tournament_id));
+
+        $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
         
         if ($this->request->getPost('title')) {
             $tournament['name'] = $this->request->getPost('title');
@@ -511,7 +517,6 @@ class TournamentController extends BaseController
             $tournament['increment_score_type'] = $this->request->getPost('increment_score_type');
         }
         
-        $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
         if ($this->request->getPost('availability')) {
             $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
 
@@ -576,6 +581,10 @@ class TournamentController extends BaseController
                             $email->clear();
                         }
                     }
+                }
+
+                if ($tournament['available_start'] > date('Y-m-d H:i:s')) {
+                    $tournament['status'] = TOURNAMENT_STATUS_NOTSTARTED;
                 }
 
                 if ($tournament['available_end'] > date('Y-m-d H:i:s')) {

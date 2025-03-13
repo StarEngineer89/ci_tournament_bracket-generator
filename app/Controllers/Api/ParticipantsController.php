@@ -75,7 +75,8 @@ class ParticipantsController extends BaseController
                     $participant['email'] = null;
                     if ($participant['name'][0] == '@' && $participant['registered_user_id']) {
                         $registered_user_id = $participant['registered_user_id'];
-                        $participant['email'] = auth()->getProvider()->findById($registered_user_id)->email;
+                        $registered_user = auth()->getProvider()->findById($registered_user_id);
+                        $participant['email'] = $registered_user ? $registered_user->email : null;
                         $tournament_ids = $this->participantsModel->where('registered_user_id', $registered_user_id)->findColumn('tournament_id');
                         if ($this->request->getPost('tournament')) {
                             if (!$this->tournamentsModel->whereIn('id', $tournament_ids)->like('name', $this->request->getPost('tournament'))->select(['id', 'name'])->findAll()) {

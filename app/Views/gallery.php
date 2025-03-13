@@ -148,6 +148,10 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             "data": "status",
             "render": function(data, type, row, meta) {
                 var status = 'In progress'
+                if (row.status == <?= TOURNAMENT_STATUS_NOTSTARTED ?>) {
+                    status = 'Not started'
+                }
+
                 if (row.status == <?= TOURNAMENT_STATUS_COMPLETED ?>) {
                     status = 'Completed'
                 }
@@ -281,6 +285,7 @@ function handleKeyPress(event) {
                             <label for="statusFilter">Status:</label>
                             <select id="stautsFilter" class="form-select form-select-sm">
                                 <option value="">All Status</option>
+                                <option value="<?= TOURNAMENT_STATUS_NOTSTARTED ?>">Not started</option>
                                 <option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In progress</option>
                                 <option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Completed</option>
                                 <option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandoned</option>

@@ -447,9 +447,9 @@ $(document).ready(function() {
 
     <?php if ($navActive == 'shared'): ?>
     <?php if ($shareType == 'wh'): ?>
-    var orderFalseColumns = [2, 3, 4, 5]
+    var orderFalseColumns = [2, 3, 4, 5, 6]
     <?php else: ?>
-    var orderFalseColumns = [2, 3, 5]
+    var orderFalseColumns = [2, 3, 4, 6]
     <?php endif ?>
 
     tournamentsTable = $('#tournamentTable').DataTable({
@@ -601,6 +601,10 @@ $(document).ready(function() {
                 "data": "status",
                 "render": function(data, type, row, meta) {
                     var status = 'In progress'
+                    if (row.status == <?= TOURNAMENT_STATUS_NOTSTARTED ?>) {
+                        status = 'Not started'
+                    }
+
                     if (row.status == <?= TOURNAMENT_STATUS_COMPLETED ?>) {
                         status = 'Completed'
                     }
@@ -709,7 +713,7 @@ $(document).ready(function() {
         scrollX: true,
         "columnDefs": [{
             "orderable": false,
-            "targets": [0, 3, 4, 8, 10]
+            "targets": [0, 3, 4, 5, 9, 11]
         }],
         // Add custom initComplete to initialize select all checkbox
         "initComplete": function(settings, json) {
@@ -817,6 +821,10 @@ $(document).ready(function() {
                 "data": "status",
                 "render": function(data, type, row, meta) {
                     var status = 'In progress'
+                    if (row.status == <?= TOURNAMENT_STATUS_NOTSTARTED ?>) {
+                        status = 'Not started'
+                    }
+
                     if (row.status == <?= TOURNAMENT_STATUS_COMPLETED ?>) {
                         status = 'Completed'
                     }
@@ -1473,6 +1481,7 @@ const changeStatus = (event) => {
     statusBox.setAttribute('data-status-label', currentStatusLabel)
 
     const statusOptions = {
+        '<?= TOURNAMENT_STATUS_NOTSTARTED ?>': 'Not started',
         '<?= TOURNAMENT_STATUS_INPROGRESS ?>': 'In progress',
         '<?= TOURNAMENT_STATUS_COMPLETED ?>': 'Completed',
         '<?= TOURNAMENT_STATUS_ABANDONED ?>': 'Abandoned'
@@ -1807,6 +1816,8 @@ function saveChange() {
 
             if (data.status != undefined && data.status != '') {
                 let statusLabel = '<?= TOURNAMENT_STATUS_LABELS[TOURNAMENT_STATUS_INPROGRESS] ?>';
+                if (data.status == '<?= TOURNAMENT_STATUS_NOTSTARTED ?>')
+                    statusLabel = '<?= TOURNAMENT_STATUS_LABELS[TOURNAMENT_STATUS_NOTSTARTED] ?>';
                 if (data.status == '<?= TOURNAMENT_STATUS_COMPLETED ?>')
                     statusLabel = '<?= TOURNAMENT_STATUS_LABELS[TOURNAMENT_STATUS_COMPLETED] ?>';
                 if (data.status == '<?= TOURNAMENT_STATUS_ABANDONED ?>')
