@@ -234,16 +234,13 @@
 .home-block:nth-child(4) {
   background-color: #D9EEE1;
 }
-.home-block p {
-  max-width: 450px;
-}
 
-.home-block p span {
+.home-block .title {
   font-size: 1.3em;
   font-weight: 600;
 }
 
-.home-block p > .btn {
+.home-block .btn {
   min-width: 300px;
   border-radius: 20px;
   padding: 15px;

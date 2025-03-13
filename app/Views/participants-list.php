@@ -76,9 +76,6 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             source: participantNames,
             minLength: 0,
             scroll: true,
-            change: function(event, ui) {
-                participantsTable.ajax.reload()
-            },
             close: function(event, ui) {
                 participantsTable.ajax.reload()
             }
@@ -131,8 +128,8 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         }
 
         $('#participantLeaderboardTable').on('preXhr.dt', function() {
-            // $('#beforeProcessing').removeClass('d-none')
-            timeout();
+            $('#beforeProcessing').removeClass('d-none')
+            // timeout();
         });
 
         // Hide custom loading overlay after reload
