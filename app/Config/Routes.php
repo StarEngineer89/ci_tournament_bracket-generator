@@ -6,6 +6,8 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
+$routes->get('contact', 'Home::viewContact');
+$routes->get('terms', 'Home::viewTerms');
 
 $routes->get('profile', 'ProfileController::index');
 $routes->get('profile/change-email', 'ProfileController::changeEmail', ['as' => 'profile.change-email']);

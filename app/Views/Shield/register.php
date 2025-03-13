@@ -56,6 +56,9 @@
 
                     <p class="text-center"><?= lang('Auth.haveAccount') ?> <a href="<?= url_to('login') ?>"><?= lang('Auth.login') ?></a></p>
 
+                    <div class="text-center d-grid col-12 col-md-8 mx-auto m-3 mt-4">
+                        <p>By using this site, you agree to the <a href="<?= base_url('terms') ?>">Terms of Service</a>.</p>
+                    </div>
                 </form>
             </div>
         </div>

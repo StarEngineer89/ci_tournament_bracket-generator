@@ -11,7 +11,9 @@
 <?= $this->section('main') ?>
 <div class="container-fluid text-center align-middle">
     <div class="home-title row d-flex justify-content-center p-3">
-        <h1 class="p-5">Welcome!</h1>
+        <h1 class="p-5"><strong>Join the TournCreator Community!</strong></h1>
+        <h5>We believe tournaments should be <strong>fun</strong>, easy, and accessible to everyone. </h5>
+        <h5>Whether you're a casual organizer or a spectator, <strong>TournCreator</strong> equips you with everything you need to engage with exciting, well-managed competitions!</h5>
     </div>
 
     <div class="row">

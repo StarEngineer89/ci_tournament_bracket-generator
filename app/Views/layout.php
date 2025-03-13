@@ -106,7 +106,13 @@
                                     <a class="nav-link <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link  <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                                    <a class="nav-link <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                                </li>
+                                <li class="nav-item d-flex align-items-center">
+                                    <a class="nav-link <?php if(current_url()==base_url('contact')){echo "active";}?>" href="<?= base_url('contact') ?>">About, FAQ, and Contact</a>
+                                </li>
+                                <li class="nav-item d-flex align-items-center">
+                                    <a class="nav-link <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">Terms of Use page</a>
                                 </li>
                             </ul>
                         </div>
@@ -133,6 +139,12 @@
                                 <li><a href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a></li>
                                 <li>
                                     <a href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url('contact') ?>">About, FAQ, and Contact</a>
+                                </li>
+                                <li>
+                                    <a href="<?= base_url('terms') ?>">Terms of Use page</a>
                                 </li>
                             </ul>
                         </div>

@@ -8,4 +8,14 @@ class Home extends BaseController
     {
         return view('home');
     }
+
+    public function viewContact()
+    {
+        return view('contact-us');
+    }
+
+    public function viewTerms()
+    {
+        return view('terms');
+    }
 }
