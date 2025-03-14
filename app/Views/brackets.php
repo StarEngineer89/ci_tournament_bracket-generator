@@ -421,7 +421,7 @@ $(document).ready(function() {
         </nav>
         <h5 class="card-title d-flex justify-content-center mb-5">
             <?= $tournament['name'] ?>&nbsp;
-            <button type="button" class="btn btn-light p-0 bg-transparent border-0" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<strong>Organized/Hosted by</strong>:<br/><?= $tournament['created_by']->username ?> (<?= $tournament['created_by']->email ?>)"><i class="fa-classic fa-solid fa-circle-exclamation"></i></button>
+            <button type="button" class="btn btn-light p-0 bg-transparent border-0" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<strong>Organized/Hosted by</strong>:<br/><?= $tournament['created_by'] ?> (<?= $tournament['created_by']->email ?>)"><i class="fa-classic fa-solid fa-circle-exclamation"></i></button>
         </h5>
 
         <?php if (session('error') !== null) : ?>
