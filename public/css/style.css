@@ -187,18 +187,6 @@
   height: 15px;
 }
 
-.navbar-nav .nav-link .menu-icon.home {
-  height: 15px;
-}
-
-.navbar-nav .nav-link .menu-icon.gallery {
-  height: 30px;
-}
-
-.navbar-nav .nav-link .menu-icon.dashboard {
-  height: 30px;
-}
-
 .navbar-nav .nav-link .menu-icon.leaderboard {
   height: 20px;
 }
@@ -303,7 +291,7 @@
 /* Particle Effect for Create Tournament Button */
 .particle {
   position: absolute;
-  font-size: 30px;
+  font-size: 50px;
   font-weight: bolder;
   color: pink;
   animation: scatterParticle 1s forwards;

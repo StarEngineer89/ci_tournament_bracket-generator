@@ -807,6 +807,7 @@ $(document).ready(function() {
             </div>
             <div class="modal-body">
                 <div id="qrcode" class="d-flex justify-content-center"></div>
+                <label>Or Copy/Share this link: [link thats equivalent to QR code]</label>
             </div>
         </div>
     </div>
