@@ -8,7 +8,7 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <script type="text/javascript">
 // Handle scatter effect for Create Tournament button
-document.querySelector('.create-tournament1').addEventListener('click', function(e) {
+document.querySelector('.create-tournament').addEventListener('click', function(e) {
     const button = e.target;
     const buttonRect = button.getBoundingClientRect();
     const particlesCount = 30; // Number of particles to generate
@@ -74,7 +74,6 @@ document.querySelector('.teleport').addEventListener('click', function(e) {
                     Plus, enjoy sleek animations that bring your brackets to life!
                 </div>
                 <p class="text-center"><a class="create-tournament btn btn-success mt-5" href="<?= base_url('/tournaments/create') ?>">Create Tournament</a></p>
-                <p class="text-center"><a class="create-tournament1 btn btn-success mt-5" href="javascript:;">Create Tournament</a></p>
             </div>
         </div>
         <div class="home-block col-md-12 d-flex align-items-center justify-content-center text-center">
