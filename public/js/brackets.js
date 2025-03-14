@@ -1199,6 +1199,8 @@ let displayQRCode = () => {
             colorLight: "#ffffff" // Light color
     });
     
+    document.getElementById('tournamentURL').value = window.location.href;
+    
     $('#displayQRCodeModal').modal('show')
 }
 

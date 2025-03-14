@@ -807,7 +807,11 @@ $(document).ready(function() {
             </div>
             <div class="modal-body">
                 <div id="qrcode" class="d-flex justify-content-center"></div>
-                <label>Or Copy/Share this link: [link thats equivalent to QR code]</label>
+                <p class="text-center mt-4">Or Copy/Share this link</p>
+                <div class="col-auto input-group">
+                    <input type="text" class="form-control" id="tournamentURL" value="" aria-label="Tournament URL" aria-describedby="urlCopy" readonly="">
+                    <button class="btn btn-primary input-group-text btnCopy" data-copyid="tournamentURL" type="button" data-toggle="popover" data-trigger="focus" data-placement="top" data-content="Link Copied!" onclick="copyClipboard('tournamentURL')">Copy</button>
+                </div>
             </div>
         </div>
     </div>
