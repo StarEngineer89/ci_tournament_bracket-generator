@@ -26,7 +26,7 @@
             <div class="header border-bottom sticky-top">
                 <div class="container-fluid">
                     <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary position-relative d-flex p-0">
-                        <a class="navbar-brand me-auto pe-3" href="<?= base_url() ?>"><img src="/images/logo.jpg" class="logo" /></a>
+                        <a class="navbar-brand me-auto pe-3" href="javascript:;"><img src="/images/logo.jpg" class="logo" /></a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>
                         <div class="notification-box me-3 order-md-3">
@@ -328,6 +328,38 @@
                     }
                 }))
             }
+
+            // Handle scatter effect for Create Tournament button
+            document.querySelector('.navbar-brand').addEventListener('click', function(e) {
+                const button = e.target;
+                const buttonRect = button.getBoundingClientRect();
+                const particlesCount = 5; // Number of particles to generate
+
+                for (let i = 0; i < particlesCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    particle.textContent = '🔥';
+                    document.querySelector('.navbar-brand').appendChild(particle);
+
+                    // Increase the range of scatter
+                    const randomX = (Math.random() * 400 - 250); // Range -200px to +200px for more balanced scattering
+                    const randomY = (Math.random() * 400 - 250); // Range -200px to +200px for more balanced scattering
+
+                    particle.style.setProperty('--x', `${randomX}px`);
+                    particle.style.setProperty('--y', `${randomY}px`);
+
+                    // Position the particle near the center of the button
+                    const xPos = buttonRect.left + buttonRect.width / 2;
+                    const yPos = buttonRect.top + buttonRect.height / 2 + window.scrollY;
+                    particle.style.left = `${xPos}px`;
+                    particle.style.top = `${yPos}px`;
+
+                    // Remove the particle after animation
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 1000); // Match the animation duration
+                }
+            });
         })
 
         // Show the modal if cookie consent is not given
