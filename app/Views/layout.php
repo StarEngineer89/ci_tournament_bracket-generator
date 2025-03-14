@@ -350,7 +350,7 @@
 
                     // Position the particle near the center of the button
                     const xPos = buttonRect.left + buttonRect.width / 2;
-                    const yPos = buttonRect.top + buttonRect.height / 2 + window.scrollY;
+                    const yPos = buttonRect.top + buttonRect.height / 2;
                     particle.style.left = `${xPos}px`;
                     particle.style.top = `${yPos}px`;
 
