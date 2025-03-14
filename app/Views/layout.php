@@ -25,7 +25,7 @@
         <main role="main">
             <div class="header border-bottom sticky-top">
                 <div class="container-fluid">
-                    <nav class="navbar navbar-expand-md navbar-light bg-body-tertiary position-relative d-flex p-0">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary position-relative d-flex p-0">
                         <a class="navbar-brand me-auto pe-3" href="<?= base_url() ?>"><img src="/images/logo.jpg" class="logo" /></a>
 
                         <?php if (auth()->user() && auth()->user()->id) : ?>
@@ -97,26 +97,43 @@
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link  <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">Home</a>
+                                    <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">
+                                        <object type="image/svg+xml" data="<?= base_url('images/menu-icons/home.svg') ?>" class="menu-icon home"></object>
+                                        Home
+                                    </a>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a>
+                                    <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>?filter=glr">
+                                        <object type="image/svg+xml" data="<?= base_url('images/menu-icons/gallery.svg') ?>" class="menu-icon gallery"></object>
+                                        Tournament Gallery
+                                    </a>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a>
+                                    <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">
+                                        <object type="image/svg+xml" data="<?= base_url('images/menu-icons/dashboard.svg') ?>" class="menu-icon dashboard"></object>
+                                        My Tournament Dashboard
+                                    </a>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                                    <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">
+                                        <object type="image/svg+xml" data="<?= base_url('images/menu-icons/leaderboard.svg') ?>" class="menu-icon leaderboard"></object>
+                                        Participant Leaderboard
+                                    </a>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link <?php if(current_url()==base_url('contact')){echo "active";}?>" href="<?= base_url('contact') ?>">About, FAQ, and Contact</a>
+                                    <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('contact')){echo "active";}?>" href="<?= base_url('contact') ?>">
+                                        <object type="image/svg+xml" data="<?= base_url('images/menu-icons/faq.svg') ?>" class="menu-icon faq"></object>
+                                        About, FAQ, and Contact
+                                    </a>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
-                                    <a class="nav-link <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">Terms of Service</a>
+                                    <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">
+                                        <object type="image/svg+xml" data="<?= base_url('images/menu-icons/terms.svg') ?>" class="menu-icon terms"></object>
+                                        Terms of Service
+                                    </a>
                                 </li>
                             </ul>
                         </div>
-
                     </nav>
                 </div>
             </div>
@@ -133,17 +150,17 @@
                         <div class="col-md-4">
                             <h4>Pages</h4>
                             <ul class="link-group">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a></li>
-                                <li><a href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a></li>
+                                <li><a href="/"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/home.svg') ?>" class="menu-icon home"></object>Home</a></li>
+                                <li><a href="<?= base_url('gallery') ?>?filter=glr"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/gallery.svg') ?>" class="menu-icon gallery"></object>Tournament Gallery</a></li>
+                                <li><a href="<?= base_url('tournaments') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/dashboard.svg') ?>" class="menu-icon dashboard"></object>My Tournament Dashboard</a></li>
                                 <li>
-                                    <a href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                                    <a href="<?= base_url('participants') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/leaderboard.svg') ?>" class="menu-icon leaderboard"></object>Participant Leaderboard</a>
                                 </li>
                                 <li>
-                                    <a href="<?= base_url('contact') ?>">About, FAQ, and Contact</a>
+                                    <a href="<?= base_url('contact') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/faq.svg') ?>" class="menu-icon faq"></object>About, FAQ, and Contact</a>
                                 </li>
                                 <li>
-                                    <a href="<?= base_url('terms') ?>">Terms of Service</a>
+                                    <a href="<?= base_url('terms') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/terms.svg') ?>" class="menu-icon terms"></object>Terms of Service</a>
                                 </li>
                             </ul>
                         </div>
@@ -296,6 +313,20 @@
                     const selectedTimezone = $('#timezone').val();
                     updateTime(selectedTimezone);
                 })
+            }
+
+            const themeClass = document.getElementsByTagName('body')[0].classList
+            if (themeClass && themeClass[0] != 'bg-light') {
+                document.querySelectorAll('.menu-icon').forEach((element => {
+                    element.onload = function() {
+                        const svgDoc = element.contentDocument; // Access the SVG document
+                        const paths = svgDoc.querySelectorAll('path, line, polyline, polygon, rect, circle, ellipse'); // Select all relevant elements
+                        paths.forEach(path => {
+                            path.setAttribute('fill', 'white'); // Change the stroke color
+                            path.setAttribute('stroke', 'white'); // Change the stroke color
+                        });
+                    }
+                }))
             }
         })
 

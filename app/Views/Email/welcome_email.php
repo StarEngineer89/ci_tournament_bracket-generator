@@ -23,9 +23,9 @@
     <p>📺 <b><a href="<?= base_url('gallery?filter=glr') ?>">Tournament Gallery</a></b> – Spectate live tournaments and watch the competition unfold in real-time—whether you're signed in or just visiting!</p>
     <p>✨️And much more!</p>
     <br />
-    <p>🚀 Your journey starts now—<a href="<?= url_to('tournaments/create') ?>" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: inline-block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">Click Here to Create Your First Tournament</a></p>
+    <p>🚀 Your journey starts now—<a href="<?= url_to('tournaments/create') ?>" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: inline-block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">Click here to Create a Tournament</a></p>
     <br />
-    <p>If you have any questions, feel free to reply back to this email and we'll respond accordingly. 😊</p>
+    <p>Should you have any questions/concerns, don't hesitate to contact us(link to about/contact page) and we'll respond accordingly. 😊</p>
     <br />
     <p>⚔️ Let the games begin!</p>
 </body>
