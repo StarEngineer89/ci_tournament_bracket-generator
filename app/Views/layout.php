@@ -354,6 +354,8 @@
                     particle.style.left = `${xPos}px`;
                     particle.style.top = `${yPos}px`;
 
+                    particle.style.fontSize = '15px';
+
                     // Remove the particle after animation
                     setTimeout(() => {
                         particle.remove();

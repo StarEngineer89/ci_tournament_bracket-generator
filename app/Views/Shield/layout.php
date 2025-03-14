@@ -79,17 +79,17 @@
                     <div class="col-md-4">
                         <h4>Pages</h4>
                         <ul class="link-group">
-                            <li><a href="/">Home</a></li>
-                            <li><a href="<?= base_url('gallery') ?>?filter=glr">Tournament Gallery</a></li>
-                            <li><a href="<?= base_url('tournaments') ?>">My Tournament Dashboard</a></li>
+                            <li><a href="/"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/home.svg') ?>" class="menu-icon home"></object>Home</a></li>
+                            <li><a href="<?= base_url('gallery') ?>?filter=glr"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/gallery.svg') ?>" class="menu-icon gallery"></object>Tournament Gallery</a></li>
+                            <li><a href="<?= base_url('tournaments') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/dashboard.svg') ?>" class="menu-icon dashboard"></object>My Tournament Dashboard</a></li>
                             <li>
-                                <a href="<?= base_url('participants') ?>">Participant Leaderboard</a>
+                                <a href="<?= base_url('participants') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/leaderboard.svg') ?>" class="menu-icon leaderboard"></object>Participant Leaderboard</a>
                             </li>
                             <li>
-                                <a href="<?= base_url('contact') ?>">About, FAQ, and Contact</a>
+                                <a href="<?= base_url('contact') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/faq.svg') ?>" class="menu-icon faq"></object>About, FAQ, and Contact</a>
                             </li>
                             <li>
-                                <a href="<?= base_url('terms') ?>">Terms of Service</a>
+                                <a href="<?= base_url('terms') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/terms.svg') ?>" class="menu-icon terms"></object>Terms of Service</a>
                             </li>
                         </ul>
                     </div>
