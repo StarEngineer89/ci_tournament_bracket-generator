@@ -249,7 +249,193 @@
   color: #fff;
   font-weight: 700;
   font-size: 1.2em;
+  position: relative;
 }
+
+.home-block .btn:active {
+  transform: scale(0.9);
+}
+
+.home-block .btn:hover {
+  transform: scale(1.1);
+}
+
+/* Create Tournament - Plus Symbols Effect */
+@keyframes scatterParticle {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) scale(0.5);
+  }
+}
+
+/* Particle Effect for Create Tournament Button */
+.particle {
+  position: absolute;
+  font-size: 24px;
+  color: white;
+  animation: scatterParticle 1s forwards;
+}
+
+/* Teleport Effect - Beam Waves */
+.home-block .btn.teleport::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 20%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.5s;
+  animation: teleportBeamWave 2s infinite ease-out;
+  transform-origin: center;
+  left: 0;
+  top: 0;
+}
+
+/* Teleport Beam Waves Animation */
+@keyframes teleportBeamWave {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.home-block .btn.teleport:hover::before {
+  opacity: 0.8;
+  transform: scale(1.5);
+}
+
+/* New Beam Outward Effect on Click */
+@keyframes beamScatter {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.home-block .btn.teleport.clicked::before {
+  animation: beamScatter 1s forwards;
+}
+
+/* Check Leaderboard - Sparkles + Glowing Pulse */
+.home-block .btn.leaderboard {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sparkles */
+.home-block .btn.leaderboard::before,
+.home-block .btn.leaderboard::after {
+  content: "✨";
+  position: absolute;
+  font-size: 20px;
+  opacity: 0;
+  animation: sparkle-animation 1.5s infinite;
+}
+
+.home-block .btn.leaderboard::before {
+  top: -5px;
+  left: 10%;
+  animation-delay: 0.2s;
+}
+
+.home-block .btn.leaderboard::after {
+  bottom: -5px;
+  right: 10%;
+  animation-delay: 0.4s;
+}
+
+/* Glow Pulse */
+@keyframes pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px #17a2b8;
+  }
+
+  50% {
+    box-shadow: 0 0 20px #17a2b8;
+  }
+}
+
+.home-block .btn.leaderboard:hover {
+  animation: pulse 1s infinite;
+}
+
+/* Sparkle Animation */
+@keyframes sparkle-animation {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(5px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1) translateY(-5px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(5px);
+  }
+}
+
+/* My Tournament Dashboard - Grid Pattern */
+.home-block .btn.dashboard {
+  position: relative;
+  overflow: hidden;
+}
+
+.home-block .btn.dashboard::before,
+.home-block .btn.dashboard::after {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  opacity: 0;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.3) 1px, transparent 1px);
+  background-size: 10px 10px;
+  transition: opacity 0.3s, transform 0.5s;
+}
+
+.home-block .btn.dashboard::before {
+  top: -10px;
+  left: -10px;
+  transform: scale(0.5);
+}
+
+.home-block .btn.dashboard::after {
+  bottom: -10px;
+  right: -10px;
+  transform: scale(0.5);
+}
+
+.home-block .btn.dashboard:hover::before,
+.home-block .btn.dashboard:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
 
 #tournamentSettings input.form-control-sm {
   max-width: 60px;

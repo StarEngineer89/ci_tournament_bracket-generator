@@ -1,6 +1,6 @@
 <?= $this->extend('\App\Views\layout') ?>
 
-<?= $this->section('title') ?>Tournament Brackets<?= $this->endSection() ?>
+<?= $this->section('title') ?>Terms of Service<?= $this->endSection() ?>
 
 <?= $this->section('pageStyles') ?><?= $this->endSection() ?>
 
