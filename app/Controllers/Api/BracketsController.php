@@ -626,6 +626,10 @@ class BracketsController extends BaseController
             foreach ($registeredUsers as $user_id) {
                 $user = $userProvider->findById($user_id);
 
+                if (!$user) {
+                    continue;
+                }
+
                 $message = lang('Notifications.tournamentReset', [$tournamentEntity->name]);
                 $notificationService->addNotification(['user_id' => $insert_data['user_id'], 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_RESET, 'link' => "tournaments/$tournamentEntity->id/view"]);
 
@@ -743,7 +747,7 @@ class BracketsController extends BaseController
         /** Send the notifications to the participants (registered users) */
         $tournamentData = new \App\Entities\Tournament($tournament);
         $notificationService = new \App\Services\NotificationService();
-        
+
         if ($this->request->getPost('tournament_id')) {
             $users = $this->participantsModel->where('tournament_id', $this->request->getPost('tournament_id'))->where('registered_user_id is Not Null')->findAll();
         } else {
@@ -755,6 +759,11 @@ class BracketsController extends BaseController
             $userSettingsService = service('userSettings');
             foreach ($users as $user) {
                 $user = $userProvider->findById($user['registered_user_id']);
+                
+                if (!$user) {
+                    continue;
+                }
+
                 $message = "You've been added to tournament \"$tournamentData->name\"!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
