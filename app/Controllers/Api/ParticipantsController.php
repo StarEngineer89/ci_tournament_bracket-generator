@@ -181,7 +181,12 @@ class ParticipantsController extends BaseController
             }
         }
 
-        $participants = $this->participantsModel->where(['user_id' => $user_id, 'tournament_id' => $tournament_id, 'sessionid' => $hash])->findAll();
+        if (auth()->user()) {
+            $participants = $this->participantsModel->where(['user_id' => $user_id, 'tournament_id' => $tournament_id])->findAll();
+        } else {
+            $participants = $this->participantsModel->where(['user_id' => $user_id, 'tournament_id' => $tournament_id, 'sessionid' => $hash])->findAll();
+        }
+        
 
         return json_encode(array('result' => 'success', 'participants' => $participants, 'count' => $inserted_count));
     }
@@ -282,7 +287,7 @@ class ParticipantsController extends BaseController
     
     public function clearParticipants()
     {
-        if ($tournament_id = $this->request->getPost('t_id')) {
+        if ($tournament_id = $this->request->getGet('t_id')) {
             $this->participantsModel->where(['user_id' => auth()->user()->id, 'tournament_id' => $tournament_id])->delete();
         } else {
             if (auth()->user()) {

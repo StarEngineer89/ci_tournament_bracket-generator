@@ -657,6 +657,7 @@ class BracketsController extends BaseController
     {
         $list = $this->request->getPost('list');
         $participant_names_string = '';
+        $tournament_id = $this->request->getPost('tournament_id');
 
         $min_count = 2;
         if ($this->request->getPost('type') == TOURNAMENT_TYPE_KNOCKOUT) {
@@ -738,6 +739,45 @@ class BracketsController extends BaseController
             }
             
         }
+
+        /** Send the notifications to the participants (registered users) */
+        $tournamentData = new \App\Entities\Tournament($tournament);
+        $notificationService = new \App\Services\NotificationService();
+        
+        if ($this->request->getPost('tournament_id')) {
+            $users = $this->participantsModel->where('tournament_id', $this->request->getPost('tournament_id'))->where('registered_user_id is Not Null')->findAll();
+        } else {
+            $users = $this->participantsModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->findAll();
+        }
+
+        if ($users) {
+            $userProvider = auth()->getProvider();
+            $userSettingsService = service('userSettings');
+            foreach ($users as $user) {
+                $user = $userProvider->findById($user['registered_user_id']);
+                $message = "You've been added to tournament \"$tournamentData->name\"!";
+                $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
+
+                if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
+                    $email = service('email');
+                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    $email->setTo($user->email);
+                    $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
+                    $email->setMessage(view(
+                        'email/invite-to-tournament',
+                        ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['debug' => false]
+                    ));
+
+                    if ($email->send(false) === false) {
+                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    }
+
+                    $email->clear();
+                }
+            }
+        }
+
         return $this->response->setJSON(['result' => 'success', 'brackets' => $brackets, 'request' => $this->request->getPost()]);
     }
 

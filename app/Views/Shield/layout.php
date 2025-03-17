@@ -135,6 +135,40 @@
             document.getElementById('cookieConsentModal').style.display = 'none';
             alert('Cookies rejected. To reactivate, clear your browser history and visit the site again.');
         }
+        
+        // Handle scatter effect for Create Tournament button
+        document.querySelector('.navbar-brand').addEventListener('click', function(e) {
+            const button = e.target;
+            const buttonRect = button.getBoundingClientRect();
+            const particlesCount = 5; // Number of particles to generate
+
+            for (let i = 0; i < particlesCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.textContent = '🔥';
+                document.querySelector('.navbar-brand').appendChild(particle);
+
+                // Increase the range of scatter
+                const randomX = (Math.random() * 400 - 250); // Range -200px to +200px for more balanced scattering
+                const randomY = (Math.random() * 400 - 250); // Range -200px to +200px for more balanced scattering
+
+                particle.style.setProperty('--x', `${randomX}px`);
+                particle.style.setProperty('--y', `${randomY}px`);
+
+                // Position the particle near the center of the button
+                const xPos = buttonRect.left + buttonRect.width / 2;
+                const yPos = buttonRect.top + buttonRect.height / 2;
+                particle.style.left = `${xPos}px`;
+                particle.style.top = `${yPos}px`;
+
+                particle.style.fontSize = '15px';
+
+                // Remove the particle after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000); // Match the animation duration
+            }
+        });
         </script>
         <script src="/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>

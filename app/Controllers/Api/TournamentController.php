@@ -385,36 +385,6 @@ class TournamentController extends BaseController
         }
         /** End adding the tournament Id into the cookie for guest users */
         
-        /** Send the notifications to the participants (registered users) */
-        $users = $this->participantModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->findAll();
-        if ($users) {
-            $userProvider = auth()->getProvider();
-            $userSettingsService = service('userSettings');
-            foreach ($users as $user) {
-                $user = $userProvider->findById($user['registered_user_id']);
-                $message = "You've been added to tournament \"$tournamentData->name\"!";
-                $this->notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
-
-                if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
-                    $email = service('email');
-                    $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                    $email->setTo($user->email);
-                    $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
-                    $email->setMessage(view(
-                        'email/invite-to-tournament',
-                        ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName')],
-                        ['debug' => false]
-                    ));
-
-                    if ($email->send(false) === false) {
-                        $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                    }
-
-                    $email->clear();
-                }
-            }
-        }
-
         /** Enable foreign key check */
         if (!auth()->user() && $dbDriver === 'MySQLi') {
             $db->query('SET FOREIGN_KEY_CHECKS = 1;');
@@ -1240,17 +1210,22 @@ class TournamentController extends BaseController
     public function reuseParticipants() {
         $participantsModel = model('\App\Models\ParticipantModel');
 
-        // Get the user_id parameter from the request
-        $tournamentId = $this->request->getPost('id');
+        $reuse_Id = $this->request->getPost('id');
+        
+        if ($this->request->getPost('tournament_id')) {
+            $tournament_id = $this->request->getPost('tournament_id');
+        } else {
+            $tournament_id = 0;
+        }
 
         // Apply the filter if the user_id parameter is provided
-        if (!$tournamentId) {
+        if (!$reuse_Id) {
             return $this->response->setJSON(['status' => 'error', 'msg' => "Tournament was not selected."]);
         }
 
 
         // Fetch the participants
-        $participants = $participantsModel->where('tournament_id', $tournamentId)->findAll();
+        $participants = $participantsModel->where('tournament_id', $reuse_Id)->findAll();
 
         /** Clear existing participants */
         if (auth()->user()) {
@@ -1260,9 +1235,9 @@ class TournamentController extends BaseController
         }
 
         if ($user_id) {
-            $participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->delete();
+            $participantsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->delete();
         } else {
-            $participantsModel->where(['tournament_id' => 0, 'sessionid' => $this->request->getPost('hash')])->delete();
+            $participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->delete();
         }
 
         /** Create new participants list from previous tournaments */
@@ -1271,7 +1246,7 @@ class TournamentController extends BaseController
                 $newParticipant = new \App\Entities\Participant([
                     'name' => $participant['name'],
                     'user_id' => $user_id,
-                    'tournament_id' => 0,
+                    'tournament_id' => $tournament_id,
                     'order' => $participant['order'],
                     'active' => 1,
                     'sessionid' => $this->request->getPost('hash'),
@@ -1283,9 +1258,9 @@ class TournamentController extends BaseController
         }
 
         if ($user_id) {
-            $participants = $participantsModel->where(['tournament_id' => 0, 'user_id' => $user_id])->findAll();
+            $participants = $participantsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->findAll();
         } else {
-            $participants = $participantsModel->where(['tournament_id' => 0, 'sessionid' => $this->request->getPost('hash')])->findAll();
+            $participants = $participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->findAll();
         }
 
         // Return the tournaments as a JSON response

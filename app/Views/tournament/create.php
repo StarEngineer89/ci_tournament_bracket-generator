@@ -987,12 +987,13 @@ var reuseParticipant = (element) => {
         performReuseParticipants(element.dataset.tournamentId)
     }
 }
-var performReuseParticipants = (tournament_id = null) => {
+var performReuseParticipants = (reuse_id = null) => {
     $.ajax({
         type: "POST",
         url: apiURL + '/tournaments/reuse-participants',
         data: {
-            id: tournament_id,
+            id: reuse_id,
+            tournament_id: tournament_id,
             hash: hash
         },
         beforeSend: function() {

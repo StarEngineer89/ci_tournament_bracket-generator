@@ -25,7 +25,7 @@
     <br />
     <p>🚀 Your journey starts now—<a href="<?= url_to('tournaments/create') ?>" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: inline-block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">Click here to Create a Tournament</a></p>
     <br />
-    <p>Should you have any questions/concerns, don't hesitate to contact us(link to about/contact page) and we'll respond accordingly. 😊</p>
+    <p>Should you have any questions/concerns, don't hesitate to <a href="<?= base_url('contact')?>">contact us</a> and we'll respond accordingly. 😊</p>
     <br />
     <p>⚔️ Let the games begin!</p>
 </body>
