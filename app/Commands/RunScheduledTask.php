@@ -59,6 +59,11 @@ class RunScheduledTask extends BaseCommand
         $voteLibrary = new \App\Libraries\VoteLibrary();
         $schedulesModel = model('\App\Models\SchedulesModel');
         $schedules = $schedulesModel->where(['result' => 0])->findAll();
+        $userProvider = auth()->getProvider();
+        $userSettingService = service('userSettings');
+        $notificationService = service('notification');
+
+        $tournamentsModel = model('\App\Models\TournamentModel');
 
         $host_id = auth()->user() ? auth()->user()->id : 0;
         
@@ -66,21 +71,21 @@ class RunScheduledTask extends BaseCommand
             foreach($schedules as $schedule) {
                 $schedule_time = new \DateTime($schedule['schedule_time']);
                 $current_time = new \DateTime();
+                
+                $tournament = $tournamentsModel->find($schedule['tournament_id']);
+                $tournament = new \App\Entities\Tournament($tournament);
 
                 if (($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART || $schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) && $current_time >= $schedule_time) {
                     $participantsModel = model('\App\Models\ParticipantModel');
                     $registeredUsers = $participantsModel->where(['tournament_id' => $schedule['tournament_id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
 
                     if ($registeredUsers) {
-                        $userProvider = auth()->getProvider();
-                        $userSettingService = service('userSettings');
-                        $notificationService = service('notification');
-
-                        $tournamentsModel = model('\App\Models\TournamentModel');
-                        $tournament = $tournamentsModel->find($schedule['tournament_id']);
-                        $tournament = new \App\Entities\Tournament($tournament);
                         foreach ($registeredUsers as $user_id) {
                             $user = $userProvider->findById($user_id);
+
+                            if (!$user) {
+                                continue;
+                            }
 
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
                                 $message = "The tournament \"$tournament->name\" has started!";
