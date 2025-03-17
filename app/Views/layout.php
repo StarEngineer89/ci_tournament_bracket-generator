@@ -86,11 +86,11 @@
                             </ul>
                         </div>
                         <?php else: ?>
-                        <a class="btn btn-primary me-md-3 me-sm-2 order-md-3" href="<?= base_url('login') ?>">Login</a>
-                        <a class="btn btn-primary order-md-4 me-sm-2" href="<?= base_url('register') ?>">Signup</a>
+                        <a class="btn btn-primary me-2 order-lg-3" href="<?= base_url('login') ?>">Login</a>
+                        <a class="btn btn-primary me-2 order-lg-4" href="<?= base_url('register') ?>">Signup</a>
                         <?php endif; ?>
 
-                        <button class="navbar-toggler order-md-5 ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler ms-2 order-lg-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
 

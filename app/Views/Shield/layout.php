@@ -21,7 +21,7 @@
                 <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary p-0">
                     <a class="navbar-brand" href="<?= base_url() ?>"><img src="/images/logo.jpg" class="logo" /></a>
 
-                    <button class="navbar-toggler order-md-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <button class="navbar-toggler order-lg-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
