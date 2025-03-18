@@ -30,6 +30,8 @@ a {
 <?= $this->section('pageScripts') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.0/jquery-ui.min.js" integrity="sha512-MlEyuwT6VkRXExjj8CdBKNgd+e2H+aYZOCUaCrt9KRk6MlZDOs91V1yK22rwm8aCIsb5Ec1euL8f0g58RKT/Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="https://cdn.canvasjs.com/jquery.canvasjs.min.js"></script>
 <script type="text/javascript">
 var participantsTable = null;
 var participantsTableRows;
@@ -188,7 +190,8 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                         }
 
                         if (i >= 3) {
-                            moreHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                            moreHtml +=
+                                `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
 
                             if (i < row.won_tournaments.length - 1) {
                                 if (moreHtml) {
@@ -199,7 +202,8 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                             return
                         }
 
-                        listHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                        listHtml +=
+                            `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
                         if (i < row.won_tournaments.length - 1) {
                             listHtml += ', '
                             if (moreHtml) {
@@ -231,7 +235,8 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                         }
 
                         if (i >= 3) {
-                            moreHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                            moreHtml +=
+                                `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
 
                             if (i < row.tournaments_list.length - 1) {
                                 if (moreHtml) {
@@ -242,7 +247,8 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                             return
                         }
 
-                        listHtml += `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+                        listHtml +=
+                            `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
                         if (i < row.tournaments_list.length - 1) {
                             listHtml += ', '
                             if (moreHtml) {
@@ -281,6 +287,7 @@ participantsTable.on('draw.dt', function() {
         var tooltip = new bootstrap.Tooltip(element)
     })
 })
+
 const readMoreList = (element) => {
     let tdElement = element.parentElement
     let list = tdElement.querySelectorAll('.list')[0].innerHTML.trim()
@@ -330,6 +337,89 @@ if (noteAlertTrigger) {
 }
 
 $('#toggleNoteBtn').click();
+
+const pieChartPlaceholder = document.getElementById('pieChartPlaceholder')
+const appendPieChart = (message, type) => {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = [
+        `<div class="container alert alert-${type} alert-dismissible" id="pieChartAlert" role="alert">`,
+        `   <div id="pieChart" style="min-height: 410px;"></div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+    ].join('')
+
+    pieChartPlaceholder.append(wrapper)
+}
+
+const pieChartAlertTrigger = document.getElementById('togglePieChartBtn')
+if (pieChartAlertTrigger) {
+    const pieChartHtml = $('#pieChart').html();
+    pieChartAlertTrigger.addEventListener('click', () => {
+        appendPieChart('', 'light')
+        drawChart()
+
+        pieChartAlertTrigger.classList.add('d-none')
+
+        const myAlert = document.getElementById('pieChartAlert')
+        myAlert.addEventListener('closed.bs.alert', event => {
+            pieChartAlertTrigger.classList.remove('d-none')
+        })
+    })
+}
+
+$('#togglePieChartBtn').click();
+
+function drawChart() {
+    $.ajax({
+        "url": apiURL + '/participants/get-analysis',
+        "type": "POST",
+        "dataSrc": "",
+        "data": {},
+        dataType: "JSON",
+        beforeSend: function() {
+            $('#beforeProcessing').removeClass('d-none')
+        },
+        success: function(result) {
+            var data = []
+            var wons = 0
+            if (result.participants.length) {
+                result.participants.forEach(participant => {
+                    data.push({
+                        label: participant.name,
+                        y: participant.tournaments_won
+                    })
+                    wons += participant.tournaments_won
+                })
+
+                data.push({
+                    label: 'Others',
+                    y: result.tournaments_count - wons
+                })
+            }
+
+            var options = {
+                title: {
+                    text: "Tournaments Won Analyze"
+                },
+                data: [{
+                    type: "pie",
+                    startAngle: -90,
+                    showInLegend: "true",
+                    legendText: "{label}",
+                    indexLabel: "{label} ({y})",
+                    yValueFormatString: "#,##0.#" % "",
+                    dataPoints: data
+                }]
+            };
+            $("#pieChart").CanvasJSChart(options);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        $('#beforeProcessing').addClass('d-none')
+    });
+}
 </script>
 <?= $this->endSection() ?>
 
@@ -339,25 +429,34 @@ $('#toggleNoteBtn').click();
         <div class="container">
             <div class="text-center">
                 <h3>Participant Leaderboard</h3>
-                <p>Discover the top-performing participants across all tournaments. See who’s dominating the competition and climbing to the top with every victory!</p>
+                <p>Discover the top-performing participants across all tournaments. See who’s dominating the competition
+                    and climbing to the top with every victory!</p>
             </div>
 
             <div class="container alert-btn-container mb-1 d-flex justify-content-end">
                 <button type="button" class="btn" id="toggleNoteBtn">
                     <i class="fa-solid fa-circle-info"></i>
                 </button>
+
+                <button type="button" class="btn" id="togglePieChartBtn">
+                    <i class="fa-classic fa-solid fa-chart-pie fa-fw"></i>
+                </button>
             </div>
 
             <div id="notePlaceholder"></div>
             <div id="noteMsg" class="d-none">
-
                 Note:<br />
                 By default, the top participants are ranked by the number of tournaments they’ve won.<br />
-                Registered participants (prefixed with @) who were explicitly added/invited by a host are grouped under a single record, ensuring accurate tracking of their achievements.<br />
+                Registered participants (prefixed with @) who were explicitly added/invited by a host are grouped under
+                a single record, ensuring accurate tracking of their achievements.<br />
                 In contrast, anonymous participants have separate records for each tournament they join. <br />
-                Even if an anonymous participant uses the same name across multiple tournaments, there is no way to verify if they are the same individual or different participants.<br />
-                This is one of the key benefits of registration—it allows for proper verification, ensuring consistency and prioritizing registered participants on the leaderboard!
+                Even if an anonymous participant uses the same name across multiple tournaments, there is no way to
+                verify if they are the same individual or different participants.<br />
+                This is one of the key benefits of registration—it allows for proper verification, ensuring consistency
+                and prioritizing registered participants on the leaderboard!
             </div>
+
+            <div id="pieChartPlaceholder"></div>
         </div>
 
         <div class="buttons d-flex justify-content-end">

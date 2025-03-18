@@ -52,6 +52,7 @@ $routes->group('api', static function ($routes) {
 
     $routes->group('participants', static function ($routes) {
         $routes->post('get-leaderboard', 'Api\ParticipantsController::getParticipants');
+        $routes->post('get-analysis', 'Api\ParticipantsController::getAnalysis');
         $routes->post('new', 'Api\ParticipantsController::addParticipant');
         $routes->post('update/(:num)', 'Api\ParticipantsController::updateParticipant/$1');
         $routes->delete('delete/(:num)', 'Api\ParticipantsController::deleteParticipant/$1');
