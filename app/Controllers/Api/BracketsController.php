@@ -147,6 +147,8 @@ class BracketsController extends BaseController
         $notificationService = service('notification');
         $userSettingsService = service('userSettings');
 
+        $wsClient = new \App\Libraries\WebSocketClient();
+
         $nextBracket = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->findAll();
         if (count($nextBracket) == 1) {
             $nextBracket = $nextBracket[0];
@@ -238,6 +240,8 @@ class BracketsController extends BaseController
             }
 
             $this->bracketsModel->save($bracket);
+
+            $wsClient->sendMessage("tournamentUpdated");
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
@@ -285,6 +289,8 @@ class BracketsController extends BaseController
                     }
                 }
             }
+
+            $wsClient->sendMessage("tournamentUpdated");
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
@@ -323,8 +329,8 @@ class BracketsController extends BaseController
                 }
                 $this->bracketsModel->save($nextBracket);
             }
-
-            /** Add the notification and send the congratulation email if it's the registered user */
+            
+            $wsClient->sendMessage("tournamentUpdated");
         }
 
         if (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
@@ -341,6 +347,7 @@ class BracketsController extends BaseController
                 $this->bracketsModel->save($nextBracket);
             }
             
+            $wsClient->sendMessage("tournamentUpdated");
         }
         /** Change the tournament status
          *  If mark as winner in final, set status to completed

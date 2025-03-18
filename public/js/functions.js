@@ -60,6 +60,20 @@ $(document).on('ready', function () {
                 
             }
 
+            if (data[0] == "tournamentUpdated") {
+                const pathname = window.location.pathname
+                const paths = pathname.split(/(\/|\?)/)
+
+                if (paths[2] == 'gallery') {
+                    tournamentsTable.ajax.reload()
+                }
+
+                if (paths[2] == 'participants') {
+                    participantsTable.ajax.reload()
+                    drawChart()
+                }
+            }
+
             if ($('#brackets').length) {
                 if (data[1] == tournament_id) {
                     if (data[0] == "winnerChange") {
