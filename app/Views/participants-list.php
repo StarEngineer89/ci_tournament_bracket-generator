@@ -399,7 +399,7 @@ function drawChart() {
 
             var options = {
                 title: {
-                    text: "Tournaments Won Analyze"
+                    text: "Participants Won Analyze"
                 },
                 data: [{
                     type: "pie",
