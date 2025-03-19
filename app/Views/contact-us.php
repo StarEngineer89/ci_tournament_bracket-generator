@@ -103,9 +103,29 @@
                                     <strong>What happens if I accidentally leave my browser session before signing up/signing in?</strong>
                                 </button>
                             </h5>
-                            <div id="explainReservation" class="accordion-collapse collapse" data-bs-parent="#faqItems">
+                            <div id="explainReservation" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
                                 <p class="ps-2">Unfortunately, guest tournaments are tied to the current browser session. If you close the tab and youre using your browser as something like incognito/private mode, your tournament will be unclaimed and automatically <strong>deleted after 24 hours</strong>!</p>
                                 <p class="ps-2">If you want to retain full access, we recommend signing up/signing in before leaving your session. That way, your tournament is linked to your account and won’t be lost!</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explainContact" aria-expanded="false" aria-controls="collapseThree">
+                                    <strong>How can I contact a tournament organizer/host or a registered participant on the leaderboard?</strong>
+                                </button>
+                            </h5>
+                            <div id="explainContact" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
+                                <p class="ps-2">If a tournament organizer/host or a registered participant has chosen to hide their email address (for privacy reasons) from their <strong>profile settings</strong>, their email address will not be displayed in the tournament, so unfortunately you will not be able to contact the organizer/host or verified participant in such scenario.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explainActions" aria-expanded="false" aria-controls="collapseThree">
+                                    <strong>As a tournament organizer/host, or someone whose been delegated admin(edit) permissions, how can I administer the participants in the tournament, such as <strong>Marking participants as winners</strong> manually, <strong>Adding participants</strong>, <strong>Changing participants</strong>, <strong>Removing participants</strong>, and <strong>Deleting brackets</strong>?</strong>
+                                </button>
+                            </h5>
+                            <div id="explainActions" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
+                                <p class="ps-2">You can simply right-click (or hold on mobile/tablet) the participant bracket box/modal and several actions will be available to you to administer the participants/brackets!</p>
                             </div>
                         </div>
                     </div>

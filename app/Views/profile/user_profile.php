@@ -276,7 +276,7 @@ let deleteAccount = () => {
                     <div class="row mb-3">
                         <label for="switchHideEmail" class="col-md-3 col-sm-6 col-form-label text-start pe-0">
                             Hide Email Address
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="For enhanced privacy on the site">
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="For enhanced privacy on the site.<br/>Enabling the switch will not apply this effect, instead, it simply reveals two additional sub-options for specific customizations, which are the options that actually apply the privacy settings if selected.">
                                 <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                             </button>
                         </label>

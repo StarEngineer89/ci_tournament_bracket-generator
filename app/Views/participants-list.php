@@ -339,6 +339,7 @@ const appendPieChart = (message, type) => {
     wrapper.innerHTML = [
         `<div class="container alert alert-${type} alert-dismissible" id="pieChartAlert" role="alert">`,
         `   <div id="pieChart"></div>`,
+        `   <div class="text-center">${message}</div>`,
         '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
         '</div>'
     ].join('')
@@ -347,10 +348,10 @@ const appendPieChart = (message, type) => {
 }
 
 const pieChartAlertTrigger = document.getElementById('togglePieChartBtn')
+const msg = $('#pieChartTypes').html();
 if (pieChartAlertTrigger) {
-    const pieChartHtml = $('#pieChart').html();
     pieChartAlertTrigger.addEventListener('click', () => {
-        appendPieChart('', 'light')
+        appendPieChart(msg, 'light')
         drawChart()
 
         pieChartAlertTrigger.classList.add('d-none')
@@ -359,17 +360,25 @@ if (pieChartAlertTrigger) {
         myAlert.addEventListener('closed.bs.alert', event => {
             pieChartAlertTrigger.classList.remove('d-none')
         })
+
+        document.querySelectorAll('input.piecharttype').forEach((element) => {
+            element.addEventListener('change', event => {
+                drawChart(element.value)
+            })
+        })
     })
 }
 
 $('#togglePieChartBtn').click();
 
-function drawChart() {
+function drawChart(type = 'tournament') {
     $.ajax({
         "url": apiURL + '/participants/get-analysis',
         "type": "POST",
         "dataSrc": "",
-        "data": {},
+        "data": {
+            type: type
+        },
         dataType: "JSON",
         beforeSend: function() {
             $('#beforeProcessing').removeClass('d-none')
@@ -379,17 +388,36 @@ function drawChart() {
             var wons = 0
             if (result.participants.length) {
                 result.participants.forEach(participant => {
+                    var yValue = participant.tournaments_won
+                    if (type == 'bracket') {
+                        yValue = participant.brackets_won
+                    }
+                    if (type == 'score') {
+                        yValue = participant.accumulated_score
+                    }
+                    if (type == 'votes') {
+                        yValue = participant.votes
+                    }
+
                     data.push({
                         label: participant.name,
-                        y: participant.tournaments_won
+                        y: yValue
                     })
+
                     wons += participant.tournaments_won
                 })
 
-                data.push({
-                    label: 'Others',
-                    y: result.tournaments_count - wons
-                })
+                if (type == 'tournaments') {
+                    data.push({
+                        label: 'Others',
+                        y: result.tournaments_count - wons
+                    })
+                } else {
+                    data.push({
+                        label: 'Others',
+                        y: null
+                    })
+                }
             }
 
             var options = {
@@ -452,6 +480,24 @@ function drawChart() {
             </div>
 
             <div id="pieChartPlaceholder"></div>
+            <div id="pieChartTypes" class="d-none">
+                <div class="form-check form-check-inline">
+                    <input class="piecharttype form-check-input" type="radio" id="tournamentWonChart" name="chartType" value="tournament" checked>
+                    <label class="form-check-label" for="tournamentWonChart">Tournaments Won</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="piecharttype form-check-input" type="radio" id="bracketsWonChart" name="chartType" value="bracket">
+                    <label class="form-check-label" for="bracketsWonChart">Brackets Won</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="piecharttype form-check-input" type="radio" id="topScoreChart" name="chartType" value="score">
+                    <label class="form-check-label" for="topScoreChart">Top Score</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="piecharttype form-check-input" type="radio" id="mostVotesChart" name="chartType" value="votes">
+                    <label class="form-check-label" for="mostVotesChart">Most Votes</label>
+                </div>
+            </div>
         </div>
 
         <div class="buttons d-flex justify-content-end">

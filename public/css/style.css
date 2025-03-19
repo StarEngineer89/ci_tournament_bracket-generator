@@ -1643,6 +1643,9 @@
   font-size: 14px;
 }
 
+.canvasjs-chart-container {
+  overflow: hidden;
+}
 .canvasjs-chart-credit {
   display: none;
 }

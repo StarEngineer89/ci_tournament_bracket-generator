@@ -401,6 +401,8 @@ $(document).ready(function() {
 <script src="/js/brackets.js"></script>
 <?= $this->endSection() ?>
 
+<?php $userSettingService = service('userSettings') ?>
+
 <?= $this->section('main') ?>
 <div class="background">
     <div class="corner-top-left"></div>
@@ -502,7 +504,9 @@ $(document).ready(function() {
         <div id="availabilityAlertPlaceholder"></div>
         <div id="availabilityAlertMsg" class="d-none">
             <?php $created_by = $tournament['created_by'] ?>
-            The tournament <strong><?= $tournament['name'] ?></strong> hosted by <strong><?= $created_by ? "$created_by->username ($created_by->email)" : 'Guest' ?></strong> will be available starting <?= auth()->user() ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?> and ending on <?= auth()->user() ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?>. <br />
+            <?php $created_by_name = $created_by ? $created_by->username : 'Guest' ?>
+            <?php $created_by_name .= (!$userSettingService->get('hide_email_host') && $created_by) ? " ($created_by->email)" : '' ?>
+            The tournament <strong><?= $tournament['name'] ?></strong> hosted by <strong><?= $created_by_name ?></strong> will be available starting <?= auth()->user() ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?> and ending on <?= auth()->user() ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?>. <br />
             If voting is enabled, the voting period will begin once the tournament availability starts and conclude once the availability ends.
         </div>
         <?php endif; ?>

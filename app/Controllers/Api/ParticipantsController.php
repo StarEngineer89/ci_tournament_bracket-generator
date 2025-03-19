@@ -35,6 +35,9 @@ class ParticipantsController extends BaseController
             
             $participants = $this->getParticipantsList($participant_name);
             
+            $keys = array_column($participants, 'tournaments_won');
+            array_multisort($keys, SORT_DESC, $participants);
+
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                                     ->setJSON($participants);
         }
@@ -48,22 +51,40 @@ class ParticipantsController extends BaseController
     {
         // Check if it's an AJAX request
         if ($this->request->isAJAX()) {
-            $list = $this->getParticipantsList();
-            $participants = [];
-            if ($list) {
-                foreach ($list as $i => $participant) {
+            $participants = $this->getParticipantsList();
+            $type = 'tournaments_won';
+
+            if ($this->request->getPost('type') == 'bracket') {
+                $type = 'brackets_won';
+            }
+
+            if ($this->request->getPost('type') == 'score') {
+                $type = 'accumulated_score';
+            }
+
+            if ($this->request->getPost('type') == 'votes') {
+                $type = 'votes';
+            }
+
+            $keys = array_column($participants, $type);
+
+            array_multisort($keys, SORT_DESC, $participants);
+
+            $list = [];
+            if ($participants) {
+                foreach ($participants as $i => $participant) {
                     if ($i > 4) {
                         break;
                     }
 
-                    $participants[] = $participant;
+                    $list[] = $participant;
                 }
             }
 
             $tournaments_count = $this->tournamentsModel->where('status', TOURNAMENT_STATUS_COMPLETED)->countAllResults();
             
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON(['participants' => $participants, 'tournaments_count' => $tournaments_count]);
+                                    ->setJSON(['participants' => $list, 'tournaments_count' => $tournaments_count]);
         }
 
         // If not an AJAX request, return a 403 error
@@ -168,9 +189,6 @@ class ParticipantsController extends BaseController
                     
                 }
             }
-
-            $keys = array_column($newList, 'tournaments_won');
-            array_multisort($keys, SORT_DESC, $newList);
 
             $participants = $newList;
         }

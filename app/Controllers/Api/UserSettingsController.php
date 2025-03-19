@@ -79,7 +79,7 @@ class UserSettingsController extends BaseController
             $db->query('PRAGMA foreign_keys = ON');
         }
 
-        return $this->response->setJson(['status' => 'success', 'setting' => $setting, 'message' => 'You saved your settings successfully!']);
+        return $this->response->setJson(['status' => 'success', 'setting' => $setting, 'message' => 'Settings updated successfully!']);
     }
 
     public function delete($id = null)
