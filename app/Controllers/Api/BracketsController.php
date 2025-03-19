@@ -33,6 +33,9 @@ class BracketsController extends BaseController
 
     public function getBrackets($id)
     {
+        $userProvider = auth()->getProvider();
+        $userSettingService = service('userSettings');
+
         $tournament_settings = $this->tournamentsModel->find($id);
         $brackets = $this->bracketsModel->where('tournament_id', $id)->orderBy('bracketNo')->findAll();
 
@@ -80,9 +83,13 @@ class BracketsController extends BaseController
                     $teams[0]['votes_in_round'] = count($votes_in_round);
                     $teams[0]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[0]['id']) ? true : false;
 
+                    $participant = $this->participantsModel->find($teams[0]['id']);
                     if (!isset($teams[0]['order'])) {
-                        $participant = $this->participantsModel->find($teams[0]['id']);
                         $teams[0]['order'] = $participant['order'];
+                    }
+
+                    if ($participant['registered_user_id'] && !$userSettingService->get('hide_email_participant', $participant['registered_user_id'])) {
+                        $teams[0]['email'] = $userProvider->findById($participant['registered_user_id'])->email;
                     }
                 }
 
@@ -102,9 +109,13 @@ class BracketsController extends BaseController
                     $teams[1]['votes_in_round'] = count($votes_in_round);
                     $teams[1]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[1]['id']) ? true : false;
 
+                    $participant = $this->participantsModel->find($teams[1]['id']);
                     if (!isset($teams[1]['order'])) {
-                        $participant = $this->participantsModel->find($teams[1]['id']);
                         $teams[1]['order'] = $participant['order'];
+                    }
+
+                    if ($participant['registered_user_id'] && !$userSettingService->get('hide_email_participant', $participant['registered_user_id'])) {
+                        $teams[1]['email'] = $userProvider->findById($participant['registered_user_id'])->email;
                     }
                 }
                 

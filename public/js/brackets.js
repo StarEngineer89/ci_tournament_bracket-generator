@@ -387,7 +387,12 @@ let editing_mode = false;
             nameSpan.classList.add('name')
             nameSpan.classList.add('tooltip-span')
             nameSpan.setAttribute('data-bs-toggle', "tooltip")
-            nameSpan.setAttribute('data-bs-title', teams[team_index].name)
+            if (teams[team_index].email) {
+                nameSpan.setAttribute('data-bs-html', true)
+                nameSpan.setAttribute('data-bs-title', teams[team_index].name + `<br/>(${teams[team_index].email})`)
+            } else {
+                nameSpan.setAttribute('data-bs-title', teams[team_index].name)
+            }
             nameSpan.textContent = teams[team_index].name;
             participant.appendChild(nameSpan)
 

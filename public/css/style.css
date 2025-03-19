@@ -1643,3 +1643,6 @@
 .canvasjs-chart-credit {
   display: none;
 }
+.canvasjs-chart-canvas:first-child {
+  position: relative !important;
+}

@@ -35,7 +35,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
     scrollX: true,
     "columnDefs": [{
         "orderable": false,
-        "targets": [2, 3, 7, 8]
+        "targets": [2, 3, 8]
     }],
     // Add custom initComplete to initialize select all checkbox
     "initComplete": function(settings, json) {
@@ -194,7 +194,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
         {
             "data": null,
             "render": function(data, type, row, meta) {
-                return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email}" data-id="${row.user_id}">${row.username}</span>`;
+                return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email ? row.email : row.username}" data-id="${row.user_id}">${row.username}</span>`;
             },
             "createdCell": function(td, cellData, rowData, row, col) {
                 $(td).attr('data-label', 'name');

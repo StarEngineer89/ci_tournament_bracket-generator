@@ -44,6 +44,9 @@ class TournamentController extends BaseController
         $created_by = $this->request->getPost('created_by');
         $accessibility = $this->request->getPost('accessibility');
         
+        $userProvider = auth()->getProvider();
+        $userSettingService = service('userSettings');
+
         /** Filter the tournaments by my tournament, archived, shared, gallery */
         if ($this->request->getGet('filter') == 'shared') {
             $tournaments = $this->shareSettingModel->tournamentDetails();
@@ -161,7 +164,11 @@ class TournamentController extends BaseController
             }
 
             $tournament['created_at'] = (auth()->user()) ? convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id)) : $tournament['created_at'];
-                
+
+            if ($userSettingService->get('hide_email_host', $tournament['user_id'])) {
+                $tournament['email'] = null;
+            }
+
             $participants = $this->participantModel->where('tournament_id', $tournament_id)->findAll();
             if ($participants) {
                 $tournament['participants_count'] = count($participants);
@@ -180,8 +187,8 @@ class TournamentController extends BaseController
         $status = $this->request->getPost('status');
         $created_by = $this->request->getPost('created_by');
 
-        $userModel = model('CodeIgniter\Shield\Models\UserModel');
-        $userIdentityModel = model('CodeIgniter\Shield\Models\UserIdentityModel');
+        $userProvider = auth()->getProvider();
+        $userSettingService = service('userSettings');
 
         $tournaments = $this->tournamentModel->where(['visibility' => 1]);
         $searchString = '';
@@ -214,13 +221,14 @@ class TournamentController extends BaseController
         foreach($tournaments as $tournament){
             $temp = $tournament;
             
-            $temp['username'] = 'Guest';
-            $temp['email'] = 'Guest User';
+            $temp['username'] = 'Guest User';
             if($tournament['user_id'] > 0){
-                $user = $userModel->find($tournament['user_id']);
-                $userId = $userIdentityModel->where(['user_id' => $tournament['user_id']])->first();
+                $user = $userProvider->findById($tournament['user_id']);
                 $temp['username'] = $user->username;
-                $temp['email'] = $userId->secret;
+
+                if (!$userSettingService->get('hide_email_host', $user->id)) {
+                    $temp['email'] = $user->email;
+                }
             }
 
             $participantModel = model('\App\Models\ParticipantModel');

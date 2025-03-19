@@ -639,7 +639,7 @@ $(document).ready(function() {
                 "data": null,
                 "render": function(data, type, row, meta) {
                     return `
-                    <span class="d-inline-block tooltip-span" data-bs-toggle="tooltip" data-bs-title="${row.email}" data-id="${row.user_id}">
+                    <span class="d-inline-block tooltip-span" data-bs-toggle="tooltip" data-bs-title="${row.email ? row.email : row.username}" data-id="${row.user_id}">
                         ${row.username}
                     </span>
                     `

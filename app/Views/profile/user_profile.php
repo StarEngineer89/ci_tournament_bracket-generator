@@ -44,6 +44,94 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#switchHideEmail').on('change', (e) => {
+        e.preventDefault();
+
+        let data = {
+            'hide_email': e.target.checked ? 1 : 0
+        }
+
+        if (!e.target.checked) {
+            data.hide_email_host = 0
+            data.hide_email_participant = 0
+        }
+
+        $.ajax({
+            url: '<?= base_url('api/usersettings/save') ?>',
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(response) {
+                if (response.message) {
+                    $('#responseMessage').html()
+                    $('#notification-area').html(
+                        `<div class="alert ${response.status == 'success' ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
+                    );
+                    $('#changePasswordForm')[0].reset(); // Reset form if successful
+                    $('#changePasswordModal').modal('hide')
+                }
+
+                if (e.target.checked) {
+                    $('#hideEmailOptions').removeClass('d-none')
+                } else {
+                    $('#hideEmailOptions').addClass('d-none')
+                    $('#hideEmailOptions input').attr('checked', false)
+                }
+
+                // Clear notification after 10 seconds
+                setTimeout(function() {
+                    $('#notification-area').fadeOut('slow', function() {
+                        $(this).empty().show(); // Empty and show to reset for future messages
+                    });
+                }, 5000);
+            },
+            error: function() {
+                $('#notification-area').html(
+                    '<div class="alert alert-danger">An error occurred. Please try again.</div>'
+                );
+            }
+        });
+    })
+
+    $('#hideEmailOptions input').on('change', (e) => {
+        e.preventDefault();
+        const name = e.target.getAttribute('name')
+        let data = {}
+        data[name] = e.target.checked ? 1 : 0
+
+        $.ajax({
+            url: '<?= base_url('api/usersettings/save') ?>',
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(response) {
+                if (response.message) {
+                    $('#responseMessage').html()
+                    $('#notification-area').html(
+                        `<div class="alert ${response.status == 'success' ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
+                    );
+                    $('#changePasswordForm')[0].reset(); // Reset form if successful
+                    $('#changePasswordModal').modal('hide')
+                }
+
+                // Clear notification after 10 seconds
+                setTimeout(function() {
+                    $('#notification-area').fadeOut('slow', function() {
+                        $(this).empty().show(); // Empty and show to reset for future messages
+                    });
+                }, 5000);
+            },
+            error: function() {
+                $('#notification-area').html(
+                    '<div class="alert alert-danger">An error occurred. Please try again.</div>'
+                );
+            }
+        });
+    })
+
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 });
 
 let sendVerificationCode = (resend = false) => {
@@ -174,24 +262,59 @@ let deleteAccount = () => {
             </div>
 
             <div class="container">
+                <?php $userSettingService = service('userSettings') ?>
                 <form>
                     <div class="row mb-3">
-                        <label for="inputEmail3" class="col-sm-3 col-form-label text-start">Email</label>
+                        <label for="inputEmail3" class="col-md-3 col-sm-6 col-form-label text-start">Email</label>
                         <div class="col-sm-6">
                             <input type="email" class="form-control" id="inputEmail3" value="<?= $userInfo->email ?>" disabled>
                         </div>
-                        <div class="col-sm-3 text-start">
+                        <div class="col-sm-3 text-start d-flex align-items-center">
                             <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changeEmailModal">Change Email</a>
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <label for="inputPassword3" class="col-sm-3 col-form-label text-start">Password</label>
-                        <div class="col-sm-6 text-start">
+                        <label for="switchHideEmail" class="col-md-3 col-sm-6 col-form-label text-start pe-0">
+                            Hide Email Address
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="For enhanced privacy on the site">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </button>
+                        </label>
+                        <div class="col-sm-6 pt-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="hide-email" role="switch" id="switchHideEmail" <?= $userSettingService->get('hide_email') ? 'checked' : '' ?>>
+                            </div>
+
+                            <div class="hide-email-options <?= $userSettingService->get('hide_email') ? '' : 'd-none' ?>" id="hideEmailOptions">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="hideEmailAsHost" name="hide_email_host" <?= $userSettingService->get('hide_email_host') ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="hideEmailAsHost">
+                                        As Tournament Host
+                                        <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="Hides Email Address from being displayed in the Tournament Organizer/Host informational modals.">
+                                            <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                        </button>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="hideEmailAsParticipant" name="hide_email_participant" <?= $userSettingService->get('hide_email_participant') ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="hideEmailAsParticipant">
+                                        As Tournament Participant
+                                        <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="Hides Email Address from being displayed in the Tournament Participants field and Leaderboard informational modals.">
+                                            <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                        </button>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputPassword3" class="col-md-3 col-sm-6 col-form-label text-start">Password</label>
+                        <div class="col-sm-6 text-start d-flex align-items-center">
                             <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</a>
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <label for="closeAccount" class="col-sm-3 col-form-label text-start">Close Account</label>
+                        <label for="closeAccount" class="col-md-3 col-sm-6 col-form-label text-start">Close Account</label>
                         <div class="col-sm-6 text-start">
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#closeAccountModal">Close Account</button>
                         </div>

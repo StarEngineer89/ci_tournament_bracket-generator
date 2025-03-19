@@ -158,12 +158,7 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         {
             "data": null,
             "render": function(data, type, row, meta) {
-                if (row.email) {
-                    return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email}">${row.name}</span>`
-                } else {
-                    return `<span>${row.name}</span>`
-                }
-
+                return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="${row.email ? row.name + '<br/>(' + row.email + ')' : row.name}">${row.name}</span>`
             },
             "createdCell": function(td, cellData, rowData, row, col) {
                 $(td).attr('data-label', 'name');
@@ -343,7 +338,7 @@ const appendPieChart = (message, type) => {
     const wrapper = document.createElement('div')
     wrapper.innerHTML = [
         `<div class="container alert alert-${type} alert-dismissible" id="pieChartAlert" role="alert">`,
-        `   <div id="pieChart" style="min-height: 410px;"></div>`,
+        `   <div id="pieChart"></div>`,
         '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
         '</div>'
     ].join('')
