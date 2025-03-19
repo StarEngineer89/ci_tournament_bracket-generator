@@ -557,7 +557,9 @@
 }
 
 .bg-cs .brackets .round-name-wrapper .btn {
-  color: #fff
+  color: #fff;
+  background: none;
+  border: none;
 }
 
 .brackets .round-name-wrapper {

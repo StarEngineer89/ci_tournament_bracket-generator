@@ -37,6 +37,10 @@ class UserSettingsService
     public function get($key, $user_id = null)
     {
         if (!$user_id) {
+            if (!auth()->user()) {
+                return false;
+            }
+            
             $user_id = auth()->user()->id;
         }
 
