@@ -33,8 +33,13 @@
             <?= $tournament['name'] ?>
         </h5>
 
+        <?php $userSettingService = service('userSettings') ?>
         <div class="alert alert-danger" role="alert">
+            <?php if (!$userSettingService->get('hide_email_host', $tournament['user_id'])): ?>
             This tournament is not made public by the host (<?= $created_by ? $created_by->email : 'Guest User' ?>).
+            <?php else: ?>
+            This tournament is not made public by the host (<?= $created_by ? $created_by->username : 'Guest User' ?>).
+            <?php endif ?>
         </div>
         <?php endif; ?>
     </div>

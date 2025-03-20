@@ -100,7 +100,7 @@
                         <div class="accordion-item">
                             <h5 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explainReservation" aria-expanded="false" aria-controls="collapseThree">
-                                    <strong>What happens if I accidentally leave my browser session before signing up/signing in?</strong>
+                                    <strong>What happens if I leave my browser session before signing up/signing in?</strong>
                                 </button>
                             </h5>
                             <div id="explainReservation" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
@@ -121,7 +121,7 @@
                         <div class="accordion-item">
                             <h5 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explainActions" aria-expanded="false" aria-controls="collapseThree">
-                                    <strong>As a tournament organizer/host, or someone whose been delegated admin(edit) permissions, how can I administer the participants in the tournament, such as <strong>Marking participants as winners</strong> manually, <strong>Adding participants</strong>, <strong>Changing participants</strong>, <strong>Removing participants</strong>, and <strong>Deleting brackets</strong>?</strong>
+                                    <strong>As a tournament organizer/host, or someone whose been delegated admin (edit) permissions, how can I administer the participants in the tournament, such as <strong>Marking participants as winners</strong> manually, <strong>Adding participants</strong>, <strong>Changing participants</strong>, <strong>Removing participants</strong>, and <strong>Deleting brackets</strong>?</strong>
                                 </button>
                             </h5>
                             <div id="explainActions" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
