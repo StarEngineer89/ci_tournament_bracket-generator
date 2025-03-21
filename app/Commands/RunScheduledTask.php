@@ -168,7 +168,8 @@ class RunScheduledTask extends BaseCommand
         $users = $userProvider->findAll();
         if ($users) {
             foreach ($users as $user) {
-                if ($currentDate->format('Y-m-d') == (new \DateTime($user->last_active))->modify("+$days days")->format('Y-m-d')) {
+                $lastActive = $user->last_active ?? $user->created_at;
+                if ($currentDate->format('Y-m-d') == (new \DateTime($lastActive))->modify("+$days days")->format('Y-m-d')) {
                     $notifyHistory = $inactiveNotifyHistoryModel->where(['user_id' => $user->id, 'inactive_days' => $days])->findAll();
                     if (!$notifyHistory) {
                         $inactiveNotifyHistoryModel->save(['user_id' => $user->id, 'inactive_days' => $days]);
