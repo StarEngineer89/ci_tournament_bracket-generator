@@ -115,7 +115,9 @@
                                 </button>
                             </h5>
                             <div id="explainContact" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
-                                <p class="ps-2">If a tournament organizer/host or a registered participant has chosen to hide their email address (for privacy reasons) from their <strong>profile settings</strong>, their email address will not be displayed in the tournament, so unfortunately you will not be able to contact the organizer/host or verified participant in such scenario.</p>
+                                <p class="ps-2">There are information modals/popups available from a tournament title/name and participant bracket boxes (for registered participants) displaying the email addresses, as well as by hovering on the participant name in the leaderboard table.</p>
+                                <p class="ps-2">If a tournament is hosted by a guest, or a participant is a nonregistered user, no email address is associated/available.</p>
+                                <p class="ps-2">Do note that if a tournament organizer/host or a registered participant has chosen to hide their email address (for privacy reasons) from their <strong>profile settings</strong>, their email address will not be displayed in the tournament, so unfortunately you will not be able to contact the organizer/host or verified participant in such scenario.</p>
                             </div>
                         </div>
                         <div class="accordion-item">

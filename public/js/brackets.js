@@ -1068,22 +1068,44 @@ let initConfetti = () => {
     if (winnerAudioPlayingForEveryone) {
         var player = document.getElementById('myAudio');
         if (player) {
+            player.value = player.dataset.duration;
+            player._startTime = player.dataset.starttime;
+            player.currentTime = player.dataset.starttime;
+
+            // Add an event listener for user interaction
+            document.addEventListener('click', function initPlayback() {
+                // Play the audio
+                player.play().then(() => {
+                    console.log('Audio playback started successfully.');
+                }).catch((error) => {
+                    console.error('Audio playback failed:', error);
+                });
+
+                // Remove the event listener after the first interaction
+                document.removeEventListener('click', initPlayback);
+            });
+
+            // Add the timeupdate event listener
             player.addEventListener("timeupdate", function () {
                 if ((player.currentTime - player._startTime) >= player.value) {
                     player.pause();
                     document.getElementById('stopAudioButton').classList.add('d-none');
-                };
+                }
             });
 
-            player.value = player.dataset.duration;
-            player._startTime = player.dataset.starttime;
-            player.currentTime = player.dataset.starttime;
-            player.play();
-        }
+            if (document.getElementById('stopAudioButton')) {
+                document.getElementById('stopAudioButton').classList.remove('d-none');
+                document.getElementById('stopAudioButton').textContent = "Pause Audio"
+            }
 
-        if (document.getElementById('stopAudioButton')) {
-            document.getElementById('stopAudioButton').classList.remove('d-none');
-            document.getElementById('stopAudioButton').textContent = "Pause Audio"
+            var clickEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+            });
+
+            // Dispatch the event on the document
+            document.dispatchEvent(clickEvent);
         }
     }
 
