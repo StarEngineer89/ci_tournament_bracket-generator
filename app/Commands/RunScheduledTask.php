@@ -153,6 +153,46 @@ class RunScheduledTask extends BaseCommand
             }
         }
 
+        /** Check the activity history and find the inactive users */
+        $this->checkAndNotifyInactivity(30);
+        $this->checkAndNotifyInactivity(60);
+        $this->checkAndNotifyInactivity(90);
+    }
+
+    private function checkAndNotifyInactivity($days)
+    {
+        $inactiveNotifyHistoryModel = model('\App\Models\InactiveNotifyHistoryModel');
+        $currentDate = new \DateTime();
+        
+        $userProvider = auth()->getProvider();
+        $users = $userProvider->findAll();
+        if ($users) {
+            foreach ($users as $user) {
+                if ($currentDate->format('Y-m-d') == (new \DateTime($user->last_active))->modify("+$days days")->format('Y-m-d')) {
+                    $notifyHistory = $inactiveNotifyHistoryModel->where(['user_id' => $user->id, 'inactive_days' => $days])->findAll();
+                    if (!$notifyHistory) {
+                        $inactiveNotifyHistoryModel->save(['user_id' => $user->id, 'inactive_days' => $days]);
+
+                        $email = service('email');
+                        $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                        $email->setTo($user->email);
+                        $email->setSubject(lang('Emails.inactive30DaysNotifyEmailSubject'));
+                        $email->setMessage(view(
+                            "email/inactivity-$days",
+                            ['username' => $user->username, 'tournamentCreatorName' => setting('Email.fromName')],
+                            ['debug' => false]
+                        ));
+
+                        if ($email->send(false) === false) {
+                            $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                        }
+
+                        $email->clear();
+                    }
+                }
+            }
+        }
+
         return true;
     }
 }

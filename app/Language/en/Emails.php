@@ -12,4 +12,7 @@ return [
     'tournamentChampionWonEmailSubject' => "🏆 Congratulations Champion!",
     'tournamentResetEmailSubject' => "🔄 Tournament Reset Notification",
     'tournamentDeleteEmailSubject' => "❌ Tournament Deleted!",
+    'inactive30DaysNotifyEmailSubject' => "🎉 Ready to Jump Back In? Exciting Tournaments Await!",
+    'inactive60DaysNotifyEmailSubject' => "⚡ It’s Been a While… Ready to Compete Again?",
+    'inactive90DaysNotifyEmailSubject' => "🚀 Last Call! Are You Still In the Game?",
 ];
