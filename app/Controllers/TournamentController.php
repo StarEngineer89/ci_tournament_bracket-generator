@@ -86,7 +86,25 @@ class TournamentController extends BaseController
             return redirect()->to('/tournaments');
         }
 
-        if (!auth()->user() && !$tournament['visibility']) {
+        $hosted_by_this = true;
+        if($tournament['user_id'] == 0){
+            $hosted_by_this = false;
+            $existingHistory = $this->request->getCookie('guest_tournaments');
+            $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
+            $shareSetting = $shareSettingsModel->where(['tournament_id' => $id, 'user_id' => 0])->first();
+
+            if ($shareSetting) {
+                $cookie_value = $id . "_" . $shareSetting['token'];
+            } else {
+                $cookie_value = $id . "_" . 'guest';
+            }
+
+            if (in_array($cookie_value, $tournamentHistory)) {
+                $hosted_by_this = true;
+            }
+        }
+
+        if (!auth()->user() && !$tournament['visibility'] && !$hosted_by_this) {
             return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);
         }
 
@@ -99,21 +117,9 @@ class TournamentController extends BaseController
             $votingBtnEnabled = true;
         }
         
-        if($tournament['user_id'] == 0){
-            $existingHistory = $this->request->getCookie('guest_tournaments');
-            $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
-            $shareSetting = $shareSettingsModel->where(['tournament_id' => $id, 'user_id' => 0])->first();
-
-            if ($shareSetting) {
-                $cookie_value = $id . "_" . $shareSetting['token'];
-            } else {
-                $cookie_value = $id . "_" . 'guest';
-            }
-
-            if (in_array($cookie_value, $tournamentHistory)) {
-                $editable = true;
-                $votingBtnEnabled = true;
-            }
+        if($tournament['user_id'] == 0 && $hosted_by_this){
+            $editable = true;
+            $votingBtnEnabled = true;
         }
 
         /** 

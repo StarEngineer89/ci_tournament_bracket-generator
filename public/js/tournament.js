@@ -7,7 +7,7 @@ function getSeconds(time) {
 function audioSettingToggleChange(element) {
     const settingPanel = $(element).parents('.audio-setting').find('.setting');
     if ($(element).prop("checked") == true) {
-        settingPanel.find('input[type="radio"], .preview input').attr('disabled', false);
+        settingPanel.find('input[type="radio"], input[type="checkbox"], .preview input').attr('disabled', false);
         const radioElement = $(element).parent().parent().find('input[type="radio"]:checked');
         radioElement.parent().parent().children('.audio-source').attr('disabled', false);
         settingPanel.removeClass('visually-hidden');
