@@ -64,6 +64,7 @@ class RunScheduledTask extends BaseCommand
         $notificationService = service('notification');
 
         $tournamentsModel = model('\App\Models\TournamentModel');
+        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
 
         $host_id = auth()->user() ? auth()->user()->id : 0;
         
@@ -75,14 +76,33 @@ class RunScheduledTask extends BaseCommand
                 $tournament = $tournamentsModel->find($schedule['tournament_id']);
                 $tournament = new \App\Entities\Tournament($tournament);
 
+                $sendNotificationsTo = [];
                 if (($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART || $schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) && $current_time >= $schedule_time) {
                     $participantsModel = model('\App\Models\ParticipantModel');
                     $registeredUsers = $participantsModel->where(['tournament_id' => $schedule['tournament_id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
 
                     if ($registeredUsers) {
-                        foreach ($registeredUsers as $user_id) {
-                            $user = $userProvider->findById($user_id);
+                        $sendNotificationsTo = $registeredUsers;
+                    }
 
+                    if ($userProvider->findById($tournament->user_id)) {
+                        $sendNotificationsTo[] = $tournament->user_id;
+                    }
+
+                    $sharedTo = $shareSettingsModel->where(['tournament_id' => $tournament->id, 'target' => SHARE_TO_USERS])->findColumn('users');
+                    if ($sharedTo) {
+                        foreach($sharedTo as $to) {
+                            $user_ids = json_decode($to, true);
+                            if ($user_ids) {
+                                array_push($sendNotificationsTo, $to);
+                            }
+                        }
+                    }
+
+                    $sendNotificationsTo = array_unique($sendNotificationsTo);
+                    if ($sendNotificationsTo) {
+                        foreach ($sendNotificationsTo as $user_id) {
+                            $user = $userProvider->findById($user_id);
                             if (!$user) {
                                 continue;
                             }

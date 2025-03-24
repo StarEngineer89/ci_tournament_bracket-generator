@@ -563,3 +563,13 @@
     border-radius: 10px 0 0 10px;
     border-left: solid 2px var(--bg-cs-bracket-border-color);
 }
+
+/** Common Styles */
+.bg-cs .brackets .round-name-wrapper .btn,
+.bg-dr .brackets .round-name-wrapper .btn,
+.bg-gr .brackets .round-name-wrapper .btn,
+.bg-mm .brackets .round-name-wrapper .btn {
+    color: #fff;
+    background: none;
+    border: none;
+}

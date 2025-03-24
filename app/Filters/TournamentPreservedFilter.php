@@ -55,21 +55,26 @@ class TournamentPreservedFilter implements FilterInterface
             $shareSettingsModel = model('\App\Models\ShareSettingsModel');
             $tournamentModel = model('\App\Models\TournamentModel');
             $participantModel = model('\App\Models\participantModel');
+            $bracketModel = model('\App\Models\BracketModel');
+
             $sharedTournaments = $shareSettingsModel->where(['user_id' => 0])->whereIn('tournament_id', $tournament_ids)->findAll();
             if($sharedTournaments){
                 foreach ($sharedTournaments as $sharedTournament) {
                     $sharedTournament['user_id'] = auth()->user()->id;
                     $sharedTournament['uuid'] = null;
                     $shareSettingsModel->save($sharedTournament);
+                }
+            }
 
-                    $tournament = $tournamentModel->find($sharedTournament['tournament_id']);
+            if ($tournament_ids) {
+                foreach ($tournament_ids as $id) {
+                    $tournament = $tournamentModel->find($id);
                     $tournament['user_id'] = auth()->user()->id;
                     $tournamentModel->save($tournament);
 
                     $participantModel->where(['tournament_id' => $tournament['id']])->set('user_id', auth()->user()->id)->update();
 
-                    $bracketModel = model('\App\Models\BracketModel');
-                    $bracketModel->where(['tournament_id' => $sharedTournament['tournament_id'], 'user_id' => 0])->set('user_id', auth()->user()->id)->update();
+                    $bracketModel->where(['tournament_id' => $id])->set('user_id', auth()->user()->id)->update();
                 }
             }
 
