@@ -72,10 +72,12 @@ class TournamentController extends BaseController
             }
 
             if ($this->request->getGet('type') == 'wh') {
-                $tournaments->groupStart();
-                $tournaments->whereIn('share_settings.target', [SHARE_TO_EVERYONE, SHARE_TO_PUBLIC]);
-                $tournaments->orLike('share_settings.users', strval(auth()->user()->id));
-                $tournaments->groupEnd();
+                $tournaments->groupStart()
+                    ->whereIn('share_settings.target', [SHARE_TO_EVERYONE, SHARE_TO_PUBLIC])
+                    ->where('tournament_share_access_logs.created_at Is Not null')
+                    ->where('tournament_share_access_logs.created_at', auth()->user()->id)
+                    ->groupEnd()
+                    ->orLike('share_settings.users', strval(auth()->user()->id));
                 $tempRows = $tournaments->findAll();
                 
                 $tournaments = [];
@@ -210,6 +212,36 @@ class TournamentController extends BaseController
 
         if ($created_by || $created_by == 0) {
             $tournaments->where('user_id', $created_by);
+        }
+
+        if ($this->request->getPost('is_reuse') && auth()->user()) {
+            $tournaments->orWhere('user_id', auth()->user()->id);
+
+            $sharedWithMe = $this->shareSettingModel->tournamentDetails()
+                ->groupStart()
+                ->whereIn('share_settings.target', [SHARE_TO_EVERYONE, SHARE_TO_PUBLIC])
+                ->where('tournament_share_access_logs.created_at Is Not null')
+                ->where('tournament_share_access_logs.created_at', auth()->user()->id)
+                ->groupEnd()
+                ->orLike('share_settings.users', strval(auth()->user()->id))
+                ->findAll();
+
+            $shared_ids = [];
+            if ($sharedWithMe) {
+                foreach ($sharedWithMe as $tempRow) {
+                    $user_ids = $tempRow['users'] ? explode(',', $tempRow['users']) : null;
+                    
+                    if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
+                        $shared_ids[] = $tempRow['tournament_id'];
+                    }
+
+                    if (($tempRow['target'] == SHARE_TO_EVERYONE || $tempRow['target'] == SHARE_TO_PUBLIC) && $tempRow['access_time']) {
+                        $shared_ids[] = $tempRow['tournament_id'];
+                    }
+                }
+            }
+                
+            $tournaments->orWhereIn('id', $shared_ids);
         }
 
         $tournaments = $tournaments->findAll();

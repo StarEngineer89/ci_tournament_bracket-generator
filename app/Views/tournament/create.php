@@ -830,8 +830,10 @@ var drawTournamentsTable = () => {
             "dataSrc": "",
             "data": function(d) {
                 d.user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>; // Include the user_id parameter
+                d.is_reuse = true;
                 d.search_tournament = $('#searchTournament').val();
                 d.type = $('#typeFilter').val();
+                d.evaluation_method = $('#evaluationFilter').val();
                 d.status = $('#stautsFilter').val();
                 d.created_by = $('#userByFilter').val();
             }
@@ -844,6 +846,10 @@ var drawTournamentsTable = () => {
             }).nodes();
 
             $('#typeFilter').on('change', function() {
+                tournamentsTable.ajax.reload()
+            });
+
+            $('#evaluationFilter').on('change', function() {
                 tournamentsTable.ajax.reload()
             });
 
@@ -901,7 +907,13 @@ var drawTournamentsTable = () => {
                 }
             },
             {
-                "data": "name"
+                "data": "name",
+                "render": function(data, type, row, meta) {
+                    return `<a href="${window.location.origin}/tournaments/${row.id}/view" target="__blank">${row.name}</a>`
+                },
+                "createdCell": function(td, cellData, rowData, row, col) {
+                    $(td).attr('data-label', 'name');
+                }
             },
             {
                 "data": "type",
@@ -913,6 +925,17 @@ var drawTournamentsTable = () => {
 
                     if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
                         type = "Knockout"
+                    }
+
+                    return type;
+                }
+            },
+            {
+                "data": "evaluation_method",
+                "render": function(data, type, row, meta) {
+                    var type = 'Manual'
+                    if (row.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>") {
+                        type = "Voting"
                     }
 
                     return type;
@@ -943,7 +966,7 @@ var drawTournamentsTable = () => {
             {
                 "data": null,
                 "render": function(data, type, row, meta) {
-                    return `<span data-toggle="tooltip" data-placement="top" title="${row.email}" data-id="${row.user_id}">${row.username}</span>`;
+                    return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email ? row.email : row.username}" data-id="${row.user_id}">${row.username}</span>`;
                 },
                 "createdCell": function(td, cellData, rowData, row, col) {
                     $(td).attr('data-label', 'name');
@@ -966,6 +989,12 @@ var drawTournamentsTable = () => {
             "targets": [2, 3, 4, 6]
         }],
     });
+
+    tournamentsTable.on('draw.dt', function() {
+        document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
+            var tooltip = new bootstrap.Tooltip(element)
+        })
+    })
 
     $('#searchTournamentBtn').on('click', function() {
         tournamentsTable.ajax.reload();
@@ -1263,6 +1292,14 @@ var performReuseParticipants = (reuse_id = null) => {
                                         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
                                         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
                                         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+                                    </select>
+                                </th>
+                                <th scope="col">
+                                    <label for="evaluationFilter">Evaluation Method:</label>
+                                    <select id="evaluationFilter" class="form-select form-select-sm">
+                                        <option value="">All Types</option>
+                                        <option value="<?= EVALUATION_METHOD_MANUAL ?>">Manual</option>
+                                        <option value="<?= EVALUATION_METHOD_VOTING ?>">Voting</option>
                                     </select>
                                 </th>
                                 <th scope="col">
