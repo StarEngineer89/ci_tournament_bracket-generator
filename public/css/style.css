@@ -1637,6 +1637,9 @@
   font-size: 14px;
 }
 
+#pieChartContainer {
+  margin-top: -40px;
+}
 .canvasjs-chart-container {
   overflow: hidden;
 }

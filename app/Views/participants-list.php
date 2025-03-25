@@ -338,17 +338,17 @@ const appendPieChart = (message, type) => {
     const wrapper = document.createElement('div')
     wrapper.innerHTML = [
         `<div class="container alert alert-${type} alert-dismissible" id="pieChartAlert" role="alert">`,
-        `   <div id="pieChart"></div>`,
         `   <div class="text-center">${message}</div>`,
         '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
         '</div>'
     ].join('')
 
     pieChartPlaceholder.append(wrapper)
+    document.getElementById('pieChartContainer').classList.remove('d-none')
 }
 
 const pieChartAlertTrigger = document.getElementById('togglePieChartBtn')
-const msg = $('#pieChartTypes').html();
+const msg = '';
 if (pieChartAlertTrigger) {
     pieChartAlertTrigger.addEventListener('click', () => {
         appendPieChart(msg, 'light')
@@ -359,6 +359,7 @@ if (pieChartAlertTrigger) {
         const myAlert = document.getElementById('pieChartAlert')
         myAlert.addEventListener('closed.bs.alert', event => {
             pieChartAlertTrigger.classList.remove('d-none')
+            document.getElementById('pieChartContainer').classList.add('d-none')
         })
 
         document.querySelectorAll('input.piecharttype').forEach((element) => {
@@ -480,22 +481,25 @@ function drawChart(type = 'tournament') {
             </div>
 
             <div id="pieChartPlaceholder"></div>
-            <div id="pieChartTypes" class="d-none">
-                <div class="form-check form-check-inline">
-                    <input class="piecharttype form-check-input" type="radio" id="tournamentWonChart" name="chartType" value="tournament" checked>
-                    <label class="form-check-label" for="tournamentWonChart">Tournaments Won</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="piecharttype form-check-input" type="radio" id="bracketsWonChart" name="chartType" value="bracket">
-                    <label class="form-check-label" for="bracketsWonChart">Brackets Won</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="piecharttype form-check-input" type="radio" id="topScoreChart" name="chartType" value="score">
-                    <label class="form-check-label" for="topScoreChart">Top Score</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="piecharttype form-check-input" type="radio" id="mostVotesChart" name="chartType" value="votes">
-                    <label class="form-check-label" for="mostVotesChart">Most Votes</label>
+            <div id="pieChartContainer">
+                <div id="pieChart"></div>
+                <div id="pieChartTypes">
+                    <div class="form-check form-check-inline">
+                        <input class="piecharttype form-check-input" type="radio" id="tournamentWonChart" name="chartType" value="tournament" checked>
+                        <label class="form-check-label" for="tournamentWonChart">Tournaments Won</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="piecharttype form-check-input" type="radio" id="bracketsWonChart" name="chartType" value="bracket">
+                        <label class="form-check-label" for="bracketsWonChart">Brackets Won</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="piecharttype form-check-input" type="radio" id="topScoreChart" name="chartType" value="score">
+                        <label class="form-check-label" for="topScoreChart">Top Score</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="piecharttype form-check-input" type="radio" id="mostVotesChart" name="chartType" value="votes">
+                        <label class="form-check-label" for="mostVotesChart">Most Votes</label>
+                    </div>
                 </div>
             </div>
         </div>
