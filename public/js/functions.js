@@ -626,6 +626,9 @@ var changeEvaluationMethod = (element) => {
         $('.evaluation-method-voting-hint').addClass('d-none')
         $('#enableAvailability').prop('required', false)
 
+        $('.round-duration-combine, .round-duration-combine .round-duration-manual-checkbox-hint').removeClass('d-none')
+        $('.round-duration-combine .round-duration-maxVote-checkbox-hint').addClass('d-none')
+
         $('.evaluation-method-manual-hint').addClass('text-content')
     } else {
         $('.voting-settings-panel').removeClass('d-none')
@@ -635,12 +638,19 @@ var changeEvaluationMethod = (element) => {
             $('#enableAvailability').prop('required', true)
         }
 
+        $('.round-duration-combine, .round-duration-combine .form-text').addClass('d-none')
+        if ($('#votingMechanism').val() == 2) {
+            $('.round-duration-combine, .round-duration-combine .round-duration-maxVote-checkbox-hint').removeClass('d-none')
+        }
+
         $('.evaluation-method-voting-hint').addClass('text-content')
 
-        document.querySelectorAll("#tournamentSettings .voting-settings-panel .read-more-container").forEach(container => {
-            adjustReadMore(container)
-        })
+        
     }
+
+    document.querySelectorAll("#tournamentSettings .evaluation-settings .read-more-container").forEach(container => {
+        adjustReadMore(container)
+    })
 }
 
 var changeVotingAccessbility = (element) => {
@@ -663,6 +673,7 @@ var changeVotingAccessbility = (element) => {
 
 var changeVotingMechanism = (element) => {
     $(element).parent().parent().find('.form-text').removeClass('text-content')
+    $('.round-duration-combine, .round-duration-combine .form-text').addClass('d-none')
     // EVALUATION_VOTING_MECHANISM_ROUND = 1
     // EVALUATION_VOTING_MECHANISM_MAXVOTE = 2
     // EVALUATION_VOTING_MECHANISM_OPENEND = 3
@@ -695,6 +706,8 @@ var changeVotingMechanism = (element) => {
         $('.allow-host-override-setting').removeClass('d-none')
         $('#enableAvailability').prop('required', false)
 
+        $('.round-duration-combine, .round-duration-combine .round-duration-maxVote-checkbox-hint').removeClass('d-none')
+
         $('.evaluation-vote-max').addClass('text-content')
     }
 
@@ -712,7 +725,9 @@ var changeVotingMechanism = (element) => {
         $('.evaluation-open-ended').addClass('text-content')
     }
 
-    adjustReadMore($(element).parent().parent().find('.read-more-container')[0])
+    document.querySelectorAll("#tournamentSettings .evaluation-settings .read-more-container").forEach(container => {
+        adjustReadMore(container)
+    })
 }
 
 var changeTournamentTheme = (element) => {

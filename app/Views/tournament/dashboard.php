@@ -1673,7 +1673,9 @@ const changeSettings = (event) => {
                     result.tournamentSettings.voting_mechanism = '<?= EVALUATION_VOTING_MECHANISM_ROUND ?>'
                 }
                 $('#votingMechanism').val(result.tournamentSettings.voting_mechanism)
-                changeVotingMechanism(document.getElementById('votingMechanism'))
+                if (result.tournamentSettings.evaluation_method != '<?= EVALUATION_METHOD_MANUAL ?>') {
+                    changeVotingMechanism(document.getElementById('votingMechanism'))
+                }
                 $('#maxVotes').val(result.tournamentSettings.max_vote_value)
 
                 if (result.tournamentSettings.voting_retain == 1) {
@@ -1686,6 +1688,12 @@ const changeSettings = (event) => {
                     $('#allowHostOverride').prop('checked', true)
                 } else {
                     $('#allowHostOverride').prop('checked', false)
+                }
+
+                if (result.tournamentSettings.round_duration_combine == 1) {
+                    $('#roundDurationCheckbox').prop('checked', true)
+                } else {
+                    $('#roundDurationCheckbox').prop('checked', false)
                 }
 
                 if (result.tournamentSettings.pt_image_update_enabled == 1) {

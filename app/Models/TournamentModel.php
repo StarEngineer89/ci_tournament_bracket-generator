@@ -12,7 +12,7 @@ class TournamentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_enabled', 'score_bracket', 'increment_score_enabled', 'increment_score', 'increment_score_type', 'visibility', 'availability', 'available_start', 'available_end', 'evaluation_method', 'voting_accessibility', 'voting_mechanism', 'max_vote_value', 'voting_retain', 'allow_host_override', 'pt_image_update_enabled', 'theme', 'winner_audio_everyone'];
+    protected $allowedFields    = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_enabled', 'score_bracket', 'increment_score_enabled', 'increment_score', 'increment_score_type', 'visibility', 'availability', 'available_start', 'available_end', 'evaluation_method', 'voting_accessibility', 'voting_mechanism', 'max_vote_value', 'voting_retain', 'round_duration_combine', 'allow_host_override', 'pt_image_update_enabled', 'theme', 'winner_audio_everyone'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

@@ -319,6 +319,7 @@ class TournamentController extends BaseController
             'voting_accessibility' => $this->request->getPost('voting_accessibility'),
             'voting_mechanism' => $this->request->getPost('voting_mechanism'),
             'max_vote_value' => $this->request->getPost('max_vote_value'),
+            'round_duration_combine' => $this->request->getPost('round_duration_combine'),
             'voting_retain' => ($this->request->getPost('voting_retain') == 'on') ? 1 : 0,
             'allow_host_override' => ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0,
             'pt_image_update_enabled' => ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0,
@@ -629,6 +630,9 @@ class TournamentController extends BaseController
             if ($this->request->getPost('allow_host_override')) {
                 $tournament['allow_host_override'] = ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0;
             }
+            if ($this->request->getPost('round_duration_combine')) {
+                $tournament['round_duration_combine'] = ($this->request->getPost('round_duration_combine') == 'on') ? 1 : 0;
+            }
         }
         
         if ($this->request->getPost('pt_image_update_enabled')) {
@@ -652,8 +656,10 @@ class TournamentController extends BaseController
         $tournamentModel->save($tournament);
 
         /** Schedule to update the rounds by cron */
-        if (isset($tournament['availability']) && $tournament['availability'] && $tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
-            $scheduleLibrary->scheduleRoundUpdate($tournament_id);
+        if (isset($tournament['availability']) && $tournament['availability']) {
+            if ($tournament['round_duration_combine'] || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND)) {
+                $scheduleLibrary->scheduleRoundUpdate($tournament_id);
+            }
         }
         
         /**

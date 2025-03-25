@@ -31,6 +31,7 @@ class Tournament extends Entity
         'evaluation_method' => null, 
         'voting_accessibility' => null, 
         'voting_mechanism' => null, 
+        'round_duration_combine' => null,
         'max_vote_value' => null, 
         'voting_retain' => null, 
         'allow_host_override' => null,

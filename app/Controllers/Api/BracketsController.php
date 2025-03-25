@@ -748,14 +748,13 @@ class BracketsController extends BaseController
         /** Add a schedule to update rounds */
         if ($this->request->getPost('tournament_id')) {
             if ($tournament['availability']) {
-                
                 $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
 
                 $maxRound = $this->bracketsModel->where('tournament_id', $tournament['id'])->selectMax('roundNo')->first() ?? 1;
                 $scheduleLibrary->registerSchedule($tournament['id'], SCHEDULE_NAME_TOURNAMENTSTART, 1, $tournament['available_start']);
                 $scheduleLibrary->registerSchedule($tournament['id'], SCHEDULE_NAME_TOURNAMENTEND, $maxRound, $tournament['available_end']);
 
-                if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
+                if ($tournament['round_duration_combine'] || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND)) {
                     $scheduleLibrary->scheduleRoundUpdate($tournament['id']);
                 }
             }

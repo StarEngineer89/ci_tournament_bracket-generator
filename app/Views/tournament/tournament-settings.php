@@ -100,7 +100,7 @@
     </div>
 </div>
 
-<div class="border-bottom mb-3 ps-2 pb-3">
+<div class="evaluation-settings border-bottom mb-3 ps-2 pb-3">
     <div class="row g-3 align-items-center">
         <div class="col-auto">
             <label for="evaluationMethod" class="col-form-label"><strong>Evaluation Method</strong></label>
@@ -177,6 +177,17 @@
             <input type="checkbox" class="form-check-input" name="allow_host_override" id="allowHostOverride">
             <label class="form-check-label" for="allowHostOverride">Allow Host override</label>
             <div class="retain-votes-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?></div>
+        </div>
+    </div>
+
+    <div class="round-duration-combine ps-3">
+        <div class="mt-2">
+            <input type="checkbox" class="form-check-input" name="round_duration_combine" id="roundDurationCheckbox">
+            <label class="form-check-label" for="roundDurationCheckbox">Round Duration</label>
+            <div class="read-more-container">
+                <div class="round-duration-maxVote-checkbox-hint form-text text-content ps-3 d-none"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
+                <div class="round-duration-manual-checkbox-hint form-text text-content ps-3"><?= lang('Descriptions.tournamentManualRoundDurationDesc') ?></div>
+            </div>
         </div>
     </div>
 </div>
