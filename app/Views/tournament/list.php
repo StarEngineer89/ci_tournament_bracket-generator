@@ -43,7 +43,7 @@
 <div class="table-responsive">
     <?php if ($navActive == 'shared'): ?>
     <?php if ($shareType == 'wh'): ?>
-    <table id="tournamentTable" class="table align-middle">
+    <table id="tournamentTable" class="table stripe align-middle">
         <thead>
             <tr>
                 <th scope="col">#</th>
@@ -95,7 +95,7 @@
         <tbody></tbody>
     </table>
     <?php else: ?>
-    <table id="tournamentTable" class="shared-by-me table align-middle">
+    <table id="tournamentTable" class="shared-by-me table stripe align-middle">
         <thead>
             <tr>
                 <th scope="col">#</th>
@@ -135,7 +135,7 @@
     </table>
     <?php endif; ?>
     <?php else: ?>
-    <table id="tournamentTable" class="table align-middle">
+    <table id="tournamentTable" class="table stripe align-middle">
         <thead>
             <tr>
                 <th scope="col" width="20px">

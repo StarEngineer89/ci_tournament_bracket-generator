@@ -153,16 +153,15 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             "data": null,
             "render": function(data, type, row, meta) {
                 return meta.row + 1; // Display index number
-            }
+            },
+            "className": "text-center"
         },
         {
             "data": null,
             "render": function(data, type, row, meta) {
                 return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="${row.email ? row.name + '<br/>(' + row.email + ')' : row.name}">${row.name}</span>`
             },
-            "createdCell": function(td, cellData, rowData, row, col) {
-                $(td).attr('data-label', 'name');
-            }
+            "className": "text-center"
         },
         {
             "data": "brackets_won",
@@ -508,7 +507,7 @@ function drawChart(type = 'tournament') {
             <a href="<?= base_url('participants/export') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
         </div>
         <div class="table-responsive">
-            <table id="participantLeaderboardTable" class="table align-middle">
+            <table id="participantLeaderboardTable" class="table stripe align-middle">
                 <thead>
                     <tr>
                         <th scope="col">#</th>

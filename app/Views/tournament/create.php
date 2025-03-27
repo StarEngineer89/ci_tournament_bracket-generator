@@ -902,6 +902,7 @@ var drawTournamentsTable = () => {
         },
         "columns": [{
                 "data": null,
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     return meta.row + 1; // Display index number
                 }
@@ -917,6 +918,7 @@ var drawTournamentsTable = () => {
             },
             {
                 "data": "type",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var type = 'Single'
                     if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
@@ -932,6 +934,7 @@ var drawTournamentsTable = () => {
             },
             {
                 "data": "evaluation_method",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var type = 'Manual'
                     if (row.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>") {
@@ -943,6 +946,7 @@ var drawTournamentsTable = () => {
             },
             {
                 "data": "status",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var status = 'In progress'
                     if (row.status == <?= TOURNAMENT_STATUS_NOTSTARTED ?>) {
@@ -965,6 +969,7 @@ var drawTournamentsTable = () => {
             },
             {
                 "data": null,
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email ? row.email : row.username}" data-id="${row.user_id}">${row.username}</span>`;
                 },
@@ -973,10 +978,12 @@ var drawTournamentsTable = () => {
                 }
             },
             {
-                "data": "created_at"
+                "data": "created_at",
+                "className": "text-center",
             },
             {
                 "data": null,
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     return `
                         <a class="edit-btn" data-tournament-id="${row.id}" data-name="${row.name}" onClick="reuseParticipant(this)">Reuse</a>

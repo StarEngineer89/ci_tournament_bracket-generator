@@ -107,7 +107,8 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             "data": null,
             "render": function(data, type, row, meta) {
                 return meta.row + 1; // Display index number
-            }
+            },
+            "className": "text-center"
         },
         {
             "data": "name",
@@ -131,7 +132,8 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                 }
 
                 return type;
-            }
+            },
+            "className": "text-center"
         },
         {
             "data": "evaluation_method",
@@ -142,7 +144,8 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                 }
 
                 return type;
-            }
+            },
+            "className": "text-center"
         },
         {
             "data": "status",
@@ -167,13 +170,16 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             }
         },
         {
-            "data": "participants_count"
+            "data": "participants_count",
+            "className": "text-center"
         },
         {
-            "data": "available_start"
+            "data": "available_start",
+            "className": "text-center"
         },
         {
-            "data": "available_end"
+            "data": "available_end",
+            "className": "text-center"
         },
         {
             "data": "public_url",
@@ -189,10 +195,12 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                     return ''
                 }
 
-            }
+            },
+            "className": "text-center"
         },
         {
             "data": null,
+            "className": "text-center",
             "render": function(data, type, row, meta) {
                 return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-title="${row.email ? row.email : row.username}" data-id="${row.user_id}">${row.username}</span>`;
             },
@@ -201,7 +209,8 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
             }
         },
         {
-            "data": "created_at"
+            "data": "created_at",
+            "className": "text-center"
         },
     ],
     "createdRow": function(row, data, dataIndex) {
@@ -259,7 +268,7 @@ function handleKeyPress(event) {
             <a href="<?= base_url('gallery/export?filter=all') ?>" class="btn btn-success ms-2"><i class="fa-solid fa-file-csv"></i> Export</a>
         </div>
         <div class="table-responsive">
-            <table id="tournamentGalleryTable" class="table align-middle">
+            <table id="tournamentGalleryTable" class="table stripe">
                 <thead>
                     <tr>
                         <th scope="col">#<br />&nbsp;</th>

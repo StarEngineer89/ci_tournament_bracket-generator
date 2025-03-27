@@ -553,12 +553,14 @@ $(document).ready(function() {
         },
         "columns": [{
                 "data": null,
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     return meta.row + 1; // Display index number
                 }
             },
             {
                 "data": "name",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     <?php if ($shareType == 'wh'): ?>
                     return `<a href="${window.location.pathname}/shared/${row.token}">${row.name}</a>`
@@ -573,6 +575,7 @@ $(document).ready(function() {
             },
             {
                 "data": "type",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var type = 'Single'
                     if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
@@ -588,6 +591,7 @@ $(document).ready(function() {
             },
             {
                 "data": "evaluation_method",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var type = 'Manual'
                     if (row.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>") {
@@ -599,6 +603,7 @@ $(document).ready(function() {
             },
             {
                 "data": "status",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var status = 'In progress'
                     if (row.status == <?= TOURNAMENT_STATUS_NOTSTARTED ?>) {
@@ -621,6 +626,7 @@ $(document).ready(function() {
             },
             <?php if ($shareType == 'wh'): ?> {
                 "data": null,
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     let bsTitle = 'You can view the tournament brackets.'
                     let btnText = 'Can View'
@@ -637,6 +643,7 @@ $(document).ready(function() {
                 }
             }, {
                 "data": null,
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     return `
                     <span class="d-inline-block tooltip-span" data-bs-toggle="tooltip" data-bs-title="${row.email ? row.email : row.username}" data-id="${row.user_id}">
@@ -649,10 +656,12 @@ $(document).ready(function() {
                 }
             },
             {
-                "data": "access_time"
+                "data": "access_time",
+                "className": "text-center",
             }
             <?php else: ?> {
-                "data": "created_at"
+                "data": "created_at",
+                "className": "text-center",
             },
             {
                 "data": null,
@@ -770,6 +779,7 @@ $(document).ready(function() {
         },
         "columns": [{
                 "data": null, // The 'null' data property is used because this column doesn't have a specific data field
+                "className": "text-center",
                 "render": function(data, type, row) {
                     // Render a checkbox with a value equal to the ID of the row
                     return '<input type="checkbox" class="item-checkbox row-checkbox" value="' + row.id + '">';
@@ -778,6 +788,7 @@ $(document).ready(function() {
             },
             {
                 "data": null,
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     return meta.row + 1; // Display index number
                 }
@@ -793,6 +804,7 @@ $(document).ready(function() {
             },
             {
                 "data": "type",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var type = 'Single'
                     if (row.type == <?= TOURNAMENT_TYPE_DOUBLE ?>) {
@@ -808,6 +820,7 @@ $(document).ready(function() {
             },
             {
                 "data": "evaluation_method",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var type = 'Manual'
                     if (row.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>") {
@@ -819,6 +832,7 @@ $(document).ready(function() {
             },
             {
                 "data": "status",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     var status = 'In progress'
                     if (row.status == <?= TOURNAMENT_STATUS_NOTSTARTED ?>) {
@@ -840,16 +854,20 @@ $(document).ready(function() {
                 }
             },
             {
-                "data": "participants_count"
+                "data": "participants_count",
+                "className": "text-center",
             },
             {
-                "data": "available_start"
+                "data": "available_start",
+                "className": "text-center",
             },
             {
-                "data": "available_end"
+                "data": "available_end",
+                "className": "text-center",
             },
             {
                 "data": "public_url",
+                "className": "text-center",
                 "render": function(data, type, row, meta) {
                     if (row.public_url) {
                         return `<div class="col-auto input-group">
@@ -863,7 +881,8 @@ $(document).ready(function() {
                 }
             },
             {
-                "data": "created_at"
+                "data": "created_at",
+                "className": "text-center",
             },
             {
                 "data": null,
