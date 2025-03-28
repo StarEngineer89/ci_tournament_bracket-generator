@@ -13,7 +13,7 @@
         <a href="<?= base_url() ?>"><img src="<?= base_url('images/logo.jpg') ?>" style="max-height: 120px;"></a>
     </div>
     <p>Hi <?= esc($username) ?>,</p>
-    <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" hosted by <?= $creator ? "$creator->name ($creator->email)" : 'Guest' ?> has officially ended! Check the progress by visiting the tournament! </p>
+    <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" hosted by <?= $creator ? "$creator->username ($creator->email)" : 'Guest' ?> has officially ended! Check the progress by visiting the tournament! </p>
 
     <p>Stay tuned for future tournaments, and until next time—keep the competitive spirit alive! </p>
 
