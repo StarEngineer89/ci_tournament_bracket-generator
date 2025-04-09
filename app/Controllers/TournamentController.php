@@ -169,7 +169,7 @@ class TournamentController extends BaseController
 
             $participantModel = model('\App\Models\ParticipantModel');
 
-            $participants = $participantModel->where(['user_id' => $user_id, 'tournament_id' => $id])->findAll();
+            $participants = $participantModel->where(['user_id' => $user_id, 'tournament_id' => $id])->withGroupInfo()->findAll();
 
             $settingsBlock = view('tournament/tournament-settings', []);
             $audioSettingsBlock = view('tournament/audio-setting', []);

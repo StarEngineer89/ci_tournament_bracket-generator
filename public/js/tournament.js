@@ -88,10 +88,10 @@ function audioFileUpload(element) {
         cache: false,
         processData: false,
         beforeSend: function () {
-            $("#processingMessage").removeClass('d-none')
+            $("#beforeProcessing").removeClass('d-none')
         },
         success: function (data) {
-            $("#processingMessage").addClass('d-none')
+            $("#beforeProcessing").addClass('d-none')
 
             if (data.errors) {
                 $('#errorModal .errorDetails').html(data.errors.audio)
@@ -156,10 +156,10 @@ function videoFileUpload(element) {
         cache: false,
         processData: false,
         beforeSend: function () {
-            $("#processingMessage").removeClass('d-none')
+            $("#beforeProcessing").removeClass('d-none')
         },
         success: function (data) {
-            $("#processingMessage").addClass('d-none')
+            $("#beforeProcessing").addClass('d-none')
 
             if (data.errors) {
                 $('#errorModal .errorDetails').html(data.errors.audio)

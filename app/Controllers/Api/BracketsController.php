@@ -681,6 +681,8 @@ class BracketsController extends BaseController
         $participant_names_string = '';
         $tournament_id = $this->request->getPost('tournament_id');
 
+        $user_id = auth()->user() ? auth()->user()->id : 0;
+
         $min_count = 2;
         if ($this->request->getPost('type') == TOURNAMENT_TYPE_KNOCKOUT) {
             $min_count = 4;
@@ -697,7 +699,7 @@ class BracketsController extends BaseController
                 $participant = $this->participantsModel->find($item['id']);
 
                 if (!$participant) {
-                    $participant = ['name' => $item['name'], 'user_id' => auth()->user()->id];
+                    $participant = ['name' => $item['name'], 'user_id' => $user_id, 'active' => 1];
                 }
 
                 $participant['order'] = $item['order'];

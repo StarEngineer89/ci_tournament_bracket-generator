@@ -224,11 +224,7 @@
 }
 
 #errorModal .modal-header {
-  background-color: #ff6b79;
-}
-
-#errorModal .modal-body {
-  background-color: rgb(200, 200, 200);
+  color: #ff6b79;
 }
 
 .home-title {
@@ -475,6 +471,7 @@
   background-color: #496aff;
 }
 
+#shuffle_board>div,
 #newList {
   display: flex;
   flex-wrap: wrap;
@@ -482,22 +479,25 @@
   max-width: 500px;
 }
 
-#indexList .list-group-item {
-  background: none;
-}
-#indexList .list-group-item span {
-  color: #000;
-  font-weight: 600;
+#newList .group-name {
+  background-color: #c5c2fd;
+  min-height: 48px;
 }
 
 .list-group-item {
   align-items: center;
   background-color: #fff;
-  justify-content: center;
   display: flex;
   height: 50px;
   border-radius: 5px !important;
   margin: 10px;
+  transform-style: preserve-3d;
+}
+
+#newList.list-group-numbered .list-group-item::before {
+  content: counters(section, ".") ". ";
+  counter-increment: section;
+  width: 30px;
 }
 
 .list-group-item .front {
@@ -509,12 +509,16 @@
   transform: rotateY(180deg);
 }
 
-.list-group-item {
-  transform-style: preserve-3d;
-}
-
 .list-group-item.flipped {
   transition: transform 0.5s;
+}
+
+#makeGroupModal .group-image img {
+  height: 100px;
+}
+
+#makeGroupModal .group-image button {
+  margin-top: -70px;
 }
 
 /*  */

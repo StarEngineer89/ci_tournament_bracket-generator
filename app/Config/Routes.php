@@ -98,6 +98,11 @@ $routes->group('api', static function ($routes) {
         $routes->post('list', 'Api\UserSettingsController::index');
         $routes->post('save', 'Api\UserSettingsController::save');
     });
+    
+    $routes->get('get-group-list', 'Api\GroupsController::getList');
+    $routes->post('save-group', 'Api\GroupsController::save');
+    $routes->post('upload-image', 'Api\GeneralController::uploadImage');
+    $routes->post('remove-image', 'Api\GeneralController::removeImage');
 });
 
 /** API to fetch the data of shared tournaments */

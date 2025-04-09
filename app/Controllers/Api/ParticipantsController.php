@@ -14,6 +14,7 @@ class ParticipantsController extends BaseController
     protected $bracketsModel;
     protected $tournamentsModel;
     protected $votesModel;
+    protected $groupedParticipantsModel;
 
     public function initController(
         RequestInterface $request,
@@ -26,6 +27,7 @@ class ParticipantsController extends BaseController
         $this->bracketsModel = model('\App\Models\BracketModel');
         $this->tournamentsModel = model('\App\Models\TournamentModel');
         $this->votesModel = model('\App\Models\VotesModel');
+        $this->groupedParticipantsModel = model('\App\Models\GroupedParticipantsModel');
     }
 
     public function getParticipants() {
@@ -134,6 +136,19 @@ class ParticipantsController extends BaseController
 
                 $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
                 $participant['votes'] = ($votes) ? count($votes) : 0;
+                
+                /** Get the group info */
+                $participant['group_id'] = null;
+                $participant['group_name'] = null;
+                $participant['group_image'] = null;
+                $groupInfo = $this->groupedParticipantsModel->where('participant_id', $participant['id'])->groupInfo()->findAll();
+                if ($groupInfo) {
+                    $participant['group_id'] = $groupInfo[0]['id'];
+                    $participant['group_name'] = $groupInfo[0]['group_name'];
+                    $participant['group_image'] = $groupInfo[0]['image_path'];
+                }
+                // End group Info
+                log_message('debug', __METHOD__ .'groupinfo: '. json_encode($participant));
 
                 $participant['email'] = null;
                 if ($participant['name'][0] == '@' && $participant['registered_user_id']) {

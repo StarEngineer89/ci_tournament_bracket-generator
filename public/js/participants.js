@@ -2,7 +2,6 @@ let shufflingPromise = null;
 
 function callShuffle(enableShuffling = true) {
     const delayBetweenRuns = 800; // Delay in milliseconds (0.5 seconds)
-    $('#generateProcessing').removeClass('d-none')
 
     exampleTeams = [];
     
@@ -33,7 +32,7 @@ function callShuffle(enableShuffling = true) {
     });
 
     shufflingPromise.then(() => {
-        Array.from(itemList.children).forEach((item, i) => {
+        Array.from(document.querySelectorAll('#shuffle_board .list-group-item')).forEach((item, i) => {
             let img = '';
             if($(item).find('img').length > 0) img = $(item).find('img').attr('src');
             exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'image': img, 'order': i });
@@ -52,9 +51,9 @@ function skipShuffling() {
 }
 
 function shuffleList(callback) {
-    const itemList = document.getElementById('newList');
+    const list = document.getElementById('shuffle_board').children[0];
 
-    let children = Array.from(itemList.children);
+    let children = Array.from(list.children);
 
     const keys = {}; // Reset keys object for each click
 
@@ -64,13 +63,13 @@ function shuffleList(callback) {
     });
 
     // Shuffle elements
-    children = shuffleArray(Array.from(itemList.children));
+    children = shuffleArray(Array.from(list.children));
     children.forEach(elm => {
-        itemList.appendChild(elm);
+        list.appendChild(elm);
     });
 
     // Apply animations
-    Array.from(itemList.children).forEach(elm => {
+    Array.from(list.children).forEach(elm => {
         const first = keys[elm.id];
         const last = elm.getBoundingClientRect();
 
@@ -115,11 +114,7 @@ function shuffleArray(array) {
  * Render the list of Participants
  */
 function renderParticipants(participantsArray) {
-
-    let indexList = document.getElementById('indexList')
-
     itemList.innerHTML = ''
-    indexList.innerHTML = ''
 
     if (participantsArray.length) {
         $('.empty-message-wrapper').addClass('d-none')
@@ -131,13 +126,25 @@ function renderParticipants(participantsArray) {
     enable_confirmPopup = true;
 
     $('.empty-message-wrapper').addClass('d-none')
+
+    let groups = {}
+    let ungroupedHtml = document.createElement('div')
+    ungroupedHtml.setAttribute('class', 'ungrouped group border rounded')
+
+    const groupLabel = document.createElement('p')
+    groupLabel.setAttribute('class', "group-name d-flex align-items-center p-1 ps-3 border-bottom")
+    groupLabel.textContent = "Individuals"
+
+    ungroupedHtml.appendChild(groupLabel)
+    groups['ungrouped'] = ungroupedHtml
+    
     participantsArray.forEach((participant, i) => {
         var item = document.createElement('div');
         item.setAttribute('id', participant.id);
-        item.setAttribute('class', "list-group-item");
+        item.setAttribute('class', "list-group-item d-flex");
         item.setAttribute('data-id', participant.id);
         item.setAttribute('data-name', participant.name);
-        let item_html = `<span class="p-name col text-center">` + participant.name + '</span>';
+        let item_html = `<span class="p-name ms-3">` + participant.name + '</span>';
         if(participant.image) {
             item_html = `<div class="p-image"><img src="${participant.image}" class="col-auto" height="30px" id="pimage_${participant.id}" data-pid="${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
         }else{
@@ -145,112 +152,137 @@ function renderParticipants(participantsArray) {
         }
         item.innerHTML = item_html;
 
-        if (itemList.length > 0)
-            itemList.insertBefore(item);
-        else
-            itemList.appendChild(item);
+        if (!participant.group_id) {
+            groups['ungrouped'].appendChild(item)
+        } else {
+            if (!(participant.group_id in groups)) {
+                const groupHtml = document.createElement('div')
+                groupHtml.setAttribute('class', 'group border rounded mb-3')
 
-        var indexItem = document.createElement('div');
-        indexItem.setAttribute('class', "list-group-item border-0 text-end");
-        indexItem.innerHTML = `<span>${i + 1}</span>`;
+                const groupLabel = document.createElement('p')
+                groupLabel.setAttribute('class', "group-name d-flex align-items-center p-1 ps-3 border-bottom")
+                groupLabel.textContent = participant.group_name
 
-        if (indexList.length > 0)
-            indexList.insertBefore(indexItem);
-        else
-            indexList.appendChild(indexItem);
+                groupHtml.appendChild(groupLabel)
+                groups[participant.group_id] = groupHtml
+            }
+
+            groups[participant.group_id].appendChild(item);
+        }
     });
+
+    Object.entries(groups).forEach(([group_name, group]) => {
+        if (itemList.length > 0)
+            itemList.insertBefore(group);
+        else
+            itemList.appendChild(group);
+    })
 
     $('#newList').contextMenu({
         selector: '.list-group-item',
-        items: {
-            edit: {
+        build: function ($triggerElement, e) {
+            let items = {}
+            items.edit = {
                 name: "Edit",
-                callback: (key, opt, e) => {
-                    var element_id = opt.$trigger.data('id');
-                    const nameBox = document.createElement('input');
-                    const name = opt.$trigger.children().last().text();
-                    nameBox.classList.add('name-input', 'form-control');
-                    nameBox.value = name;
+                    callback: (key, opt, e) => {
+                        var element_id = opt.$trigger.data('id');
+                        const nameBox = document.createElement('input');
+                        const name = opt.$trigger.children().last().text();
+                        nameBox.classList.add('name-input', 'form-control');
+                        nameBox.value = name;
 
-                    $(nameBox).atwho({
-                        at: "@",
-                        searchKey: 'username',
-                        data: users,
-                        limit: 5, // Show only 5 suggestions
-                        displayTpl: "<li data-value='@${id}'>${username}</li>",
-                        insertTpl: "@${username}",
-                        callbacks: {
-                            remoteFilter: function(query, callback) {
-                                if (query.length < 1) return; // Don't fetch on empty query
-                                $.ajax({
-                                    url: apiURL + '/tournaments/get-users', // Your API endpoint
-                                    type: "GET",
-                                    data: {
-                                        query: query
-                                    },
-                                    dataType: "json",
-                                    success: function(data) {
-                                        callback(data);
-                                    }
-                                });
+                        $(nameBox).atwho({
+                            at: "@",
+                            searchKey: 'username',
+                            data: users,
+                            limit: 5, // Show only 5 suggestions
+                            displayTpl: "<li data-value='@${id}'>${username}</li>",
+                            insertTpl: "@${username}",
+                            callbacks: {
+                                remoteFilter: function (query, callback) {
+                                    if (query.length < 1) return; // Don't fetch on empty query
+                                    $.ajax({
+                                        url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                        type: "GET",
+                                        data: {
+                                            query: query
+                                        },
+                                        dataType: "json",
+                                        success: function (data) {
+                                            callback(data);
+                                        }
+                                    });
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    const inputBox = document.createElement('div');
-                    inputBox.appendChild(nameBox);
-                    inputBox.classList.add('col');
+                        const inputBox = document.createElement('div');
+                        inputBox.appendChild(nameBox);
+                        inputBox.classList.add('col');
 
-                    const buttonBox = document.createElement('div');
-                    const button = document.createElement('button');
-                    button.classList.add('btn', 'btn-primary');
-                    button.textContent = "Save";
-                    button.setAttribute('onClick', `saveParticipant(event, ${element_id})`);
-                    buttonBox.appendChild(button);
-                    buttonBox.classList.add('col-auto');
+                        const buttonBox = document.createElement('div');
+                        const button = document.createElement('button');
+                        button.classList.add('btn', 'btn-primary');
+                        button.textContent = "Save";
+                        button.setAttribute('onClick', `saveParticipant(event, ${element_id})`);
+                        buttonBox.appendChild(button);
+                        buttonBox.classList.add('col-auto');
 
-                    const cancelBtn = document.createElement('button')
-                    cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
-                    cancelBtn.textContent = 'Cancel'
-                    cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
-                    buttonBox.appendChild(cancelBtn)
+                        const cancelBtn = document.createElement('button')
+                        cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
+                        cancelBtn.textContent = 'Cancel'
+                        cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+                        buttonBox.appendChild(cancelBtn)
 
-                    const html = document.createElement('div');
-                    //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
-                    html.appendChild(inputBox);
-                    html.appendChild(buttonBox);
-                    html.classList.add('row', 'g-3', 'align-items-center');
+                        const html = document.createElement('div');
+                        //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
+                        html.appendChild(inputBox);
+                        html.appendChild(buttonBox);
+                        html.classList.add('row', 'g-3', 'align-items-center');
 
-                    originalHtml = opt.$trigger.html()
+                        originalHtml = opt.$trigger.html()
 
-                    opt.$trigger.html(html);
-                    
-                    const originalObj = document.createElement('div')
-                    originalObj.classList.add('original', 'd-none')
-                    originalObj.innerHTML = originalHtml
-                    opt.$trigger.append(originalObj)
-                }
-            },
-            delete: {
+                        opt.$trigger.html(html);
+                
+                        const originalObj = document.createElement('div')
+                        originalObj.classList.add('original', 'd-none')
+                        originalObj.innerHTML = originalHtml
+                        opt.$trigger.append(originalObj)
+                    }
+            }
+            items.delete = {
                 name: "Delete",
-                callback: (key, opt, e) => {
-                    var element_id = opt.$trigger.data('id');
-                    $.ajax({
-                        type: "DELETE",
-                        url: apiURL + '/participants/delete/' + element_id,
-                        success: function (result) {
-                            document.getElementById(element_id).remove();
-                            $('#indexList').children().last().remove();
-                        },
-                        error: function (error) {
-                            console.log(error);
-                        }
-                    }).done(() => {
-                        setTimeout(function () {
-                            $("#overlay").fadeOut(300);
-                        }, 500);
-                    });
+                    callback: (key, opt, e) => {
+                        var element_id = opt.$trigger.data('id');
+                        $.ajax({
+                            type: "DELETE",
+                            url: apiURL + '/participants/delete/' + element_id,
+                            success: function (result) {
+                                document.getElementById(element_id).remove();
+                                $('#indexList').children().last().remove();
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        }).done(() => {
+                            setTimeout(function () {
+                                $("#overlay").fadeOut(300);
+                            }, 500);
+                        });
+                    }
+            }
+
+            if (!$triggerElement.parent().data('select-participants')) {
+                items.group = {
+                    name: "Group Participants",
+                    callback: (key, opt, e) => {
+                        selectParticipantsToGroup()
+                    }
                 }
+            }
+
+            return {
+                items: items
             }
         }
     });
@@ -290,6 +322,14 @@ $(document).on("click", ".p-image img", function(){
         $("#image_" + pid).trigger('click');
     }else{
         $(this).parent().addClass('active');
+    }
+})
+
+$(document).on("click", "#group_image", function(){
+    if($(this).hasClass('temp')){
+        $("#group_image_input").trigger('click');
+    } else {
+        $("#group_image" + ' ~ .btn').removeClass('d-none');
     }
 })
 
@@ -431,17 +471,12 @@ function generateBrackets(list) {
         url: apiURL + '/brackets/generate',
         data: { 'type': eleminationType, 'tournament_id': tournament_id, 'user_id': user_id, 'list': list },
         beforeSend: function() {
-            $('#generateProcessing').addClass('d-none')
-            // $('#beforeProcessing').addClass('generateProcessing')
-            $('#beforeProcessing').removeClass('d-none')
+            $('#generateProcessing').removeClass('d-none')
         },
         success: function (result) {
             if (result.result == 'success') {
                 window.location.href = '/tournaments/' + tournament_id + '/view' 
             } else {
-                $('#generateProcessing').addClass('d-none')
-                $('#beforeProcessing').addClass('d-none')
-
                 $('#errorModal .errorDetails').html(result.message)
                 $("#errorModal").modal('show');
 
@@ -452,6 +487,7 @@ function generateBrackets(list) {
             console.log(error);
         }
     }).done(() => {
+        $('#generateProcessing').addClass('d-none')
         setTimeout(function () {
             $("#overlay").fadeOut(300);
         }, 500);
@@ -504,7 +540,7 @@ var addParticipants = (data) => {
 
 var validateParticipantNames = (names) => {
     let exisingNames = []
-    itemList.querySelectorAll('#newList .p-name').forEach((item, i) => {
+    document.querySelectorAll('#newList .p-name').forEach((item, i) => {
         exisingNames.push(item.textContent.trim())
     })
 
@@ -568,4 +604,208 @@ $(document).ready(function () {
         });
 });
 
+let selectParticipantsToGroup = () => {
+    document.querySelector('#newList .ungrouped').setAttribute('data-select-participants', true)
+    document.querySelectorAll('#newList .ungrouped .list-group-item').forEach(element => {
+        // Add checkboxs to the participant list
+        const checkBoxWrapper = document.createElement('div')
+        checkBoxWrapper.setAttribute('class', 'form-check ms-auto p-2')
 
+        const checkBox = document.createElement('input')
+        checkBox.setAttribute('type', "checkbox")
+        checkBox.setAttribute('class', "form-check-input")
+        checkBox.setAttribute('value', element.id)
+
+        checkBoxWrapper.appendChild(checkBox)
+        element.appendChild(checkBoxWrapper)
+
+    })
+
+    // Add the Make a Group button
+    const ungroupWrapper = document.querySelector('#newList .ungrouped .group-name')
+    
+    const makeBtn = document.createElement('button')
+    makeBtn.setAttribute('class', "btn btn-primary ms-auto")
+    makeBtn.textContent = "Make a Group"
+    ungroupWrapper.appendChild(makeBtn)
+
+    const cancelBtn = document.createElement('button')
+    cancelBtn.setAttribute('class', "btn btn-secondary ms-2")
+    cancelBtn.textContent = "Cancel"
+    ungroupWrapper.appendChild(cancelBtn)
+
+    makeBtn.addEventListener('click', makeGroup)
+    cancelBtn.addEventListener('click', cancelMakeGroup)
+}
+
+let makeGroup = (event) => {
+    group_participants = []
+    document.querySelectorAll('#newList .ungrouped input[type="checkbox"]').forEach(element => {
+        if (element.checked) {
+            group_participants.push(element.value)
+        }
+    })
+
+    if (group_participants.length) {
+        $('#makeGroupModal').modal('show')
+    } else {
+        $('#selectParticipantsAlertModal').modal('show')
+    }
+}
+
+let cancelMakeGroup = (event) => {
+    event.target.parentElement.parentElement.removeAttribute('data-select-participants')
+    const checkboxs = event.target.parentElement.parentElement.querySelectorAll('input[type="checkbox"]');
+    checkboxs.forEach(ckb => ckb.remove());
+
+    const buttons = event.target.parentElement.querySelectorAll('.btn');
+    buttons.forEach(btn => btn.remove());
+}
+
+let drawGroupsInModal = () => {
+    $.ajax({
+        url: apiURL + '/get-group-list',
+        type: "get",
+        beforeSend: function() {
+            $('#beforeProcessing').removeClass('d-none')
+            $("#err").fadeOut();
+        },
+        success: function(result) {
+            $('#beforeProcessing').addClass('d-none')
+            if (result.status == 'success' && result.groups.length) {
+                document.querySelector('#makeGroupModal #select_group select').innerHTML = ''
+                result.groups.forEach(group => {
+                    let option = document.createElement('option')
+                    option.setAttribute('value', group.id)
+                    option.setAttribute('data-image', group.image_path)
+                    option.textContent = group.group_name
+                    document.querySelector('#makeGroupModal #select_group select').appendChild(option)
+                })
+            }
+        },
+        error: function(e) {
+            $("#err").html(e).fadeIn();
+        }
+    });
+}
+
+let saveGroup = (e) => {
+    e.preventDefault()
+
+    if (!document.querySelector('#input_group_name input').value && !document.querySelector('#select_group select').value) {
+        document.querySelector('#errorModal .message').innerHTML = 'Please input the Group Name or select the existing group'
+        $('#errorModal').modal('show')
+
+        return false
+    }
+
+    const data = Object.fromEntries($('#create_group_form').serializeArray().map(({
+        name,
+        value
+    }) => [name, value]));
+
+    data['hash'] = hash
+
+    if (group_participants.length) {
+        data['participants'] = group_participants
+    } else {
+        return false
+    }
+
+    if (tournament) {
+        data['tournament_id'] = tournament.id
+    }
+
+    $.ajax({
+        url: apiURL + '/save-group',
+        type: "POST",
+        data: data,
+        beforeSend: function () {
+            //$("#preview").fadeOut();
+            $('#create_group_form').modal('hide');
+            $('#beforeProcessing').removeClass('d-none')
+            $("#err").fadeOut();
+        },
+        success: function (result) {
+            if (result.status == 'success') {
+                $('#makeGroupModal').modal('hide')
+                renderParticipants(result.participants)
+            }
+        },
+        error: function (e) {
+            $("#err").html(e).fadeIn();
+        }
+    }).done(() => {
+        setTimeout(function () {
+            $("#beforeProcessing").fadeOut(300);
+        }, 500)
+    });
+}
+
+let uploadGroupImage = (el) => {
+    var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+    if (!allowedTypes.includes(el.files[0].type)) {
+        $('#errorModal .errorDetails').html('Please upload image as *.jpeg, *.jpg, *.png, *.gif format.')
+        $("#errorModal").modal('show');
+
+        this.value = '';
+        return
+    }
+
+    if (el.files[0].size > 3145728) {
+        $('#errorModal .errorDetails').html('Max image size is 3MB. Please upload small image.')
+        $("#errorModal").modal('show');
+        
+        this.value='';
+        return
+    }else{
+        var formData = new FormData();
+        formData.append('image', $("#group_image_input")[0].files[0]);
+        formData.append('type', "group");
+
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/upload-image',
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (result) {
+                if (result.status == 'error') {
+                    $('#errorModal .errorDetails').html(result.errors.file)
+                    $("#errorModal").modal('show');
+
+                    return false
+                }
+
+                $("#group_image").attr('src', result.file_path);
+                $('#group_image_path').val(result.file_path)
+                $("#group_image").removeClass('temp');
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    }
+}
+
+let removeGroupImage = (e, element_id) => {
+    document.getElementById('group_image_input').value = ''
+    document.getElementById('group_image').src = '/images/group-placeholder.png'
+}
+
+let changeGroup = (el) => {
+    const selectedOption = el.options[el.selectedIndex];
+    if (selectedOption.dataset.image && selectedOption.dataset.image != 'null') {
+        document.getElementById('group_image').src = selectedOption.dataset.image
+        document.getElementById('group_image_path').value = selectedOption.dataset.image
+    } else {
+        document.getElementById('group_image').src = '/images/group-placeholder.png'
+        document.getElementById('group_image_path').value = null
+    }
+}

@@ -61,6 +61,8 @@ const itemList = document.getElementById('newList');
 
 let users = <?= json_encode($users) ?>
 
+let group_participants = [];
+
 $(window).on('load', function() {
     $("#preview").fadeIn();
 });
@@ -251,18 +253,6 @@ $(document).ready(function() {
 
         data['hash'] = hash
 
-        let min_participants = 2
-        if (data.type == tournamentTypeConsts.k) {
-            min_participants = 4
-        }
-
-        if (itemList.children.length < min_participants) {
-            $('#tournamentSettings').modal('hide')
-            $('#generateErrorModal .count').html(min_participants)
-            $('#generateErrorModal').modal('show')
-            return false;
-        }
-
         $.ajax({
             url: apiURL + '/tournaments/save',
             type: "POST",
@@ -270,13 +260,11 @@ $(document).ready(function() {
             beforeSend: function() {
                 //$("#preview").fadeOut();
                 $('#tournamentSettings').modal('hide');
-                $('#beforeProcessing').addClass('generateProcessing')
                 $('#beforeProcessing').removeClass('d-none')
                 $("#err").fadeOut();
             },
             success: function(result) {
                 $('#beforeProcessing').addClass('d-none')
-                $('#beforeProcessing').removeClass('generateProcessing')
                 if (result.errors) {
                     if (result.errors == 'duplicated') {
                         const userConfirmed = confirm(result.message);
@@ -344,6 +332,9 @@ $(document).ready(function() {
                         });
                     }
 
+                    // Display the shuffle board
+                    document.getElementById('shuffle_board').classList.add('overlay')
+
                     let enableShuffling = true
                     if ($('#enableShuffle')) {
                         enableShuffling = $('#enableShuffle').prop('checked')
@@ -364,11 +355,22 @@ $(document).ready(function() {
             minParticipantCounts = 4
         }
 
-        if (itemList.children.length < minParticipantCounts) {
+        if (document.querySelectorAll('#newList .list-group-item').length < minParticipantCounts) {
             $('#generateErrorModal .count').html(minParticipantCounts)
             $('#generateErrorModal').modal('show')
             return false;
         }
+
+        // Add the Shuffle Board
+        const shuffle_list = document.querySelectorAll('#newList .list-group-item')
+        shuffle_list.innerHtml = ''
+        const boardContainer = document.createElement('div')
+        boardContainer.classList.add('list-group', 'bg-light', 'p-5')
+        shuffle_list.forEach(element => {
+            boardContainer.appendChild(element.cloneNode(true))
+        })
+        document.getElementById('shuffle_board').appendChild(boardContainer)
+        // End the Shuffle Board
 
         document.getElementsByClassName('participants-box')[0].scrollIntoView({
             behavior: "smooth",
@@ -412,6 +414,8 @@ $(document).ready(function() {
         <?php if ($tournament['shuffle_enabled']): ?>
         shuffle_enable = 1
         <?php endif ?>
+
+        document.getElementById('shuffle_board').classList.add('overlay')
         callShuffle(shuffle_enable);
 
         <?php else : ?>
@@ -683,6 +687,17 @@ $(document).ready(function() {
         performReuseParticipants(tournament_id);
     })
 
+    const makeGroupModal = document.getElementById('makeGroupModal');
+    if (makeGroupModal) {
+        makeGroupModal.addEventListener('show.bs.modal', event => {
+            document.getElementById('create_group_form').reset()
+            document.getElementById('input_group_name').classList.remove('d-none')
+            document.querySelector('#input_group_name input').removeAttribute('disabled')
+            document.getElementById('select_group').classList.add('d-none')
+            document.querySelector('#select_group select').setAttribute('disabled', 'disabled')
+            drawGroupsInModal()
+        })
+    }
 });
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -1052,6 +1067,22 @@ var performReuseParticipants = (reuse_id = null) => {
         }, 500);
     });
 }
+
+var chooseGroupType = (element) => {
+    if (element.value == 'new') {
+        document.querySelector('#makeGroupModal #input_group_name').classList.remove('d-none')
+        document.querySelector('#makeGroupModal #input_group_name input').removeAttribute('disabled')
+        document.querySelector('#makeGroupModal #select_group').classList.add('d-none')
+        document.querySelector('#makeGroupModal #select_group select').setAttribute('disabled', true)
+    }
+
+    if (element.value == 'reuse') {
+        document.querySelector('#makeGroupModal #input_group_name').classList.add('d-none')
+        document.querySelector('#makeGroupModal #input_group_name input').setAttribute('disabled', true)
+        document.querySelector('#makeGroupModal #select_group').classList.remove('d-none')
+        document.querySelector('#makeGroupModal #select_group select').removeAttribute('disabled')
+    }
+}
 </script>
 
 <?= $this->endSection() ?>
@@ -1149,9 +1180,9 @@ var performReuseParticipants = (reuse_id = null) => {
                     <?php endif; ?>
                 </div>
 
-                <div class="col-12 d-flex">
-                    <div id="indexList" class="list-group col-auto"></div>
-                    <div id="newList" class="list-group col-10"></div>
+                <div class="col-12 d-flex justify-content-center">
+                    <div id="shuffle_board" class="list-group"></div>
+                    <div id="newList" class="list-group list-group-numbered col-10"></div>
                 </div>
 
             </div>
@@ -1406,6 +1437,94 @@ var performReuseParticipants = (reuse_id = null) => {
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="selectParticipantsAlertModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="selectParticipantsAlertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="selectParticipantsAlertModalLabel">Warning!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please select at least one participant!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="makeGroupModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="makeGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="makeGroupModalLabel">Group participants</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="container" id="create_group_form">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="group-image d-flex align-items-center flex-column">
+                                <img src="/images/group-placeholder.png" class="temp col-auto" id="group_image">
+                                <input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onchange="uploadGroupImage(this)" name="image" id="group_image_input">
+                                <input type="hidden" name="image_path" id="group_image_path">
+                                <button class="btn btn-danger d-none col-auto" onclick="removeGroupImage(event)"><i class="fa fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-8 col-sm-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="create_group_type" id="create_new_group" value="new" onchange="chooseGroupType(this)" checked>
+                                <label class="form-check-label" for="create_new_group">
+                                    Create new Group
+                                </label>
+                            </div>
+                            <div class="ms-3" id="input_group_name">
+                                <input type="text" class="form-control form-control-sm" name="group_name" placeholder="" aria-label="">
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="create_group_type" id="reuse_existing_group" value="reuse" onchange="chooseGroupType(this)">
+                                <label class="form-check-label" for="reuse_existing_group">
+                                    Reuse the group
+                                </label>
+                            </div>
+                            <div class="ms-3 d-none" id="select_group">
+                                <select class="form-select" aria-label="Default select example" name="group_id" onchange="changeGroup(this)">
+                                    <option selected></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary save" onclick="saveGroup(event)">Save</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Discard</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="errorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="errorModalLabel">Error</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="message">Please select at least one participant!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php if (isset($settings) && isset($settings[AUDIO_TYPE_BRACKET_GENERATION])) : ?>
 <audio id="myAudio" preload="auto" data-starttime="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION]['start']) ? $settings[AUDIO_TYPE_BRACKET_GENERATION]['start'] : '' ?>" data-duration="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION]['duration']) ? $settings[AUDIO_TYPE_BRACKET_GENERATION]['duration'] : '' ?>">
     <source src="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION]['source'] == 'f') ? '/uploads/' . $settings[AUDIO_TYPE_BRACKET_GENERATION]['path'] : '/uploads/' . $settings[AUDIO_TYPE_BRACKET_GENERATION]['path'] ?>" type="audio/mpeg" id="audioSrc">
@@ -1425,15 +1544,6 @@ var performReuseParticipants = (reuse_id = null) => {
 <div id="generateProcessing" class="overlay d-none">
     <div class="snippet p-3 .bg-light" data-title="dot-elastic">
         <p>Generating Tournament Brackets...</p>
-        <div class="stage">
-            <div class="dot-elastic"></div>
-        </div>
-    </div>
-</div>
-
-<div id="processingMessage" class="overlay d-none">
-    <div class="snippet p-3 .bg-light" data-title="dot-elastic">
-        <p>Processing, please wait...</p>
         <div class="stage">
             <div class="dot-elastic"></div>
         </div>
