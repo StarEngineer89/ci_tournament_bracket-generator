@@ -881,10 +881,16 @@ let removeParticipantFromGroup = (el) => {
     document.querySelector('#confirmModal .confirmBtn').replaceWith(confirmBtn)
 
     confirmBtn.addEventListener('click', () => {
+        let data = {'participant_id': el.data('id'), 'group_id': group_id, 'hash': hash}
+        
+        if (tournament) {
+            data.tournament_id = tournament.id
+        }
+
         $.ajax({
             type: "POST",
             url: apiURL + '/groups/remove-participant',
-            data: {'tournament_id': tournament.id, 'participant_id': el.data('id'), 'group_id': group_id, 'hash': hash},
+            data: data,
             success: function (result) {
                 if (result.status == 'error') {
                     $('#errorModal .message').html(result.message)
