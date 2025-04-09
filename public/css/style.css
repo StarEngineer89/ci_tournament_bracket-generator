@@ -479,9 +479,13 @@
   max-width: 500px;
 }
 
+#newList .group .group-image {
+  max-height: 40px;
+}
+
 #newList .group-name {
   background-color: #c5c2fd;
-  min-height: 48px;
+  max-height: 50px;
 }
 
 .list-group-item {

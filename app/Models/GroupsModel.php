@@ -12,7 +12,7 @@ class GroupsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['group_name', 'image_path'];
+    protected $allowedFields    = ['group_name', 'image_path', 'user_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

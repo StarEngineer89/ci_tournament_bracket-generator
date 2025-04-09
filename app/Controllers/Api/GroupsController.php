@@ -42,7 +42,10 @@ class GroupsController extends BaseController
     }
 
     public function save()
-    {   
+    {
+        helper('db_helper');
+
+        $user_id = auth()->user() ? auth()->user()->id :0;
         if ($this->request->getPost('tournament_id')) {
             $tournament_id = $this->request->getPost('tournament_id');
         } else {
@@ -57,8 +60,17 @@ class GroupsController extends BaseController
             if ($this->request->getPost('group_name')) {
                 $groupEntity->group_name = $this->request->getPost('group_name');
                 $groupEntity->image_path = $this->request->getPost('image_path');
+                $groupEntity->user_id = $user_id;
                 
+                if (!$user_id) {
+                    disableForeignKeyCheck();
+                }
+
                 $this->groupsModel->save($groupEntity);
+
+                if (!$user_id) {
+                    enableForeignKeyCheck();
+                }
                 $group_id = $this->groupsModel->getInsertID();
             }
 
@@ -75,11 +87,75 @@ class GroupsController extends BaseController
                 }
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON(['status' => 'error', 'message' => 'Group Id is not valid']);
+                                    ->setJSON(['status' => 'error', 'message' => 'Failed to save the group info.']);
             }
 
-            if ($user = auth()->user()) {
-                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user->id])->withGroupInfo()->findAll();
+            if ($user_id) {
+                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+            } else {
+                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+            }
+
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'success', 'participants' => $participants]);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+
+    public function reset()
+    {
+        $user_id = auth()->user() ? auth()->user()->id :0;
+        if ($this->request->getPost('tournament_id')) {
+            $tournament_id = $this->request->getPost('tournament_id');
+        } else {
+            $tournament_id = 0;
+        }
+
+        if ($this->request->isAJAX()) {
+            if ($this->request->getPost('participants')) {
+                $this->group_participantsModel->where(['group_id'=> $this->request->getPost('group_id')])->whereIn('participant_id', $this->request->getPost('participants'))->delete();
+            } else {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'error', 'message' => 'There is not the participants to remove.']);
+            }
+
+            if ($user_id) {
+                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+            } else {
+                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+            }
+
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'success', 'participants' => $participants]);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+    
+    public function removeParticipant()
+    {
+        $user_id = auth()->user() ? auth()->user()->id :0;
+        if ($this->request->getPost('tournament_id')) {
+            $tournament_id = $this->request->getPost('tournament_id');
+        } else {
+            $tournament_id = 0;
+        }
+
+        if ($this->request->isAJAX()) {
+            if ($this->request->getPost('participant_id')) {
+                $this->group_participantsModel->where(['group_id'=> $this->request->getPost('group_id'), 'participant_id' => $this->request->getPost('participant_id')])->delete();
+            } else {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'error', 'message' => 'Failed to remove the participant.']);
+            }
+
+            if ($user_id) {
+                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
             } else {
                 $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
             }

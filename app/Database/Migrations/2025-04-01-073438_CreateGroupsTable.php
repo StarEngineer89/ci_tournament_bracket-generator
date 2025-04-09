@@ -15,11 +15,13 @@ class CreateGroupsTable extends Migration
             'id'            => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'group_name'    => ['type' => 'varchar', 'constraint' => 64, 'null' => false],
             'image_path'    => ['type' => 'varchar', 'constraint' => 128, 'null' => true],
+            'user_id'       => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'created_at'    => ['type' => 'datetime', 'null' => false],
             'updated_at'    => ['type' => 'datetime', 'null' => false],
             'deleted_at'    => ['type' => 'datetime', 'null' => true],
         ]);
         $this->forge->addPrimaryKey('id');
+        $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
         $this->forge->createTable('groups', false, $attributes);
 
         // Groups participants Table

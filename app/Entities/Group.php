@@ -12,6 +12,7 @@ class Group extends Entity
     protected $attributes = [
         'id'            => null,
         'group_name'  => null,
-        'image_path' => null
+        'image_path' => null,
+        'user_id' => null
     ];
 }

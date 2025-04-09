@@ -46,7 +46,7 @@ class ParticipantModel extends Model
     
     public function withGroupInfo()
     {
-        $this->select('participants.*, groups.id as group_id, groups.group_name, groups.image_path as group_image');
+        $this->select('participants.*, groups.id as group_id, groups.group_name, groups.image_path as group_image, groups.user_id as group_creator_id');
         $this->join('grouped_participants', 'grouped_participants.participant_id = participants.id', 'LEFT');
         $this->join('groups', 'grouped_participants.group_id = groups.id', 'LEFT');
 

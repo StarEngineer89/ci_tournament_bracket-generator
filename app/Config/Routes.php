@@ -98,9 +98,14 @@ $routes->group('api', static function ($routes) {
         $routes->post('list', 'Api\UserSettingsController::index');
         $routes->post('save', 'Api\UserSettingsController::save');
     });
+
+    $routes->group('groups', static function ($routes) {
+        $routes->get('get-list', 'Api\GroupsController::getList');
+        $routes->post('save', 'Api\GroupsController::save');
+        $routes->post('reset', 'Api\GroupsController::reset');
+        $routes->post('remove-participant', 'Api\GroupsController::removeParticipant');
+    });
     
-    $routes->get('get-group-list', 'Api\GroupsController::getList');
-    $routes->post('save-group', 'Api\GroupsController::save');
     $routes->post('upload-image', 'Api\GeneralController::uploadImage');
     $routes->post('remove-image', 'Api\GeneralController::removeImage');
 });

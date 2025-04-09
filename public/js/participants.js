@@ -133,7 +133,7 @@ function renderParticipants(participantsArray) {
 
     const groupLabel = document.createElement('p')
     groupLabel.setAttribute('class', "group-name d-flex align-items-center p-1 ps-3 border-bottom")
-    groupLabel.textContent = "Individuals"
+    groupLabel.innerHTML = `<img src="/images/group-placeholder.png" class="group-image pe-2"><span class="name">Participants</span>`
 
     ungroupedHtml.appendChild(groupLabel)
     groups['ungrouped'] = ungroupedHtml
@@ -158,10 +158,14 @@ function renderParticipants(participantsArray) {
             if (!(participant.group_id in groups)) {
                 const groupHtml = document.createElement('div')
                 groupHtml.setAttribute('class', 'group border rounded mb-3')
+                groupHtml.setAttribute('data-id', participant.group_id)
 
+                if (!participant.group_image) participant.group_image = "/images/group-placeholder.png"
                 const groupLabel = document.createElement('p')
                 groupLabel.setAttribute('class', "group-name d-flex align-items-center p-1 ps-3 border-bottom")
-                groupLabel.textContent = participant.group_name
+                groupLabel.innerHTML = `<img src="${participant.group_image}" class="group-image pe-2"><span class="name me-auto">${participant.group_name}</span>`
+                // groupLabel.innerHTML += `<button class="edit btn border me-2 p-1" data-id="${participant.group_id}" onclick="editGroup(this)"><i class="fa fa-edit"></i> Edit</button>`
+                groupLabel.innerHTML += `<button class="remove btn border p-1" data-id="${participant.group_id}" onclick="removeGroup(this)"><i class="fa fa-trash"></i> Remove</button>`
 
                 groupHtml.appendChild(groupLabel)
                 groups[participant.group_id] = groupHtml
@@ -272,11 +276,20 @@ function renderParticipants(participantsArray) {
                     }
             }
 
-            if (!$triggerElement.parent().data('select-participants')) {
+            if ($triggerElement.parent().hasClass('ungrouped')) {
+                if (!$triggerElement.parent().data('select-participants')) {
+                    items.group = {
+                        name: "Group Participants",
+                        callback: (key, opt, e) => {
+                            selectParticipantsToGroup()
+                        }
+                    }
+                }
+            } else {
                 items.group = {
-                    name: "Group Participants",
+                    name: "Remove from a group",
                     callback: (key, opt, e) => {
-                        selectParticipantsToGroup()
+                        removeParticipantFromGroup(opt.$trigger)
                     }
                 }
             }
@@ -664,7 +677,7 @@ let cancelMakeGroup = (event) => {
 
 let drawGroupsInModal = () => {
     $.ajax({
-        url: apiURL + '/get-group-list',
+        url: apiURL + '/groups/get-list',
         type: "get",
         beforeSend: function() {
             $('#beforeProcessing').removeClass('d-none')
@@ -717,7 +730,7 @@ let saveGroup = (e) => {
     }
 
     $.ajax({
-        url: apiURL + '/save-group',
+        url: apiURL + '/groups/save',
         type: "POST",
         data: data,
         beforeSend: function () {
@@ -808,4 +821,114 @@ let changeGroup = (el) => {
         document.getElementById('group_image').src = '/images/group-placeholder.png'
         document.getElementById('group_image_path').value = null
     }
+}
+
+let removeGroup = (el) => {
+    const group_id = el.dataset.id
+
+    $('#confirmModal .message').html('Are you sure to delete this group?')
+    $('#confirmModal').modal('show')
+
+    let confirmBtn = document.querySelector('#confirmModal .confirmBtn').cloneNode(true)
+    document.querySelector('#confirmModal .confirmBtn').replaceWith(confirmBtn)
+
+    confirmBtn.addEventListener('click', () => {
+        let participant_ids = []
+        document.querySelectorAll(`#newList .group[data-id="${group_id}"] .list-group-item`).forEach(item => {
+            participant_ids.push(item.dataset.id)
+        })
+
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/groups/reset',
+            data: {'tournament_id': tournament.id, 'participants': participant_ids, 'group_id': group_id, 'hash': hash},
+            success: function (result) {
+                if (result.status == 'error') {
+                    $('#errorModal .message').html(result.message)
+                    $("#errorModal").modal('show');
+
+                    return false
+                }
+
+                renderParticipants(result.participants)
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            $('#confirmModal').modal('hide')
+
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
+}
+
+let removeParticipantFromGroup = (el) => {
+    const group_id = el.parent().data('id')
+
+    $('#confirmModal .message').html('Are you sure to remove this participant from the group?')
+    $('#confirmModal').modal('show')
+
+    let confirmBtn = document.querySelector('#confirmModal .confirmBtn').cloneNode(true)
+    document.querySelector('#confirmModal .confirmBtn').replaceWith(confirmBtn)
+
+    confirmBtn.addEventListener('click', () => {
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/groups/remove-participant',
+            data: {'tournament_id': tournament.id, 'participant_id': el.data('id'), 'group_id': group_id, 'hash': hash},
+            success: function (result) {
+                if (result.status == 'error') {
+                    $('#errorModal .message').html(result.message)
+                    $("#errorModal").modal('show');
+
+                    return false
+                }
+
+                renderParticipants(result.participants)
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            $('#confirmModal').modal('hide')
+
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
+}
+
+let editGroup = (el) => {
+    var group_id = el.data('id');
+    var originalHtml = el.parent().html()
+
+    const nameBox = document.createElement('input');
+    const name = el.parent().find('span.name').text();
+    nameBox.classList.add('group-name', 'form-control');
+    nameBox.value = name;
+
+    const buttonWrapper = document.createElement('div');
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-primary');
+    button.textContent = "Save";
+    button.setAttribute('onClick', `saveParticipant(event, ${group_id})`);
+    buttonWrapper.appendChild(button);
+    buttonWrapper.classList.add('col-auto');
+
+    const cancelBtn = document.createElement('button')
+    cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
+    cancelBtn.textContent = 'Cancel'
+    cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+    buttonWrapper.appendChild(cancelBtn)
+
+    const html = document.createElement('div');
+    //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
+    html.appendChild(nameBox);
+    html.appendChild(buttonWrapper);
+
+    el.parent().html(html);
 }
