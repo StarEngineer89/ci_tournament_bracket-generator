@@ -99,9 +99,9 @@ class ParticipantsController extends BaseController
         $userSettingService = service('userSettings');
 
         if ($participant_name) {
-            $participants = $this->participantsModel->like('name', $participant_name)->findAll();
+            $participants = $this->participantsModel->like('name', $participant_name)->withGroupInfo()->findAll();
         } else {
-            $participants = $this->participantsModel->findAll();
+            $participants = $this->participantsModel->withGroupInfo()->findAll();
         }
         
         if ($participants) {
@@ -137,19 +137,6 @@ class ParticipantsController extends BaseController
                 $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
                 $participant['votes'] = ($votes) ? count($votes) : 0;
                 
-                /** Get the group info */
-                $participant['group_id'] = null;
-                $participant['group_name'] = null;
-                $participant['group_image'] = null;
-                $groupInfo = $this->groupedParticipantsModel->where('participant_id', $participant['id'])->groupInfo()->findAll();
-                if ($groupInfo) {
-                    $participant['group_id'] = $groupInfo[0]['id'];
-                    $participant['group_name'] = $groupInfo[0]['group_name'];
-                    $participant['group_image'] = $groupInfo[0]['image_path'];
-                }
-                // End group Info
-                log_message('debug', __METHOD__ .'groupinfo: '. json_encode($participant));
-
                 $participant['email'] = null;
                 if ($participant['name'][0] == '@' && $participant['registered_user_id']) {
                     $registered_user_id = $participant['registered_user_id'];
