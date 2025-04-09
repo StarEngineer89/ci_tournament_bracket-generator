@@ -37,7 +37,7 @@ if (!function_exists('enableForeignKeyCheck')) {
             $db->query('SET FOREIGN_KEY_CHECKS = 1;');
         }
 
-        if ($dbDriver === 'MySQLi') {
+        if ($dbDriver === 'SQLite3') {
             $db->query('PRAGMA foreign_keys = ON');
         }
     
