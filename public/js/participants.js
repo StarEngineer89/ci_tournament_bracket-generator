@@ -838,10 +838,16 @@ let removeGroup = (el) => {
             participant_ids.push(item.dataset.id)
         })
 
+        let data = { 'participants': participant_ids, 'group_id': group_id, 'hash': hash }
+        
+        if (tournament) {
+            data.tournament_id = tournament.id
+        }
+
         $.ajax({
             type: "POST",
             url: apiURL + '/groups/reset',
-            data: {'tournament_id': tournament.id, 'participants': participant_ids, 'group_id': group_id, 'hash': hash},
+            data: data,
             success: function (result) {
                 if (result.status == 'error') {
                     $('#errorModal .message').html(result.message)
