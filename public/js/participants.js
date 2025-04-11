@@ -137,6 +137,16 @@ function renderParticipants(participantsArray) {
 
     ungroupedHtml.appendChild(groupLabel)
     groups['ungrouped'] = ungroupedHtml
+
+    const noteIcon = document.createElement('button')
+    noteIcon.setAttribute('class', "ms-auto me-2 btn btn-light p-0 bg-transparent border-0")
+    noteIcon.innerHTML = `<i class="fa-classic fa-solid fa-circle-exclamation"></i>`
+    noteIcon.setAttribute('data-bs-toggle', 'tooltip');
+    noteIcon.setAttribute('data-bs-placement', 'top');
+    noteIcon.setAttribute('data-bs-html', true)
+    noteIcon.setAttribute('title', 'You may group individual participants together by selecting each one in the list belonging to the same group.<br/>Note: Nested grouping is not an option, meaning groups cannot be grouped within one another!');
+    const tooltip = new bootstrap.Tooltip(noteIcon)
+    groupLabel.appendChild(noteIcon)
     
     participantsArray.forEach((participant, i) => {
         var item = document.createElement('div');
