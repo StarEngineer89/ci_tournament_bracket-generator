@@ -19,7 +19,8 @@
 
     <?php $user = auth()->user() ? auth()->getProvider()->findById(auth()->user()->id) : null; ?>
     🔹 <strong>Added By</strong>: <?= $user ? "$user->username ($user->email)" : "Guest User" ?><br />
-    🔹 <strong>Your Role</strong>: Participant
+    🔹 <strong>Your Role</strong>: Participant<br />
+    🔹 <strong>Group</strong>: <?= $groupName ?? "None (Individual Participant)" ?>
 
     <p>Prepare yourself for an exciting competition. If you weren’t expecting this invitation, you can ignore this email.</p>
 

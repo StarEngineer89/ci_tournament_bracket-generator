@@ -211,14 +211,15 @@ class BracketsController extends BaseController
                         }
 
                         $participant_id = $this->participantsModel->insert($participant);
-                        $participant = $this->participantsModel->find($participant_id);
+                        $participant = $this->participantsModel->withGroupInfo()->find($participant_id);
                     }
                     
                     /** Send the email to the registered user */
                     if($req->name[0] == '@' && $user) {
                         $tournamentObj = new \App\Entities\Tournament($tournament);
 
-                        $message = "You've been added to tournament \"$tournamentObj->name\"!";
+                        $string = $participant['group_name'] ? 'Group: \"' . $participant["group_name"] . '\"' : 'Individual Participant';
+                        $message = "You've been added to tournament \"$tournamentObj->name\" ($string)!";
                         $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournamentObj->id/view"]);
 
                         if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
@@ -228,7 +229,7 @@ class BracketsController extends BaseController
                             $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
                             $email->setMessage(view(
                                 'email/invite-to-tournament',
-                                ['username' => $user->username, 'tournament' => $tournamentObj, 'tournamentCreatorName' => setting('Email.fromName')],
+                                ['username' => $user->username, 'tournament' => $tournamentObj, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $participant['group_name']],
                                 ['debug' => false]
                             ));
 
@@ -768,22 +769,24 @@ class BracketsController extends BaseController
         $notificationService = new \App\Services\NotificationService();
 
         if ($this->request->getPost('tournament_id')) {
-            $users = $this->participantsModel->where('tournament_id', $this->request->getPost('tournament_id'))->where('registered_user_id is Not Null')->findAll();
+            $users = $this->participantsModel->where('tournament_id', $this->request->getPost('tournament_id'))->where('registered_user_id is Not Null')->withGroupInfo()->findAll();
         } else {
-            $users = $this->participantsModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->findAll();
+            $users = $this->participantsModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->withGroupInfo()->findAll();
         }
 
         if ($users) {
             $userProvider = auth()->getProvider();
             $userSettingsService = service('userSettings');
             foreach ($users as $user) {
+                $groupName = $user['group_name'];
                 $user = $userProvider->findById($user['registered_user_id']);
                 
                 if (!$user) {
                     continue;
                 }
 
-                $message = "You've been added to tournament \"$tournamentData->name\"!";
+                $string = $groupName ? 'Group: \"' . $groupName . '\"' : 'Individual Participant';
+                $message = "You've been added to tournament \"$tournamentData->name\" ($string)!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
                 if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
@@ -793,7 +796,7 @@ class BracketsController extends BaseController
                     $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
                     $email->setMessage(view(
                         'email/invite-to-tournament',
-                        ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $groupName],
                         ['debug' => false]
                     ));
 

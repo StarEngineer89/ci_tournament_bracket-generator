@@ -1293,7 +1293,7 @@ class TournamentController extends BaseController
         }
 
         if ($user_id) {
-            $participantsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->delete();
+            $participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->delete();
         } else {
             $participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->delete();
         }
@@ -1316,7 +1316,7 @@ class TournamentController extends BaseController
         }
 
         if ($user_id) {
-            $participants = $participantsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->withGroupInfo()->findAll();
+            $participants = $participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
         } else {
             $participants = $participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
         }
