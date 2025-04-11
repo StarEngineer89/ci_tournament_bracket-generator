@@ -218,7 +218,7 @@ class BracketsController extends BaseController
                     if($req->name[0] == '@' && $user) {
                         $tournamentObj = new \App\Entities\Tournament($tournament);
 
-                        $string = $participant['group_name'] ? 'Group: \"' . $participant["group_name"] . '\"' : 'Individual Participant';
+                        $string = $participant['group_name'] ? 'Group: "' . $participant["group_name"] . '"' : 'Individual Participant';
                         $message = "You've been added to tournament \"$tournamentObj->name\" ($string)!";
                         $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournamentObj->id/view"]);
 
@@ -785,7 +785,7 @@ class BracketsController extends BaseController
                     continue;
                 }
 
-                $string = $groupName ? 'Group: \"' . $groupName . '\"' : 'Individual Participant';
+                $string = $groupName ? 'Group: "' . $groupName . '"' : 'Individual Participant';
                 $message = "You've been added to tournament \"$tournamentData->name\" ($string)!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
