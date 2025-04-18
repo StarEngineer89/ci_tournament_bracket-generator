@@ -32,10 +32,17 @@ function callShuffle(enableShuffling = true) {
     });
 
     shufflingPromise.then(() => {
-        Array.from(document.querySelectorAll('#shuffle_board .list-group-item')).forEach((item, i) => {
+        Array.from(document.getElementById('newList').children).forEach((item, i) => {
             let img = '';
-            if($(item).find('img').length > 0) img = $(item).find('img').attr('src');
-            exampleTeams.push({ 'id': item.id, 'name': item.lastChild.textContent, 'image': img, 'order': i });
+            let members = [];
+            if ($(item).find('img').length > 0) img = $(item).find('img').attr('src');
+            if (item.dataset.isGroup) {
+                Array.from(item.children[1].children).forEach((member, i) => {
+                    members.push({'id': member.dataset.id, 'order': i})
+                })
+            }
+            exampleTeams.push({ 'id': item.dataset.id, 'order': i, 'is_group': item.dataset.isGroup, 'members': members });
+            console.log(item.dataset.isGroup)
         });
 
         generateBrackets(exampleTeams);
@@ -51,7 +58,7 @@ function skipShuffling() {
 }
 
 function shuffleList(callback) {
-    const list = document.getElementById('shuffle_board').children[0];
+    const list = document.getElementById('newList');
 
     let children = Array.from(list.children);
 
@@ -65,7 +72,7 @@ function shuffleList(callback) {
     // Shuffle elements
     children = shuffleArray(Array.from(list.children));
     children.forEach(elm => {
-        list.appendChild(elm);
+        document.getElementById('newList').appendChild(elm);
     });
 
     // Apply animations
@@ -123,30 +130,25 @@ function renderParticipants(participantsArray) {
         return false
     }
 
+    if (participantsArray.length > 2) {
+        document.querySelector('.list-tool-bar .enableBtn').classList.remove('d-none')
+    }
+
     enable_confirmPopup = true;
 
     $('.empty-message-wrapper').addClass('d-none')
 
     let groups = {}
-    let ungroupedHtml = document.createElement('div')
-    ungroupedHtml.setAttribute('class', 'ungrouped group border rounded')
-
-    const groupLabel = document.createElement('p')
-    groupLabel.setAttribute('class', "group-name d-flex align-items-center p-1 ps-3 border-bottom")
-    groupLabel.innerHTML = `<img src="/images/group-placeholder.png" class="group-image pe-2"><span class="name">Participants</span>`
-
-    ungroupedHtml.appendChild(groupLabel)
-    groups['ungrouped'] = ungroupedHtml
 
     const noteIcon = document.createElement('button')
-    noteIcon.setAttribute('class', "ms-auto me-2 btn btn-light p-0 bg-transparent border-0")
+    noteIcon.setAttribute('class', "ms-2 btn btn-light p-0 bg-transparent border-0")
     noteIcon.innerHTML = `<i class="fa-classic fa-solid fa-circle-exclamation"></i>`
     noteIcon.setAttribute('data-bs-toggle', 'tooltip');
     noteIcon.setAttribute('data-bs-placement', 'top');
     noteIcon.setAttribute('data-bs-html', true)
     noteIcon.setAttribute('title', 'You may group individual participants together by selecting each one in the list belonging to the same group.<br/>Note: Nested grouping is not an option, meaning groups cannot be grouped within one another!');
     const tooltip = new bootstrap.Tooltip(noteIcon)
-    groupLabel.appendChild(noteIcon)
+    document.querySelector('.list-tool-bar').appendChild(noteIcon)
     
     participantsArray.forEach((participant, i) => {
         var item = document.createElement('div');
@@ -160,41 +162,48 @@ function renderParticipants(participantsArray) {
         }else{
             item_html = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${participant.id}" data-pid="${participant.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
         }
+
         item.innerHTML = item_html;
 
         if (!participant.group_id) {
-            groups['ungrouped'].appendChild(item)
+            itemList.appendChild(item)
         } else {
             if (!(participant.group_id in groups)) {
                 const groupHtml = document.createElement('div')
-                groupHtml.setAttribute('class', 'group border rounded mb-3')
+                groupHtml.setAttribute('class', 'group')
                 groupHtml.setAttribute('data-id', participant.group_id)
+                groupHtml.setAttribute('data-is-group', true)
 
                 if (!participant.group_image) participant.group_image = "/images/group-placeholder.png"
-                const groupLabel = document.createElement('p')
-                groupLabel.setAttribute('class', "group-name d-flex align-items-center p-1 ps-3 border-bottom")
+                const groupLabel = document.createElement('div')
+                groupLabel.setAttribute('class', "group-name list-group-item d-flex align-items-center p-1 ps-3 border-bottom")
                 groupLabel.innerHTML = `<img src="${participant.group_image}" class="group-image pe-2"><span class="name me-auto">${participant.group_name}</span>`
                 // groupLabel.innerHTML += `<button class="edit btn border me-2 p-1" data-id="${participant.group_id}" onclick="editGroup(this)"><i class="fa fa-edit"></i> Edit</button>`
-                groupLabel.innerHTML += `<button class="remove btn border p-1" data-id="${participant.group_id}" onclick="removeGroup(this)"><i class="fa fa-trash"></i> Remove</button>`
+                groupLabel.innerHTML += `<button class="remove btn border p-1" data-id="${participant.group_id}" onclick="removeGroup(this)"><i class="fa-classic fa-solid fa-link-slash fa-fw"></i> Ungroup</button>`
+
+                const groupList = document.createElement('div')
+                groupList.setAttribute('class', 'list-group list-group-numbered ms-3')
+                groupList.setAttribute('data-group', participant.group_id)
 
                 groupHtml.appendChild(groupLabel)
+                groupHtml.appendChild(groupList)
+
                 groups[participant.group_id] = groupHtml
+
+                itemList.appendChild(groups[participant.group_id])
             }
 
-            groups[participant.group_id].appendChild(item);
+            groups[participant.group_id].children[1].appendChild(item);
         }
     });
-
-    Object.entries(groups).forEach(([group_name, group]) => {
-        if (itemList.length > 0)
-            itemList.insertBefore(group);
-        else
-            itemList.appendChild(group);
-    })
 
     $('#newList').contextMenu({
         selector: '.list-group-item',
         build: function ($triggerElement, e) {
+            if ($triggerElement.parent().hasClass('group')) {
+                return false
+            }
+
             let items = {}
             items.edit = {
                 name: "Edit",
@@ -286,17 +295,8 @@ function renderParticipants(participantsArray) {
                     }
             }
 
-            if ($triggerElement.parent().hasClass('ungrouped')) {
-                if (!$triggerElement.parent().data('select-participants')) {
-                    items.group = {
-                        name: "Group Participants",
-                        callback: (key, opt, e) => {
-                            selectParticipantsToGroup()
-                        }
-                    }
-                }
-            } else {
-                items.group = {
+            if ($triggerElement.parent().data('group')) {
+                items.ungroup = {
                     name: "Remove from a group",
                     callback: (key, opt, e) => {
                         removeParticipantFromGroup(opt.$trigger)
@@ -309,6 +309,8 @@ function renderParticipants(participantsArray) {
             }
         }
     });
+
+    cancelMakeGroup()
 }
 
 /**
@@ -627,9 +629,8 @@ $(document).ready(function () {
         });
 });
 
-let selectParticipantsToGroup = () => {
-    document.querySelector('#newList .ungrouped').setAttribute('data-select-participants', true)
-    document.querySelectorAll('#newList .ungrouped .list-group-item').forEach(element => {
+let enableGroupParticipants = () => {
+    document.querySelectorAll('#newList > .list-group-item').forEach(element => {
         // Add checkboxs to the participant list
         const checkBoxWrapper = document.createElement('div')
         checkBoxWrapper.setAttribute('class', 'form-check ms-auto p-2')
@@ -645,25 +646,25 @@ let selectParticipantsToGroup = () => {
     })
 
     // Add the Make a Group button
-    const ungroupWrapper = document.querySelector('#newList .ungrouped .group-name')
-    
-    const makeBtn = document.createElement('button')
-    makeBtn.setAttribute('class', "btn btn-primary ms-auto")
-    makeBtn.textContent = "Make a Group"
-    ungroupWrapper.appendChild(makeBtn)
+    const makeGroupBtn = document.createElement('button')
+    makeGroupBtn.setAttribute('class', "group-action btn btn-primary ms-auto")
+    makeGroupBtn.textContent = "Save"
 
     const cancelBtn = document.createElement('button')
-    cancelBtn.setAttribute('class', "btn btn-secondary ms-2")
+    cancelBtn.setAttribute('class', "group-action btn btn-secondary ms-2")
     cancelBtn.textContent = "Cancel"
-    ungroupWrapper.appendChild(cancelBtn)
 
-    makeBtn.addEventListener('click', makeGroup)
+    makeGroupBtn.addEventListener('click', makeGroup)
     cancelBtn.addEventListener('click', cancelMakeGroup)
+
+    document.querySelector('.list-tool-bar .enableBtn').classList.add('d-none')
+    document.querySelector('.list-tool-bar').appendChild(makeGroupBtn)
+    document.querySelector('.list-tool-bar').appendChild(cancelBtn)
 }
 
 let makeGroup = (event) => {
     group_participants = []
-    document.querySelectorAll('#newList .ungrouped input[type="checkbox"]').forEach(element => {
+    document.querySelectorAll('#newList > .list-group-item input[type="checkbox"]').forEach(element => {
         if (element.checked) {
             group_participants.push(element.value)
         }
@@ -677,12 +678,12 @@ let makeGroup = (event) => {
 }
 
 let cancelMakeGroup = (event) => {
-    event.target.parentElement.parentElement.removeAttribute('data-select-participants')
-    const checkboxs = event.target.parentElement.parentElement.querySelectorAll('input[type="checkbox"]');
+    const checkboxs = document.querySelectorAll('#newList > .list-group-item input[type="checkbox"]');
     checkboxs.forEach(ckb => ckb.remove());
 
-    const buttons = event.target.parentElement.querySelectorAll('.btn');
+    const buttons = document.querySelectorAll('.list-tool-bar .btn.group-action');
     buttons.forEach(btn => btn.remove());
+    document.querySelector('.list-tool-bar .enableBtn').classList.remove('d-none')
 }
 
 let drawGroupsInModal = () => {
@@ -882,7 +883,7 @@ let removeGroup = (el) => {
 }
 
 let removeParticipantFromGroup = (el) => {
-    const group_id = el.parent().data('id')
+    const group_id = el.parent().data('group')
 
     $('#confirmModal .message').html('Are you sure to remove this participant from the group?')
     $('#confirmModal').modal('show')

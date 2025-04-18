@@ -483,16 +483,9 @@
   max-height: 40px;
 }
 
-#newList .group-name {
-  background-color: #c5c2fd;
-  max-height: 50px;
-}
-
 .list-group-item {
   align-items: center;
   background-color: #fff;
-  display: flex;
-  height: 50px;
   border-radius: 5px !important;
   margin: 10px;
   transform-style: preserve-3d;

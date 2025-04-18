@@ -43,4 +43,12 @@ class GroupedParticipantsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+    
+    public function details()
+    {
+        $this->select('participants.*');
+        $this->join('participants', 'grouped_participants.participant_id = participants.id', 'LEFT');
+
+        return $this;
+    }
 }

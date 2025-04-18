@@ -390,6 +390,13 @@ let editing_mode = false;
             if (teams[team_index].email) {
                 nameSpan.setAttribute('data-bs-html', true)
                 nameSpan.setAttribute('data-bs-title', teams[team_index].name + `<br/>(${teams[team_index].email})`)
+            } else if (teams[team_index].type == 'group') {
+                nameSpan.setAttribute('data-bs-html', true)
+                let members = ''
+                teams[team_index].members.forEach(member => {
+                    members += `${member.name}<br/> `
+                })
+                nameSpan.setAttribute('data-bs-title', `Group: ${teams[team_index].name}<br/>Members:<br/>${members}`)
             } else {
                 nameSpan.setAttribute('data-bs-title', teams[team_index].name)
             }

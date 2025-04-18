@@ -332,9 +332,6 @@ $(document).ready(function() {
                         });
                     }
 
-                    // Display the shuffle board
-                    document.getElementById('shuffle_board').classList.add('overlay')
-
                     let enableShuffling = true
                     if ($('#enableShuffle')) {
                         enableShuffling = $('#enableShuffle').prop('checked')
@@ -362,14 +359,7 @@ $(document).ready(function() {
         }
 
         // Add the Shuffle Board
-        const shuffle_list = document.querySelectorAll('#newList .list-group-item')
-        shuffle_list.innerHtml = ''
-        const boardContainer = document.createElement('div')
-        boardContainer.classList.add('list-group', 'bg-light', 'p-5')
-        shuffle_list.forEach(element => {
-            boardContainer.appendChild(element.cloneNode(true))
-        })
-        document.getElementById('shuffle_board').appendChild(boardContainer)
+        const shuffle_list = document.querySelectorAll('#newList > .list-group-item')
         // End the Shuffle Board
 
         document.getElementsByClassName('participants-box')[0].scrollIntoView({
@@ -415,7 +405,6 @@ $(document).ready(function() {
         shuffle_enable = 1
         <?php endif ?>
 
-        document.getElementById('shuffle_board').classList.add('overlay')
         callShuffle(shuffle_enable);
 
         <?php else : ?>
@@ -1180,9 +1169,11 @@ var chooseGroupType = (element) => {
                     <?php endif; ?>
                 </div>
 
-                <div class="col-12 d-flex justify-content-center">
-                    <div id="shuffle_board" class="list-group"></div>
-                    <div id="newList" class="list-group list-group-numbered col-10"></div>
+                <div class="col-12 d-flex justify-content-center flex-column">
+                    <div class="list-tool-bar d-flex justify-content-end col-10 m-auto pe-3">
+                        <button type="button" class="enableBtn btn btn-primary" onclick="enableGroupParticipants()"><i class="fa-classic fa-solid fa-link fa-fw"></i> Group Participants</button>
+                    </div>
+                    <div id="newList" class="list-group list-group-numbered col-10 m-auto"></div>
                 </div>
 
             </div>
