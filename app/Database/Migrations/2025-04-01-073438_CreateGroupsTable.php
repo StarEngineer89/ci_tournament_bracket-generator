@@ -29,6 +29,7 @@ class CreateGroupsTable extends Migration
             'id'            => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'group_id'      => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'participant_id'=> ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
+            'tournament_id' => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'created_at'    => ['type' => 'datetime', 'null' => false],
             'updated_at'    => ['type' => 'datetime', 'null' => false],
             'deleted_at'    => ['type' => 'datetime', 'null' => true],

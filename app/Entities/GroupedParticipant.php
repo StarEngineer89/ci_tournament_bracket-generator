@@ -12,6 +12,7 @@ class GroupedParticipant extends Entity
     protected $attributes = [
         'id'            => null,
         'group_id'  => null,
-        'participant_id' => null
+        'participant_id' => null,
+        'tournament_id' => null
     ];
 }

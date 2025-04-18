@@ -1316,9 +1316,9 @@ class TournamentController extends BaseController
         }
 
         if ($user_id) {
-            $participants = $participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+            $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
         } else {
-            $participants = $participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+            $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
         }
 
         // Return the tournaments as a JSON response
@@ -1332,7 +1332,7 @@ class TournamentController extends BaseController
         $registeredParticipants = [];
 
         if ($tournament_id) {
-            $participants = $participantsModel->where('tournament_id', $tournament_id)->withGroupInfo()->findAll();
+            $participants = $participantsModel->where('participants.tournament_id', $tournament_id)->withGroupInfo()->findAll();
             $registeredParticipants = $participantsModel->where('tournament_id', $tournament_id)->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
         }
 

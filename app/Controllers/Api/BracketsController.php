@@ -92,7 +92,7 @@ class BracketsController extends BaseController
                         $group = $this->groupsModel->find($teams[0]['id']);
                         $teams[0]['name'] = $group['group_name'];
                         $teams[0]['type'] = 'group';
-                        $teams[0]['members'] = $this->groupedParticipantsModel->where(['group_id' => $group['id']])->details()->findAll();
+                        $teams[0]['members'] = $this->groupedParticipantsModel->where(['group_id' => $group['id'], 'grouped_participants.tournament_id' => $tournament_settings['id']])->details()->findAll();
                     } else {
                         $participant = $this->participantsModel->find($teams[0]['id']);
                         $teams[0]['name'] = $participant['name'];
@@ -127,7 +127,7 @@ class BracketsController extends BaseController
                         $group = $this->groupsModel->find($teams[1]['id']);
                         $teams[1]['name'] = $group['group_name'];
                         $teams[1]['type'] = 'group';
-                        $teams[1]['members'] = $this->groupedParticipantsModel->where(['group_id' => $group['id']])->details()->findAll();
+                        $teams[1]['members'] = $this->groupedParticipantsModel->where(['group_id' => $group['id'], 'grouped_participants.tournament_id' => $tournament_settings['id']])->details()->findAll();
                     } else {
                         $participant = $this->participantsModel->find($teams[1]['id']);
                         $teams[1]['name'] = $participant['name'];
@@ -794,7 +794,7 @@ class BracketsController extends BaseController
         $notificationService = new \App\Services\NotificationService();
 
         if ($this->request->getPost('tournament_id')) {
-            $users = $this->participantsModel->where('tournament_id', $this->request->getPost('tournament_id'))->where('registered_user_id is Not Null')->withGroupInfo()->findAll();
+            $users = $this->participantsModel->where('participants.tournament_id', $this->request->getPost('tournament_id'))->where('registered_user_id is Not Null')->withGroupInfo()->findAll();
         } else {
             $users = $this->participantsModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->withGroupInfo()->findAll();
         }

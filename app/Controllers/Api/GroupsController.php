@@ -81,6 +81,7 @@ class GroupsController extends BaseController
                         $entity = new GroupedParticipant();
                         $entity->group_id = $group_id;
                         $entity->participant_id = $participant;
+                        $entity->tournament_id = $tournament_id;
 
                         $this->group_participantsModel->save($entity);
                     }
@@ -91,9 +92,9 @@ class GroupsController extends BaseController
             }
 
             if ($user_id) {
-                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
             } else {
-                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
             }
 
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
@@ -123,9 +124,9 @@ class GroupsController extends BaseController
             }
 
             if ($user_id) {
-                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
             } else {
-                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
             }
 
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
@@ -155,9 +156,9 @@ class GroupsController extends BaseController
             }
 
             if ($user_id) {
-                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
             } else {
-                $participants = $this->participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
             }
 
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)

@@ -12,7 +12,7 @@ class GroupedParticipantsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['group_id', 'participant_id'];
+    protected $allowedFields    = ['group_id', 'participant_id', 'tournament_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
