@@ -724,6 +724,7 @@ class BracketsController extends BaseController
                 if (isset($item['is_group']) && $item['is_group'] && count($item['members'])) {
                     foreach($item['members'] as $member) {
                         $all_participants[] = $member;
+                        $this->groupedParticipantsModel->where(['group_id' => $item['id'], 'participant_id' => $member['id']])->set(['tournament_id' => $tournament_id])->update();
                     }
                 } else {
                     $all_participants[] = $item;

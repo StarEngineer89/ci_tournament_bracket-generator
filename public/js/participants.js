@@ -122,6 +122,8 @@ function shuffleArray(array) {
  */
 function renderParticipants(participantsArray) {
     itemList.innerHTML = ''
+    let enableBtn = document.querySelector('.list-tool-bar .enableBtn').cloneNode(true)
+    document.querySelector('.list-tool-bar').innerHTML = ''
 
     if (participantsArray.length) {
         $('.empty-message-wrapper').addClass('d-none')
@@ -131,7 +133,8 @@ function renderParticipants(participantsArray) {
     }
 
     if (participantsArray.length > 2) {
-        document.querySelector('.list-tool-bar .enableBtn').classList.remove('d-none')
+        enableBtn.classList.remove('d-none')
+        document.querySelector('.list-tool-bar').appendChild(enableBtn)
     }
 
     enable_confirmPopup = true;
@@ -141,7 +144,7 @@ function renderParticipants(participantsArray) {
     let groups = {}
 
     const noteIcon = document.createElement('button')
-    noteIcon.setAttribute('class', "ms-2 btn btn-light p-0 bg-transparent border-0")
+    noteIcon.setAttribute('class', "noteBtn ms-2 btn btn-light p-0 bg-transparent border-0")
     noteIcon.innerHTML = `<i class="fa-classic fa-solid fa-circle-exclamation"></i>`
     noteIcon.setAttribute('data-bs-toggle', 'tooltip');
     noteIcon.setAttribute('data-bs-placement', 'top');
@@ -658,6 +661,7 @@ let enableGroupParticipants = () => {
     cancelBtn.addEventListener('click', cancelMakeGroup)
 
     document.querySelector('.list-tool-bar .enableBtn').classList.add('d-none')
+    document.querySelector('.list-tool-bar .noteBtn').classList.add('d-none')
     document.querySelector('.list-tool-bar').appendChild(makeGroupBtn)
     document.querySelector('.list-tool-bar').appendChild(cancelBtn)
 }
@@ -684,6 +688,7 @@ let cancelMakeGroup = (event) => {
     const buttons = document.querySelectorAll('.list-tool-bar .btn.group-action');
     buttons.forEach(btn => btn.remove());
     document.querySelector('.list-tool-bar .enableBtn').classList.remove('d-none')
+    document.querySelector('.list-tool-bar .noteBtn').classList.remove('d-none')
 }
 
 let drawGroupsInModal = () => {
@@ -705,12 +710,33 @@ let drawGroupsInModal = () => {
                     option.textContent = group.group_name
                     document.querySelector('#makeGroupModal #select_group select').appendChild(option)
                 })
+
+                chooseGroupType(document.querySelector('#makeGroupModal #create_new_group'))
             }
         },
         error: function(e) {
             $("#err").html(e).fadeIn();
         }
     });
+}
+
+let chooseGroupType = (element) => {
+    if (element.value == 'new') {
+        document.querySelector('#makeGroupModal #input_group_name').classList.remove('d-none')
+        document.querySelector('#makeGroupModal #input_group_name input').removeAttribute('disabled')
+        document.querySelector('#makeGroupModal #select_group').classList.add('d-none')
+        document.querySelector('#makeGroupModal #select_group select').setAttribute('disabled', true)
+        document.querySelector('#makeGroupModal .group-image img').setAttribute('src', '/images/group-placeholder.png')
+    }
+
+    if (element.value == 'reuse') {
+        document.querySelector('#makeGroupModal #input_group_name').classList.add('d-none')
+        document.querySelector('#makeGroupModal #input_group_name input').setAttribute('disabled', true)
+        document.querySelector('#makeGroupModal #select_group').classList.remove('d-none')
+        document.querySelector('#makeGroupModal #select_group select').removeAttribute('disabled')
+        let selectedOption = document.querySelector('#makeGroupModal #select_group select option:checked')
+        document.querySelector('#makeGroupModal .group-image img').setAttribute('src', selectedOption.getAttribute('data-image'))
+    }
 }
 
 let saveGroup = (e) => {

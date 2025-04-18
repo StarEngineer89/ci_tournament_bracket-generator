@@ -1056,22 +1056,6 @@ var performReuseParticipants = (reuse_id = null) => {
         }, 500);
     });
 }
-
-var chooseGroupType = (element) => {
-    if (element.value == 'new') {
-        document.querySelector('#makeGroupModal #input_group_name').classList.remove('d-none')
-        document.querySelector('#makeGroupModal #input_group_name input').removeAttribute('disabled')
-        document.querySelector('#makeGroupModal #select_group').classList.add('d-none')
-        document.querySelector('#makeGroupModal #select_group select').setAttribute('disabled', true)
-    }
-
-    if (element.value == 'reuse') {
-        document.querySelector('#makeGroupModal #input_group_name').classList.add('d-none')
-        document.querySelector('#makeGroupModal #input_group_name input').setAttribute('disabled', true)
-        document.querySelector('#makeGroupModal #select_group').classList.remove('d-none')
-        document.querySelector('#makeGroupModal #select_group select').removeAttribute('disabled')
-    }
-}
 </script>
 
 <?= $this->endSection() ?>
@@ -1171,7 +1155,7 @@ var chooseGroupType = (element) => {
 
                 <div class="col-12 d-flex justify-content-center flex-column">
                     <div class="list-tool-bar d-flex justify-content-end col-10 m-auto pe-3">
-                        <button type="button" class="enableBtn btn btn-primary" onclick="enableGroupParticipants()"><i class="fa-classic fa-solid fa-link fa-fw"></i> Group Participants</button>
+                        <button type="button" class="enableBtn btn btn-primary d-none" onclick="enableGroupParticipants()"><i class="fa-classic fa-solid fa-link fa-fw"></i> Group Participants</button>
                     </div>
                     <div id="newList" class="list-group list-group-numbered col-10 m-auto"></div>
                 </div>
