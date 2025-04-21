@@ -974,7 +974,8 @@ let ungroup = (el) => {
 let removeParticipantFromGroup = (el) => {
     const group_id = el.parent().data('group')
 
-    $('#confirmModal .message').html('Are you sure to remove this participant from the group?')
+    $('#confirmModal .message').html(`Are you sure to remove this participant "${el.data('name')}" from the group "${el.parent().data('name')}"?`)
+    $('#confirmModal .text-danger').addClass('d-none')
     $('#confirmModal').modal('show')
 
     let confirmBtn = document.querySelector('#confirmModal .confirmBtn').cloneNode(true)
