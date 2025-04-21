@@ -1446,7 +1446,7 @@ var performReuseParticipants = (reuse_id = null) => {
                                 <img src="/images/group-placeholder.png" class="temp col-auto" id="group_image">
                                 <input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onchange="uploadGroupImage(this)" name="image" id="group_image_input">
                                 <input type="hidden" name="image_path" id="group_image_path">
-                                <button class="btn btn-danger d-none col-auto" onclick="removeGroupImage(event)"><i class="fa fa-trash-alt"></i></button>
+                                <button type="button" class="btn btn-danger d-none col-auto" id="group_image_delete" onclick="removeGroupImage(event)"><i class="fa fa-trash-alt"></i></button>
                             </div>
                         </div>
                         <div class="col-md-8 col-sm-6">
@@ -1462,7 +1462,7 @@ var performReuseParticipants = (reuse_id = null) => {
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="create_group_type" id="reuse_existing_group" value="reuse" onchange="chooseGroupType(this)">
                                 <label class="form-check-label" for="reuse_existing_group">
-                                    Reuse the group
+                                    Use existing group
                                 </label>
                             </div>
                             <div class="ms-3 d-none" id="select_group">
@@ -1497,24 +1497,6 @@ var performReuseParticipants = (reuse_id = null) => {
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger confirmBtn">Confirm</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="errorModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="errorModalLabel">Error</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="message">Please select at least one participant!</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

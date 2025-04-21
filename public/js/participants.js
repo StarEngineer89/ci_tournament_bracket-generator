@@ -181,12 +181,16 @@ function renderParticipants(participantsArray) {
                 const groupLabel = document.createElement('div')
                 groupLabel.setAttribute('class', "group-name list-group-item d-flex align-items-center p-1 ps-3 border-bottom")
                 groupLabel.innerHTML = `<img src="${participant.group_image}" class="group-image pe-2"><span class="name me-auto">${participant.group_name}</span>`
-                // groupLabel.innerHTML += `<button class="edit btn border me-2 p-1" data-id="${participant.group_id}" onclick="editGroup(this)"><i class="fa fa-edit"></i> Edit</button>`
-                groupLabel.innerHTML += `<button class="remove btn border p-1" data-id="${participant.group_id}" onclick="removeGroup(this)"><i class="fa-classic fa-solid fa-link-slash fa-fw"></i> Ungroup</button>`
+
+                groupLabel.setAttribute('data-bs-toggle', "collapse")
+                groupLabel.setAttribute('data-bs-target', `#group_${participant.group_id}`)
+                groupLabel.setAttribute('data-name', `${participant.group_name}`)
 
                 const groupList = document.createElement('div')
-                groupList.setAttribute('class', 'list-group list-group-numbered ms-3')
+                groupList.setAttribute('id', `group_${participant.group_id}`)
+                groupList.setAttribute('class', 'list-group list-group-numbered ms-3 collapse')
                 groupList.setAttribute('data-group', participant.group_id)
+                groupList.setAttribute('data-name', participant.group_name)
 
                 groupHtml.appendChild(groupLabel)
                 groupHtml.appendChild(groupList)
@@ -203,13 +207,23 @@ function renderParticipants(participantsArray) {
     $('#newList').contextMenu({
         selector: '.list-group-item',
         build: function ($triggerElement, e) {
-            if ($triggerElement.parent().hasClass('group')) {
-                return false
-            }
-
             let items = {}
-            items.edit = {
-                name: "Edit",
+            if ($triggerElement.parent().hasClass('group')) {
+                items.edit = {
+                    name: "Edit Group",
+                    callback: (key, opt, e) => {
+                        
+                    }
+                }
+                items.ungroup = {
+                    name: "Ungroup",
+                    callback: (key, opt, e) => {
+                        ungroup(opt.$trigger)
+                    }
+                }
+            } else {
+                items.edit = {
+                    name: "Edit",
                     callback: (key, opt, e) => {
                         var element_id = opt.$trigger.data('id');
                         const nameBox = document.createElement('input');
@@ -275,9 +289,9 @@ function renderParticipants(participantsArray) {
                         originalObj.innerHTML = originalHtml
                         opt.$trigger.append(originalObj)
                     }
-            }
-            items.delete = {
-                name: "Delete",
+                }
+                items.delete = {
+                    name: "Delete",
                     callback: (key, opt, e) => {
                         var element_id = opt.$trigger.data('id');
                         $.ajax({
@@ -296,13 +310,14 @@ function renderParticipants(participantsArray) {
                             }, 500);
                         });
                     }
-            }
+                }
 
-            if ($triggerElement.parent().data('group')) {
-                items.ungroup = {
-                    name: "Remove from a group",
-                    callback: (key, opt, e) => {
-                        removeParticipantFromGroup(opt.$trigger)
+                if ($triggerElement.parent().data('group')) {
+                    items.ungroup = {
+                        name: `Remove from Group "${$triggerElement.parent().data('name')}"`,
+                        callback: (key, opt, e) => {
+                            removeParticipantFromGroup(opt.$trigger)
+                        }
                     }
                 }
             }
@@ -739,14 +754,59 @@ let chooseGroupType = (element) => {
     }
 }
 
-let saveGroup = (e) => {
+let saveGroup = (e, forceInsert = false) => {
     e.preventDefault()
 
-    if (!document.querySelector('#input_group_name input').value && !document.querySelector('#select_group select').value) {
-        document.querySelector('#errorModal .message').innerHTML = 'Please input the Group Name or select the existing group'
-        $('#errorModal').modal('show')
+    if (!forceInsert) {
+        let isValidate = true
 
-        return false
+        if (!document.querySelector('#input_group_name input').value && !document.querySelector('#select_group select').value) {
+            document.querySelector('#errorModal .message').innerHTML = 'Please input the Group Name or select the existing group'
+            $('#errorModal').modal('show')
+
+            isValidate = false
+        }
+
+        [...document.querySelectorAll('#select_group option'), ...document.querySelectorAll('#newList .p-name')].forEach(optionEl => {
+            if (document.querySelector('#input_group_name input').value == optionEl.textContent) {
+                const includeBtn = document.createElement('button')
+                includeBtn.setAttribute('class', "btn btn-primary")
+                includeBtn.textContent = "Save duplicated name"
+                includeBtn.addEventListener('click', () => {
+                    saveGroup(e, true)
+                })
+                $('#errorModal .modal-footer').prepend(includeBtn)
+                $('#errorModal .errorDetails').html(`The group name "${document.querySelector('#input_group_name input').value}" appears to be duplicated.`)
+                $('#errorModal').modal('show')
+
+                isValidate = false
+
+                return false
+            }
+        })
+
+        // document.querySelectorAll('#newList .p-name').forEach(nameEl => {
+        //     if (document.querySelector('#input_group_name input').value == nameEl.textContent) {
+        //         const includeBtn = document.createElement('button')
+        //         includeBtn.setAttribute('class', "btn btn-primary")
+        //         includeBtn.addEventListener('click', () => {
+        //             saveGroup(e, true)
+        //         })
+        //         $('#errorModal .modal-footer').prepend(includeBtn)
+        //         $('#errorModal .errorDetails').html(`The group name "${document.querySelector('#input_group_name input').value}" appears to be duplicated.`)
+        //         $('#errorModal').modal('show')
+
+        //         isValidate = false
+        //     }
+        // })
+
+        if (!isValidate) {
+            return false
+        }
+    }
+    
+    if (forceInsert) {
+        $('#errorModal').modal('hide')
     }
 
     const data = Object.fromEntries($('#create_group_form').serializeArray().map(({
@@ -847,6 +907,7 @@ let uploadGroupImage = (el) => {
 let removeGroupImage = (e, element_id) => {
     document.getElementById('group_image_input').value = ''
     document.getElementById('group_image').src = '/images/group-placeholder.png'
+    document.getElementById('group_image_delete').classList.add('d-none')
 }
 
 let changeGroup = (el) => {
@@ -860,10 +921,9 @@ let changeGroup = (el) => {
     }
 }
 
-let removeGroup = (el) => {
-    const group_id = el.dataset.id
-
-    $('#confirmModal .message').html('Are you sure to delete this group?')
+let ungroup = (el) => {
+    let group_id = el.parent().data('id')
+    $('#confirmModal .message').html(`Are you sure to ungroup the participants in this group "${el.data('name')}"?`)
     $('#confirmModal').modal('show')
 
     let confirmBtn = document.querySelector('#confirmModal .confirmBtn').cloneNode(true)
