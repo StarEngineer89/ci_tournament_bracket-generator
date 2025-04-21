@@ -765,8 +765,10 @@ let saveGroup = (e, forceInsert = false) => {
     
     let isValidate = true
 
-    if (!document.querySelector('#input_group_name input').value && !document.querySelector('#select_group select').value) {
-        document.querySelector('#errorModal .message').innerHTML = 'Please input the Group Name or select the existing group'
+    $('#errorModal .modal-footer button.force').remove()
+
+    if (!document.querySelector('#input_group_name input').value || !document.querySelector('#select_group select').value) {
+        document.querySelector('#errorModal .errorDetails').innerHTML = 'Please input the Group Name or select the existing group'
         $('#errorModal').modal('show')
 
         return false
@@ -774,9 +776,13 @@ let saveGroup = (e, forceInsert = false) => {
 
     if (!forceInsert) {
         [...document.querySelectorAll('#select_group option'), ...document.querySelectorAll('#newList .p-name')].forEach(optionEl => {
+            if (!isValidate) {
+                return false
+            }
+
             if (document.querySelector('#input_group_name input').value == optionEl.textContent) {
                 const includeBtn = document.createElement('button')
-                includeBtn.setAttribute('class', "btn btn-primary")
+                includeBtn.setAttribute('class', "btn btn-primary force")
                 includeBtn.textContent = "Save duplicated name"
                 includeBtn.addEventListener('click', () => {
                     saveGroup(e, true)
@@ -898,6 +904,7 @@ let uploadGroupImage = (el) => {
 let removeGroupImage = (e, element_id) => {
     document.getElementById('group_image_input').value = ''
     document.getElementById('group_image').src = '/images/group-placeholder.png'
+    document.getElementById('group_image').classList.add('temp')
     document.getElementById('group_image_delete').classList.add('d-none')
 }
 
