@@ -215,6 +215,12 @@ function renderParticipants(participantsArray) {
                         
                     }
                 }
+                items.delete = {
+                    name: "Delete",
+                    callback: (key, opt, e) => {
+                        
+                    }
+                }
                 items.ungroup = {
                     name: "Ungroup",
                     callback: (key, opt, e) => {
@@ -756,17 +762,17 @@ let chooseGroupType = (element) => {
 
 let saveGroup = (e, forceInsert = false) => {
     e.preventDefault()
+    
+    let isValidate = true
+
+    if (!document.querySelector('#input_group_name input').value && !document.querySelector('#select_group select').value) {
+        document.querySelector('#errorModal .message').innerHTML = 'Please input the Group Name or select the existing group'
+        $('#errorModal').modal('show')
+
+        return false
+    }
 
     if (!forceInsert) {
-        let isValidate = true
-
-        if (!document.querySelector('#input_group_name input').value && !document.querySelector('#select_group select').value) {
-            document.querySelector('#errorModal .message').innerHTML = 'Please input the Group Name or select the existing group'
-            $('#errorModal').modal('show')
-
-            isValidate = false
-        }
-
         [...document.querySelectorAll('#select_group option'), ...document.querySelectorAll('#newList .p-name')].forEach(optionEl => {
             if (document.querySelector('#input_group_name input').value == optionEl.textContent) {
                 const includeBtn = document.createElement('button')
@@ -784,21 +790,6 @@ let saveGroup = (e, forceInsert = false) => {
                 return false
             }
         })
-
-        // document.querySelectorAll('#newList .p-name').forEach(nameEl => {
-        //     if (document.querySelector('#input_group_name input').value == nameEl.textContent) {
-        //         const includeBtn = document.createElement('button')
-        //         includeBtn.setAttribute('class', "btn btn-primary")
-        //         includeBtn.addEventListener('click', () => {
-        //             saveGroup(e, true)
-        //         })
-        //         $('#errorModal .modal-footer').prepend(includeBtn)
-        //         $('#errorModal .errorDetails').html(`The group name "${document.querySelector('#input_group_name input').value}" appears to be duplicated.`)
-        //         $('#errorModal').modal('show')
-
-        //         isValidate = false
-        //     }
-        // })
 
         if (!isValidate) {
             return false
