@@ -510,6 +510,11 @@
   transition: transform 0.5s;
 }
 
+.list-group-item svg {
+  width: 20px;
+  color: #414141;
+}
+
 #makeGroupModal .group-image img {
   height: 100px;
 }
