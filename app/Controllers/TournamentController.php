@@ -167,10 +167,6 @@ class TournamentController extends BaseController
                 return redirect()->to('/tournaments');
             }
 
-            $participantModel = model('\App\Models\ParticipantModel');
-
-            $participants = $participantModel->where(['participants.user_id' => $user_id, 'participants.tournament_id' => $id])->withGroupInfo()->findAll();
-
             $settingsBlock = view('tournament/tournament-settings', []);
             $audioSettingsBlock = view('tournament/audio-setting', []);
             $audioSettings = $audioSettingModel->where(['tournament_id' => $id])->whereIn('type', [AUDIO_TYPE_BRACKET_GENERATION, AUDIO_TYPE_BRACKET_GENERATION_VIDEO])->orderBy('type','asc')->findAll();
@@ -195,7 +191,7 @@ class TournamentController extends BaseController
 
             $users = auth()->getProvider()->limit(5)->findAll();
 
-            return view('tournament/create', ['participants' => json_encode($participants), 'tournament' => $tournament, 'users' => $users, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
+            return view('tournament/create', ['tournament' => $tournament, 'users' => $users, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();

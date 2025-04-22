@@ -120,10 +120,12 @@ function shuffleArray(array) {
 /**
  * Render the list of Participants
  */
-function renderParticipants(participantsArray) {
+function renderParticipants(participantsData) {
     itemList.innerHTML = ''
     let enableBtn = document.querySelector('.list-tool-bar .enableBtn').cloneNode(true)
     document.querySelector('.list-tool-bar').innerHTML = ''
+
+    let participantsArray = participantsData.participants
 
     if (participantsArray.length) {
         $('.empty-message-wrapper').addClass('d-none')
@@ -206,24 +208,24 @@ function renderParticipants(participantsArray) {
         }
     });
 
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
     $('#newList').contextMenu({
         selector: '.list-group-item',
         build: function ($triggerElement, e) {
             let items = {}
             if ($triggerElement.parent().hasClass('group')) {
+                const reused = participantsData.reusedGroups.includes($triggerElement.parent().data('id'))
                 items.edit = {
                     name: "Edit Group",
+                    disabled: reused,
                     callback: (key, opt, e) => {
-                        
+                        enableEditGroup(opt.$trigger)
                     }
                 }
                 items.delete = {
-                    name: "Delete",
+                    name: "Delete Group",
+                    disabled: reused,
                     callback: (key, opt, e) => {
-                        
+                        deleteGroup(opt.$trigger)
                     }
                 }
                 items.ungroup = {
@@ -338,6 +340,9 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
             }
         }
     });
+    
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
     cancelMakeGroup()
 }
@@ -772,7 +777,7 @@ let saveGroup = (e, forceInsert = false) => {
 
     $('#errorModal .modal-footer button.force').remove()
 
-    if (!document.querySelector('#input_group_name input').value || !document.querySelector('#select_group select').value) {
+    if (!document.querySelector('#input_group_name input').value && document.querySelector('#select_group select').getAttribute('disabled')) {
         document.querySelector('#errorModal .errorDetails').innerHTML = 'Please input the Group Name or select the existing group'
         $('#errorModal').modal('show')
 
@@ -841,7 +846,7 @@ let saveGroup = (e, forceInsert = false) => {
         success: function (result) {
             if (result.status == 'success') {
                 $('#makeGroupModal').modal('hide')
-                renderParticipants(result.participants)
+                renderParticipants(result)
             }
         },
         error: function (e) {
@@ -926,7 +931,7 @@ let changeGroup = (el) => {
 
 let ungroup = (el) => {
     let group_id = el.parent().data('id')
-    $('#confirmModal .message').html(`Are you sure to ungroup the participants in this group "${el.data('name')}"?`)
+    $('#confirmModal .message').html(`Are you sure to ungroup the participants from the group "${el.data('name')}"?`)
     $('#confirmModal').modal('show')
 
     let confirmBtn = document.querySelector('#confirmModal .confirmBtn').cloneNode(true)
@@ -956,7 +961,50 @@ let ungroup = (el) => {
                     return false
                 }
 
-                renderParticipants(result.participants)
+                renderParticipants(result)
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            $('#confirmModal').modal('hide')
+
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
+}
+
+let deleteGroup = (el) => {
+    const group_id = el.parent().data('id')
+
+    $('#confirmModal .message').html(`Are you sure to remove this group "${el.data('name')}"?`)
+    $('#confirmModal').modal('show')
+
+    let confirmBtn = document.querySelector('#confirmModal .confirmBtn').cloneNode(true)
+    document.querySelector('#confirmModal .confirmBtn').replaceWith(confirmBtn)
+
+    confirmBtn.addEventListener('click', () => {
+        let data = {'group_id': group_id, 'hash': hash}
+        
+        if (tournament) {
+            data.tournament_id = tournament.id
+        }
+
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/groups/delete',
+            data: data,
+            success: function (result) {
+                if (result.status == 'error') {
+                    $('#errorModal .message').html(result.message)
+                    $("#errorModal").modal('show');
+
+                    return false
+                }
+
+                renderParticipants(result)
             },
             error: function (error) {
                 console.log(error);

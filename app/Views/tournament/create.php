@@ -141,11 +141,7 @@ $(document).ready(function() {
         }
     });
 
-    <?php if (isset($participants)): ?>
-    var participants = JSON.parse('<?= $participants ?>')
-    renderParticipants(participants)
-    <?php endif ?>
-
+    loadParticipants()
 
     /** Submit the tournament settings when create the new tournament */
     $('#submit').on('click', function(event) {

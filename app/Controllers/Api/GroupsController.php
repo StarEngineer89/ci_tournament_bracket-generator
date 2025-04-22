@@ -90,15 +90,16 @@ class GroupsController extends BaseController
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                                     ->setJSON(['status' => 'error', 'message' => 'Failed to save the group info.']);
             }
-
-            if ($user_id) {
-                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+            
+            helper('participant_helper');            
+            if ($tournament_id) {
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
             } else {
-                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
             }
 
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON(['status' => 'success', 'participants' => $participants]);
+                                    ->setJSON(['status' => 'success', "participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
         }
 
         // If not an AJAX request, return a 403 error
@@ -123,14 +124,49 @@ class GroupsController extends BaseController
                                     ->setJSON(['status' => 'error', 'message' => 'There is not the participants to remove.']);
             }
 
-            if ($user_id) {
-                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+            helper('participant_helper');            
+            if ($tournament_id) {
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
             } else {
-                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
             }
 
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON(['status' => 'success', 'participants' => $participants]);
+                                    ->setJSON(['status' => 'success', "participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+    
+    public function delete()
+    {
+        $user_id = auth()->user() ? auth()->user()->id :0;
+        if ($this->request->getPost('tournament_id')) {
+            $tournament_id = $this->request->getPost('tournament_id');
+        } else {
+            $tournament_id = 0;
+        }
+
+        if ($this->request->isAJAX()) {
+            if ($this->request->getPost('group_id')) {
+                $this->group_participantsModel->where(['group_id'=> $this->request->getPost('group_id')])->delete();
+                $this->groupsModel->where(['id'=> $this->request->getPost('group_id')])->delete();
+            } else {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'error', 'message' => 'The group was not specified.']);
+            }
+            
+            helper('participant_helper');            
+            if ($tournament_id) {
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
+            } else {
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
+            }
+
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'success', "participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
         }
 
         // If not an AJAX request, return a 403 error
@@ -155,14 +191,15 @@ class GroupsController extends BaseController
                                     ->setJSON(['status' => 'error', 'message' => 'Failed to remove the participant.']);
             }
 
-            if ($user_id) {
-                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+            helper('participant_helper');            
+            if ($tournament_id) {
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
             } else {
-                $participants = $this->participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+                $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
             }
 
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON(['status' => 'success', 'participants' => $participants]);
+                                    ->setJSON(['status' => 'success', "participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
         }
 
         // If not an AJAX request, return a 403 error

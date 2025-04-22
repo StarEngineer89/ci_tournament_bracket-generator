@@ -103,6 +103,7 @@ $routes->group('api', static function ($routes) {
         $routes->get('get-list', 'Api\GroupsController::getList');
         $routes->post('save', 'Api\GroupsController::save');
         $routes->post('reset', 'Api\GroupsController::reset');
+        $routes->post('delete', 'Api\GroupsController::delete');
         $routes->post('remove-participant', 'Api\GroupsController::removeParticipant');
     });
     

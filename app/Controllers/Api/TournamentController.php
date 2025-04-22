@@ -19,6 +19,7 @@ class TournamentController extends BaseController
     protected $participantModel;
     protected $bracketModel;
     protected $shareSettingModel;
+    protected $groupMembersModel;
 
     public function __construct()
     {
@@ -27,6 +28,7 @@ class TournamentController extends BaseController
         $this->participantModel = model('\App\Models\ParticipantModel');
         $this->bracketModel = model('\App\Models\BracketModel');
         $this->shareSettingModel = model('\App\Models\ShareSettingsModel');
+        $this->groupMembersModel = model('\App\Models\GroupedParticipantsModel');
     }
     
     public function index()
@@ -559,8 +561,7 @@ class TournamentController extends BaseController
              *  Notify the availability duration was updated
              */
             if ($availabilityChanged) {
-                $participantsModel = model('\App\Models\ParticipantModel');
-                $registeredUsers = $participantsModel->where(['tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+                $registeredUsers = $this->participantModel->where(['tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
 
                 if ($registeredUsers) {
                     $userProvider = auth()->getProvider();
@@ -1266,8 +1267,6 @@ class TournamentController extends BaseController
     }
 
     public function reuseParticipants() {
-        $participantsModel = model('\App\Models\ParticipantModel');
-
         $reuse_Id = $this->request->getPost('id');
         
         if ($this->request->getPost('tournament_id')) {
@@ -1283,7 +1282,7 @@ class TournamentController extends BaseController
 
 
         // Fetch the participants
-        $participants = $participantsModel->where('tournament_id', $reuse_Id)->findAll();
+        $participants = $this->participantModel->where('tournament_id', $reuse_Id)->findAll();
 
         /** Clear existing participants */
         if (auth()->user()) {
@@ -1293,9 +1292,9 @@ class TournamentController extends BaseController
         }
 
         if ($user_id) {
-            $participantsModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->delete();
+            $this->participantModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->delete();
         } else {
-            $participantsModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->delete();
+            $this->participantModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->delete();
         }
 
         /** Create new participants list from previous tournaments */
@@ -1311,14 +1310,14 @@ class TournamentController extends BaseController
                     'registered_user_id' => $participant['registered_user_id']
                 ]);
 
-                $participantsModel->save($newParticipant);
+                $this->participantModel->save($newParticipant);
             }
         }
 
         if ($user_id) {
-            $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
+            $participants = $this->participantModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
         } else {
-            $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
+            $participants = $this->participantModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
         }
 
         // Return the tournaments as a JSON response
@@ -1327,28 +1326,10 @@ class TournamentController extends BaseController
 
     public function getParticipants($tournament_id)
     {
-        $participantsModel = model('\App\Models\ParticipantModel');
-        $participants = [];
-        $registeredParticipants = [];
-
-        if ($tournament_id) {
-            $participants = $participantsModel->where('participants.tournament_id', $tournament_id)->withGroupInfo()->findAll();
-            $registeredParticipants = $participantsModel->where('tournament_id', $tournament_id)->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
-        }
-
-        if ($registeredParticipants) {
-            $registeredUsers = auth()->getProvider()->whereNotIn('id', $registeredParticipants)->findAll();
-        } else {
-            $registeredUsers = auth()->getProvider()->findAll();
-        }
-
-        if ($registeredUsers) {
-            foreach ($registeredUsers as $user) {
-                $participants[] = ['id' => 0, 'name' => "@$user->username"];
-            }
-        }
+        helper('participant_helper');
+        $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
         
-        return json_encode($participants);
+        return $this->response->setJSON(["participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
     }
 
     public function getUsers()
@@ -1371,7 +1352,6 @@ class TournamentController extends BaseController
             $voteData = $this->request->getPost(); // Get the posted data
 
             $voteModel = model('\App\Models\VotesModel');
-            $participantsModel = $this->participantModel;
             
             $bracketModel = model('\App\Models\BracketModel');
             $bracket = $bracketModel->find($voteData['bracket_id']);
@@ -1467,7 +1447,7 @@ class TournamentController extends BaseController
                 $data = [];
                 $data['bracket_no'] = $bracket['bracketNo'];
                 $data['round_no'] = $saveData['round_no'];
-                $participant = $participantsModel->find($saveData['participant_id']);
+                $participant = $this->participantModel->find($saveData['participant_id']);
                 $data['participants'] = [$participant['name']];
                 $insert_data['params'] = json_encode($data);
 
@@ -1557,5 +1537,4 @@ class TournamentController extends BaseController
         fclose($output);
         exit;
     }
-
 }
