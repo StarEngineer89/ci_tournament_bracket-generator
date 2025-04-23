@@ -129,14 +129,11 @@ function renderParticipants(participantsData) {
 
     if (participantsArray.length) {
         $('.empty-message-wrapper').addClass('d-none')
+        enableBtn.classList.remove('d-none')
+        document.querySelector('.list-tool-bar').appendChild(enableBtn)
     } else {
         $('.empty-message-wrapper').removeClass('d-none')
         return false
-    }
-
-    if (participantsArray.length > 2) {
-        enableBtn.classList.remove('d-none')
-        document.querySelector('.list-tool-bar').appendChild(enableBtn)
     }
 
     enable_confirmPopup = true;
@@ -584,7 +581,7 @@ var addParticipants = (data) => {
         success: function(result) {
             $('#beforeProcessing').addClass('d-none')
             if (result.count) {
-                renderParticipants(result.participants);
+                renderParticipants(result);
 
                 $('#participantNames').val(null);
                 $('input.csv-import').val(null)
@@ -727,8 +724,11 @@ let cancelMakeGroup = (event) => {
 
     const buttons = document.querySelectorAll('.list-tool-bar .btn.group-action');
     buttons.forEach(btn => btn.remove());
-    document.querySelector('.list-tool-bar .enableBtn').classList.remove('d-none')
-    document.querySelector('.list-tool-bar .noteBtn').classList.remove('d-none')
+
+    if (document.querySelector('.list-tool-bar .enableBtn'))
+        document.querySelector('.list-tool-bar .enableBtn').classList.remove('d-none')
+    if (document.querySelector('.list-tool-bar .noteBtn'))
+        document.querySelector('.list-tool-bar .noteBtn').classList.remove('d-none')
 }
 
 let drawGroupsInModal = () => {

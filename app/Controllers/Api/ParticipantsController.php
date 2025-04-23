@@ -237,14 +237,15 @@ class ParticipantsController extends BaseController
             }
         }
 
-        if (auth()->user()) {
-            $participants = $this->participantsModel->where(['user_id' => $user_id, 'tournament_id' => $tournament_id])->findAll();
+        helper('participant_helper');            
+        if ($tournament_id) {
+            $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
         } else {
-            $participants = $this->participantsModel->where(['user_id' => $user_id, 'tournament_id' => $tournament_id, 'sessionid' => $hash])->findAll();
+            $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
         }
-        
 
-        return json_encode(array('result' => 'success', 'participants' => $participants, 'count' => $inserted_count));
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                ->setJSON(['result' => 'success', "participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups'], 'count' => $inserted_count]);
     }
 
     public function updateParticipant($id)
