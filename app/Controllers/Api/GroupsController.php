@@ -79,27 +79,27 @@ class GroupsController extends BaseController
 
                     $group_id = $this->groupsModel->getInsertID();
                 }
-
-                if ($group_id) {
-                    $participants = $this->request->getPost('participants');
-                    if ($participants && is_array($participants)) {
-                        foreach ($participants as $participant) {
-                            $entity = new GroupedParticipant();
-                            $entity->group_id = $group_id;
-                            $entity->participant_id = $participant;
-                            $entity->tournament_id = $tournament_id;
-
-                            $this->group_participantsModel->save($entity);
-                        }
-                    }
-                } else {
-                    return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                        ->setJSON(['status' => 'error', 'message' => 'Failed to save the group info.']);
-                }
             }
             
             if (!$user_id) {
                 enableForeignKeyCheck();
+            }
+
+            if ($group_id) {
+                $participants = $this->request->getPost('participants');
+                if ($participants && is_array($participants)) {
+                    foreach ($participants as $participant) {
+                        $entity = new GroupedParticipant();
+                        $entity->group_id = $group_id;
+                        $entity->participant_id = $participant;
+                        $entity->tournament_id = $tournament_id;
+
+                        $this->group_participantsModel->save($entity);
+                    }
+                }
+            } else {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                    ->setJSON(['status' => 'error', 'message' => 'Failed to save the group info.']);
             }
             
             helper('participant_helper');            

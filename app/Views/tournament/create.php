@@ -67,6 +67,9 @@ $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
+    if (tournament) {
+        loadParticipants()
+    }
 
     const linkedPicker1Element = document.getElementById('startAvPicker');
     const linked1 = new tempusDominus.TempusDominus(linkedPicker1Element, {
@@ -140,8 +143,6 @@ $(document).ready(function() {
             }
         }
     });
-
-    loadParticipants()
 
     /** Submit the tournament settings when create the new tournament */
     $('#submit').on('click', function(event) {

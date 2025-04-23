@@ -1314,14 +1314,10 @@ class TournamentController extends BaseController
             }
         }
 
-        if ($user_id) {
-            $participants = $this->participantModel->where(['participants.tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->withGroupInfo()->findAll();
-        } else {
-            $participants = $this->participantModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->withGroupInfo()->findAll();
-        }
-
-        // Return the tournaments as a JSON response
-        return $this->response->setJSON($participants);
+        helper('participant_helper');
+        $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
+        
+        return $this->response->setJSON(["participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
     }
 
     public function getParticipants($tournament_id)
