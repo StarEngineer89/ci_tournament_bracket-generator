@@ -246,7 +246,9 @@ class TournamentController extends BaseController
             $tournaments->orWhereIn('id', $shared_ids);
         }
 
-        $tournaments = $tournaments->findAll();
+        if ($shared_ids) {
+            $tournaments = $tournaments->findAll();
+        }
 
         $newTournaments = array();
         $existingHistory = $this->request->getCookie('guest_tournaments');
