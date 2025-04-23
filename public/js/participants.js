@@ -1167,6 +1167,7 @@ let enableGroupEdit = (el) => {
     cancelBtn.classList.add('btn', 'btn-secondary', 'ms-1')
     cancelBtn.textContent = 'Cancel'
     cancelBtn.addEventListener('click', event => {
+        event.target.parentElement.parentElement.setAttribute('data-bs-toggle', "collapse")
         event.target.parentElement.parentElement.classList.add('group-name')
         event.target.parentElement.parentElement.innerHTML = originalHtml
     })
@@ -1190,6 +1191,7 @@ let enableGroupEdit = (el) => {
     el.removeClass('group-name')
     el.html('');
     el.append(imgWrapper)
-    el.append(nameBox);
-    el.append(buttonWrapper);
+    el.append(nameBox)
+    el.append(buttonWrapper)
+    el.removeAttr('data-bs-toggle')
 }
