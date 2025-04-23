@@ -673,7 +673,7 @@ let enableGroupParticipants = () => {
     document.querySelectorAll('#newList > .list-group-item').forEach(element => {
         // Add checkboxs to the participant list
         const checkBoxWrapper = document.createElement('div')
-        checkBoxWrapper.setAttribute('class', 'form-check ms-auto p-2')
+        checkBoxWrapper.setAttribute('class', 'form-check')
 
         const checkBox = document.createElement('input')
         checkBox.setAttribute('type', "checkbox")
@@ -681,7 +681,7 @@ let enableGroupParticipants = () => {
         checkBox.setAttribute('value', element.id)
 
         checkBoxWrapper.appendChild(checkBox)
-        element.appendChild(checkBoxWrapper)
+        element.prepend(checkBoxWrapper)
 
     })
 
@@ -720,7 +720,7 @@ let makeGroup = (event) => {
 
 let cancelMakeGroup = (event) => {
     const checkboxs = document.querySelectorAll('#newList > .list-group-item input[type="checkbox"]');
-    checkboxs.forEach(ckb => ckb.remove());
+    checkboxs.forEach(ckb => ckb.parentElement.remove());
 
     const buttons = document.querySelectorAll('.list-tool-bar .btn.group-action');
     buttons.forEach(btn => btn.remove());
