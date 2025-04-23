@@ -158,7 +158,7 @@ function renderParticipants(participantsData) {
     participantsArray.forEach((participant, i) => {
         var item = document.createElement('div');
         item.setAttribute('id', participant.id);
-        item.setAttribute('class', "list-group-item d-flex");
+        item.setAttribute('class', "participant list-group-item d-flex");
         item.setAttribute('data-id', participant.id);
         item.setAttribute('data-name', participant.name);
         let item_html = `<span class="p-name ms-3">` + participant.name + '</span>';
@@ -209,128 +209,137 @@ function renderParticipants(participantsData) {
     });
 
     $('#newList').contextMenu({
-        selector: '.list-group-item',
+        selector: '.group-name',
         build: function ($triggerElement, e) {
             let items = {}
-            if ($triggerElement.parent().hasClass('group')) {
-                const reused = participantsData.reusedGroups.includes($triggerElement.parent().data('id'))
-                items.edit = {
-                    name: "Edit Group",
-                    disabled: reused,
-                    callback: (key, opt, e) => {
-                        enableEditGroup(opt.$trigger)
-                    }
-                }
-                items.delete = {
-                    name: "Delete Group",
-                    disabled: reused,
-                    callback: (key, opt, e) => {
-                        deleteGroup(opt.$trigger)
-                    }
-                }
-                items.ungroup = {
-                    name: "Ungroup",
-                    callback: (key, opt, e) => {
-                        ungroup(opt.$trigger)
-                    }
-                }
-            } else {
-                items.edit = {
-                    name: "Edit",
-                    callback: (key, opt, e) => {
-                        var element_id = opt.$trigger.data('id');
-                        const nameBox = document.createElement('input');
-                        const name = opt.$trigger.children().last().text();
-                        nameBox.classList.add('name-input', 'form-control');
-                        nameBox.value = name;
+            const reused = participantsData.reusedGroups.includes($triggerElement.parent().data('id'))
 
-                        $(nameBox).atwho({
-                            at: "@",
-                            searchKey: 'username',
-                            data: users,
-                            limit: 5, // Show only 5 suggestions
-                            displayTpl: "<li data-value='@${id}'>${username}</li>",
-                            insertTpl: "@${username}",
-                            callbacks: {
-                                remoteFilter: function (query, callback) {
-                                    if (query.length < 1) return; // Don't fetch on empty query
-                                    $.ajax({
-                                        url: apiURL + '/tournaments/get-users', // Your API endpoint
-                                        type: "GET",
-                                        data: {
-                                            query: query
-                                        },
-                                        dataType: "json",
-                                        success: function (data) {
-                                            callback(data);
-                                        }
-                                    });
-                                }
+            items.edit = {
+                name: "Edit Group",
+                disabled: reused,
+                callback: (key, opt, e) => {
+                    enableGroupEdit(opt.$trigger)
+                }
+            }
+            items.delete = {
+                name: "Delete Group",
+                disabled: reused,
+                callback: (key, opt, e) => {
+                    deleteGroup(opt.$trigger)
+                }
+            }
+            items.ungroup = {
+                name: "Ungroup",
+                callback: (key, opt, e) => {
+                    ungroup(opt.$trigger)
+                }
+            }
+
+            return {
+                items: items
+            }
+        }
+    })
+
+    $('#newList').contextMenu({
+        selector: '.participant',
+        build: function ($triggerElement, e) {
+            let items = {}
+            items.edit = {
+                name: "Edit",
+                callback: (key, opt, e) => {
+                    var element_id = opt.$trigger.data('id');
+                    const nameBox = document.createElement('input');
+                    const name = opt.$trigger.children().last().text();
+                    nameBox.classList.add('name-input', 'form-control');
+                    nameBox.value = name;
+
+                    $(nameBox).atwho({
+                        at: "@",
+                        searchKey: 'username',
+                        data: users,
+                        limit: 5, // Show only 5 suggestions
+                        displayTpl: "<li data-value='@${id}'>${username}</li>",
+                        insertTpl: "@${username}",
+                        callbacks: {
+                            remoteFilter: function (query, callback) {
+                                if (query.length < 1) return; // Don't fetch on empty query
+                                $.ajax({
+                                    url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                    type: "GET",
+                                    data: {
+                                        query: query
+                                    },
+                                    dataType: "json",
+                                    success: function (data) {
+                                        callback(data);
+                                    }
+                                });
                             }
-                        });
-
-                        const inputBox = document.createElement('div');
-                        inputBox.appendChild(nameBox);
-                        inputBox.classList.add('col');
-
-                        const buttonBox = document.createElement('div');
-                        const button = document.createElement('button');
-                        button.classList.add('btn', 'btn-primary');
-                        button.textContent = "Save";
-                        button.setAttribute('onClick', `saveParticipant(event, ${element_id})`);
-                        buttonBox.appendChild(button);
-                        buttonBox.classList.add('col-auto');
-
-                        const cancelBtn = document.createElement('button')
-                        cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
-                        cancelBtn.textContent = 'Cancel'
-                        cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
-                        buttonBox.appendChild(cancelBtn)
-
-                        const html = document.createElement('div');
-                        //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
-                        html.appendChild(inputBox);
-                        html.appendChild(buttonBox);
-                        html.classList.add('row', 'g-3', 'align-items-center');
-
-                        originalHtml = opt.$trigger.html()
-
-                        opt.$trigger.html(html);
-                
-                        const originalObj = document.createElement('div')
-                        originalObj.classList.add('original', 'd-none')
-                        originalObj.innerHTML = originalHtml
-                        opt.$trigger.append(originalObj)
-                    }
-                }
-                items.delete = {
-                    name: "Delete",
-                    callback: (key, opt, e) => {
-                        var element_id = opt.$trigger.data('id');
-                        $.ajax({
-                            type: "DELETE",
-                            url: apiURL + '/participants/delete/' + element_id,
-                            success: function (result) {
-                                document.getElementById(element_id).remove();
-                                $('#indexList').children().last().remove();
-                            },
-                            error: function (error) {
-                                console.log(error);
-                            }
-                        }).done(() => {
-                            setTimeout(function () {
-                                $("#overlay").fadeOut(300);
-                            }, 500);
-                        });
-                    }
-                }
-
-                if ($triggerElement.parent().data('group')) {
-                    items.ungroup = {
-                        name: `Remove from Group "${$triggerElement.parent().data('name')}"`,
-                        callback: (key, opt, e) => {
-                            removeParticipantFromGroup(opt.$trigger)
                         }
+                    });
+
+                    const inputBox = document.createElement('div');
+                    inputBox.appendChild(nameBox);
+                    inputBox.classList.add('col');
+
+                    const buttonBox = document.createElement('div');
+                    const button = document.createElement('button');
+                    button.classList.add('btn', 'btn-primary');
+                    button.textContent = "Save";
+                    button.setAttribute('onClick', `saveParticipant(event, ${element_id})`);
+                    buttonBox.appendChild(button);
+                    buttonBox.classList.add('col-auto');
+
+                    const cancelBtn = document.createElement('button')
+                    cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
+                    cancelBtn.textContent = 'Cancel'
+                    cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+                    buttonBox.appendChild(cancelBtn)
+
+                    const html = document.createElement('div');
+                    //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
+                    html.appendChild(inputBox);
+                    html.appendChild(buttonBox);
+                    html.classList.add('row', 'g-3', 'align-items-center');
+
+                    originalHtml = opt.$trigger.html()
+
+                    opt.$trigger.html(html);
+            
+                    const originalObj = document.createElement('div')
+                    originalObj.classList.add('original', 'd-none')
+                    originalObj.innerHTML = originalHtml
+                    opt.$trigger.append(originalObj)
+                }
+            }
+            items.delete = {
+                name: "Delete",
+                callback: (key, opt, e) => {
+                    var element_id = opt.$trigger.data('id');
+                    $.ajax({
+                        type: "DELETE",
+                        url: apiURL + '/participants/delete/' + element_id,
+                        success: function (result) {
+                            document.getElementById(element_id).remove();
+                            $('#indexList').children().last().remove();
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    }).done(() => {
+                        setTimeout(function () {
+                            $("#overlay").fadeOut(300);
+                        }, 500);
+                    });
+                }
+            }
+
+            if ($triggerElement.parent().data('group')) {
+                items.ungroup = {
+                    name: `Remove from Group "${$triggerElement.parent().data('name')}"`,
+                    callback: (key, opt, e) => {
+                        removeParticipantFromGroup(opt.$trigger)
                     }
                 }
             }
@@ -859,6 +868,76 @@ let saveGroup = (e, forceInsert = false) => {
     });
 }
 
+let updateGroup = (e, forceUpdate = false) => {
+    e.preventDefault()
+    
+    let isValidate = true
+
+    $('#errorModal .modal-footer button.force').remove()
+
+    if (!forceUpdate) {
+        [...document.querySelectorAll('#newList .name'), ...document.querySelectorAll('#newList .p-name')].forEach(optionEl => {
+            if (!isValidate) {
+                return false
+            }
+
+            if (document.querySelector('.new-group-name').value == optionEl.textContent) {
+                const includeBtn = document.createElement('button')
+                includeBtn.setAttribute('class', "btn btn-primary force")
+                includeBtn.textContent = "Save duplicated name"
+                includeBtn.addEventListener('click', () => {
+                    updateGroup(e, true)
+                })
+                $('#errorModal .modal-footer').prepend(includeBtn)
+                $('#errorModal .errorDetails').html(`The group name "${document.querySelector('.new-group-name').value}" appears to be duplicated.`)
+                $('#errorModal').modal('show')
+
+                isValidate = false
+
+                return false
+            }
+        })
+
+        if (!isValidate) {
+            return false
+        }
+    }
+    
+    if (forceUpdate) {
+        $('#errorModal').modal('hide')
+    }
+
+    const data = {'group_id': e.target.parentElement.parentElement.parentElement.dataset.id, 'group_name': document.querySelector('.new-group-name').value, 'image_path': e.target.parentElement.parentElement.querySelector('.group-image').src, 'hash': hash}
+
+    if (tournament) {
+        data['tournament_id'] = tournament.id
+    } else {
+        data['tournament_id'] = 0
+    }
+
+    $.ajax({
+        url: apiURL + '/groups/save',
+        type: "POST",
+        data: data,
+        beforeSend: function () {
+            $('#beforeProcessing').removeClass('d-none')
+            $("#err").fadeOut();
+        },
+        success: function (result) {
+            if (result.status == 'success') {
+                renderParticipants(result)
+            }
+        },
+        error: function (e) {
+            $("#err").html(e).fadeIn();
+        }
+    }).done(() => {
+        setTimeout(function () {
+            $("#beforeProcessing").fadeOut(300);
+        }, 500)
+    });
+}
+
 let uploadGroupImage = (el) => {
     var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -878,7 +957,7 @@ let uploadGroupImage = (el) => {
         return
     }else{
         var formData = new FormData();
-        formData.append('image', $("#group_image_input")[0].files[0]);
+        formData.append('image', el.files[0]);
         formData.append('type', "group");
 
         $.ajax({
@@ -896,9 +975,11 @@ let uploadGroupImage = (el) => {
                     return false
                 }
 
-                $("#group_image").attr('src', result.file_path);
-                $('#group_image_path').val(result.file_path)
-                $("#group_image").removeClass('temp');
+                el.parentElement.querySelector('img').src = result.file_path
+                if (el.parentElement.querySelector('input#group_image_path')) {
+                    el.parentElement.querySelector('input#group_image_path').value = result.file_path
+                }
+                el.parentElement.querySelector('img').classList.remove('temp');
             },
             error: function (error) {
                 console.log(error);
@@ -918,7 +999,7 @@ let removeGroupImage = (e, element_id) => {
     document.getElementById('group_image_delete').classList.add('d-none')
 }
 
-let changeGroup = (el) => {
+let selectGroup = (el) => {
     const selectedOption = el.options[el.selectedIndex];
     if (selectedOption.dataset.image && selectedOption.dataset.image != 'null') {
         document.getElementById('group_image').src = selectedOption.dataset.image
@@ -1063,33 +1144,52 @@ let removeParticipantFromGroup = (el) => {
     })
 }
 
-let editGroup = (el) => {
+let enableGroupEdit = (el) => {
     var group_id = el.data('id');
-    var originalHtml = el.parent().html()
+    var originalHtml = el.html()
 
     const nameBox = document.createElement('input');
     const name = el.parent().find('span.name').text();
-    nameBox.classList.add('group-name', 'form-control');
+    nameBox.classList.add('new-group-name', 'form-control');
     nameBox.value = name;
 
     const buttonWrapper = document.createElement('div');
-    const button = document.createElement('button');
-    button.classList.add('btn', 'btn-primary');
-    button.textContent = "Save";
-    button.setAttribute('onClick', `saveParticipant(event, ${group_id})`);
-    buttonWrapper.appendChild(button);
+    const saveBtn = document.createElement('button');
+    saveBtn.classList.add('btn', 'btn-primary', 'ms-1');
+    saveBtn.textContent = "Update";
+    saveBtn.addEventListener('click', event => {
+        updateGroup(event)
+    });
+    buttonWrapper.appendChild(saveBtn);
     buttonWrapper.classList.add('col-auto');
 
     const cancelBtn = document.createElement('button')
-    cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
+    cancelBtn.classList.add('btn', 'btn-secondary', 'ms-1')
     cancelBtn.textContent = 'Cancel'
-    cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+    cancelBtn.addEventListener('click', event => {
+        event.target.parentElement.parentElement.classList.add('group-name')
+        event.target.parentElement.parentElement.innerHTML = originalHtml
+    })
     buttonWrapper.appendChild(cancelBtn)
 
-    const html = document.createElement('div');
-    //html.innerHTML = `<input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this)" name="image_${element_id}" id="image_${element_id}"/><button class="btn btn-success col-auto" onClick="chooseImage(event, ${element_id})"><i class="fa fa-upload"></i></button>`;
-    html.appendChild(nameBox);
-    html.appendChild(buttonWrapper);
+    const imgWrapper = document.createElement('div')
+    const img = el.find('img.group-image')[0]
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file';
+    fileInput.className = 'd-none';
+    imgWrapper.appendChild(img)
+    imgWrapper.appendChild(fileInput)
+    
+    img.addEventListener('click', event => {
+        fileInput.click()
+    })
+    fileInput.addEventListener('change', event => {
+        uploadGroupImage(event.target)
+    })
 
-    el.parent().html(html);
+    el.removeClass('group-name')
+    el.html('');
+    el.append(imgWrapper)
+    el.append(nameBox);
+    el.append(buttonWrapper);
 }

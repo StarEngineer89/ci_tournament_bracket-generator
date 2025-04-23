@@ -54,41 +54,52 @@ class GroupsController extends BaseController
 
         // Check if it's an AJAX request
         if ($this->request->isAJAX()) {
-            $groupEntity = new Group();
-            $group_id = $this->request->getPost('group_id');
+            if (!$user_id) {
+                disableForeignKeyCheck();
+            }
 
-            if ($this->request->getPost('group_name')) {
+            if ($group_id = $this->request->getPost('group_id')) {
+                $group = $this->groupsModel->find($group_id);
+
+                $groupEntity = new Group($group);
                 $groupEntity->group_name = $this->request->getPost('group_name');
                 $groupEntity->image_path = $this->request->getPost('image_path');
                 $groupEntity->user_id = $user_id;
-                
-                if (!$user_id) {
-                    disableForeignKeyCheck();
-                }
 
                 $this->groupsModel->save($groupEntity);
-
-                if (!$user_id) {
-                    enableForeignKeyCheck();
-                }
-                $group_id = $this->groupsModel->getInsertID();
-            }
-
-            if ($group_id) {
-                $participants = $this->request->getPost('participants');
-                if ($participants && is_array($participants)) {
-                    foreach ($participants as $participant) {
-                        $entity = new GroupedParticipant();
-                        $entity->group_id = $group_id;
-                        $entity->participant_id = $participant;
-                        $entity->tournament_id = $tournament_id;
-
-                        $this->group_participantsModel->save($entity);
-                    }
-                }
             } else {
-                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON(['status' => 'error', 'message' => 'Failed to save the group info.']);
+                $groupEntity = new Group();
+
+                if ($this->request->getPost('group_name')) {
+                    $groupEntity->group_name = $this->request->getPost('group_name');
+                    $groupEntity->image_path = $this->request->getPost('image_path');
+                    $groupEntity->user_id = $user_id;
+
+                    $this->groupsModel->save($groupEntity);
+
+                    $group_id = $this->groupsModel->getInsertID();
+                }
+
+                if ($group_id) {
+                    $participants = $this->request->getPost('participants');
+                    if ($participants && is_array($participants)) {
+                        foreach ($participants as $participant) {
+                            $entity = new GroupedParticipant();
+                            $entity->group_id = $group_id;
+                            $entity->participant_id = $participant;
+                            $entity->tournament_id = $tournament_id;
+
+                            $this->group_participantsModel->save($entity);
+                        }
+                    }
+                } else {
+                    return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                        ->setJSON(['status' => 'error', 'message' => 'Failed to save the group info.']);
+                }
+            }
+            
+            if (!$user_id) {
+                enableForeignKeyCheck();
             }
             
             helper('participant_helper');            
