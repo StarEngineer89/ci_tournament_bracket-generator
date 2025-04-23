@@ -464,8 +464,8 @@ let toggleScoreOption = (checkbox) => {
     }
 }
 
-let toggleIncrementScore = (checkbox) => {
-    if ($(checkbox).is(':checked')) {
+let toggleIncrementScore = (element) => {
+    if ($(element).is(':checked')) {
         $('#incrementScore').prop('disabled', false)
         $('#incrementPlus').prop('disabled', false)
         $('#incrementMultiply').prop('disabled', false)
@@ -476,6 +476,10 @@ let toggleIncrementScore = (checkbox) => {
         $('#incrementMultiply').prop('disabled', true)
         $('.enable-increamentscoreoption-hint').addClass('d-none')
     }
+
+    document.querySelectorAll("#scoreOptions .read-more-container").forEach(container => {
+        adjustReadMore(container)
+    })
 }
 
 let changeIncrementScoreType = (radio) => {
@@ -618,6 +622,7 @@ let toggleAvailability = (checkbox) => {
 
 var changeEvaluationMethod = (element) => {
     $(element).parent().parent().find('.form-text').removeClass('text-content')
+    $('.round-duration-combine .form-text').removeClass('text-content')
     // EVALUATION_METHOD_MANUAL = m
     // EVALUATION_METHOD_VOTING = v
     if ($(element).val() == "m") {
@@ -630,22 +635,25 @@ var changeEvaluationMethod = (element) => {
         $('.round-duration-combine .round-duration-maxVote-checkbox-hint').addClass('d-none')
 
         $('.evaluation-method-manual-hint').addClass('text-content')
+        $('.round-duration-combine .round-duration-manual-checkbox-hint').addClass('text-content')
     } else {
         $('.voting-settings-panel').removeClass('d-none')
         $('.evaluation-method-manual-hint').addClass('d-none')
         $('.evaluation-method-voting-hint').removeClass('d-none')
+        
+        $('.round-duration-combine, .round-duration-combine .form-text').addClass('d-none')
+
         if ($('#votingMechanism').val() == 1) {
             $('#enableAvailability').prop('required', true)
+            $('.round-duration-combine .round-duration-manual-checkbox-hint').addClass('text-content')
         }
 
-        $('.round-duration-combine, .round-duration-combine .form-text').addClass('d-none')
         if ($('#votingMechanism').val() == 2) {
             $('.round-duration-combine, .round-duration-combine .round-duration-maxVote-checkbox-hint').removeClass('d-none')
+            $('.round-duration-combine .round-duration-maxVote-checkbox-hint').addClass('text-content')
         }
 
         $('.evaluation-method-voting-hint').addClass('text-content')
-
-        
     }
 
     document.querySelectorAll("#tournamentSettings .evaluation-settings .read-more-container").forEach(container => {
@@ -707,6 +715,7 @@ var changeVotingMechanism = (element) => {
         $('#enableAvailability').prop('required', false)
 
         $('.round-duration-combine, .round-duration-combine .round-duration-maxVote-checkbox-hint').removeClass('d-none')
+        $('.round-duration-combine, .round-duration-combine .round-duration-maxVote-checkbox-hint').addClass('text-content')
 
         $('.evaluation-vote-max').addClass('text-content')
     }

@@ -117,9 +117,9 @@
             <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentEvaluationVotingDesc') ?></div>
         </div>
     </div>
-
+    <div class="clearfix"></div>
     <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
-        <div class="row g-3 align-items-center">
+        <div class="row g-2 align-items-center">
             <div class="col-auto">
                 <label for="votingAccessbility" class="col-form-label"><strong>Voting Accessibility</strong></label>
             </div>
@@ -135,7 +135,7 @@
             </div>
         </div>
 
-        <div class="row g-3 align-items-center">
+        <div class="row g-2 align-items-center">
             <div class="col-auto">
                 <label for="votingMechanism" class="col-form-label"><strong>Voting Mechanism</strong></label>
             </div>
@@ -185,8 +185,8 @@
             <input type="checkbox" class="form-check-input" name="round_duration_combine" id="roundDurationCheckbox">
             <label class="form-check-label" for="roundDurationCheckbox">Round Duration</label>
             <div class="read-more-container">
-                <div class="round-duration-maxVote-checkbox-hint form-text text-content ps-3 d-none"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
-                <div class="round-duration-manual-checkbox-hint form-text text-content ps-3"><?= lang('Descriptions.tournamentManualRoundDurationDesc') ?></div>
+                <div class="round-duration-maxVote-checkbox-hint form-text ps-3 d-none"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
+                <div class="round-duration-manual-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentManualRoundDurationDesc') ?></div>
             </div>
         </div>
     </div>
@@ -232,9 +232,11 @@
             </div>
         </div>
         <div class="enable-increamentscoreoption-hint form-text">
-            <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
-            <p class="plus"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></p>
-            <p class="multiply d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></p>
+            <div class="read-more-container">
+                <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
+                <p class="plus text-content"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></p>
+                <p class="multiply text-content d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></p>
+            </div>
         </div>
     </div>
 </div>
