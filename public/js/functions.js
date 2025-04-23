@@ -477,19 +477,25 @@ let toggleIncrementScore = (element) => {
         $('.enable-increamentscoreoption-hint').addClass('d-none')
     }
 
-    document.querySelectorAll("#scoreOptions .read-more-container").forEach(container => {
+    changeIncrementScoreType($('input:radio[name="increment_score_type"]'))
+
+    document.querySelectorAll("#tournamentSettings .scoring-settings .read-more-container").forEach(container => {
         adjustReadMore(container)
     })
 }
 
 let changeIncrementScoreType = (radio) => {
     if ($('input:radio[name="increment_score_type"]:checked').val() == 'p') {
-        $('.enable-increamentscoreoption-hint .plus').removeClass('d-none')
-        $('.enable-increamentscoreoption-hint .multiply').addClass('d-none')
+        $('.enable-increamentscoreoption-hint .plus').removeClass('d-none').addClass('text-content')
+        $('.enable-increamentscoreoption-hint .multiply').addClass('d-none').removeClass('text-content')
     } else {
-        $('.enable-increamentscoreoption-hint .plus').addClass('d-none')
-        $('.enable-increamentscoreoption-hint .multiply').removeClass('d-none')
+        $('.enable-increamentscoreoption-hint .plus').addClass('d-none').removeClass('text-content')
+        $('.enable-increamentscoreoption-hint .multiply').removeClass('d-none').addClass('text-content')
     }
+
+    document.querySelectorAll("#tournamentSettings .scoring-settings .read-more-container").forEach(container => {
+        adjustReadMore(container)
+    })
 }
 
 const enableDescriptionEdit = (button) => {
@@ -766,6 +772,8 @@ var adjustReadMore = (container) => {
 
     let textElement = container.querySelector(".text-content");
 
+    if (!textElement) return false
+
     // Check if text is overflowing (more than 3 lines)
     function isOverflowing(element) {
         return element.scrollHeight > element.clientHeight;
@@ -776,11 +784,12 @@ var adjustReadMore = (container) => {
         container.append(readMoreButton)
 
         readMoreButton.addEventListener("click", function () {
-            if (textElement.classList.contains("expanded")) {
-                textElement.classList.remove("expanded");
+            // expanded or text-content
+            if (textElement.classList.contains("text-content")) {
+                textElement.classList.remove("text-content");
                 readMoreButton.textContent = "Show More";
             } else {
-                textElement.classList.add("expanded");
+                textElement.classList.add("text-content");
                 readMoreButton.textContent = "Show Less";
             }
         });

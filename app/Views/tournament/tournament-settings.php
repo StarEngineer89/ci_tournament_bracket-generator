@@ -192,7 +192,7 @@
     </div>
 </div>
 
-<div class="form-check mb-3">
+<div class="scoring-settings form-check mb-3 pb-3">
     <div class="ps-2">
         <input type="checkbox" class="form-check-input" name="score_enabled" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
         <label class="form-check-label" for="enableScoreOption">
@@ -234,8 +234,8 @@
         <div class="enable-increamentscoreoption-hint form-text">
             <div class="read-more-container">
                 <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
-                <p class="plus text-content"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></p>
-                <p class="multiply text-content d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></p>
+                <div class="plus"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></div>
+                <div class="multiply d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></div>
             </div>
         </div>
     </div>
