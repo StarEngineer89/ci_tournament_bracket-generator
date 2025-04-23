@@ -186,7 +186,7 @@
             <label class="form-check-label" for="roundDurationCheckbox">Round Duration</label>
             <div class="read-more-container">
                 <div class="round-duration-maxVote-checkbox-hint form-text ps-3 d-none"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
-                <div class="round-duration-manual-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentManualRoundDurationDesc') ?></div>
+                <div class="round-duration-manual-checkbox-hint form-text text-content ps-3"><?= lang('Descriptions.tournamentManualRoundDurationDesc') ?></div>
             </div>
         </div>
     </div>
@@ -234,7 +234,7 @@
         <div class="enable-increamentscoreoption-hint form-text">
             <div class="read-more-container">
                 <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
-                <div class="plus"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></div>
+                <div class="plus text-content"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></div>
                 <div class="multiply d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></div>
             </div>
         </div>
