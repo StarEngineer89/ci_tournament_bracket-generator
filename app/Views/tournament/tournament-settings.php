@@ -178,10 +178,7 @@
             <label class="form-check-label" for="allowHostOverride">Allow Host override</label>
             <div class="retain-votes-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?></div>
         </div>
-    </div>
-
-    <div class="round-duration-combine ps-3">
-        <div class="mt-2">
+        <div class="round-duration-combine mt-2">
             <input type="checkbox" class="form-check-input" name="round_duration_combine" id="roundDurationCheckbox">
             <label class="form-check-label" for="roundDurationCheckbox">Round Duration</label>
             <div class="read-more-container">

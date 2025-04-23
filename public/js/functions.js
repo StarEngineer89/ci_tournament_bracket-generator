@@ -721,7 +721,7 @@ var changeVotingMechanism = (element) => {
         $('#enableAvailability').prop('required', false)
 
         $('.round-duration-combine, .round-duration-combine .round-duration-maxVote-checkbox-hint').removeClass('d-none')
-        $('.round-duration-combine, .round-duration-combine .round-duration-maxVote-checkbox-hint').addClass('text-content')
+        $('.round-duration-combine .round-duration-maxVote-checkbox-hint').addClass('text-content')
 
         $('.evaluation-vote-max').addClass('text-content')
     }
