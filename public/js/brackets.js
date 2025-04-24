@@ -164,16 +164,33 @@ let editing_mode = false;
                                             select.setAttribute('class', "form-control");
                                             var index = (element.hasClass("teama")) ? 0 : 1;
 
-                                            // select.setAttribute('onChange', `changeParticipant($(this), ${index})`);
+                                            if (result.participants.length > 0) {
+                                                let group_ids = []
+                                                result.participants.forEach((participant, i) => {
+                                                    let pt_id, pt_name, pt_group
+                                                    if (participant.group_id) {
+                                                        if (group_ids.includes(participant.group_id)) {
+                                                            return
+                                                        }
 
-                                            result = JSON.parse(result);
-                                            if (result.length > 0) {
-                                                result.forEach((participant, i) => {
+                                                        pt_id = participant.group_id
+                                                        pt_name = participant.group_name
+                                                        pt_group = true
+                                                        group_ids.push(participant.group_id)
+                                                    } else {
+                                                        pt_id = participant.id
+                                                        pt_name = participant.name
+                                                    }
+
                                                     var option = document.createElement('option');
-                                                    option.setAttribute('value', participant.id);
-                                                    option.textContent = participant.name;
-                                                    if (participant.id == element.data('id')) {
+                                                    option.setAttribute('value', pt_id);
+                                                    option.textContent = pt_name;
+                                                    if (pt_id == element.data('id')) {
                                                         option.setAttribute('selected', true)
+                                                    }
+
+                                                    if (pt_group) {
+                                                        option.setAttribute('data-group', true)
                                                     }
 
                                                     select.appendChild(option);
@@ -343,6 +360,9 @@ let editing_mode = false;
             });
         }
 
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
         return group
     }
     
@@ -375,10 +395,18 @@ let editing_mode = false;
             pid.textContent = parseInt(teams[team_index].order) + 1
             participant.appendChild(pid)
             
-            if(teams[team_index].image){
-                $(participant).append(`<div class="p-image d-flex"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
-            }else{
-                $(participant).append(`<div class="p-image d-flex"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
+            if (teams[team_index].is_group) {
+                if (teams[team_index].group_image) {
+                    $(participant).append(`<div class="p-image d-flex"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
+                } else {
+                    $(participant).append(`<div class="p-image d-flex"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
+                }
+            } else {
+                if (teams[team_index].image) {
+                    $(participant).append(`<div class="p-image d-flex"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
+                } else {
+                    $(participant).append(`<div class="p-image d-flex"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
+                }
             }
 
             participant.dataset.id = teams[team_index].id;
@@ -677,8 +705,6 @@ let editing_mode = false;
         const next_id = opt.$trigger.data('next');
         let next_bracketObj = document.querySelectorAll('[data-order="' + next_id + '"]')[index];
         next_bracket = next_bracketObj.dataset.bracket;
-        const nameSpan = opt.$trigger.find('.name').clone()
-        const pimageDiv = opt.$trigger.find('.p-image').clone();
 
         let is_final = false
         if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
@@ -692,7 +718,7 @@ let editing_mode = false;
             type: "PUT",
             url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
             contentType: "application/json",
-            data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final, index: index }),
+            data: JSON.stringify({ winner: opt.$trigger.data('id'), order: opt.$trigger.data('p_order'), action_code: markWinnerActionCode, is_final: is_final, index: index, is_group: opt.$trigger.data('isGroup') }),
             success: function (result) {
                 let final_win = false
 
@@ -814,7 +840,7 @@ function changeParticipant(ele, index) {
 
         editing_mode = false;
 
-        updateBracket(ele.parent().parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order });
+        updateBracket(ele.parent().parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order, is_group: ele.find("option:selected").data('group') });
     }
 }
 

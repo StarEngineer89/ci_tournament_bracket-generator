@@ -54,6 +54,31 @@ class BracketsController extends BaseController
             foreach ($brackets as $bracket) {
                 /** Get the counts of votes and assign to the teamnames */
                 $teams = json_decode($bracket['teamnames'], true);
+                if ($teams) {
+                    $array = [];
+                    foreach ($teams as $index => $team) {
+                        if (!$team) {
+                            $array[$index] = null;
+                            continue;
+                        }
+                        
+                        if (isset($team['is_group'])) {
+                            $array[$index] = $this->groupsModel->find($team['id']);
+                            $array[$index]['name'] = $array[$index]['group_name'];
+                            $array[$index]['image'] = $array[$index]['image_path'];
+                            $array[$index]['type'] = 'group';
+                            $array[$index]['members'] = $this->groupedParticipantsModel->where(['group_id' => $team['id'], 'grouped_participants.tournament_id' => $tournament_settings['id']])->details()->findAll();
+                        } else {
+                            $array[$index] = $this->participantsModel->find($team['id']);
+                            if ($array[$index]['registered_user_id'] && !$userSettingService->get('hide_email_participant', $array[$index]['registered_user_id'])) {
+                                $array[$index]['email'] = $userProvider->findById($array[$index]['registered_user_id'])->email;
+                            }
+                        }
+
+                        $array[$index]['order'] = $team['order'];
+                    }
+                    $teams = $array;
+                }
                 // Check if user voted for the bracket
                 if (auth()->user()) {
                     $vote_in_bracket = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'user_id' => auth()->user()->id])->first();
@@ -86,24 +111,6 @@ class BracketsController extends BaseController
                     $teams[0]['votes'] = count($votes_0);
                     $teams[0]['votes_in_round'] = count($votes_in_round);
                     $teams[0]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[0]['id']) ? true : false;
-
-                    $is_group = (isset($teams[0]['is_group']) && $teams[0]['is_group']) ? true : false;
-                    if ($is_group) {
-                        $group = $this->groupsModel->find($teams[0]['id']);
-                        $teams[0]['name'] = $group['group_name'];
-                        $teams[0]['type'] = 'group';
-                        $teams[0]['members'] = $this->groupedParticipantsModel->where(['group_id' => $group['id'], 'grouped_participants.tournament_id' => $tournament_settings['id']])->details()->findAll();
-                    } else {
-                        $participant = $this->participantsModel->find($teams[0]['id']);
-                        $teams[0]['name'] = $participant['name'];
-                        if (!isset($teams[0]['order'])) {
-                            $teams[0]['order'] = $participant['order'];
-                        }
-
-                        if ($participant['registered_user_id'] && !$userSettingService->get('hide_email_participant', $participant['registered_user_id'])) {
-                            $teams[0]['email'] = $userProvider->findById($participant['registered_user_id'])->email;
-                        }
-                    }
                 }
 
                 if ($teams[1]) {
@@ -121,24 +128,6 @@ class BracketsController extends BaseController
                     $teams[1]['votes'] = count($votes_1);
                     $teams[1]['votes_in_round'] = count($votes_in_round);
                     $teams[1]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[1]['id']) ? true : false;
-
-                    $is_group = (isset($teams[1]['is_group']) && $teams[1]['is_group']) ? true : false;
-                    if ($is_group) {
-                        $group = $this->groupsModel->find($teams[1]['id']);
-                        $teams[1]['name'] = $group['group_name'];
-                        $teams[1]['type'] = 'group';
-                        $teams[1]['members'] = $this->groupedParticipantsModel->where(['group_id' => $group['id'], 'grouped_participants.tournament_id' => $tournament_settings['id']])->details()->findAll();
-                    } else {
-                        $participant = $this->participantsModel->find($teams[1]['id']);
-                        $teams[1]['name'] = $participant['name'];
-                        if (!isset($teams[1]['order'])) {
-                            $teams[1]['order'] = $participant['order'];
-                        }
-
-                        if ($participant['registered_user_id'] && !$userSettingService->get('hide_email_participant', $participant['registered_user_id'])) {
-                            $teams[1]['email'] = $userProvider->findById($participant['registered_user_id'])->email;
-                        }
-                    }
                 }
                 
                 $bracket['teamnames'] = json_encode($teams);
@@ -190,9 +179,21 @@ class BracketsController extends BaseController
         }
 
         $teamnames = json_decode($bracket['teamnames'], true);
-        $original = $teamnames;
+        $original = [];
+        if ($teamnames) {
+            foreach ($teamnames as $index => $team) {
+                if (isset($team['is_group'])) {
+                    $original[$index] = $this->groupsModel->find($team['id']);
+                    $original[$index]['name'] = $original[$index]['group_name'];
+                } else {
+                    $original[$index] = $this->participantsModel->find($team['id']);
+                }
+            }
+        }
+
         $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         
+        /** Change Participant Action */
         if(isset($req->name) && $req->name){
             $participant = $this->participantsModel->where(['name' => $req->name, 'tournament_id' => $bracket['tournament_id']])->first();
             if (isset($req->index)) {
@@ -266,7 +267,11 @@ class BracketsController extends BaseController
                     $participant_id = $req->participant;
                 }
 
-                $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'name' => $req->name, 'image'=> $participant['image'], 'order' => $order];
+                $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'order' => $order];
+
+                if ($teamnames[$req->index] && $req->is_group) {
+                    $teamnames[$req->index]['is_group'] = true;
+                }
 
                 $bracket['teamnames'] = json_encode($teamnames);
 
@@ -351,10 +356,14 @@ class BracketsController extends BaseController
             if ($nextBracket) {
                 $participant = $this->participantsModel->find($req->winner);
                 $teamnames = json_decode($nextBracket['teamnames'], true);
-                $teamnames[$req->index] = ['id' => $req->winner, 'name' => $participant['name'], 'image'=> $participant['image'], 'order' => $req->order];
+                $teamnames[$req->index] = ['id' => $req->winner, 'order' => $req->order];
                 
                 if ($is_double) {
                     $teamnames[$req->index]['is_double'] = 1;
+                }
+
+                if (isset($req->is_group) && $req->is_group) {
+                    $teamnames[$req->index]['is_group'] = true;
                 }
 
                 $nextBracket['teamnames'] = json_encode($teamnames);
@@ -436,7 +445,14 @@ class BracketsController extends BaseController
                 $teams = json_decode($brck['teamnames']);
                 foreach ($teams as $team) {
                     if ($team) {
-                        $participant_names_string .= $team->name .',';
+                        if (isset($team->is_group)) {
+                            $group = $this->groupsModel->find($team->id);
+                            $name = $group['group_name'];
+                        } else {
+                            $participant = $this->participantsModel->find($team->id);
+                            $name = $participant['name'];
+                        }
+                        $participant_names_string .= $name .',';
                     }
                 }
             }
