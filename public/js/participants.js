@@ -160,7 +160,7 @@ function renderParticipants(participantsData) {
         item.setAttribute('data-name', participant.name);
         let item_html = `<span class="p-name ms-3">` + participant.name + '</span>';
         if(participant.image) {
-            item_html = `<div class="p-image"><img src="${participant.image}" class="col-auto" height="30px" id="pimage_${participant.id}" data-pid="${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
+            item_html = `<div class="p-image"><img src="${participant.image}" class="col-auto" height="30px" id="pimage_${participant.id}" data-pid="${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
         }else{
             item_html = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${participant.id}" data-pid="${participant.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
         }
@@ -387,6 +387,7 @@ $(document).on("click", ".p-image img", function(){
         $("#image_" + pid).trigger('click');
     }else{
         $(this).parent().addClass('active');
+        $(this).parent().find('button').removeClass('d-none')
     }
 })
 
@@ -444,7 +445,8 @@ function checkBig(el, element_id){
 
                 $("#pimage_"+element_id).attr('src', result.data.image);
                 $("#pimage_"+element_id + ' ~ .btn').removeClass('d-none');
-                $("#pimage_"+element_id).removeClass('temp');
+                $("#pimage_" + element_id).removeClass('temp');
+                $("#pimage_"+element_id).parent().find('button').addClass('d-none')
             },
             error: function (error) {
                 console.log(error);
@@ -464,7 +466,8 @@ function removeImage(e, element_id){
         success: function (result) {
             result = JSON.parse(result);
             $("#pimage_"+element_id).attr('src', '/images/avatar.jpg');
-            $("#pimage_"+element_id).addClass('temp');
+            $("#pimage_" + element_id).addClass('temp');
+            $('#pimage_' + element_id).parent().find('button').addClass('d-none')
         },
         error: function (error) {
             console.log(error);
