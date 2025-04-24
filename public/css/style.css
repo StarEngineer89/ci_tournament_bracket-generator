@@ -479,7 +479,27 @@
   max-width: 500px;
 }
 
-#newList .group .group-image {
+#newList .group .group-image-edit,
+#makeGroupModal .group-image {
+  position: relative;
+}
+
+#newList .group .group-image-edit .group_image_delete,
+#makeGroupModal .group-image .group_image_delete {
+  padding: 0;
+  border-radius: 100%;
+  background-color:#ff2828;
+  color: #fff;
+  font-size: 10px;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: -5px;
+  right: 0;
+  z-index: 100;
+}
+
+#newList .group img.group-image {
   max-height: 40px;
 }
 
@@ -512,15 +532,12 @@
 
 .list-group-item svg {
   width: 20px;
+  height: 20px;
   color: #414141;
 }
 
 #makeGroupModal .group-image img {
-  height: 100px;
-}
-
-#makeGroupModal .group-image button {
-  margin-top: -70px;
+  max-width: 100%;
 }
 
 /*  */
@@ -1486,7 +1503,6 @@
 }
 .list-group-item .btn-danger,
 .bracket-team .btn-danger{
-  display: none;
   position: absolute;
   top: 50%;
   left: 50%;

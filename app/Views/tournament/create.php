@@ -1151,7 +1151,7 @@ var performReuseParticipants = (reuse_id = null) => {
                 </div>
 
                 <div class="col-12 d-flex justify-content-center flex-column">
-                    <div class="list-tool-bar d-flex justify-content-end col-10 m-auto pe-3">
+                    <div class="list-tool-bar d-flex justify-content-end col-10 m-auto ps-3 pe-3">
                         <button type="button" class="enableBtn btn btn-primary d-none" onclick="enableGroupParticipants()"><i class="fa-classic fa-solid fa-link fa-fw"></i> Group Participants</button>
                     </div>
                     <div id="newList" class="list-group list-group-numbered col-10 m-auto"></div>
@@ -1438,12 +1438,11 @@ var performReuseParticipants = (reuse_id = null) => {
             <div class="modal-body">
                 <form class="container" id="create_group_form">
                     <div class="row">
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-md-3 col-sm-6">
                             <div class="group-image d-flex align-items-center flex-column">
                                 <img src="/images/group-placeholder.png" class="temp col-auto" id="group_image">
                                 <input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onchange="uploadGroupImage(this)" name="image" id="group_image_input">
                                 <input type="hidden" name="image_path" id="group_image_path">
-                                <button type="button" class="btn btn-danger d-none col-auto" id="group_image_delete" onclick="removeGroupImage(event)"><i class="fa fa-trash-alt"></i></button>
                             </div>
                         </div>
                         <div class="col-md-8 col-sm-6">
@@ -1456,7 +1455,7 @@ var performReuseParticipants = (reuse_id = null) => {
                             <div class="ms-3" id="input_group_name">
                                 <input type="text" class="form-control form-control-sm" name="group_name" placeholder="" aria-label="">
                             </div>
-                            <div class="form-check">
+                            <div class="form-check mt-3">
                                 <input class="form-check-input" type="radio" name="create_group_type" id="reuse_existing_group" value="reuse" onchange="chooseGroupType(this)">
                                 <label class="form-check-label" for="reuse_existing_group">
                                     Use existing group

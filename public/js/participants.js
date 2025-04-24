@@ -181,7 +181,7 @@ function renderParticipants(participantsData) {
                 const groupLabel = document.createElement('div')
                 groupLabel.setAttribute('class', "group-name list-group-item d-flex align-items-center ps-3 border-bottom")
                 groupLabel.innerHTML = `<img src="${participant.group_image}" class="group-image pe-2"><span class="name me-auto">${participant.group_name}</span>`
-                groupLabel.innerHTML += '<button class="btn btn-light bg-transparent ms-auto border-0 p-0" data-bs-toggle="tooltip" data-bs-title="Group"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="8" cy="8" r="2.5" stroke="#222222" stroke-linecap="round"></circle> <path d="M11.7679 8.5C12.0332 8.04063 12.47 7.70543 12.9824 7.56815C13.4947 7.43086 14.0406 7.50273 14.5 7.76795C14.9594 8.03317 15.2946 8.47 15.4319 8.98236C15.5691 9.49472 15.4973 10.0406 15.2321 10.5C14.9668 10.9594 14.53 11.2946 14.0176 11.4319C13.5053 11.5691 12.9594 11.4973 12.5 11.2321C12.0406 10.9668 11.7054 10.53 11.5681 10.0176C11.4309 9.50528 11.5027 8.95937 11.7679 8.5L11.7679 8.5Z" stroke="#222222"></path> <path d="M13.4054 17.507L13.8992 17.4282L13.4054 17.507ZM12.5 18H3.50002V19H12.5V18ZM3.08839 17.5857C3.21821 16.7717 3.53039 15.6148 4.26396 14.671C4.97934 13.7507 6.11871 13 8.00002 13V12C5.80109 12 4.37371 12.9004 3.47442 14.0573C2.59334 15.1909 2.24293 16.5374 2.10087 17.4282L3.08839 17.5857ZM8.00002 13C9.88133 13 11.0207 13.7507 11.7361 14.671C12.4697 15.6148 12.7818 16.7717 12.9117 17.5857L13.8992 17.4282C13.7571 16.5374 13.4067 15.1909 12.5256 14.0573C11.6263 12.9004 10.199 12 8.00002 12V13ZM3.50002 18C3.20827 18 3.05697 17.7827 3.08839 17.5857L2.10087 17.4282C1.95832 18.322 2.6872 19 3.50002 19V18ZM12.5 19C13.3128 19 14.0417 18.322 13.8992 17.4282L12.9117 17.5857C12.9431 17.7827 12.7918 18 12.5 18V19Z" fill="#222222"></path> <path d="M17.2966 17.4162L16.8116 17.5377L17.2966 17.4162ZM11.8004 13.9808L11.5324 13.5586L11.0173 13.8855L11.4391 14.3264L11.8004 13.9808ZM13.4054 17.507L13.8992 17.4282L13.4054 17.507ZM16.3951 18H12.5V19H16.3951V18ZM16.8116 17.5377C16.8654 17.7526 16.7076 18 16.3951 18V19C17.2658 19 18.0152 18.2277 17.7816 17.2948L16.8116 17.5377ZM13.5001 14C14.5278 14 15.2496 14.5027 15.7784 15.2069C16.3178 15.9253 16.6345 16.8306 16.8116 17.5377L17.7816 17.2948C17.5905 16.5315 17.2329 15.4787 16.5781 14.6065C15.9126 13.7203 14.9202 13 13.5001 13V14ZM12.0683 14.4029C12.4581 14.1556 12.9262 14 13.5001 14V13C12.732 13 12.0787 13.2119 11.5324 13.5586L12.0683 14.4029ZM11.4391 14.3264C12.3863 15.3166 12.7647 16.6646 12.9116 17.5857L13.8992 17.4282C13.7397 16.4285 13.3158 14.8416 12.1617 13.6351L11.4391 14.3264ZM12.9116 17.5857C12.9431 17.7827 12.7918 18 12.5 18V19C13.3128 19 14.0417 18.322 13.8992 17.4282L12.9116 17.5857Z" fill="#222222"></path> <rect x="16.25" y="5.25" width="4.5" height="0.5" rx="0.25" stroke="#222222" stroke-width="0.5" stroke-linecap="round"></rect> <rect x="18.75" y="3.25" width="4.5" height="0.5" rx="0.25" transform="rotate(90 18.75 3.25)" stroke="#222222" stroke-width="0.5" stroke-linecap="round"></rect> </g></svg></button>'
+                groupLabel.innerHTML += '<button class="btn btn-light bg-transparent ms-auto border-0 p-0" data-bs-toggle="tooltip" data-bs-title="Group"><svg fill="#000000" height="200px" width="200px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="group"> <path d="M24,15.9c0-2.8-1.5-5-3.7-6.1C21.3,8.8,22,7.5,22,6c0-2.8-2.2-5-5-5c-2.1,0-3.8,1.2-4.6,3c0,0,0,0,0,0c-0.1,0-0.3,0-0.4,0 c-0.1,0-0.3,0-0.4,0c0,0,0,0,0,0C10.8,2.2,9.1,1,7,1C4.2,1,2,3.2,2,6c0,1.5,0.7,2.8,1.7,3.8C1.5,10.9,0,13.2,0,15.9V20h5v3h14v-3h5 V15.9z M17,3c1.7,0,3,1.3,3,3c0,1.6-1.3,3-3,3c0-1.9-1.1-3.5-2.7-4.4c0,0,0,0,0,0C14.8,3.6,15.8,3,17,3z M13.4,4.2 C13.4,4.2,13.4,4.2,13.4,4.2C13.4,4.2,13.4,4.2,13.4,4.2z M15,9c0,1.7-1.3,3-3,3s-3-1.3-3-3s1.3-3,3-3S15,7.3,15,9z M10.6,4.2 C10.6,4.2,10.6,4.2,10.6,4.2C10.6,4.2,10.6,4.2,10.6,4.2z M7,3c1.2,0,2.2,0.6,2.7,1.6C8.1,5.5,7,7.1,7,9C5.3,9,4,7.7,4,6S5.3,3,7,3 z M5.1,18H2v-2.1C2,13.1,4.1,11,7,11v0c0,0,0,0,0,0c0.1,0,0.2,0,0.3,0c0,0,0,0,0,0c0.3,0.7,0.8,1.3,1.3,1.8 C6.7,13.8,5.4,15.7,5.1,18z M17,21H7v-2.1c0-2.8,2.2-4.9,5-4.9c2.9,0,5,2.1,5,4.9V21z M22,18h-3.1c-0.3-2.3-1.7-4.2-3.7-5.2 c0.6-0.5,1-1.1,1.3-1.8c0.1,0,0.2,0,0.4,0v0c2.9,0,5,2.1,5,4.9V18z"></path> </g> </g></svg></button>'
 
                 groupLabel.setAttribute('data-bs-toggle', "collapse")
                 groupLabel.setAttribute('data-bs-target', `#group_${participant.group_id}`)
@@ -682,7 +682,17 @@ let enableGroupParticipants = () => {
 
         checkBoxWrapper.appendChild(checkBox)
         element.prepend(checkBoxWrapper)
+    })
 
+    const selectAllEl = document.createElement('div')
+    selectAllEl.setAttribute('class', 'selectAll d-flex align-items-center form-check form-check-inline')
+    selectAllEl.innerHTML = `
+        <input class="form-check-input me-2" type="checkbox" id="selectAll">
+        <label class="form-check-label" for="selectAll">Select All</label>`
+    selectAllEl.querySelector('#selectAll').addEventListener('change', event => {
+        document.querySelectorAll('#newList > .list-group-item input[type="checkbox"]').forEach(element => {
+            element.checked = event.target.checked ? true : false
+        })
     })
 
     // Add the Make a Group button
@@ -701,6 +711,7 @@ let enableGroupParticipants = () => {
     document.querySelector('.list-tool-bar .noteBtn').classList.add('d-none')
     document.querySelector('.list-tool-bar').appendChild(makeGroupBtn)
     document.querySelector('.list-tool-bar').appendChild(cancelBtn)
+    document.querySelector('.list-tool-bar').prepend(selectAllEl)
 }
 
 let makeGroup = (event) => {
@@ -724,6 +735,9 @@ let cancelMakeGroup = (event) => {
 
     const buttons = document.querySelectorAll('.list-tool-bar .btn.group-action');
     buttons.forEach(btn => btn.remove());
+
+    if (document.querySelector('.list-tool-bar .selectAll'))
+        document.querySelector('.list-tool-bar .selectAll').remove()
 
     if (document.querySelector('.list-tool-bar .enableBtn'))
         document.querySelector('.list-tool-bar .enableBtn').classList.remove('d-none')
@@ -775,7 +789,8 @@ let chooseGroupType = (element) => {
         document.querySelector('#makeGroupModal #select_group').classList.remove('d-none')
         document.querySelector('#makeGroupModal #select_group select').removeAttribute('disabled')
         let selectedOption = document.querySelector('#makeGroupModal #select_group select option:checked')
-        document.querySelector('#makeGroupModal .group-image img').setAttribute('src', selectedOption.getAttribute('data-image'))
+        if (selectedOption.getAttribute('data-image'))
+            document.querySelector('#makeGroupModal .group-image img').setAttribute('src', selectedOption.getAttribute('data-image'))
     }
 }
 
@@ -787,7 +802,7 @@ let saveGroup = (e, forceInsert = false) => {
     $('#errorModal .modal-footer button.force').remove()
 
     if (!document.querySelector('#input_group_name input').value && document.querySelector('#select_group select').getAttribute('disabled')) {
-        document.querySelector('#errorModal .errorDetails').innerHTML = 'Please input the Group Name or select the existing group'
+        document.querySelector('#errorModal .errorDetails').innerHTML = 'Please enter a Group Name or select an existing group'
         $('#errorModal').modal('show')
 
         return false
@@ -799,7 +814,7 @@ let saveGroup = (e, forceInsert = false) => {
                 return false
             }
 
-            if (document.querySelector('#input_group_name input').value == optionEl.textContent) {
+            if (document.querySelector('#input_group_name input').value.toLowerCase() == optionEl.textContent.toLowerCase()) {
                 const includeBtn = document.createElement('button')
                 includeBtn.setAttribute('class', "btn btn-primary force")
                 includeBtn.textContent = "Save duplicated name"
@@ -881,7 +896,7 @@ let updateGroup = (e, forceUpdate = false) => {
                 return false
             }
 
-            if (document.querySelector('.new-group-name').value == optionEl.textContent) {
+            if (document.querySelector('.new-group-name').value.toLowerCase() == optionEl.textContent.toLocaleLowerCase()) {
                 const includeBtn = document.createElement('button')
                 includeBtn.setAttribute('class', "btn btn-primary force")
                 includeBtn.textContent = "Save duplicated name"
@@ -980,6 +995,14 @@ let uploadGroupImage = (el) => {
                     el.parentElement.querySelector('input#group_image_path').value = result.file_path
                 }
                 el.parentElement.querySelector('img').classList.remove('temp');
+
+                const deleteImgBtn = document.createElement('button')
+                deleteImgBtn.setAttribute('class', "group_image_delete btn")
+                deleteImgBtn.innerHTML = `<i class="fa fa-close"></i>`
+                deleteImgBtn.addEventListener('click', event => {
+                    removeGroupImage(event)
+                })
+                el.parentElement.appendChild(deleteImgBtn)
             },
             error: function (error) {
                 console.log(error);
@@ -992,11 +1015,15 @@ let uploadGroupImage = (el) => {
     }
 }
 
-let removeGroupImage = (e, element_id) => {
-    document.getElementById('group_image_input').value = ''
-    document.getElementById('group_image').src = '/images/group-placeholder.png'
-    document.getElementById('group_image').classList.add('temp')
-    document.getElementById('group_image_delete').classList.add('d-none')
+let removeGroupImage = (event) => {
+    let parentEl = event.target.parentElement.parentElement
+    parentEl.querySelector('img').src = '/images/group-placeholder.png'
+    parentEl.querySelector('img').classList.add('temp')
+
+    if (parentEl.querySelector('#group_image_input'))
+        parentEl.querySelector('#group_image_input').value = ''
+    if (parentEl.querySelector('.group_image_delete'))
+        parentEl.querySelector('.group_image_delete').remove()
 }
 
 let selectGroup = (el) => {
@@ -1129,7 +1156,7 @@ let removeParticipantFromGroup = (el) => {
                     return false
                 }
 
-                renderParticipants(result.participants)
+                renderParticipants(result)
             },
             error: function (error) {
                 console.log(error);
@@ -1174,18 +1201,27 @@ let enableGroupEdit = (el) => {
     buttonWrapper.appendChild(cancelBtn)
 
     const imgWrapper = document.createElement('div')
+    imgWrapper.setAttribute('class', "group-image-edit")
     const img = el.find('img.group-image')[0]
     const fileInput = document.createElement('input')
     fileInput.type = 'file';
     fileInput.className = 'd-none';
+    const deleteImgBtn = document.createElement('button')
+    deleteImgBtn.setAttribute('class', "group_image_delete btn")
+    deleteImgBtn.innerHTML = `<i class="fa fa-close"></i>`
+    
     imgWrapper.appendChild(img)
     imgWrapper.appendChild(fileInput)
+    imgWrapper.appendChild(deleteImgBtn)
     
     img.addEventListener('click', event => {
         fileInput.click()
     })
     fileInput.addEventListener('change', event => {
         uploadGroupImage(event.target)
+    })
+    deleteImgBtn.addEventListener('click', event => {
+        removeGroupImage(event)
     })
 
     el.removeClass('group-name')

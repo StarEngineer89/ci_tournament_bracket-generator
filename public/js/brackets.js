@@ -391,6 +391,7 @@ let editing_mode = false;
                 nameSpan.setAttribute('data-bs-html', true)
                 nameSpan.setAttribute('data-bs-title', teams[team_index].name + `<br/>(${teams[team_index].email})`)
             } else if (teams[team_index].type == 'group') {
+                participant.dataset.isGroup = true
                 nameSpan.setAttribute('data-bs-html', true)
                 let members = ''
                 teams[team_index].members.forEach(member => {
