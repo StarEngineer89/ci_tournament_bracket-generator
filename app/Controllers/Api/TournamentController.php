@@ -349,6 +349,7 @@ class TournamentController extends BaseController
             
             return $this->response->setJSON($data);
         }
+
         $tournamentData->id = $tournament_id;
 
         if ($this->request->getPost('setting-toggle')) {
@@ -389,13 +390,11 @@ class TournamentController extends BaseController
             }
         }
         
-        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-
         /**
          * Add the tournament created by guest users to share table
          */
         if($tournamentData->visibility){
-            $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->first();
+            $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->first();
             if(!$shareSetting){
                 $config = new \Config\Encryption();
                 $token = hash_hmac('sha256', 'tournament_' . $tournament_id . "_created_by_" . $user_id . "_" . time(), $config->key);
@@ -407,7 +406,7 @@ class TournamentController extends BaseController
                     'permission' => SHARE_PERMISSION_VIEW,
                     'token' => $token
                 );
-                $shareSettingsModel->insert($shareData);
+                $this->shareSettingModel->insert($shareData);
             }
         }
 
@@ -416,7 +415,7 @@ class TournamentController extends BaseController
             $existingHistory = $this->request->getCookie('guest_tournaments');
             $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
 
-            $shareSetting = $shareSettingsModel->where(['tournament_id' => $tournament_id, 'user_id' => 0])->first();
+            $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'user_id' => 0])->first();
 
             // Add the new tournament to the history
             if ($shareSetting) {
@@ -430,16 +429,19 @@ class TournamentController extends BaseController
         }
         /** End adding the tournament Id into the cookie for guest users */
         
+        /**
+         * Add the tournament ID to the participants
+         */
+        $this->participantModel->where(['tournament_id'=> 0, 'sessionid' => $this->request->getPost('hash')])->set(['tournament_id' => $tournament_id])->update();
+
         /** Enable foreign key check */
         if (!auth()->user() && $dbDriver === 'MySQLi') {
             $db->query('SET FOREIGN_KEY_CHECKS = 1;');
         }
 
-        $data['tournament_id'] = $tournament_id;
+        $data['id'] = $tournament_id;
 
-        $data = ['msg' => "Tournament settings successfully saved.", 'data' => $data];
-            
-        return $this->response->setJSON($data);
+        return $this->response->setJSON(['msg' => "Tournament settings successfully saved.", 'tournament' => $data]);
     }
 
     public function getSettings($id)

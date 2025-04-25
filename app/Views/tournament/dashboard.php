@@ -1298,6 +1298,7 @@ $(document).ready(function() {
                 value: false
             });
         });
+
         const data = Object.fromEntries(values.map(({
             name,
             value

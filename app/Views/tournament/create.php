@@ -35,7 +35,7 @@ let tournament = null;
 <?php if (isset($tournament)): ?>
 tournament = <?= json_encode($tournament) ?>;
 <?php endif; ?>
-let tournament_id = '<?= (isset($tournament)) ? $tournament['id'] : null ?>';
+let tournament_id = tournament ? tournament.id : 0;
 var user_id = <?= (auth()->user()) ? auth()->user()->id : 0 ?>;
 let shuffle_duration = 10;
 let audio = document.getElementById("myAudio");
@@ -278,63 +278,10 @@ $(document).ready(function() {
                         $('#errorModal .errorDetails').html("An error occurred while saving the tournament!");
                     }
                 } else {
-                    tournament_id = result.data.tournament_id;
-                    eleminationType = parseInt(result.data.type);
+                    tournament = result.tournament
+                    tournament_id = tournament.id
 
-                    if (result.data.audio) {
-                        if (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION ?>]) {
-                            shuffle_duration = (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION ?>].duration) ? parseInt(result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION ?>].duration) : 10;
-                            audioStartTime = (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION ?>].start) ? parseInt(result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION ?>].start) : 10;
-                            let audioSrc = (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION ?>].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
-                            audioSrc += result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION ?>].path;
-
-                            $('#audioSrc').attr('src', audioSrc);
-
-                            audio.load();
-                            audio.addEventListener('loadedmetadata', function() {
-                                audio.currentTime = audioStartTime;
-                                audio.play();
-                            });
-
-                            document.getElementById('stopAudioButton').classList.remove('d-none');
-                        }
-
-                        if (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>]) {
-                            shuffle_duration = (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) ? parseInt(result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) : 10;
-                            videoStartTime = (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].start) ? parseInt(result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].start) : 10;
-                            video_duration = (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) ? parseInt(result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].duration) : video_duration;
-                            let videoSrc = (result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].source == 'f') ? '<?= base_url('uploads/') ?>' : '<?= base_url('uploads/') ?>';
-                            videoSrc += result.data.audio[<?= AUDIO_TYPE_BRACKET_GENERATION_VIDEO ?>].path;
-
-                            $('#videoPlayer').attr('src', videoSrc)
-
-                            videoPlayer.load();
-                            videoPlayer.classList.remove('d-none')
-                            videoPlayer.addEventListener('loadedmetadata', function() {
-                                videoPlayer.currentTime = videoStartTime;
-                                videoPlayer.play();
-                            });
-
-                            document.getElementById('stopVideoButton').classList.remove('d-none');
-                            document.getElementById('stopVideoButton').addEventListener('click', function() {
-                                stopVideoPlaying()
-                            });
-                        }
-                    }
-
-                    if ($('#enableShuffle').prop('checked') || (result.data.audio !== undefined && result.data.audio[0] !== undefined)) {
-                        document.getElementById('skipShuffleButton').classList.remove('d-none');
-                        document.getElementById('skipShuffleButton').addEventListener('click', function() {
-                            skipShuffling()
-                        });
-                    }
-
-                    let enableShuffling = true
-                    if ($('#enableShuffle')) {
-                        enableShuffling = $('#enableShuffle').prop('checked')
-                    }
-
-                    callShuffle(enableShuffling);
+                    $('#generate').trigger('click')
                 }
             },
             error: function(e) {
@@ -365,48 +312,51 @@ $(document).ready(function() {
             inline: "nearest"
         })
 
-        <?php if (isset($tournament) && count($tournament)) : ?>
-        tournament_id = "<?= $tournament['id'] ?>";
-        eleminationType = <?= intval($tournament['type']) ?>;
+        if (tournament) {
+            eleminationType = parseInt(tournament.type)
 
-        /** Audio player setting */
-        <?php if (isset($settings) && isset($settings[AUDIO_TYPE_BRACKET_GENERATION])) : ?>
-        audio.load();
-        audio.currentTime = parseInt(<?= $settings[AUDIO_TYPE_BRACKET_GENERATION]['start'] ? $settings[AUDIO_TYPE_BRACKET_GENERATION]['start'] : 0 ?>);
-        audio.play()
-        shuffle_duration = parseInt(<?= $settings[AUDIO_TYPE_BRACKET_GENERATION]['duration'] ?>);
+            /** 
+             * Audio player setting 
+             *  define('AUDIO_TYPE_BRACKET_GENERATION', 0)
+             *  define('AUDIO_TYPE_FINAL_WINNER', 1)
+             *  define('AUDIO_TYPE_BRACKET_GENERATION_VIDEO', 2)
+             */
+            if (tournament && tournament.audio[0]) {
+                audio.load();
+                audio.currentTime = parseInt(tournament.audio[0].start);
+                audio.play()
+                shuffle_duration = parseInt(tournament.audio[0].duration);
 
-        document.getElementById('stopAudioButton').classList.remove('d-none');
-        <?php endif; ?>
+                document.getElementById('stopAudioButton').classList.remove('d-none');
+            }
 
-        /** Video player setting */
-        <?php if (isset($settings) && isset($settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
-        videoPlayer.classList.remove('d-none')
-        videoPlayer.currentTime = parseInt(<?= $settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['start'] ? $settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['start'] : 0 ?>);
-        videoPlayer.play()
-        shuffle_duration = parseInt(<?= $settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['duration'] ?>);
+            /** Video player setting */
+            if (tournament && tournament.audio[2]) {
+                videoPlayer.classList.remove('d-none')
+                videoPlayer.currentTime = parseInt(tournament.audio[2].start);
+                videoPlayer.play()
+                shuffle_duration = parseInt(tournament.audio[2].duration);
 
-        document.getElementById('stopVideoButton').classList.remove('d-none');
-        document.getElementById('stopVideoButton').addEventListener('click', function() {
-            stopVideoPlaying()
-        });
-        <?php endif; ?>
+                document.getElementById('stopVideoButton').classList.remove('d-none');
+                document.getElementById('stopVideoButton').addEventListener('click', function() {
+                    stopVideoPlaying()
+                });
+            }
 
-        document.getElementById('skipShuffleButton').classList.remove('d-none');
-        document.getElementById('skipShuffleButton').addEventListener('click', function() {
-            skipShuffling()
-        });
+            document.getElementById('skipShuffleButton').classList.remove('d-none');
+            document.getElementById('skipShuffleButton').addEventListener('click', function() {
+                skipShuffling()
+            });
 
-        let shuffle_enable = 0
-        <?php if ($tournament['shuffle_enabled']): ?>
-        shuffle_enable = 1
-        <?php endif ?>
+            let shuffle_enable = 0
+            if (tournament.shuffle_enabled) {
+                shuffle_enable = 1
+            }
 
-        callShuffle(shuffle_enable);
-
-        <?php else : ?>
-        $('#tournamentSettings').modal('show');
-        <?php endif; ?>
+            callShuffle(shuffle_enable);
+        } else {
+            $('#tournamentSettings').modal('show');
+        }
     });
 
     $('#addParticipants').on('click', function() {
@@ -429,9 +379,6 @@ $(document).ready(function() {
             return false;
         }
 
-        <?php if (isset($tournament)): ?>
-        const tournament_id = <?= $tournament['id'] ?>;
-        <?php endif ?>
         if (ptNames.length) {
             addParticipants({
                 names: ptNames,
@@ -442,9 +389,6 @@ $(document).ready(function() {
     });
 
     $('#confirmSave .include').on('click', () => {
-        <?php if (isset($tournament)): ?>
-        const tournament_id = <?= $tournament['id'] ?>;
-        <?php endif ?>
         if (ptNames.length) {
             addParticipants({
                 names: ptNames,
@@ -457,9 +401,6 @@ $(document).ready(function() {
     })
 
     $('#confirmSave .remove').on('click', () => {
-        <?php if (isset($tournament)): ?>
-        const tournament_id = <?= $tournament['id'] ?>;
-        <?php endif ?>
         if (filteredNames.length) {
             addParticipants({
                 names: filteredNames,
@@ -483,9 +424,9 @@ $(document).ready(function() {
         }
 
         let ajax_url = apiURL + '/participants/clear'
-        <?php if (isset($tournament)): ?>
-        ajax_url = apiURL + '/participants/clear?t_id=' + '<?= $tournament['id'] ?>'
-        <?php endif ?>
+        if (tournament) {
+            ajax_url = apiURL + '/participants/clear?t_id=' + tournament_id
+        }
 
         $.ajax({
             type: "POST",
@@ -796,9 +737,6 @@ var csvUpload = (element) => {
             }
 
             if (result.names.length) {
-                <?php if (isset($tournament)): ?>
-                const tournament_id = <?= $tournament['id'] ?>;
-                <?php endif ?>
                 addParticipants({
                     names: ptNames,
                     user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
@@ -1102,7 +1040,7 @@ var performReuseParticipants = (reuse_id = null) => {
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><button id="clearParticipant" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#clearParticipantsConfirmModal"><?= lang('Button.clearParticipants') ?></button></li>
                     <li><button id="checkDuplicationBtn" class="btn btn-default"><?= lang('Button.checkDuplicates') ?></button></li>
-                    <li><button id="checkDuplicationBtn" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectTournamentModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>"><?= lang('Button.reuseParticipants') ?></button></li>
+                    <li><button id="reuseParticipantsBtn" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectTournamentModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>"><?= lang('Button.reuseParticipants') ?></button></li>
                     <li><button id="changeBackgroundColor" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#selectBackgroundColorModal" data-id="<?= (isset($tournament)) ? $tournament['id'] : '' ?>"><?= lang('Button.changeBackground') ?></button></li>
                 </ul>
             </div>

@@ -539,13 +539,13 @@ function generateBrackets(list) {
     $.ajax({
         type: "post",
         url: apiURL + '/brackets/generate',
-        data: { 'type': eleminationType, 'tournament_id': tournament_id, 'user_id': user_id, 'list': list },
+        data: { 'type': eleminationType, 'tournament_id': tournament.id, 'user_id': user_id, 'list': list },
         beforeSend: function() {
             $('#generateProcessing').removeClass('d-none')
         },
         success: function (result) {
             if (result.result == 'success') {
-                window.location.href = '/tournaments/' + tournament_id + '/view' 
+                window.location.href = '/tournaments/' + tournament.id + '/view' 
             } else {
                 $('#errorModal .errorDetails').html(result.message)
                 $("#errorModal").modal('show');
