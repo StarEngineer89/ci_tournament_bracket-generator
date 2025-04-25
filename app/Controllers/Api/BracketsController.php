@@ -182,9 +182,15 @@ class BracketsController extends BaseController
         $original = [];
         if ($teamnames) {
             foreach ($teamnames as $index => $team) {
+                if (!$team) {
+                    $original[$index] = null;
+                    continue;
+                }
+
                 if (isset($team['is_group'])) {
                     $original[$index] = $this->groupsModel->find($team['id']);
                     $original[$index]['name'] = $original[$index]['group_name'];
+                    $original[$index]['group'] = true;
                 } else {
                     $original[$index] = $this->participantsModel->find($team['id']);
                 }
@@ -269,7 +275,7 @@ class BracketsController extends BaseController
 
                 $teamnames[$req->index] = (isset($req->action_code) && $req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) ? null : ['id' => $participant_id, 'order' => $order];
 
-                if ($teamnames[$req->index] && $req->is_group) {
+                if ($teamnames[$req->index] && isset($req->is_group) && $req->is_group) {
                     $teamnames[$req->index]['is_group'] = true;
                 }
 
@@ -289,7 +295,11 @@ class BracketsController extends BaseController
             $bracket['teamnames'] = json_encode($teamnames);
             $this->bracketsModel->save($bracket);
 
-            $removedParticipantData = $this->participantsModel->find($removedParticipant['id']);
+            $removedParticipantData = (isset($removedParticipant['is_group']) && $removedParticipant['is_group']) ? $this->groupsModel->find($removedParticipant['id']) : $this->participantsModel->find($removedParticipant['id']);
+            if (isset($removedParticipant['is_group']) && $removedParticipant['is_group']) {
+                $removedParticipantData['name'] = $removedParticipantData['group_name'];
+            }
+            
             /** Check if the participant exists in other brackets */   
             helper('bracket');
             $participantIsExists = checkParticipantExistingInTournament($tournament['id'], $removedParticipant['id']);
@@ -299,7 +309,7 @@ class BracketsController extends BaseController
                 $this->participantsModel->where('id', $removedParticipant['id'])->delete();
                 
                 /** Send the notification and email if the participant was removed if it's registered user */
-                if ($removedParticipantData['registered_user_id']) {
+                if (isset($removedParticipantData['registered_user_id']) && $removedParticipantData['registered_user_id']) {
                     $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
                     $creator = auth()->getProvider()->findById($tournament['user_id']);
                     $tournamentObj = new \App\Entities\Tournament($tournament);
@@ -457,6 +467,7 @@ class BracketsController extends BaseController
                 }
             }
         }
+        
         $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
         $this->tournamentsModel->save($tournament);
 
@@ -477,17 +488,21 @@ class BracketsController extends BaseController
             $data['round_no'] = $bracket['roundNo'];
 
             if ($req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
-                $participant = $this->participantsModel->find($req->winner);
-                $data['participants'] = [$participant['name']];
+                if ($req->is_group) {
+                    $group = $this->groupsModel->find($req->winner);
+                    $data['participants'] = ['name' => $group['group_name'], 'type' => 'group'];
+                } else {
+                    $participant = $this->participantsModel->find($req->winner);
+                    $data['participants'] = ['name' => $participant['name'], 'type' => null];
+                }
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
-                $participant = $this->participantsModel->find($req->participant);
-                $data['participants'] = [$participant['name']];
+                $data['participants'] = ['name' => $group['group_name'], 'type' => $req->is_group ? 'group' : null];
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
-                $data['participants'] = $original[$req->index] ? [$original[$req->index]['name'], $req->name] : [null, $req->name];
+                $data['participants'] = $original[$req->index] ? [['name' => $original[$req->index]['name'], 'type' => isset($original[$req->index]['group']) ? "group" : null], ['name' => $req->name, 'type' => (isset($req->is_group) && $req->is_group) ? "group" : null]] : [null, ['name' => $req->name, 'type' => (isset($req->is_group) && $req->is_group) ? "group" : null]];
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
@@ -495,30 +510,17 @@ class BracketsController extends BaseController
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
-                $data['participants'] = [$removedParticipantData['name']];
+                $data['participants'] = ['name' => $removedParticipantData['name'],'type'=> ($original[$req->index] && isset($original[$req->index]['group'])) ? 'group' : null];
             }
 
             $insert_data['params'] = json_encode($data);
 
-            $db = \Config\Database::connect();
-            $dbDriver = $db->DBDriver;
-            if (!auth()->user() && $dbDriver === 'MySQLi') {
-                $db->query('SET FOREIGN_KEY_CHECKS = 0;');
-            }
-            
-            if (!auth()->user() && $dbDriver === 'SQLite3') {
-                $db->query('PRAGMA foreign_keys = OFF');
-            }
+            helper('db_helper');
+            disableForeignKeyCheck();
 
             $logActionsModel->insert($insert_data);
-            
-            if (!auth()->user() && $dbDriver === 'MySQLi') {
-                $db->query('SET FOREIGN_KEY_CHECKS = 1;');
-            }
-            
-            if (!auth()->user() && $dbDriver === 'SQLite3') {
-                $db->query('PRAGMA foreign_keys = ON');
-            }
+
+            enableForeignKeyCheck();
         }
 
         return json_encode(array('result' => 'success', 'data' => $result));

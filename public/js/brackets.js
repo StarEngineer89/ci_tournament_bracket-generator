@@ -790,10 +790,9 @@ let editing_mode = false;
             type: "PUT",
             url: apiURL + '/brackets/update/' + opt.$trigger.data('bracket'),
             contentType: "application/json",
-            data: JSON.stringify({ action_code: unmarkWinnerActionCode, participant: opt.$trigger.data('id'), index: index, is_final: is_final}),
+            data: JSON.stringify({ action_code: unmarkWinnerActionCode, participant: opt.$trigger.data('id'), index: index, is_final: is_final, is_group: opt.$trigger.data('isGroup')}),
             success: function (result) {
                 ws.send(['unmarked!', tournament_id]);
-                // ele.find('.score').remove()
 
                 loadBrackets()
 
@@ -840,7 +839,7 @@ function changeParticipant(ele, index) {
 
         editing_mode = false;
 
-        updateBracket(ele.parent().parent(), { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order, is_group: ele.find("option:selected").data('group') });
+        updateBracket(parentElement, { name: ele.find("option:selected").text(), index: index, participant: ele.find("option:selected").val(), action_code: changeParticipantActionCode, order: participant_order, is_group: ele.find("option:selected").data('group') });
     }
 }
 
