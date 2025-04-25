@@ -118,7 +118,7 @@
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="voting-settings-panel ps-md-5 ps-sm-3 d-none" id="voting-settings-panel">
+    <div class="voting-settings-panel ps-md-3 ps-sm-2 d-none" id="voting-settings-panel">
         <div class="row g-2 align-items-center">
             <div class="col-auto">
                 <label for="votingAccessbility" class="col-form-label"><strong>Voting Accessibility</strong></label>
@@ -178,9 +178,14 @@
             <label class="form-check-label" for="allowHostOverride">Allow Host override</label>
             <div class="retain-votes-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?></div>
         </div>
-        <div class="round-duration-combine mt-2">
-            <input type="checkbox" class="form-check-input" name="round_duration_combine" id="roundDurationCheckbox">
+    </div>
+    <div class="round-duration-combine ps-md-3 ps-sm-2">
+        <div class="mt-2">
+            <input type="checkbox" class="form-check-input" name="round_duration_combine" id="roundDurationCheckbox" onchange="toggleRoundDuration(this)">
             <label class="form-check-label" for="roundDurationCheckbox">Round Duration</label>
+            <div class="round-duration-combine-required text-danger form-text mb-1 ps-3 d-none">
+                * Availability must be enabled to use this setting!
+            </div>
             <div class="read-more-container">
                 <div class="round-duration-maxVote-checkbox-hint form-text ps-3 d-none"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
                 <div class="round-duration-manual-checkbox-hint form-text text-content ps-3"><?= lang('Descriptions.tournamentManualRoundDurationDesc') ?></div>

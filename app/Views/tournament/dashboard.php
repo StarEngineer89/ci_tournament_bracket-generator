@@ -959,6 +959,8 @@ $(document).ready(function() {
     const tournamentSettingsModal = document.getElementById('tournamentSettings');
     if (tournamentSettingsModal) {
         tournamentSettingsModal.addEventListener('shown.bs.modal', event => {
+            changeEvaluationMethod(document.getElementById('evaluationMethod'))
+
             tournamentSettingsModal.querySelectorAll(".read-more-container").forEach(container => {
                 adjustReadMore(container)
             })

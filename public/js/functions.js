@@ -608,21 +608,56 @@ let toggleVisibility = (checkbox) => {
 
 let toggleAvailability = (checkbox) => {
     if ($(checkbox).is(':checked')) {
+        $('#enableAvailability').removeClass('is-invalid')
         $('.availability-option').removeClass('d-none');
         $('.startAv').attr('disabled', false);
         $('.endAv').attr('disabled', false);
+        $('#startAvPickerInput').attr('required', true)
+
         $('.evaluation-vote-round-availability-required').addClass('d-none')
         $('#votingMechanism').removeClass('is-invalid')
-        $('#startAvPickerInput').attr('required', true)
+        $('.round-duration-combine-required').addClass('d-none')
+        $('#roundDurationCheckbox').removeClass('is-invalid')
     } else {
         $('.availability-option').addClass('d-none');
         $('.startAv').attr('disabled', true);
         $('.endAv').attr('disabled', true);
+        $('#startAvPickerInput').attr('required', false)
+
         if ($('#votingMechanism').val() == 1) {
             $('.evaluation-vote-round-availability-required').removeClass('d-none')
             $('#votingMechanism').addClass('is-invalid')
         }
-        $('#startAvPickerInput').attr('required', false)
+
+        if ($('#evaluationMethod').val() == "m" || ($('#evaluationMethod').val() == "v" && $('#votingMechanism').val() == 2)) {
+            $('.round-duration-combine-required').removeClass('d-none')
+            $('#roundDurationCheckbox').addClass('is-invalid')
+        }
+    }
+
+    toggleRoundDuration($('#roundDurationCheckbox'))
+}
+
+let toggleRoundDuration = (checkbox) => {
+    if ($(checkbox).is(':checked')) {
+        $('#enableAvailability').attr('required', true)
+
+        if (!$('#enableAvailability').is(':checked')) {
+            $('#enableAvailability').addClass('is-invalid')
+
+            $('.round-duration-combine-required').removeClass('d-none')
+            $('#roundDurationCheckbox').addClass('is-invalid')
+        }
+    } else {
+        $('#enableAvailability').attr('required', false)
+        $('#enableAvailability').removeClass('is-invalid')
+
+        if (!$('#enableAvailability').is(':checked')) {
+            $(checkbox).addClass('is-invalid')
+        }
+
+        $('.round-duration-combine-required').addClass('d-none')
+        $('#roundDurationCheckbox').removeClass('is-invalid')
     }
 }
 
@@ -665,6 +700,8 @@ var changeEvaluationMethod = (element) => {
     document.querySelectorAll("#tournamentSettings .evaluation-settings .read-more-container").forEach(container => {
         adjustReadMore(container)
     })
+
+    toggleAvailability($('#enableAvailability'))
 }
 
 var changeVotingAccessbility = (element) => {
@@ -709,14 +746,15 @@ var changeVotingMechanism = (element) => {
 
         $('.evaluation-vote-round').addClass('text-content')
     }
+
     if (parseInt($(element).val()) == 2) {
         $('.max-vote-setting').removeClass('d-none')
         $('.evaluation-vote-round').addClass('d-none')
         $('.evaluation-vote-max').removeClass('d-none')
         $('.evaluation-open-ended').addClass('d-none')
         $('#maxVotes').attr('required', true)
-        $('.evaluation-vote-round-availability-required').addClass('d-none')
         $('#votingMechanism').removeClass('is-invalid')
+        $('.evaluation-vote-round-availability-required').addClass('d-none')
         $('.allow-host-override-setting').removeClass('d-none')
         $('#enableAvailability').prop('required', false)
 
@@ -724,6 +762,8 @@ var changeVotingMechanism = (element) => {
         $('.round-duration-combine .round-duration-maxVote-checkbox-hint').addClass('text-content')
 
         $('.evaluation-vote-max').addClass('text-content')
+
+        toggleAvailability($('#enableAvailability'))
     }
 
     if (parseInt($(element).val()) == 3) {
