@@ -321,26 +321,28 @@ $(document).ready(function() {
              *  define('AUDIO_TYPE_FINAL_WINNER', 1)
              *  define('AUDIO_TYPE_BRACKET_GENERATION_VIDEO', 2)
              */
-            if (tournament && tournament.audio[0]) {
-                audio.load();
-                audio.currentTime = parseInt(tournament.audio[0].start);
-                audio.play()
-                shuffle_duration = parseInt(tournament.audio[0].duration);
+            if (tournament && tournament.audio) {
+                if (tournament.audio[0]) {
+                    audio.load();
+                    audio.currentTime = parseInt(tournament.audio[0].start);
+                    audio.play()
+                    shuffle_duration = parseInt(tournament.audio[0].duration);
 
-                document.getElementById('stopAudioButton').classList.remove('d-none');
-            }
+                    document.getElementById('stopAudioButton').classList.remove('d-none');
+                }
 
-            /** Video player setting */
-            if (tournament && tournament.audio[2]) {
-                videoPlayer.classList.remove('d-none')
-                videoPlayer.currentTime = parseInt(tournament.audio[2].start);
-                videoPlayer.play()
-                shuffle_duration = parseInt(tournament.audio[2].duration);
+                /** Video player setting */
+                if (tournament.audio[2]) {
+                    videoPlayer.classList.remove('d-none')
+                    videoPlayer.currentTime = parseInt(tournament.audio[2].start);
+                    videoPlayer.play()
+                    shuffle_duration = parseInt(tournament.audio[2].duration);
 
-                document.getElementById('stopVideoButton').classList.remove('d-none');
-                document.getElementById('stopVideoButton').addEventListener('click', function() {
-                    stopVideoPlaying()
-                });
+                    document.getElementById('stopVideoButton').classList.remove('d-none');
+                    document.getElementById('stopVideoButton').addEventListener('click', function() {
+                        stopVideoPlaying()
+                    });
+                }
             }
 
             document.getElementById('skipShuffleButton').classList.remove('d-none');
