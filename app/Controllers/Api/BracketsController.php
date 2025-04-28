@@ -577,42 +577,62 @@ class BracketsController extends BaseController
             foreach ($teams as $index => $team) {
                 if ($team) {
                     $checkExist = checkParticipantExistingInTournament($tournamentEntity->id, $team->id);
+
+                    $deletedParticipants = [];
                     
                     if (isset($team->is_group)) {
                         $group = $this->groupsModel->find($team->id);
                         $teamInfo[$index] = $group;
                         $teamInfo[$index]['is_group'] = true;
+
+                        if ($team->members) {
+                            foreach ($team->members as $member) {
+                                $deletedParticipants[] = $member->id;
+                            }
+                        }
                     } else {
                         $pt = $this->participantsModel->find($team->id);
                         $teamInfo[$index] = $pt;
+
+                        $deletedParticipants[] = $team->id;
                     }
-                    
-                    $removedParticipantData = $this->participantsModel->find($team->id);
-                    // if (!$checkExist && $removedParticipantData['registered_user_id']) {
-                    //     $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
-                    //     $creator = auth()->getProvider()->findById($tournamentEntity->user_id);
 
-                    //     $message = "You've been removed from tournament \"$tournamentEntity->name\"!";
-                    //     $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournamentEntity->id/view"]);
+                    if ($checkExist) {
+                        continue;
+                    }
 
-                    //     if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
-                    //         $email = service('email');
-                    //         $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                    //         $email->setTo($user->email);
-                    //         $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
-                    //         $email->setMessage(view(
-                    //             'email/removed-from-tournament',
-                    //             ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
-                    //             ['debug' => false]
-                    //         ));
+                    if ($deletedParticipants) {
+                        foreach ($deletedParticipants as $ptId) {
+                            $participantInfo = $this->participantsModel->find($ptId);
+                            if (!$participantInfo['registered_user_id']) {
+                                continue;
+                            }
 
-                    //         if ($email->send(false) === false) {
-                    //             $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                    //         }
+                            $user = auth()->getProvider()->findById($participantInfo['registered_user_id']);
+                            $creator = auth()->getProvider()->findById($tournamentEntity->user_id);
 
-                    //         $email->clear();
-                    //     }
-                    // }
+                            $message = "You've been removed from tournament \"$tournamentEntity->name\"!";
+                            $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournamentEntity->id/view"]);
+
+                            if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
+                                $email = service('email');
+                                $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                                $email->setTo($user->email);
+                                $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
+                                $email->setMessage(view(
+                                    'email/removed-from-tournament',
+                                    ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                                    ['debug' => false]
+                                ));
+
+                                if ($email->send(false) === false) {
+                                    $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                                }
+
+                                $email->clear();
+                            }
+                        }
+                    }
                 }
             }
         }
