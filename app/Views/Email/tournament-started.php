@@ -16,6 +16,7 @@
     <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->username ?></a></strong>" hosted by <?= $creator ? "$creator->name ($creator->email)" : 'Guest' ?> has officially started, and you're in the action! Get ready to track the progress. </p>
 
     🔹 <strong>Your Role</strong>: <?= $role ?>
+    🔹 <strong>Group</strong>: <?= $groupName ?? "None (Individual Participant)" ?>
 
     <p>Stay engaged, follow the matches, and may the best participant win!</p>
 

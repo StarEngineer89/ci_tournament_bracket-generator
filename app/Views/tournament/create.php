@@ -688,6 +688,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 var csvUpload = (element) => {
+    if (!$('.csv-import')[0].files) {
+        $('#errorModal .errorDetails').html('Please upload a CSV file.')
+        $("#errorModal").modal('show');
+
+        return false;
+    }
+
     // Validate file type
     const allowedExtensions = ['text/csv'];
     const fileExtension = $('.csv-import')[0].files[0].type;

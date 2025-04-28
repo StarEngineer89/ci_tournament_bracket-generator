@@ -15,6 +15,8 @@
     <p>Hi <?= esc($username) ?>,</p>
     <p>The tournament "<strong><a href="<?= base_url("tournaments/$tournament->id/view") ?>"><?= $tournament->name ?></a></strong>" hosted by <?= $creator ? "$creator->username ($creator->email)" : 'Guest' ?> has officially ended! Check the progress by visiting the tournament! </p>
 
+    🔹 <strong>Group</strong>: <?= $groupName ?? "None (Individual Participant)" ?>
+
     <p>Stay tuned for future tournaments, and until next time—keep the competitive spirit alive! </p>
 
     <p>Best regards,</p>

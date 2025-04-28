@@ -1,7 +1,9 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
-<svg width="800px" height="800px" viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" enable-background="new 0 0 76.00 76.00" xml:space="preserve" fill="#ffffff" stroke="#ffffff">
+<svg fill="#ffffff" width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
 <g id="SVGRepo_bgCarrier" stroke-width="0"/>
 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-<g id="SVGRepo_iconCarrier"> <path fill="#ffffff" fill-opacity="1" stroke-width="0.2" stroke-linejoin="round" d="M 23.75,60.1667L 23.75,53.8333L 31.6667,53.8333L 31.6666,47.5L 23.75,47.5L 23.75,41.1667L 38,41.1667L 38,47.5L 44.3333,47.5L 44.3333,28.5L 38,28.5L 38,34.8333L 23.75,34.8333L 23.75,28.5L 31.6667,28.5L 31.6666,22.1666L 23.75,22.1667L 23.75,15.8333L 38,15.8333L 38,22.1666L 50.6666,22.1667L 50.6666,34.8333L 58.5833,34.8333L 58.5833,41.1667L 50.6666,41.1667L 50.6666,53.8333L 38,53.8333L 38,60.1667L 23.75,60.1667 Z "/> </g>
+<g id="SVGRepo_iconCarrier">
+<path d="M22,3a1,1,0,0,0,0-2H20a1,1,0,0,0-1,1V4H17a1,1,0,0,0-1,1v6H14.816a2.982,2.982,0,0,0-5.632,0H8V5A1,1,0,0,0,7,4H5V2A1,1,0,0,0,4,1H2A1,1,0,0,0,2,3H3V7H2A1,1,0,0,0,2,9H4A1,1,0,0,0,5,8V6H6V18H5V16a1,1,0,0,0-1-1H2a1,1,0,0,0,0,2H3v4H2a1,1,0,0,0,0,2H4a1,1,0,0,0,1-1V20H7a1,1,0,0,0,1-1V13H9.184a2.982,2.982,0,0,0,5.632,0H16v6a1,1,0,0,0,1,1h2v2a1,1,0,0,0,1,1h2a1,1,0,0,0,0-2H21V17h1a1,1,0,0,0,0-2H20a1,1,0,0,0-1,1v2H18V6h1V8a1,1,0,0,0,1,1h2a1,1,0,0,0,0-2H21V3ZM12,13a1,1,0,1,1,1-1A1,1,0,0,1,12,13Z"/>
+</g>
 </svg>

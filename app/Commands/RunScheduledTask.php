@@ -103,10 +103,14 @@ class RunScheduledTask extends BaseCommand
                     if ($sendNotificationsTo) {
                         foreach ($sendNotificationsTo as $user_id) {
                             $user = $userProvider->findById($user_id);
+                            
                             if (!$user) {
                                 continue;
                             }
 
+                            $participantWithGroupInfo = $participantsModel->where(['tournament_id' => $tournament->id, 'registered_user_id' => $user_ids])->withGroupInfo()->first();
+                            $groupName = $participantWithGroupInfo ? $participantWithGroupInfo['group_name'] : null;
+                            
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
                                 $message = "The tournament \"$tournament->name\" has started!";
                                 $notificationService->addNotification(['user_id' => $host_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_STARTED, 'link' => "tournaments/$tournament->id/view"]);
@@ -125,7 +129,7 @@ class RunScheduledTask extends BaseCommand
                                     $email->setSubject(lang('Emails.tournamentStartedEmailSubject', [$tournament->name]));
                                     $email->setMessage(view(
                                         'email/tournament-started',
-                                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'role' => 'Participant', 'tournamentCreatorName' => setting('Email.fromName')],
+                                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'role' => 'Participant', 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $groupName],
                                         ['debug' => false]
                                     ));
                                 }
@@ -134,7 +138,7 @@ class RunScheduledTask extends BaseCommand
                                     $email->setSubject(lang('Emails.tournamentCompletedEmailSubject', [$tournament->name]));
                                     $email->setMessage(view(
                                         'email/tournament-completed',
-                                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $groupName],
                                         ['debug' => false]
                                     ));
                                 }

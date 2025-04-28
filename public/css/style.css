@@ -57,7 +57,7 @@
   /* Ensure consistency */
 }
 
-/* Google Auth button style */
+/** Google Auth button style */
 .gsi-material-button {
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -186,17 +186,31 @@
   margin-right: 5px;
   height: 15px;
 }
-
-.navbar-nav .nav-link .menu-icon.leaderboard {
-  height: 20px;
+.navbar-nav .nav-link::before {
+  width: 15px;
+  height: 15px;
+  content: '';
+  background-position: center center;
+  background-size: contain;
+  margin-right: 5px;
 }
-
-.navbar-nav .nav-link .menu-icon.faq {
-  height: 20px;
+.navbar-nav .nav-link.home::before {
+  background-image: url('../images/menu-icons/home.svg');
 }
-
-.navbar-nav .nav-link .menu-icon.terms {
-  height: 20px;
+.navbar-nav .nav-link.gallery::before {
+  background-image: url('../images/menu-icons/gallery.svg');
+}
+.navbar-nav .nav-link.dashboard::before {
+  background-image: url('../images/menu-icons/dashboard.svg');
+}
+.navbar-nav .nav-link.leaderboard::before {
+  background-image: url('../images/menu-icons/leaderboard.svg');
+}
+.navbar-nav .nav-link.faq::before {
+  background-image: url('../images/menu-icons/faq.svg');
+}
+.navbar-nav .nav-link.terms::before {
+  background-image: url('../images/menu-icons/terms.svg');
 }
 
 .profile:hover .profile-menu{

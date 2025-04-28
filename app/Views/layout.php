@@ -97,38 +97,32 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                             <li class="nav-item d-flex align-items-center">
-                                <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">
-                                    <object type="image/svg+xml" data="<?= base_url('images/menu-icons/home.svg') ?>" class="menu-icon home"></object>
+                                <a class="nav-link home d-flex align-items-center <?php if(current_url()==base_url()){echo "active";}?>" aria-current="page" href="<?= base_url() ?>">
                                     Home
                                 </a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
-                                <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>?filter=glr">
-                                    <object type="image/svg+xml" data="<?= base_url('images/menu-icons/gallery.svg') ?>" class="menu-icon gallery"></object>
+                                <a class="nav-link gallery d-flex align-items-center <?php if(current_url()==base_url('gallery')){echo "active";}?>" href="<?= base_url('gallery') ?>?filter=glr">
                                     Tournament Gallery
                                 </a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
-                                <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">
-                                    <object type="image/svg+xml" data="<?= base_url('images/menu-icons/dashboard.svg') ?>" class="menu-icon dashboard"></object>
+                                <a class="nav-link dashboard d-flex align-items-center <?php if(current_url()==base_url('tournaments')){echo "active";}?>" href="<?= base_url('tournaments') ?>">
                                     My Tournament Dashboard
                                 </a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
-                                <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">
-                                    <object type="image/svg+xml" data="<?= base_url('images/menu-icons/leaderboard.svg') ?>" class="menu-icon leaderboard"></object>
+                                <a class="nav-link leaderboard d-flex align-items-center <?php if(current_url()==base_url('participants')){echo "active";}?>" aria-current="page" href="<?= base_url('participants') ?>">
                                     Participant Leaderboard
                                 </a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
-                                <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('contact')){echo "active";}?>" href="<?= base_url('contact') ?>">
-                                    <object type="image/svg+xml" data="<?= base_url('images/menu-icons/faq.svg') ?>" class="menu-icon faq"></object>
+                                <a class="nav-link faq d-flex align-items-center <?php if(current_url()==base_url('contact')){echo "active";}?>" href="<?= base_url('contact') ?>">
                                     About, FAQ, and Contact
                                 </a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
-                                <a class="nav-link d-flex align-items-center <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">
-                                    <object type="image/svg+xml" data="<?= base_url('images/menu-icons/terms.svg') ?>" class="menu-icon terms"></object>
+                                <a class="nav-link terms d-flex align-items-center <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">
                                     Terms of Service
                                 </a>
                             </li>
@@ -147,7 +141,7 @@
         <div class="footer border-top p-3">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <h4>Pages</h4>
                         <ul class="link-group">
                             <li><a href="/"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/home.svg') ?>" class="menu-icon home"></object>Home</a></li>

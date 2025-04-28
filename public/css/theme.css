@@ -573,3 +573,46 @@
     background: none;
     border: none;
 }
+
+/** menu styles */
+.bg-cs .navbar-nav .nav-link.home::before,
+.bg-dr .navbar-nav .nav-link.home::before,
+.bg-gr .navbar-nav .nav-link.home::before,
+.bg-mm .navbar-nav .nav-link.home::before {
+    background-image: url('../images/menu-icons/home-white.svg');
+}
+
+.bg-cs .navbar-nav .nav-link.gallery::before,
+.bg-dr .navbar-nav .nav-link.gallery::before,
+.bg-gr .navbar-nav .nav-link.gallery::before,
+.bg-mm .navbar-nav .nav-link.gallery::before {
+    background-image: url('../images/menu-icons/gallery-white.svg');
+}
+
+.bg-cs .navbar-nav .nav-link.dashboard::before,
+.bg-dr .navbar-nav .nav-link.dashboard::before,
+.bg-gr .navbar-nav .nav-link.dashboard::before,
+.bg-mm .navbar-nav .nav-link.dashboard::before {
+    background-image: url('../images/menu-icons/dashboard-white.svg');
+}
+
+.bg-cs .navbar-nav .nav-link.leaderboard::before,
+.bg-dr .navbar-nav .nav-link.leaderboard::before,
+.bg-gr .navbar-nav .nav-link.leaderboard::before,
+.bg-mm .navbar-nav .nav-link.leaderboard::before {
+    background-image: url('../images/menu-icons/leaderboard-white.svg');
+}
+
+.bg-cs .navbar-nav .nav-link.faq::before,
+.bg-dr .navbar-nav .nav-link.faq::before,
+.bg-gr .navbar-nav .nav-link.faq::before,
+.bg-mm .navbar-nav .nav-link.faq::before {
+    background-image: url('../images/menu-icons/faq-white.svg');
+}
+
+.bg-cs .navbar-nav .nav-link.terms::before,
+.bg-dr .navbar-nav .nav-link.terms::before,
+.bg-gr .navbar-nav .nav-link.terms::before,
+.bg-mm .navbar-nav .nav-link.terms::before {
+    background-image: url('../images/menu-icons/terms-white.svg');
+}
