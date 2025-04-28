@@ -506,7 +506,7 @@ class BracketsController extends BaseController
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
-                $data['participants'] = [$req->name];
+                $data['participants'] = ['name' => $req->name, 'type' => null];
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
@@ -542,58 +542,77 @@ class BracketsController extends BaseController
          * Update tournament searchable data
          */
         $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
+        $tournamentEntity = new \App\Entities\Tournament($tournament);
         $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
         
         $participant_names_string = '';
         if ($brackets) {
-            foreach ($brackets as $bracket) {
-                foreach ($teams as $team) {
+            foreach ($brackets as $br) {
+                $teamsInBracket = json_decode($br['teamnames']);
+                foreach ($teamsInBracket as $team) {
                     if ($team) {
-                        $participant_names_string .= $team->name .',';
+                        if (isset($team->is_group)) {
+                            $group = $this->groupsModel->find($team->id);
+                            $teamName = $group ? $group['group_name'] : '';
+                        } else {
+                            $pt = $this->participantsModel->find($team->id);
+                            $teamName = $pt ? $pt['name'] : '';
+                        }
+
+                        $participant_names_string .= $teamName .',';
                     }
                 }
             }
         }
         
-        $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
-        $this->tournamentsModel->save($tournament);
+        $tournamentEntity->searchable = $tournamentEntity->name . ',' . $participant_names_string;
+        // $this->tournamentsModel->save($tournamentEntity);
 
         /** Check if the participant exists in other brackets and send the notification */   
         helper('bracket');
         $notificationService = service('notification');
         $userSettingsService = service('userSettings');
         if ($teams) {
-            foreach ($teams as $team) {
+            $teamInfo = [];
+            foreach ($teams as $index => $team) {
                 if ($team) {
-                    $checkExist = checkParticipantExistingInTournament($tournament['id'], $team->id);
+                    $checkExist = checkParticipantExistingInTournament($tournamentEntity->id, $team->id);
+                    
+                    if (isset($team->is_group)) {
+                        $group = $this->groupsModel->find($team->id);
+                        $teamInfo[$index] = $group;
+                        $teamInfo[$index]['is_group'] = true;
+                    } else {
+                        $pt = $this->participantsModel->find($team->id);
+                        $teamInfo[$index] = $pt;
+                    }
                     
                     $removedParticipantData = $this->participantsModel->find($team->id);
-                    if (!$checkExist && $removedParticipantData['registered_user_id']) {
-                        $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
-                        $creator = auth()->getProvider()->findById($tournament['user_id']);
-                        $tournamentEntity = new \App\Entities\Tournament($tournament);
+                    // if (!$checkExist && $removedParticipantData['registered_user_id']) {
+                    //     $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
+                    //     $creator = auth()->getProvider()->findById($tournamentEntity->user_id);
 
-                        $message = "You've been removed from tournament \"$tournamentEntity->name\"!";
-                        $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournamentEntity->id/view"]);
+                    //     $message = "You've been removed from tournament \"$tournamentEntity->name\"!";
+                    //     $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournamentEntity->id/view"]);
 
-                        if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
-                            $email = service('email');
-                            $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-                            $email->setTo($user->email);
-                            $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
-                            $email->setMessage(view(
-                                'email/removed-from-tournament',
-                                ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
-                                ['debug' => false]
-                            ));
+                    //     if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
+                    //         $email = service('email');
+                    //         $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+                    //         $email->setTo($user->email);
+                    //         $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
+                    //         $email->setMessage(view(
+                    //             'email/removed-from-tournament',
+                    //             ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                    //             ['debug' => false]
+                    //         ));
 
-                            if ($email->send(false) === false) {
-                                $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
-                            }
+                    //         if ($email->send(false) === false) {
+                    //             $data = ['errors' => "sending_emails", 'message' => "Failed to send the emails."];
+                    //         }
 
-                            $email->clear();
-                        }
-                    }
+                    //         $email->clear();
+                    //     }
+                    // }
                 }
             }
         }
@@ -611,13 +630,14 @@ class BracketsController extends BaseController
         $data['round_no'] = $bracket['roundNo'];
 
         $participants_in_bracket = [];
-        if ($teams[0]) {
-            $participants_in_bracket[] = $teams[0]->name;
+        if ($teamInfo[0]) {
+            $participants_in_bracket[] = isset($teamInfo[0]['is_group']) ? 'Group "' . $teamInfo[0]['group_name'] . '"' : $teamInfo[0]['name'];
         } else {
             $participants_in_bracket[] = null;
         }
-        if ($teams[1]) {
-            $participants_in_bracket[] = $teams[1]->name;
+        
+        if ($teamInfo[1]) {
+            $participants_in_bracket[] = isset($teamInfo[1]['is_group']) ? 'Group "' . $teamInfo[1]['group_name'] . '"' : $teamInfo[1]['name'];
         } else {
             $participants_in_bracket[] = null;
         }
@@ -626,19 +646,14 @@ class BracketsController extends BaseController
         $insert_data['params'] = json_encode($data);
 
         /** Disable foreign key check for the guest users */
-        $db = \Config\Database::connect();
-        $dbDriver = $db->DBDriver;
-        if (!auth()->user() && $dbDriver === 'MySQLi') {
-            $db->query('SET FOREIGN_KEY_CHECKS = 0;');
-        }
+        helper('db_helper');
+        disableForeignKeyCheck();
 
         /** Record a delete action log */
         $logActionsModel->insert($insert_data);
 
         /** Enable foreign key check */
-        if (!auth()->user() && $dbDriver === 'MySQLi') {
-            $db->query('SET FOREIGN_KEY_CHECKS = 1;');
-        }
+        enableForeignKeyCheck();
 
         return json_encode(array('result' => 'success'));
     }
