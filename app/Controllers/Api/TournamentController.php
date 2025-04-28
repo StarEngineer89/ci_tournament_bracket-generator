@@ -1062,11 +1062,10 @@ class TournamentController extends BaseController
     {
         $logActionsModel = model('\App\Models\LogActionsModel');
         $roundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
-        $tournamentModel = model('\App\Models\TournamentModel');
 
         $history = $logActionsModel->getLogs()->where('tournament_id', $tournament_id)->findAll();
 
-        $tournament = $tournamentModel->find($tournament_id);
+        $tournament = $this->tournamentModel->find($tournament_id);
 
         $data = [];
         $type = null;
@@ -1090,37 +1089,49 @@ class TournamentController extends BaseController
                     $roundName = ($roundSetting) ? $roundSetting['round_name'] : "round $params->round_no";
                     if ($row['action'] == BRACKET_ACTIONCODE_MARK_WINNER) {
                         $type = 'Mark Winner';
-                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no marked as a winner in $roundName";
+                        $participantName = isset($participants->type) ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+                        $description = "$participantName in bracket #$params->bracket_no marked as a winner in $roundName";
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_UNMARK_WINNER) {
                         $type = 'Unmark Winner';
-                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no unmarked winner in $roundName";
+                        $participantName = isset($participants->type) ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+                        $description = "$participantName in bracket #$params->bracket_no unmarked winner in $roundName";
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
                         $type = 'Change Participant';
-                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no changed to the following Participant: \"$participants[1]\" in $roundName";
+                        $ptName1 = $participants[0] ? $participants[0]->name : "Empty";
+                        $ptName2 = $participants[1]->name;
+                        
+                        $name2 = isset($participants[1]->type) ? "Group \"$ptName2\"" : "Participant \"$ptName2\"";
+
+                        if ($participants[0]) {
+                            $name1 = isset($participants[0]->type) ? "Group \"$ptName1\"" : "Participant \"$ptName1\"";
+                            $description = "$name1 in bracket #$params->bracket_no of $roundName was changed to $name2";
+                        } else {
+                            $description = "$name2 was added to the bracket #$params->bracket_no of $roundName";
+                        }
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
                         $type = 'Add Participant';
-                        $description = "Participant \"$participants[0]\" added in bracket #$params->bracket_no in $roundName";
+                        $ptName = $participants->name;
+                        $name = isset($participants->type) ? "Group \"$ptName\"" : "Participant \"$ptName\"";
+                        $description = "$name added in bracket #$params->bracket_no in $roundName";
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
                         $type = 'Remove Participant';
-                        $description = "Participant \"$participants[0]\" removed from bracket #$params->bracket_no in $roundName";
+                        $ptName = $participants->name;
+                        $name = isset($participants->type) ? "Group \"$ptName\"" : "Participant \"$ptName\"";
+
+                        $description = "$name removed from bracket #$params->bracket_no in $roundName";
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_DELETE) {
                         $type = 'Delete Bracket';
-                        $description = "Bracket #$params->bracket_no containing participants [\"$participants[0]\", \"$participants[1]\"] in $roundName deleted";
-                    }
-
-                    if ($row['action'] == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
-                        $type = 'Change Participant';
-                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no of $roundName was changed to $participants[1]";
+                        $description = "Bracket #$params->bracket_no containing participants \"$participants[0]\" and \"$participants[1]\" in \"$roundName\" deleted";
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {

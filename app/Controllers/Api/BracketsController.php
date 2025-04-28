@@ -488,7 +488,7 @@ class BracketsController extends BaseController
             $data['round_no'] = $bracket['roundNo'];
 
             if ($req->action_code == BRACKET_ACTIONCODE_MARK_WINNER) {
-                if ($req->is_group) {
+                if (isset($req->is_group)) {
                     $group = $this->groupsModel->find($req->winner);
                     $data['participants'] = ['name' => $group['group_name'], 'type' => 'group'];
                 } else {
@@ -498,7 +498,13 @@ class BracketsController extends BaseController
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
-                $data['participants'] = ['name' => $group['group_name'], 'type' => $req->is_group ? 'group' : null];
+                if (isset($req->is_group)) {
+                    $group = $this->groupsModel->find($req->participant);
+                    $data['participants'] = ['name' => $group['group_name'], 'type' => 'group'];
+                } else {
+                    $participant = $this->participantsModel->find($req->participant);
+                    $data['participants'] = ['name' => $participant['name'], 'type' => null];
+                }
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_CHANGE_PARTICIPANT) {
@@ -653,7 +659,7 @@ class BracketsController extends BaseController
         if ($teamInfo) {
             foreach ($teamInfo as $tInfo) {
                 if ($tInfo) {
-                    $participants_in_bracket[] = isset($tInfo['is_group']) ? 'Group "' . $tInfo['group_name'] . '"' : $tInfo['name'];
+                    $participants_in_bracket[] = isset($tInfo['is_group']) ? '' . $tInfo['group_name'] . '(Group)' : $tInfo['name'];
                 } else {
                     $participants_in_bracket[] = null;
                 }
