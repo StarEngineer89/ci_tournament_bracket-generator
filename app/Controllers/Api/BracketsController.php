@@ -650,16 +650,14 @@ class BracketsController extends BaseController
         $data['round_no'] = $bracket['roundNo'];
 
         $participants_in_bracket = [];
-        if ($teamInfo[0]) {
-            $participants_in_bracket[] = isset($teamInfo[0]['is_group']) ? 'Group "' . $teamInfo[0]['group_name'] . '"' : $teamInfo[0]['name'];
-        } else {
-            $participants_in_bracket[] = null;
-        }
-        
-        if ($teamInfo[1]) {
-            $participants_in_bracket[] = isset($teamInfo[1]['is_group']) ? 'Group "' . $teamInfo[1]['group_name'] . '"' : $teamInfo[1]['name'];
-        } else {
-            $participants_in_bracket[] = null;
+        if ($teamInfo) {
+            foreach ($teamInfo as $tInfo) {
+                if ($tInfo) {
+                    $participants_in_bracket[] = isset($tInfo['is_group']) ? 'Group "' . $tInfo['group_name'] . '"' : $tInfo['name'];
+                } else {
+                    $participants_in_bracket[] = null;
+                }
+            }
         }
 
         $data['participants'] = $participants_in_bracket;
