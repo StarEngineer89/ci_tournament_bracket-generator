@@ -1415,7 +1415,7 @@ var performReuseParticipants = (reuse_id = null) => {
                                 </label>
                             </div>
                             <div class="ms-3 d-none" id="select_group">
-                                <select class="form-select" aria-label="Default select example" name="group_id" onchange="selectGroup(this)">
+                                <select class="form-select" aria-label="Default select example" name="group_id" onchange="selectGroup(this)" size="5">
                                     <option selected></option>
                                 </select>
                             </div>
