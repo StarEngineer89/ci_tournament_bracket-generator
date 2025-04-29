@@ -696,6 +696,12 @@ let enableGroupParticipants = () => {
 
         checkBoxWrapper.appendChild(checkBox)
         element.prepend(checkBoxWrapper)
+
+        checkBox.addEventListener('change', event => {
+            if (!event.target.checked) {
+                document.getElementById('selectAll').checked = false
+            }
+        })
     })
 
     const selectAllEl = document.createElement('div')
