@@ -247,6 +247,8 @@ function renderParticipants(participantsData) {
             items.edit = {
                 name: "Edit",
                 callback: (key, opt, e) => {
+                    originalHtml = opt.$trigger.html()
+
                     var element_id = opt.$trigger.data('id');
                     const nameBox = document.createElement('input');
                     const name = opt.$trigger.children().last().text();
@@ -293,7 +295,9 @@ function renderParticipants(participantsData) {
                     const cancelBtn = document.createElement('button')
                     cancelBtn.classList.add('btn', 'btn-secondary', 'ms-2')
                     cancelBtn.textContent = 'Cancel'
-                    cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+                    cancelBtn.addEventListener('click', (event) => {
+                        $(event.target).parents('.list-group-item').html(originalHtml)
+                    })
                     buttonBox.appendChild(cancelBtn)
 
                     const html = document.createElement('div');
@@ -302,14 +306,7 @@ function renderParticipants(participantsData) {
                     html.appendChild(buttonBox);
                     html.classList.add('row', 'g-3', 'align-items-center');
 
-                    originalHtml = opt.$trigger.html()
-
                     opt.$trigger.html(html);
-            
-                    const originalObj = document.createElement('div')
-                    originalObj.classList.add('original', 'd-none')
-                    originalObj.innerHTML = originalHtml
-                    opt.$trigger.append(originalObj)
                 }
             }
             items.delete = {
@@ -317,11 +314,13 @@ function renderParticipants(participantsData) {
                 callback: (key, opt, e) => {
                     var element_id = opt.$trigger.data('id');
                     $.ajax({
-                        type: "DELETE",
+                        type: "POST",
                         url: apiURL + '/participants/delete/' + element_id,
+                        data: {tournament_id: tournament_id, hash: hash},
                         success: function (result) {
-                            document.getElementById(element_id).remove();
-                            $('#indexList').children().last().remove();
+                            if (result.status == 'success') {
+                                renderParticipants(result)
+                            }
                         },
                         error: function (error) {
                             console.log(error);
@@ -481,7 +480,16 @@ function removeImage(e, element_id){
     });
 }
 function saveParticipant(e, element_id) {
-    const name = $(e.target).parents('.list-group-item').find('.name-input').val();
+    const name = $(e.target).parents('.list-group-item').find('.name-input').val().trim();
+
+    if (!name) {
+        $('#errorModal .errorDetails').html(`Participant name cannot be blank!`)
+        $('#errorModal').modal('show')
+
+        isValidate = false
+
+        return false
+    }
 
     let parentElement = $(e.target).parent().parent().parent()
 
@@ -515,12 +523,18 @@ function saveParticipant(e, element_id) {
             processData: false,
             success: function (result) {
                 result = JSON.parse(result);
-                let participant = `<span class="p-name col text-center">${result.data.name}</span>`;
+                let participant = `<span class="p-name ms-3">${result.data.name}</span>`;
                 if (result.data.image) {
                     participant = `<div class="p-image"><img src="${result.data.image}" class="col-auto" height="30px" id="pimage_${result.data.id}" data-pid="${result.data.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
                 } else {
                     participant = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${result.data.id}" data-pid="${result.data.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
                 }
+
+                participant += `
+                    <button class="btn btn-light bg-transparent ms-auto border-0 p-0" data-bs-toggle="tooltip" data-bs-title="Individual Participant">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="8" cy="6" r="3.25"></circle> <path d="m2.75 14.25c0-2.5 2-5 5.25-5s5.25 2.5 5.25 5"></path> </g></svg>
+                    </button>`
+                
                 $(e.target).parents('.list-group-item').data('name', result.data.name)
                 $(e.target).parents('.list-group-item').html(participant);
             },
@@ -562,11 +576,6 @@ function generateBrackets(list) {
             $("#overlay").fadeOut(300);
         }, 500);
     });
-}
-
-var cancelEditing = (element) => {
-    const orignal = $(element).parents('.list-group-item').find('.original').html()
-    $(element).parents('.list-group-item').html(orignal)
 }
 
 var addParticipants = (data) => {

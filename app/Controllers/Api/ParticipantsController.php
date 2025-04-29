@@ -319,9 +319,20 @@ class ParticipantsController extends BaseController
 
     public function deleteParticipant($id)
     {
+        $participant = $this->participantsModel->find($id);
+        $tournament_id = $participant ? $participant['tournament_id'] : 0;
+
         $this->participantsModel->where('id', $id)->delete();
 
-        return json_encode(array('result' => 'success'));
+        helper('participant_helper');            
+        if ($tournament_id) {
+            $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
+        } else {
+            $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
+        }
+
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                ->setJSON(['status' => 'success', "participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
     }
     
     public function deleteParticipants()

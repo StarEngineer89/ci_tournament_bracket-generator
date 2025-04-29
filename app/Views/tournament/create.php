@@ -619,7 +619,11 @@ $(document).ready(function() {
     const makeGroupModal = document.getElementById('makeGroupModal');
     if (makeGroupModal) {
         makeGroupModal.addEventListener('show.bs.modal', event => {
+            if (event.target.querySelector('.group_image_delete')) {
+                event.target.querySelector('.group_image_delete').remove()
+            }
             document.getElementById('create_group_form').reset()
+            document.getElementById('group_image_path').value = null
             document.getElementById('input_group_name').classList.remove('d-none')
             document.querySelector('#input_group_name input').removeAttribute('disabled')
             document.getElementById('select_group').classList.add('d-none')

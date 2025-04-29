@@ -55,7 +55,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('get-analysis', 'Api\ParticipantsController::getAnalysis');
         $routes->post('new', 'Api\ParticipantsController::addParticipant');
         $routes->post('update/(:num)', 'Api\ParticipantsController::updateParticipant/$1');
-        $routes->delete('delete/(:num)', 'Api\ParticipantsController::deleteParticipant/$1');
+        $routes->post('delete/(:num)', 'Api\ParticipantsController::deleteParticipant/$1');
         $routes->post('import', 'Api\ParticipantsController::importParticipants');
         $routes->post('clear', 'Api\ParticipantsController::clearParticipants');
         $routes->post('deletes', 'Api\ParticipantsController::deleteParticipants');
