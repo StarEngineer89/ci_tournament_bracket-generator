@@ -19,6 +19,7 @@ class TournamentController extends BaseController
     protected $participantModel;
     protected $bracketModel;
     protected $shareSettingModel;
+    protected $groupsModel;
     protected $groupMembersModel;
 
     public function __construct()
@@ -28,6 +29,7 @@ class TournamentController extends BaseController
         $this->participantModel = model('\App\Models\ParticipantModel');
         $this->bracketModel = model('\App\Models\BracketModel');
         $this->shareSettingModel = model('\App\Models\ShareSettingsModel');
+        $this->groupsModel = model('\App\Models\GroupsModel');
         $this->groupMembersModel = model('\App\Models\GroupedParticipantsModel');
     }
     
@@ -1116,27 +1118,31 @@ class TournamentController extends BaseController
 
                     if ($row['action'] == BRACKET_ACTIONCODE_ADD_PARTICIPANT) {
                         $type = 'Add Participant';
-                        $ptName = $participants->name;
-                        $name = isset($participants->type) ? "Group \"$ptName\"" : "Participant \"$ptName\"";
+                        $name = isset($participants->type) ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
                         $description = "$name added in bracket #$params->bracket_no in $roundName";
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
                         $type = 'Remove Participant';
-                        $ptName = $participants->name;
-                        $name = isset($participants->type) ? "Group \"$ptName\"" : "Participant \"$ptName\"";
+                        $name = isset($participants->type) ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
 
                         $description = "$name removed from bracket #$params->bracket_no in $roundName";
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_DELETE) {
                         $type = 'Delete Bracket';
-                        $description = "Bracket #$params->bracket_no containing participants \"$participants[0]\" and \"$participants[1]\" in \"$roundName\" deleted";
+                        if (isset($participants[1])) {
+                            $description = "Bracket #$params->bracket_no containing participants \"$participants[0]\" and \"$participants[1]\" in \"$roundName\" deleted";
+                        } else {
+                            $description = "Bracket #$params->bracket_no containing participants \"$participants[0]\" in \"$roundName\" deleted";
+                        }
                     }
 
                     if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {
                         $type = 'Vote';
-                        $description = "Participant \"$participants[0]\" in bracket #$params->bracket_no of $roundName was voted";
+                        $name = $participants->type ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+                        
+                        $description = "$name in bracket #$params->bracket_no of $roundName was voted";
                     }
                 }
 
@@ -1361,16 +1367,16 @@ class TournamentController extends BaseController
         // Check if it's an AJAX request
         if ($this->request->isAJAX()) {
             $voteData = $this->request->getPost(); // Get the posted data
+            $voteData['is_group'] = (isset($voteData['is_group']) && $voteData['is_group']) ? 1 : 0;
 
             $voteModel = model('\App\Models\VotesModel');
             
-            $bracketModel = model('\App\Models\BracketModel');
-            $bracket = $bracketModel->find($voteData['bracket_id']);
-            $nextBracket = $bracketModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->findAll();
+            $bracket = $this->bracketModel->find($voteData['bracket_id']);
+            $nextBracket = $this->bracketModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->findAll();
             if (count($nextBracket) == 1) {
                 $nextBracket = $nextBracket[0];
             } else {
-                $nextBracket = $bracketModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame'], 'is_double' => $bracket['is_double']])->first();
+                $nextBracket = $this->bracketModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame'], 'is_double' => $bracket['is_double']])->first();
             }
 
             // Validation (optional, based on your form fields)
@@ -1416,7 +1422,7 @@ class TournamentController extends BaseController
                     $prevVote['participant_id'] = $voteData['participant_id'];
                 }
 
-                $saveData = $prevVote;
+                $saveData['id'] = $prevVote['id'];
             }
 
             // Check if participant is second one
@@ -1458,8 +1464,19 @@ class TournamentController extends BaseController
                 $data = [];
                 $data['bracket_no'] = $bracket['bracketNo'];
                 $data['round_no'] = $saveData['round_no'];
-                $participant = $this->participantModel->find($saveData['participant_id']);
-                $data['participants'] = [$participant['name']];
+                
+                if (isset($saveData['is_group']) && $saveData['is_group']) {
+                    $participant = $this->groupsModel->find($saveData['participant_id']);
+                    if ($participant) {
+                        $data['participants'] = ['name' => $participant['group_name'], 'type' => 'group'];
+                    }
+                } else {
+                    $participant = $this->participantModel->find($saveData['participant_id']);
+                    if ($participant) {
+                        $data['participants'] = ['name' => $participant['name'], 'type' => null];
+                    }
+                }
+                
                 $insert_data['params'] = json_encode($data);
 
                 $logActionsModel->insert($insert_data);

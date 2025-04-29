@@ -40,8 +40,16 @@ class VoteLibrary
             $nextBracket = $this->bracketsModel->where(['tournament_id' => $voteData['tournament_id'], 'bracketNo' => $currentBracket['nextGame'], 'is_double' => $currentBracket['is_double']])->first();
         }
 
-        $participant = $this->participantsModel->find($voteData['participant_id']);
-        
+        $participant = null;
+        $currentTeams = json_decode($currentBracket['teamnames']);
+        if ($currentTeams) {
+            foreach ($currentTeams as $cTeam) {
+                if ($cTeam && $cTeam->id == $voteData['participant_id']) {
+                    $participant = $cTeam;
+                }
+            }
+        }
+
         if ($nextBracket) {
             $index = 0;
             
@@ -62,7 +70,7 @@ class VoteLibrary
             }
 
             $teams = json_decode($nextBracket['teamnames']);
-            $teams[$index] = ['id' => $participant['id'], 'name' => $participant['name'], 'image' => $participant['image']];
+            $teams[$index] = $participant;
             if (isset($voteData['is_double']) && $voteData['is_double']) {
                 $teams[$index]['is_double'] = 1;
             }

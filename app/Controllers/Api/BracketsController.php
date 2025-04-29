@@ -74,7 +74,7 @@ class BracketsController extends BaseController
                                 $array[$index]['email'] = $userProvider->findById($array[$index]['registered_user_id'])->email;
                             }
                         }
-
+                        
                         $array[$index]['order'] = $team['order'];
                     }
                     $teams = $array;
