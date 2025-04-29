@@ -622,6 +622,8 @@ $(document).ready(function() {
             if (event.target.querySelector('.group_image_delete')) {
                 event.target.querySelector('.group_image_delete').remove()
             }
+            document.getElementById('group_image').classList.add('temp')
+            document.getElementById('group_image').src = '/images/group-placeholder.png'
             document.getElementById('create_group_form').reset()
             document.getElementById('group_image_path').value = null
             document.getElementById('input_group_name').classList.remove('d-none')
