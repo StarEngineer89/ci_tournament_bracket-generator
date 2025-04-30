@@ -42,7 +42,6 @@ function callShuffle(enableShuffling = true) {
                 })
             }
             exampleTeams.push({ 'id': item.dataset.id, 'order': i, 'is_group': item.dataset.isGroup, 'members': members });
-            console.log(item.dataset.isGroup)
         });
 
         generateBrackets(exampleTeams);
@@ -153,6 +152,10 @@ function renderParticipants(participantsData) {
     document.querySelector('.list-tool-bar').appendChild(noteIcon)
     
     participantsArray.forEach((participant, i) => {
+        if (parseInt(participant.is_group)) {
+            return
+        }
+
         var item = document.createElement('div');
         item.setAttribute('id', participant.id);
         item.setAttribute('class', "participant list-group-item d-flex");
@@ -175,7 +178,7 @@ function renderParticipants(participantsData) {
                 const groupHtml = document.createElement('div')
                 groupHtml.setAttribute('class', 'group')
                 groupHtml.setAttribute('data-id', participant.group_id)
-                groupHtml.setAttribute('data-is-group', true)
+                groupHtml.setAttribute('data-is-group', 1)
 
                 let hasImgClass = (participant.group_image) ? "has-img" : '';
                 if (!hasImgClass) participant.group_image = "/images/group-placeholder.png"
@@ -553,7 +556,7 @@ function generateBrackets(list) {
     $.ajax({
         type: "post",
         url: apiURL + '/brackets/generate',
-        data: { 'type': eleminationType, 'tournament_id': tournament.id, 'user_id': user_id, 'list': list },
+        data: { 'type': eleminationType, 'tournament_id': tournament.id, 'user_id': user_id, 'list': list, 'hash': hash },
         beforeSend: function() {
             $('#generateProcessing').removeClass('d-none')
         },
@@ -801,16 +804,38 @@ let chooseGroupType = (element) => {
         document.querySelector('#makeGroupModal #select_group').classList.add('d-none')
         document.querySelector('#makeGroupModal #select_group select').setAttribute('disabled', true)
         document.querySelector('#makeGroupModal .group-image img').setAttribute('src', '/images/group-placeholder.png')
+
+        if (document.querySelector('#makeGroupModal .group_image_delete')) {
+            document.querySelector('#makeGroupModal .group_image_delete').remove()
+        }
     }
 
     if (element.value == 'reuse') {
         document.querySelector('#makeGroupModal #input_group_name').classList.add('d-none')
+        document.querySelector('#makeGroupModal #input_group_name input').value = null
         document.querySelector('#makeGroupModal #input_group_name input').setAttribute('disabled', true)
         document.querySelector('#makeGroupModal #select_group').classList.remove('d-none')
         document.querySelector('#makeGroupModal #select_group select').removeAttribute('disabled')
-        let selectedOption = document.querySelector('#makeGroupModal #select_group select option:checked')
-        if (selectedOption.getAttribute('data-image'))
+        let selectedOption = document.querySelector('#makeGroupModal #select_group select').firstChild
+        selectedOption.selected = true
+        if (selectedOption.getAttribute('data-image')) {
             document.querySelector('#makeGroupModal .group-image img').setAttribute('src', selectedOption.getAttribute('data-image'))
+
+            if (!document.querySelector('#makeGroupModal .group_image_delete')) {
+                const deleteImgBtn = document.createElement('button')
+                deleteImgBtn.setAttribute('class', "group_image_delete btn")
+                deleteImgBtn.innerHTML = `<i class="fa fa-close"></i>`
+                deleteImgBtn.addEventListener('click', event => {
+                    removeGroupImage(event)
+                })
+                document.querySelector('#makeGroupModal .group-image').appendChild(deleteImgBtn)
+            }
+        } else {
+            document.querySelector('#makeGroupModal .group-image img').setAttribute('src', '/images/group-placeholder.png')
+            if (document.querySelector('#makeGroupModal .group_image_delete')) {
+                document.querySelector('#makeGroupModal .group_image_delete').remove()
+            }
+        }
     }
 }
 
@@ -951,7 +976,7 @@ let updateGroup = (e, forceUpdate = false) => {
         $('#errorModal').modal('hide')
     }
 
-    const data = {'group_id': e.target.parentElement.parentElement.parentElement.dataset.id, 'group_name': document.querySelector('.new-group-name').value, 'image_path': e.target.parentElement.parentElement.querySelector('.group-image').src, 'hash': hash}
+    const data = {'group_id': e.target.parentElement.parentElement.parentElement.dataset.id, 'group_name': document.querySelector('.new-group-name').value, 'image_path': e.target.parentElement.parentElement.querySelector('.group-image').getAttribute('src'), 'hash': hash}
 
     if (tournament) {
         data['tournament_id'] = tournament.id
@@ -1060,9 +1085,22 @@ let selectGroup = (el) => {
     if (selectedOption.dataset.image && selectedOption.dataset.image != 'null') {
         document.getElementById('group_image').src = selectedOption.dataset.image
         document.getElementById('group_image_path').value = selectedOption.dataset.image
+
+        if (!document.querySelector('#makeGroupModal .group_image_delete')) {
+            const deleteImgBtn = document.createElement('button')
+            deleteImgBtn.setAttribute('class', "group_image_delete btn")
+            deleteImgBtn.innerHTML = `<i class="fa fa-close"></i>`
+            deleteImgBtn.addEventListener('click', event => {
+                removeGroupImage(event)
+            })
+            document.querySelector('#makeGroupModal .group-image').appendChild(deleteImgBtn)
+        }
     } else {
         document.getElementById('group_image').src = '/images/group-placeholder.png'
         document.getElementById('group_image_path').value = null
+        if (document.querySelector('#makeGroupModal .group_image_delete')) {
+            document.querySelector('#makeGroupModal .group_image_delete').remove()
+        }
     }
 }
 

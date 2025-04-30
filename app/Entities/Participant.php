@@ -18,6 +18,8 @@ class Participant extends Entity
         'tournament_id' => null,
         'order' => null,
         'active' => null,
-        'sessionid' => null
+        'sessionid' => null,
+        'is_group' => null,
+        'group_id' => null
     ];
 }

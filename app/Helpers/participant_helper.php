@@ -13,7 +13,7 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
         $groupMembersModel = model('\App\Models\GroupedParticipantsModel');
         $participants = [];
         if ($tournament_id) {
-            $participants = $participantsModel->where('participants.tournament_id', $tournament_id)->withGroupInfo()->findAll();
+            $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id])->withGroupInfo()->findAll();
         } else {
             $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $hash])->withGroupInfo()->findAll();
         }

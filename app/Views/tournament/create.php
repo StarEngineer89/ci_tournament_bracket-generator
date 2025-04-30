@@ -630,6 +630,7 @@ $(document).ready(function() {
             document.querySelector('#input_group_name input').removeAttribute('disabled')
             document.getElementById('select_group').classList.add('d-none')
             document.querySelector('#select_group select').setAttribute('disabled', 'disabled')
+            document.querySelector('#select_group select').firstChild.selected = true
             drawGroupsInModal()
         })
     }

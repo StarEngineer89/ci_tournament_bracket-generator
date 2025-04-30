@@ -167,25 +167,20 @@ let editing_mode = false;
                                             if (result.participants.length > 0) {
                                                 let group_ids = []
                                                 result.participants.forEach((participant, i) => {
-                                                    let pt_id, pt_name, pt_group
+                                                    let pt_group
                                                     if (participant.group_id) {
                                                         if (group_ids.includes(participant.group_id)) {
                                                             return
                                                         }
 
-                                                        pt_id = participant.group_id
-                                                        pt_name = participant.group_name
                                                         pt_group = true
                                                         group_ids.push(participant.group_id)
-                                                    } else {
-                                                        pt_id = participant.id
-                                                        pt_name = participant.name
                                                     }
 
                                                     var option = document.createElement('option');
-                                                    option.setAttribute('value', pt_id);
-                                                    option.textContent = pt_name;
-                                                    if (pt_id == element.data('id')) {
+                                                    option.setAttribute('value', participant.id);
+                                                    option.textContent = participant.name;
+                                                    if (participant.id == element.data('id')) {
                                                         option.setAttribute('selected', true)
                                                     }
 
@@ -360,9 +355,6 @@ let editing_mode = false;
             });
         }
 
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
         return group
     }
     
@@ -395,30 +387,21 @@ let editing_mode = false;
             pid.textContent = parseInt(teams[team_index].order) + 1
             participant.appendChild(pid)
             
-            if (teams[team_index].is_group) {
-                if (teams[team_index].group_image) {
-                    $(participant).append(`<div class="p-image d-flex"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
-                } else {
-                    $(participant).append(`<div class="p-image d-flex"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
-                }
+            if (teams[team_index].image) {
+                $(participant).append(`<div class="p-image d-flex"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
             } else {
-                if (teams[team_index].image) {
-                    $(participant).append(`<div class="p-image d-flex"><img src="${teams[team_index].image}" height="30px" width="30px" class="parect-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`);
-                } else {
-                    $(participant).append(`<div class="p-image d-flex"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
-                }
+                $(participant).append(`<div class="p-image d-flex"><img src="/images/avatar.jpg" height="30px" width="30px" class="temp object-cover" id="pimage_${teams[team_index].id}" data-pid="${teams[team_index].id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${teams[team_index].id})" name="image_${teams[team_index].id}" id="image_${teams[team_index].id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${teams[team_index].id})"><i class="fa fa-trash-alt"></i></button></div>`)
             }
 
             participant.dataset.id = teams[team_index].id;
             participant.dataset.p_order = teams[team_index].order;
             var nameSpan = document.createElement('span')
             nameSpan.classList.add('name')
-            nameSpan.classList.add('tooltip-span')
             nameSpan.setAttribute('data-bs-toggle', "tooltip")
             if (teams[team_index].email) {
                 nameSpan.setAttribute('data-bs-html', true)
                 nameSpan.setAttribute('data-bs-title', teams[team_index].name + `<br/>(${teams[team_index].email})`)
-            } else if (teams[team_index].type == 'group') {
+            } else if (parseInt(teams[team_index].is_group)) {
                 participant.dataset.isGroup = true
                 nameSpan.setAttribute('data-bs-html', true)
                 let members = ''
@@ -634,10 +617,6 @@ let editing_mode = false;
                     });
                 }
 
-                document.querySelectorAll('span.tooltip-span').forEach((element, i) => {
-                    var tooltip = new bootstrap.Tooltip(element)
-                })
-
                 if (confetti) {
                     initConfetti()
                 }
@@ -648,6 +627,9 @@ let editing_mode = false;
                 console.log(error);
             }
         }).done(() => {
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
             setTimeout(function () {
                 $("#overlay").fadeOut(300);
             }, 500);
