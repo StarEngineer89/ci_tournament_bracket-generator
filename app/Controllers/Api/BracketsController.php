@@ -77,7 +77,10 @@ class BracketsController extends BaseController
                             }
                         } else {
                             if ($array[$index]['registered_user_id'] && !$userSettingService->get('hide_email_participant', $array[$index]['registered_user_id'])) {
-                                $array[$index]['email'] = $userProvider->findById($array[$index]['registered_user_id'])->email;
+                                $user = $userProvider->findById($array[$index]['registered_user_id']);
+                                if ($user) {
+                                    $array[$index]['email'] = $user->email;
+                                }
                             }
                         }
                         
