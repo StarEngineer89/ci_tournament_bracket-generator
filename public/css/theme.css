@@ -117,7 +117,7 @@
 .bg-cs .nav-link,
 .bg-cs .breadcrumb-item.active,
 .bg-cs .card-title,
-.bg-cs button {
+.bg-cs .btn {
     color: rgba(255, 255, 255, 1);
 }
 
@@ -197,7 +197,7 @@
 .bg-dr .nav-link,
 .bg-dr .breadcrumb-item.active,
 .bg-dr .card-body,
-.bg-dr button {
+.bg-dr .btn {
     color: var(--bg-dr-font-color)
 }
 
@@ -336,7 +336,7 @@
 .bg-gr .nav-link,
 .bg-gr .breadcrumb-item.active,
 .bg-gr .card-body,
-.bg-gr button {
+.bg-gr .btn {
     color: var(--bg-dr-font-color)
 }
 
@@ -499,7 +499,7 @@
 .bg-mm .card-body,
 .bg-mm .nav-link,
 .bg-mm .breadcrumb-item.active,
-.bg-mm button {
+.bg-mm .btn {
     color: var(--font-color-white);
 }
 

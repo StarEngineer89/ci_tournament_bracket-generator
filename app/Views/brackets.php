@@ -392,6 +392,7 @@ $(document).ready(function() {
                 $("#image_" + pid).trigger('click');
             } else {
                 $(this).parent().addClass('active');
+                $(this).parent().find('.btn').removeClass('d-none')
             }
         })
     }
