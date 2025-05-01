@@ -108,7 +108,7 @@ class RunScheduledTask extends BaseCommand
                                 continue;
                             }
 
-                            $participantWithGroupInfo = $participantsModel->where(['tournament_id' => $tournament->id, 'registered_user_id' => $user_ids])->withGroupInfo()->first();
+                            $participantWithGroupInfo = $participantsModel->withGroupInfo()->find($user_id);
                             $groupName = $participantWithGroupInfo ? $participantWithGroupInfo['group_name'] : null;
                             
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
