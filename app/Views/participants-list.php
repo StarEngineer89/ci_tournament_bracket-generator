@@ -161,7 +161,10 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
             "render": function(data, type, row, meta) {
                 return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="${row.email ? row.name + '<br/>(' + row.email + ')' : row.name}">${row.name}</span>`
             },
-            "className": "text-center"
+            "className": "text-center",
+            "createdCell": function(td, cellData, rowData, row, col) {
+                $(td).attr('data-label', 'name');
+            }
         },
         {
             "data": "brackets_won",
