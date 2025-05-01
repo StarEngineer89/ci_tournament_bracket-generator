@@ -89,6 +89,22 @@ $(document).on('ready', function () {
     }
 });
 
+let getCookie = (cname) => {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 setCookie = (name, value, days) => {
     const d = new Date();
     d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -97,12 +113,14 @@ setCookie = (name, value, days) => {
 }
 
 let acceptCookies = () => {
-    setCookie('cookie_consent', 'accepted', 365);
+    localStorage.setItem('cookie_consent', 'accepted')
+    // setCookie('cookie_consent', 'accepted', 365);
     document.getElementById('cookieConsentModal').style.display = 'none';
 }
 
 let rejectCookies = () => {
-    setCookie('cookie_consent', 'rejected', 365);
+    localStorage.setItem('cookie_consent', 'rejected')
+    // setCookie('cookie_consent', 'rejected', 365);
     document.getElementById('cookieConsentModal').style.display = 'none';
     alert('Cookies rejected. To reactivate, clear your browser history and visit the site again.');
 }

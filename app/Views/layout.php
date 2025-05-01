@@ -362,7 +362,7 @@
     })
 
     // Show the modal if cookie consent is not given
-    if (!document.cookie.includes('cookie_consent')) {
+    if (!localStorage.getItem('cookie_consent')) {
         document.getElementById('cookieConsentModal').style.display = 'block';
     }
     </script>

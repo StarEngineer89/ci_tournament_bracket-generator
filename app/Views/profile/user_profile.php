@@ -7,6 +7,45 @@
 <?= $this->section('pageScripts') ?>
 <script>
 $(document).ready(function() {
+    const cookieSetting = localStorage.getItem('cookie_consent');
+
+    if (cookieSetting) {
+        if (cookieSetting == 'accepted') {
+            document.querySelector('.cookie-status').textContent = "Accepted"
+            document.querySelector('.cookie-status').setAttribute('class', 'cookie-status p-1 ps-2 pe-2 rounded-2 text-bg-success')
+        } else {
+            document.querySelector('.cookie-status').textContent = "Rejected"
+            document.querySelector('.cookie-status').setAttribute('class', 'cookie-status p-1 ps-2 pe-2 rounded-2 text-bg-danger')
+        }
+
+        document.querySelector('.cookie-reset-btn').classList.remove('disabled')
+        document.querySelector('.cookie-reset-btn').setAttribute('data-bs-toggle', "modal")
+    } else {
+        document.querySelector('.cookie-status').textContent = "Pending"
+        document.querySelector('.cookie-status').setAttribute('class', 'cookie-status p-1 ps-2 pe-2 rounded-2 text-bg-secondary')
+        document.querySelector('.cookie-reset-btn').setAttribute('disabled', true)
+        document.querySelector('.cookie-reset-btn').classList.add('disabled')
+        document.querySelector('.cookie-reset-btn').setAttribute('data-bs-toggle', "")
+    }
+
+    const resetCookieConsentModal = document.getElementById('resetCookieConsentModal');
+    if (resetCookieConsentModal) {
+        resetCookieConsentModal.addEventListener('show.bs.modal', event => {
+            const confirmBtn = resetCookieConsentModal.querySelector('.modal-footer .confirm');
+            confirmBtn.addEventListener('click', event => {
+                localStorage.removeItem('cookie_consent')
+
+                document.querySelector('.cookie-status').textContent = "Pending"
+                document.querySelector('.cookie-status').setAttribute('class', 'cookie-status p-1 ps-2 pe-2 rounded-2 text-bg-secondary')
+                document.querySelector('.cookie-reset-btn').setAttribute('disabled', true)
+                document.querySelector('.cookie-reset-btn').classList.add('disabled')
+                document.querySelector('.cookie-reset-btn').setAttribute('data-bs-toggle', "")
+
+                $(resetCookieConsentModal).modal('hide')
+            })
+        })
+    }
+
     $('#changePasswordForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
@@ -307,6 +346,18 @@ let deleteAccount = () => {
                             </div>
                         </div>
                     </div>
+
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-md-3 col-sm-6 col-form-label text-start">Cookie Permission Status</label>
+                        <div class="col-md-9 col-sm-6">
+                            <label class="cookie-status p-1 ps-2 pe-2 rounded-2">Pending</label><br />
+                            <a href="javascript:;" class="cookie-reset-btn" data-bs-toggle="modal" data-bs-target="#resetCookieConsentModal">Reset Cookie Permissions</a>
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='We respect your privacy. <br/>If you’ve previously accepted or rejected cookies on this site and want to change your choice, <strong>click here</strong> to reset your cookie preferences.<br/> <strong>Note</strong>: This option is inactive when the status is "Pending."'>
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <label for="inputPassword3" class="col-md-3 col-sm-6 col-form-label text-start">Password</label>
                         <div class="col-sm-6 text-start d-flex align-items-center">
@@ -450,4 +501,22 @@ let deleteAccount = () => {
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="resetCookieConsentModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="resetCookieConsentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="resetCookieConsentModalLabel">⚠️ Confirm Cookie Permission Reset</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h3>Are you sure you want to reset the cookie consent permission?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>

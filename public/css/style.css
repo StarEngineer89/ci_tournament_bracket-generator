@@ -31,6 +31,9 @@
     stroke-width: 0;
   }
 }
+a.disabled {
+  color: grey;
+}
 
 .btn-purple {
   background-color: var(--color-purple);
