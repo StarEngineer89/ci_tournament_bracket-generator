@@ -704,6 +704,8 @@ a.disabled {
 .brackets span.score-wrapper {
   position: absolute;
   right: 0;
+  height: 100%;
+  background-color: #fff;
 }
 .brackets span.p-id {
   font-size: 0.85em;
