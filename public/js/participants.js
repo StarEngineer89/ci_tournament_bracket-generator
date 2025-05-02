@@ -254,7 +254,7 @@ function renderParticipants(participantsData) {
 
                     var element_id = opt.$trigger.data('id');
                     const nameBox = document.createElement('input');
-                    const name = opt.$trigger.children().last().text();
+                    const name = opt.$trigger.find('.p-name').html().trim();
                     nameBox.classList.add('name-input', 'form-control');
                     nameBox.value = name;
 

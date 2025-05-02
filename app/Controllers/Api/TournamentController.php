@@ -1296,11 +1296,15 @@ class TournamentController extends BaseController
             $tournament_id = 0;
         }
 
+        if (!$tournament_id) {
+            helper('db_helper');
+            disableForeignKeyCheck();
+        }
+
         // Apply the filter if the user_id parameter is provided
         if (!$reuse_Id) {
             return $this->response->setJSON(['status' => 'error', 'msg' => "Tournament was not selected."]);
         }
-
 
         // Fetch the participants
         $participants = $this->participantModel->where('tournament_id', $reuse_Id)->findAll();
@@ -1320,7 +1324,7 @@ class TournamentController extends BaseController
 
         /** Create new participants list from previous tournaments */
         foreach ($participants as $participant) {
-            if ($participant['name']) {
+            if ($participant['name'] && !$participant['is_group']) {
                 $newParticipant = new \App\Entities\Participant([
                     'name' => $participant['name'],
                     'user_id' => $user_id,
@@ -1332,7 +1336,19 @@ class TournamentController extends BaseController
                 ]);
 
                 $this->participantModel->save($newParticipant);
+                $newParticipantId = $this->participantModel->getInsertID();
+
+                // Check if the participant was included in the group and assign new participant to the group
+                if ($members = $this->groupMembersModel->where(['tournament_id' => $reuse_Id, 'participant_id' => $participant['id']])->findAll()) {
+                    foreach ($members as $member) {
+                        $this->groupMembersModel->insert(['tournament_id' => $tournament_id, 'participant_id' => $newParticipantId, 'group_id' => $member['group_id']]);
+                    }
+                }
             }
+        }
+
+        if (!$tournament_id) {
+            enableForeignKeyCheck();
         }
 
         helper('participant_helper');

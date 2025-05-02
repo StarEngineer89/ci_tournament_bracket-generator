@@ -85,7 +85,7 @@
                     <?php endif ?>
 
                     <div class="text-center d-grid col-12 col-md-8 mx-auto m-3 mt-4">
-                        <p>By using this site, you agree to the <a href="<?= base_url('terms') ?>">Terms of Service</a>.</p>
+                        <p>By using this site, you agree to the <a href="<?= base_url('terms') ?>">Terms of Service & Privacy Policy</a>.</p>
                     </div>
                 </form>
             </div>

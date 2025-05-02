@@ -1372,7 +1372,7 @@ var performReuseParticipants = (reuse_id = null) => {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Please select at least one participant!</p>
+                <p>Please select at least one individual participant!</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>

@@ -1,6 +1,6 @@
 <?= $this->extend('\App\Views\layout') ?>
 
-<?= $this->section('title') ?>Terms of Service<?= $this->endSection() ?>
+<?= $this->section('title') ?>Terms of Service & Privacy Policy<?= $this->endSection() ?>
 
 <?= $this->section('pageStyles') ?><?= $this->endSection() ?>
 
@@ -10,7 +10,7 @@
 <div class="container-fluid align-middle p-5">
     <div class="row">
         <div class="col-12">
-            <h3 class="text-center">Terms of Service</h3>
+            <h3 class="text-center">Terms of Service & Privacy Policy</h3>
             <p class="text-center">Last Updated: 2025-03-12</p>
         </div>
     </div>

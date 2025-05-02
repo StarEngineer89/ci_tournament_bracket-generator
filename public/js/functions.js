@@ -845,10 +845,10 @@ var adjustReadMore = (container) => {
             // expanded or text-content
             if (textElement.classList.contains("text-content")) {
                 textElement.classList.remove("text-content");
-                readMoreButton.textContent = "Show More";
+                readMoreButton.textContent = "Show Less";
             } else {
                 textElement.classList.add("text-content");
-                readMoreButton.textContent = "Show Less";
+                readMoreButton.textContent = "Show More";
             }
         });
     }

@@ -123,7 +123,7 @@
                             </li>
                             <li class="nav-item d-flex align-items-center">
                                 <a class="nav-link terms d-flex align-items-center <?php if(current_url()==base_url('terms')){echo "active";}?>" href="<?= base_url('terms') ?>">
-                                    Terms of Service
+                                    Terms of Service & Privacy Policy
                                 </a>
                             </li>
                         </ul>
@@ -154,7 +154,7 @@
                                 <a href="<?= base_url('contact') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/faq.svg') ?>" class="menu-icon faq"></object>About, FAQ, and Contact</a>
                             </li>
                             <li>
-                                <a href="<?= base_url('terms') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/terms.svg') ?>" class="menu-icon terms"></object>Terms of Service</a>
+                                <a href="<?= base_url('terms') ?>"><object type="image/svg+xml" data="<?= base_url('images/menu-icons/terms.svg') ?>" class="menu-icon terms"></object>Terms of Service & Privacy Policy</a>
                             </li>
                         </ul>
                     </div>
