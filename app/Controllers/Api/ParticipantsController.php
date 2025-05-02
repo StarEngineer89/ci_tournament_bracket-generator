@@ -107,7 +107,12 @@ class ParticipantsController extends BaseController
         if ($participants) {
             $newList = [];
             $registered_users = [];
+            $groups = [];
             foreach ($participants as $participant) {
+                if ($participant['is_group']) {
+                    $groups[] = ['p_id' => $participant['id'], 'group_id' => $participant['group_id']];
+                }
+
                 $brackets = $this->bracketsModel->where(['winner' => $participant['id']])->findAll();
                 $participant['brackets_won'] = ($brackets) ? count($brackets) : 0;
 
@@ -174,12 +179,12 @@ class ParticipantsController extends BaseController
                         }
                     } else {
                         $participant['tournaments_list'] = $this->tournamentsModel->where('id', $participant['tournament_id'])->select(['id', 'name'])->findAll();
-                        $newList[] = $participant;
+                        $newList[$participant['id']] = $participant;
                     }
                 }
             }
 
-            if ($registered_users) {
+            if (isset($registered_users) && $registered_users) {
                 foreach ($registered_users as $user) {
                     if ($this->request->getPost('tournament')) {
                         if ($user['tournaments_list']) {
@@ -189,6 +194,24 @@ class ParticipantsController extends BaseController
                         array_push($newList, $user);
                     }
                     
+                }
+            }
+
+            if (isset($groups) && $groups) {
+                foreach ($groups as $group) {
+                    // Fetch the group members and plus the score and counts
+                    $members = $this->groupedParticipantsModel->where('group_id', $group['group_id'])->findAll();
+                    if ($members) {
+                        foreach ($members as $member) {
+                            $newList[$member['participant_id']]['brackets_won'] += $newList[$group['group_id']]['brackets_won'];
+                            $newList[$member['participant_id']]['tournaments_won'] += $newList[$group['group_id']]['tournaments_won'];
+                            $newList[$member['participant_id']]['top_score'] += $newList[$group['group_id']]['top_score'];
+                            $newList[$member['participant_id']]['accumulated_score'] += $newList[$group['group_id']]['accumulated_score'];
+                            $newList[$member['participant_id']]['votes'] += $newList[$group['group_id']]['votes'];
+                            $newList[$member['participant_id']]['won_tournaments'] = array_merge($newList[$member['participant_id']]['won_tournaments'], $newList[$group['group_id']]['won_tournaments']);
+                            $newList[$member['participant_id']]['tournaments_list'] = array_merge($newList[$member['participant_id']]['tournaments_list'], $newList[$group['group_id']]['tournaments_list']);
+                        }
+                    }
                 }
             }
 
