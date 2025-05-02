@@ -47,9 +47,17 @@
             <p>We reserve the right to suspend or delete accounts and tournaments that violate these guidelines.</p>
 
             <p class="mt-3"><strong>6. Privacy and Data Usage</strong></p>
-            <p class="mb-1 ps-2">✔ We value your privacy!</p>
-            <p class="mb-1 ps-2">✔ By using the site, you consent to limited data collection necessary for tournament functionality, such as participant records and leaderboard rankings.</p>
-            <p class="mb-1 ps-2">✔ Guest users should be aware that data may not be permanently stored unless linked to a registered account.</p>
+            <p class="mb-1 ps-2">✔ <strong>We value your privacy!</strong></p>
+            <p class="mb-1 ps-2">By using the site, you consent to limited data collection necessary for tournament functionality, such as participant records and leaderboard rankings.</p>
+            <p class="mb-1 ps-2">✔ <strong>Guest Users</strong></p>
+            <p class="mb-1 ps-2">Please note that tournament data created by guest users is temporary and may not be permanently stored unless claimed by or linked to a registered account.</p>
+            <p class="mb-1 ps-2">✔ <strong>Your Privacy Controls</strong></p>
+            <p class="mb-1 ps-2">
+                We provide tools to help you manage your privacy at any time from your Profile Settings:<br />
+            <p class="mb-0 ps-3">• <strong>Reset Cookie Preferences:</strong> Revisit and modify your cookie consent choices.</p>
+            <p class="mb-0 ps-3">• <strong>Email Privacy:</strong> Choose to hide your email address from tournaments and participant leaderboards.</p>
+            <p class="mb-0 ps-3">• <strong>Account Deletion:</strong> You may delete your account permanently at any time.</p>
+            </p>
 
             <p class="mt-3"><strong>7. Intellectual Property & Media Usage</strong></p>
             <p class="mb-1 ps-2">✔ TournCreator’s software, trademarks, and design are owned by us and may not be copied, modified, or distributed without permission.</p>
