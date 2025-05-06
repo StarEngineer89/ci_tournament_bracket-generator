@@ -366,7 +366,6 @@ class TournamentController extends BaseController
                             $access_tokens[] = $tempRow['token'];
                         }
                     }
-                    log_message('debug', json_encode($tournaments));
                 }
             } else {
                 $tempRows = $tournaments->where('share_settings.user_id', auth()->user()->id)->findAll();

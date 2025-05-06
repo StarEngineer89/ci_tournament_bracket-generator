@@ -83,8 +83,6 @@ class CustomMagicLinkController extends MagicLinkController
         ));
         
         if ($email->send(false) === false) {
-            log_message('error', $email->printDebugger(['headers']));
-
             return redirect()->route('magic-link')->with('error', lang('Auth.unableSendEmailToUser', [$user->email]));
         }
         
