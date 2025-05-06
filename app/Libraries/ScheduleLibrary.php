@@ -26,6 +26,8 @@ class ScheduleLibrary
         $tournamentSettings = $this->tournamentsModel->find($tournament_id);
         $maxRounds = $this->bracketsModel->where(['tournament_id' => $tournament_id])->selectMax('roundNo')->get()->getRow();
 
+        $this->schedulesModel->where(['tournament_id' => $tournament_id])->delete();
+
         if ($tournamentSettings['availability']) {
             $startDate = new \DateTime($tournamentSettings['available_start']);
             $endDate = new \DateTime($tournamentSettings['available_end']);

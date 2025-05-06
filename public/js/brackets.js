@@ -32,7 +32,7 @@ let editing_mode = false;
             }
             
             let timerIcon = ''
-            if (parseInt(tournament.availability) && tournament.evaluation_method == evaluationMethodVotingCode && tournament.voting_mechanism == votingMechanismRoundDurationCode) {
+            if (parseInt(tournament.availability) && (tournament.round_duration_combine || (tournament.evaluation_method == evaluationMethodVotingCode && tournament.voting_mechanism == votingMechanismRoundDurationCode))) {
                 let roundDuration = $(`<div class="round-duration-wrapper text-center p-2 m-2 d-none"></div>`)
                 let roundStart = `<strong>Start:</strong> <span class="start">${grouped[g][0].start}</span>`
                 let roundEnd = `<strong>End :</strong> <span class="end">${grouped[g][0].end}</span>`

@@ -613,6 +613,18 @@ $(document).ready(function() {
                     </p>
                     <?php endif; ?>
 
+                    <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE)): ?>
+                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                        <strong>Round Duration</strong>
+                        <span>
+                            <?= $tournament['round_duration_combine'] ? "On" : "Off" ?>
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentRoundDurationCombineManual') : lang('Descriptions.tournamentRoundDurationCombineMaxVote') ?>'>
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </button>
+                        </span>
+                    </p>
+                    <?php endif; ?>
+
                     <p class="property-info d-flex justify-content-between mb-1">
                         <strong>Participant Image Customization Access</strong>
                         <span>

@@ -151,7 +151,7 @@ class BracketsController extends BaseController
                 }
 
                 /** Get the round duration for the Round mechanism */
-                if ($tournament_settings['availability'] && $tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND) {
+                if ($tournament_settings['availability'] && ($tournament_settings['round_duration_combine'] || ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND))) {
                     $bracket['start'] = $schedules[$bracket['roundNo'] - 1]['schedule_time'];
                     $bracket['end'] = $schedules[$bracket['roundNo']]['schedule_time'];
                 }

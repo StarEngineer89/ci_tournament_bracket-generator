@@ -195,6 +195,7 @@ a.disabled {
   content: '';
   background-position: center center;
   background-size: contain;
+  background-repeat: no-repeat;
   margin-right: 5px;
 }
 .navbar-nav .nav-link.home::before {
