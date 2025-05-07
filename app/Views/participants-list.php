@@ -159,7 +159,11 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         {
             "data": null,
             "render": function(data, type, row, meta) {
-                return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="${row.email ? row.name + '<br/>(' + row.email + ')' : row.name}">${row.name}</span>`
+                if (parseInt(row.is_group)) {
+                    return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="Group: ${row.name}<br/>Members:<br/>${row.members}">${row.name}</span>`
+                } else {
+                    return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="${row.email ? row.name + '<br/>(' + row.email + ')' : row.name}">${row.name}</span>`
+                }
             },
             "className": "text-center",
             "createdCell": function(td, cellData, rowData, row, col) {
