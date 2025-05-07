@@ -112,11 +112,13 @@ class RunScheduledTask extends BaseCommand
                             $groupName = $participantWithGroupInfo ? $participantWithGroupInfo['group_name'] : null;
                             
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
-                                $message = "The tournament \"$tournament->name\" has started!";
+                                $string = $groupName ? $tournament->name . " (Group: $groupName)" : $tournament->name . " (Individual participant)";
+                                $message = "The tournament $string has started!";
                                 $notificationService->addNotification(['user_id' => $host_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_STARTED, 'link' => "tournaments/$tournament->id/view"]);
                             }
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) {
-                                $message = "The tournament \"$tournament->name\" has completed!";
+                                $string = $groupName ? $tournament->name . " (Group: $groupName)" : $tournament->name . " (Individual participant)";
+                                $message = "The tournament $string has completed!";
                                 $notificationService->addNotification(['user_id' => $host_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_COMPLETED, 'link' => "tournaments/$tournament->id/view"]);
                             }
 

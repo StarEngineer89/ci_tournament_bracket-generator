@@ -83,6 +83,10 @@ class BracketsController extends BaseController
                                 }
                             }
                         }
+
+                        if (isset($team['is_double'])) {
+                            $array[$index]['is_double'] = $team['is_double'];
+                        }
                         
                         $array[$index]['order'] = $team['order'];
                     }
@@ -134,6 +138,7 @@ class BracketsController extends BaseController
                     } else {
                         $votes_1 = $votes_in_round;
                     }
+                    
                     $teams[1]['votes'] = count($votes_1);
                     $teams[1]['votes_in_round'] = count($votes_in_round);
                     $teams[1]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[1]['id']) ? true : false;
