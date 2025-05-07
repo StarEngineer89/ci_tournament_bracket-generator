@@ -67,6 +67,7 @@ class GroupsController extends BaseController
                 $groupEntity->user_id = $user_id;
 
                 $this->groupsModel->save($groupEntity);
+                $participantsInGroups = $this->group_participantsModel->having('g_id', $group_id)->details()->findAll();
             } else {
                 $groupEntity = new Group();
 
@@ -87,6 +88,21 @@ class GroupsController extends BaseController
 
             if ($group_id) {
                 $participants = $this->request->getPost('participants');
+
+                if (isset($participantsInGroups) && $participantsInGroups) {
+                    foreach ($participantsInGroups as $participant) {
+                        $participant = new \App\Entities\Participant($participant);
+                        $participant->id = null;
+                        $participant->tournament_id = $tournament_id;
+                        $participant->sessionid = $this->request->getPost('hash');
+
+                        $this->participantsModel->save($participant);
+                        $insertId = $this->participantsModel->getInsertID();
+
+                        $participants[] = $insertId;
+                    }
+                }
+                
                 if ($participants && is_array($participants)) {
                     foreach ($participants as $participant) {
                         $entity = new GroupedParticipant();

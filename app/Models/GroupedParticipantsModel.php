@@ -46,7 +46,7 @@ class GroupedParticipantsModel extends Model
     
     public function details()
     {
-        $this->select('participants.*');
+        $this->select('grouped_participants.group_id as g_id, participants.*');
         $this->join('participants', 'grouped_participants.participant_id = participants.id', 'LEFT');
 
         return $this;
