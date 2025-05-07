@@ -990,7 +990,7 @@ a.disabled {
 
   background-repeat: no-repeat;
   background-position: 0px;
-  background-size: 380%;
+  background-size: 400%;
 }
 
 .brackets .trophy.animate~.participants .bracket-team.winner .p-image,
@@ -1681,4 +1681,9 @@ a.disabled {
 }
 .canvasjs-chart-canvas:first-child {
   position: relative !important;
+}
+
+li.context-menu-item.context-menu-disabled span {
+  display: flex;
+  justify-content: space-between;
 }

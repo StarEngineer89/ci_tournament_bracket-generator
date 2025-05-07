@@ -214,17 +214,26 @@ function renderParticipants(participantsData) {
         selector: '.group-name',
         build: function ($triggerElement, e) {
             let items = {}
+            let editItemLabel = "Edit Group"
+            let deleteItemLabel = "Delete Group"
             const reused = participantsData.reusedGroups.includes($triggerElement.parent().data('id'))
 
+            if (reused) {
+                editItemLabel += `<span data-toggle='tooltip' title="Reused groups cannot be deleted due to their associations with other tournaments."><i class="fa-classic fa-solid fa-circle-exclamation"></i></span>`
+                deleteItemLabel += `<span data-toggle='tooltip' title="Reused groups cannot be deleted due to their associations with other tournaments."><i class="fa-classic fa-solid fa-circle-exclamation"></i></span>`
+            }
+
             items.edit = {
-                name: "Edit Group",
+                name: editItemLabel,
+                isHtmlName: true,
                 disabled: reused,
                 callback: (key, opt, e) => {
                     enableGroupEdit(opt.$trigger)
                 }
             }
             items.delete = {
-                name: "Delete Group",
+                name: deleteItemLabel,
+                isHtmlName: true,
                 disabled: reused,
                 callback: (key, opt, e) => {
                     deleteGroup(opt.$trigger)
@@ -238,7 +247,22 @@ function renderParticipants(participantsData) {
             }
 
             return {
-                items: items
+                html: true,
+                items: items,
+                events: {
+                    show: function(opt) {
+                        // Initialize tooltips when menu is shown
+                        $('.context-menu-list [data-toggle="tooltip"]').tooltip({
+                            trigger: 'hover',
+                            placement: 'right',
+                            container: 'body'
+                        });
+                    },
+                    hide: function(opt) {
+                        // Destroy tooltips when menu hides to prevent memory leaks
+                        $('.context-menu-list [data-toggle="tooltip"]').tooltip('dispose');
+                    }
+                }
             }
         }
     })
