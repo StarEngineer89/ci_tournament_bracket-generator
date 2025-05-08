@@ -11,6 +11,8 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
     {
         $participantsModel = model('\App\Models\ParticipantModel');
         $groupMembersModel = model('\App\Models\GroupedParticipantsModel');
+        $userSettingService = service('userSettings');
+
         $participants = [];
         if ($tournament_id) {
             $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id])->withGroupInfo()->findAll();
@@ -18,6 +20,8 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
             $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $hash])->withGroupInfo()->findAll();
         }
 
+        $filteredParticipants = [];
+        $notAllowdParticipants = [];
         $reusedGroups = [];
         if ($participants) {
             foreach ($participants as $participant) {
@@ -26,9 +30,19 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
                         $reusedGroups[] = intval($participant['g_id']);
                     }
                 }
+
+                /** Check if the registered user allows the invitations */
+                if ($participant['name'][0] == '@' && $participant['registered_user_id']) {
+                    if ($userSettingService->get('disable_invitations', $participant['registered_user_id'])) {
+                        $participant['invitation_disabled'] = true;
+                        $notAllowdParticipants[] = $participant['name'];
+                    }
+                }
+
+                $filteredParticipants[] = $participant;
             }
         }
         
-        return ['participants' => $participants, 'reusedGroups' => $reusedGroups];
+        return ['participants' => $filteredParticipants, 'notAllowed' => $notAllowdParticipants, 'reusedGroups' => $reusedGroups];
     }
 }

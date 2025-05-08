@@ -529,6 +529,11 @@ a.disabled {
   transform-style: preserve-3d;
 }
 
+.list-group-item.not-allowed {
+  color: var(--bs-list-group-disabled-color);
+  background-color: var(--bs-list-group-disabled-bg);
+}
+
 #newList.list-group-numbered .list-group-item::before {
   content: counters(section, ".") ". ";
   counter-increment: section;

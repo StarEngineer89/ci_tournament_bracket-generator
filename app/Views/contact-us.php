@@ -130,6 +130,26 @@
                                 <p class="ps-2">You can simply right-click (or hold on mobile/tablet) the participant bracket box/modal and several actions will be available to you to administer the participants/brackets!</p>
                             </div>
                         </div>
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explainAllowInvitation" aria-expanded="false" aria-controls="collapseThree">
+                                    <strong>Is there a way to decline Tournament organizer participant invitations automatically?</strong>
+                                </button>
+                            </h5>
+                            <div id="explainAllowInvitation" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
+                                <p class="ps-2">Of course! To opt out of tournament invitations, you can adjust the "Allow Invitations" option from your (bold)Profile Settings. </p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h5 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explainCustomScoring" aria-expanded="false" aria-controls="collapseThree">
+                                    <strong>Custom scoring is not an option at the moment to prevent overranking and abuse in the Participant Leaderboard statistics.</strong>
+                                </button>
+                            </h5>
+                            <div id="explainCustomScoring" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
+                                <p class="ps-2">You can simply right-click (or hold on mobile/tablet) the participant bracket box/modal and several actions will be available to you to administer the participants/brackets!</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

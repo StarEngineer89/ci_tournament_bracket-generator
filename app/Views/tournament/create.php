@@ -296,15 +296,12 @@ $(document).ready(function() {
             minParticipantCounts = 4
         }
 
-        if (document.querySelectorAll('#newList .list-group-item').length < minParticipantCounts) {
+        let notAllowedItems = document.querySelectorAll('#newList .list-group-item.not-allowed')
+        if ((document.querySelectorAll('#newList .list-group-item').length - notAllowedItems.length) < minParticipantCounts) {
             $('#generateErrorModal .count').html(minParticipantCounts)
             $('#generateErrorModal').modal('show')
             return false;
         }
-
-        // Add the Shuffle Board
-        const shuffle_list = document.querySelectorAll('#newList > .list-group-item')
-        // End the Shuffle Board
 
         document.getElementsByClassName('participants-box')[0].scrollIntoView({
             behavior: "smooth",
@@ -719,6 +716,9 @@ var csvUpload = (element) => {
     $('.csv-import').removeClass('is-invalid');
     var formData = new FormData();
     formData.append('file', $('.csv-import')[0].files[0]);
+    formData.append('tournament_id', tournament_id)
+    formData.append('hash', hash)
+
     $.ajax({
         url: apiURL + '/participants/import',
         type: "POST",
@@ -997,6 +997,24 @@ var performReuseParticipants = (reuse_id = null) => {
             renderParticipants(result)
             $(selectTournamentConfirmModal).modal('hide')
             $(selectTournamentModal).modal('hide')
+
+            if (result.notAllowedParticipants) {
+                let names = ''
+                result.notAllowedParticipants.forEach((name, i) => {
+                    names += name
+                    if (i < (result.notAllowedParticipants.length - 1)) {
+                        names += ', '
+                    }
+                })
+                let html = `<h5>The following participant(s) declined invitations to tournaments.<h5>
+                    <span class="text-danger">${names}</span><br/><br/>
+                    <h5>Therefore, the invitation will be voided.</h5>`
+
+                $('#errorModal .errorDetails').html(html);
+
+                $("#errorModal").modal('show');
+            }
+
         },
         error: function(error) {
             console.log(error);

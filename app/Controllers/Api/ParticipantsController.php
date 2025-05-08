@@ -305,7 +305,7 @@ class ParticipantsController extends BaseController
         }
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                ->setJSON(['result' => 'success', "participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups'], 'count' => $inserted_count]);
+                                ->setJSON(['result' => 'success', "participants"=> $list['participants'], 'notAllowedParticipants' => $list['notAllowed'], "reusedGroups"=> $list['reusedGroups'], 'count' => $inserted_count]);
     }
 
     public function updateParticipant($id)
@@ -322,6 +322,8 @@ class ParticipantsController extends BaseController
             if ($user) {
                 $participant['registered_user_id'] = $user->id;
             }
+        } else {
+            $participant['registered_user_id'] = null;
         }
 
         $uploadConfig = new UploadConfig();
@@ -374,7 +376,11 @@ class ParticipantsController extends BaseController
         }
         $this->participantsModel->update($id, $participant);
 
-        return json_encode(array('result' => 'success', 'data' => $participant));
+        
+        helper('participant_helper');
+        $list = getParticipantsAndReusedGroupsInTournament($this->request->getPost('tournament_id'), $this->request->getPost('hash'));
+        
+        return $this->response->setJSON(['result' => 'success', "participants"=> $list['participants'], "reusedGroups"=> $list['reusedGroups']]);
     }
 
     public function deleteParticipant($id)

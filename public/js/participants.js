@@ -32,7 +32,13 @@ function callShuffle(enableShuffling = true) {
     });
 
     shufflingPromise.then(() => {
+        let order = 0
+        let notAllowedItems = []
         Array.from(document.getElementById('newList').children).forEach((item, i) => {
+            if (item.classList.contains('not-allowed')) {
+                notAllowedItems.push(item.dataset.id)
+                return
+            }
             let img = '';
             let members = [];
             if ($(item).find('img').length > 0) img = $(item).find('img').attr('src');
@@ -41,10 +47,11 @@ function callShuffle(enableShuffling = true) {
                     members.push({'id': member.dataset.id, 'order': i})
                 })
             }
-            exampleTeams.push({ 'id': item.dataset.id, 'order': i, 'is_group': item.dataset.isGroup, 'members': members });
+            exampleTeams.push({ 'id': item.dataset.id, 'order': order, 'is_group': item.dataset.isGroup, 'members': members });
+            order++
         });
 
-        generateBrackets(exampleTeams);
+        generateBrackets(exampleTeams, notAllowedItems);
     },
         function (error) { myDisplayer(error); }
     );
@@ -161,7 +168,14 @@ function renderParticipants(participantsData) {
         item.setAttribute('class', "participant list-group-item d-flex");
         item.setAttribute('data-id', participant.id);
         item.setAttribute('data-name', participant.name);
-        let item_html = `<span class="p-name ms-3">` + participant.name + '</span>';
+
+        let itemInfo = '';
+        if (participant.invitation_disabled) {
+            item.classList.add('not-allowed')
+            itemInfo = `<button class="btn btn-light bg-transparent border-0 p-0 ms-3" data-bs-toggle="tooltip" data-bs-title="This participant declined invitations to tournaments, therefore they won't be included in the brackets."><i class="fa-classic fa-solid fa-circle-exclamation"></i></button>`
+        }
+
+        let item_html = `<span class="p-name ms-3">` + participant.name + '</span>' + itemInfo;
         if(participant.image) {
             item_html = `<div class="p-image"><img src="${participant.image}" class="col-auto" height="30px" id="pimage_${participant.id}" data-pid="${participant.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${participant.id})" name="image_${participant.id}" id="image_${participant.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${participant.id})"><i class="fa fa-trash-alt"></i></button></div>` + item_html;
         }else{
@@ -219,7 +233,7 @@ function renderParticipants(participantsData) {
             const reused = participantsData.reusedGroups.includes($triggerElement.parent().data('id'))
 
             if (reused) {
-                editItemLabel += `<span data-toggle='tooltip' title="Reused groups cannot be deleted due to their associations with other tournaments."><i class="fa-classic fa-solid fa-circle-exclamation"></i></span>`
+                editItemLabel += `<span data-toggle='tooltip' title="Reused groups cannot be edited due to their associations with other tournaments."><i class="fa-classic fa-solid fa-circle-exclamation"></i></span>`
                 deleteItemLabel += `<span data-toggle='tooltip' title="Reused groups cannot be deleted due to their associations with other tournaments."><i class="fa-classic fa-solid fa-circle-exclamation"></i></span>`
             }
 
@@ -540,6 +554,8 @@ function saveParticipant(e, element_id) {
     if (ability) {
         var formData = new FormData();
         formData.append('name', name);
+        formData.append('tournament_id', tournament_id)
+        formData.append('hash', hash)
         // formData.append('image', $("#image_" + element_id)[0].files[0]);
         $.ajax({
             type: "POST",
@@ -549,21 +565,7 @@ function saveParticipant(e, element_id) {
             cache: false,
             processData: false,
             success: function (result) {
-                result = JSON.parse(result);
-                let participant = `<span class="p-name ms-3">${result.data.name}</span>`;
-                if (result.data.image) {
-                    participant = `<div class="p-image"><img src="${result.data.image}" class="col-auto" height="30px" id="pimage_${result.data.id}" data-pid="${result.data.id}"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
-                } else {
-                    participant = `<div class="p-image"><img src="/images/avatar.jpg" class="temp col-auto" id="pimage_${result.data.id}" data-pid="${result.data.id}" height="30px"/><input type="file" accept=".jpg,.jpeg,.gif,.png,.webp" class="d-none file_image" onChange="checkBig(this, ${result.data.id})" name="image_${result.data.id}" id="image_${result.data.id}"/><button class="btn btn-danger d-none col-auto" onClick="removeImage(event, ${result.data.id})"><i class="fa fa-trash-alt"></i></button></div>` + participant;
-                }
-
-                participant += `
-                    <button class="btn btn-light bg-transparent ms-auto border-0 p-0" data-bs-toggle="tooltip" data-bs-title="Individual Participant">
-                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" version="1.1" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="8" cy="6" r="3.25"></circle> <path d="m2.75 14.25c0-2.5 2-5 5.25-5s5.25 2.5 5.25 5"></path> </g></svg>
-                    </button>`
-                
-                $(e.target).parents('.list-group-item').data('name', result.data.name)
-                $(e.target).parents('.list-group-item').html(participant);
+                renderParticipants(result);
             },
             error: function (error) {
                 console.log(error);
@@ -576,11 +578,11 @@ function saveParticipant(e, element_id) {
     }
 }
 
-function generateBrackets(list) {
+function generateBrackets(list, notAllowedItems = null) {
     $.ajax({
         type: "post",
         url: apiURL + '/brackets/generate',
-        data: { 'type': eleminationType, 'tournament_id': tournament.id, 'user_id': user_id, 'list': list, 'hash': hash },
+        data: { 'type': eleminationType, 'tournament_id': tournament.id, 'user_id': user_id, 'list': list, 'notAllowedList': notAllowedItems, 'hash': hash },
         beforeSend: function() {
             $('#generateProcessing').removeClass('d-none')
         },
@@ -630,6 +632,23 @@ var addParticipants = (data) => {
                 $('#collapseAddParticipant').removeClass('show');
 
                 appendAlert('Records inserted successfully!', 'success');
+            }
+
+            if (result.notAllowedParticipants) {
+                let names = ''
+                result.notAllowedParticipants.forEach((name, i) => {
+                    names += name
+                    if (i < (result.notAllowedParticipants.length - 1)) {
+                        names += ', '
+                    }
+                })
+                let html = `<h5>The following participant(s) declined invitations to tournaments.<h5>
+                    <span class="text-danger">${names}</span><br/><br/>
+                    <h5>Therefore, the invitation will be voided.</h5>`
+                
+                $('#errorModal .errorDetails').html(html);
+                
+                $("#errorModal").modal('show');
             }
 
             $('#collapseAddParticipant').removeClass('show');

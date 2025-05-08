@@ -169,6 +169,41 @@ $(document).ready(function() {
         });
     })
 
+    $('#switchAllowInvitations').on('change', (e) => {
+        e.preventDefault();
+
+        let data = {
+            'disable_invitations': e.target.checked ? 0 : 1
+        }
+
+        $.ajax({
+            url: '<?= base_url('api/usersettings/save') ?>',
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(response) {
+                if (response.message) {
+                    $('#responseMessage').html()
+                    $('#notification-area').html(
+                        `<div class="alert ${response.status == 'success' ? 'alert-success' : 'alert-danger'}">${response.message}</div>`
+                    );
+                }
+
+                // Clear notification after 10 seconds
+                setTimeout(function() {
+                    $('#notification-area').fadeOut('slow', function() {
+                        $(this).empty().show(); // Empty and show to reset for future messages
+                    });
+                }, 5000);
+            },
+            error: function() {
+                $('#notification-area').html(
+                    '<div class="alert alert-danger">An error occurred. Please try again.</div>'
+                );
+            }
+        });
+    })
+
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 });
@@ -343,6 +378,20 @@ let deleteAccount = () => {
                                         </button>
                                     </label>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="switchAllowInvitations" class="col-md-3 col-sm-6 col-form-label text-start pe-0">
+                            Allow Invitations
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="If enabled, Tournament organizers/hosts can invite you to participate by adding your username to the participants list.">
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </button>
+                        </label>
+                        <div class="col-sm-6 pt-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="disable_invitations" role="switch" id="switchAllowInvitations" <?= $userSettingService->get('disable_invitations') ? '' : 'checked' ?>>
                             </div>
                         </div>
                     </div>

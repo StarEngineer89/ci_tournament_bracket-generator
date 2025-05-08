@@ -751,6 +751,13 @@ class BracketsController extends BaseController
     public function generateBrackets()
     {
         $list = $this->request->getPost('list');
+        
+        if ($notAllowedList = $this->request->getPost('notAllowedList')) {
+            foreach ($notAllowedList as $item) {
+                $this->participantsModel->delete($item);
+            }
+        }
+
         $participant_names_string = '';
         $tournament_id = $this->request->getPost('tournament_id');
 

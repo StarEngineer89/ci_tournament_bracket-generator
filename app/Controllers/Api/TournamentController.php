@@ -1354,7 +1354,7 @@ class TournamentController extends BaseController
         helper('participant_helper');
         $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
         
-        return $this->response->setJSON(["participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
+        return $this->response->setJSON(["participants"=> $list['participants'], 'notAllowedParticipants' => $list['notAllowed'], "reusedGroups"=> $list['reusedGroups']]);
     }
 
     public function getParticipants($tournament_id)
@@ -1368,14 +1368,28 @@ class TournamentController extends BaseController
     public function getUsers()
     {
         $query = $this->request->getGet('query');
-        
+
+        $userSettingService = service('userSettings');
+
         $users = auth()->getProvider();
         if ($query) {
             $users = $users->like('username', $query);
         }
 
+        /** Check if the registered user allows the invitations */
+        $filteredUsers = [];
+        if ($users = $users->findAll()) {
+            foreach ($users as $user) {
+                if ($userSettingService->get('disable_invitations', $user->id)) {
+                    continue;
+                }
+
+                $filteredUsers[] = $user;
+            }
+        }
+
         return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON($users->findAll());
+                                    ->setJSON($filteredUsers);
     }
 
     public function saveVote()

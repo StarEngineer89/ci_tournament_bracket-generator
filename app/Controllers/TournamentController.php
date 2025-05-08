@@ -47,11 +47,24 @@ class TournamentController extends BaseController
         }
 
         $users = auth()->getProvider()->limit(5)->findAll();
+        /** Check if the registered user allows the invitations */
+        $userSettingService = service('userSettings');
+
+        $filteredUsers = [];
+        if ($users) {
+            foreach ($users as $user) {
+                if ($userSettingService->get('disable_invitations', $user->id)) {
+                    continue;
+                }
+
+                $filteredUsers[] = $user;
+            }
+        }
 
         $settingsBlock = view('tournament/tournament-settings', []);
         $audioSettingsBlock = view('tournament/audio-setting', []);
 
-        return view('tournament/create', ['audioSettingsBlock' => $audioSettingsBlock, 'settingsBlock' => $settingsBlock, 'userSettings' => $settingsArray, 'users' => $users]);
+        return view('tournament/create', ['audioSettingsBlock' => $audioSettingsBlock, 'settingsBlock' => $settingsBlock, 'userSettings' => $settingsArray, 'users' => $filteredUsers]);
     }
 
     public function view($id)
@@ -190,8 +203,22 @@ class TournamentController extends BaseController
             }
 
             $users = auth()->getProvider()->limit(5)->findAll();
+            
+            /** Check if the registered user allows the invitations */
+            $userSettingService = service('userSettings');
 
-            return view('tournament/create', ['tournament' => $tournament, 'users' => $users, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
+            $filteredUsers = [];
+            if ($users) {
+                foreach ($users as $user) {
+                    if ($userSettingService->get('disable_invitations', $user->id)) {
+                        continue;
+                    }
+
+                    $filteredUsers[] = $user;
+                }
+            }
+
+            return view('tournament/create', ['tournament' => $tournament, 'users' => $filteredUsers, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
