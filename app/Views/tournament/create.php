@@ -998,7 +998,7 @@ var performReuseParticipants = (reuse_id = null) => {
             $(selectTournamentConfirmModal).modal('hide')
             $(selectTournamentModal).modal('hide')
 
-            if (result.notAllowedParticipants) {
+            if (result.notAllowedParticipants && result.notAllowedParticipants.length) {
                 let names = ''
                 result.notAllowedParticipants.forEach((name, i) => {
                     names += name

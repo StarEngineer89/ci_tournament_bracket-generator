@@ -1700,6 +1700,14 @@ const changeSettings = (event) => {
                 }
                 $('#maxVotes').val(result.tournamentSettings.max_vote_value)
 
+                if (result.tournamentSettings.vote_displaying == '<?= VOTE_DISPLAYING_IN_POINT ?>') {
+                    $('#voting-settings-panel #voteDisplayPoint').prop('checked', true)
+                    $('#voting-settings-panel #voteDisplayPercent').prop('checked', false)
+                } else {
+                    $('#voting-settings-panel #voteDisplayPoint').prop('checked', false)
+                    $('#voting-settings-panel #voteDisplayPercent').prop('checked', true)
+                }
+
                 if (result.tournamentSettings.voting_retain == 1) {
                     $('#retainVotesCheckbox').prop('checked', true)
                 } else {

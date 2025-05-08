@@ -327,6 +327,7 @@ class TournamentController extends BaseController
             'max_vote_value' => $this->request->getPost('max_vote_value'),
             'round_duration_combine' => ($this->request->getPost('round_duration_combine') == 'on') ? 1 : 0,
             'voting_retain' => ($this->request->getPost('voting_retain') == 'on') ? 1 : 0,
+            'vote_displaying' => $this->request->getPost('vote_displaying'),
             'allow_host_override' => ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0,
             'pt_image_update_enabled' => ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0,
             'theme' => $this->request->getPost('theme'),
@@ -639,6 +640,9 @@ class TournamentController extends BaseController
             }
             if ($this->request->getPost('round_duration_combine')) {
                 $tournament['round_duration_combine'] = ($this->request->getPost('round_duration_combine') == 'on') ? 1 : 0;
+            }
+            if ($this->request->getPost('vote_display')) {
+                $tournament['vote_displaying'] = $this->request->getPost('vote_display');
             }
         }
         
