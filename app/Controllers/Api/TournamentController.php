@@ -178,8 +178,9 @@ class TournamentController extends BaseController
                 $tournament['email'] = null;
             }
 
+            $tournament['participants_count'] = 0;
             if ($participants = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->findAll()) {
-                $tournament['participants_count'] = $participants ? count($participants) : 0;
+                $tournament['participants_count'] = count($participants);
             }
             
             $result_tournaments[] = $tournament;
