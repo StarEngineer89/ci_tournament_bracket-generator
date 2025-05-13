@@ -180,8 +180,9 @@ class TournamentController extends BaseController
 
             if ($participants = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->findAll()) {
                 $tournament['participants_count'] = count($participants);
-                $result_tournaments[] = $tournament;
             }
+            
+            $result_tournaments[] = $tournament;
         }
 
         // Return the tournaments as a JSON response
