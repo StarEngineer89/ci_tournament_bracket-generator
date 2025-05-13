@@ -167,21 +167,6 @@
         </div>
 
         <div class="mt-2">
-            <label class="form-check-label me-3"><strong>Vote Display</strong></label>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="vote_display" id="voteDisplayPoint" value="<?= VOTE_DISPLAYING_IN_POINT ?>" onchange="changeVoteDisplayType(this)" checked>
-                <label class="form-check-label" for="voteDisplayPoint">Points</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="vote_display" id="voteDisplayPercent" value="<?= VOTE_DISPLAYING_IN_PERCENT ?>" onchange="changeVoteDisplayType(this)">
-                <label class="form-check-label" for="voteDisplayPercent">Percentage</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <label class="col-form-label">&nbsp;</label>
-            </div>
-        </div>
-
-        <div class="mt-2">
             <input type="checkbox" class="form-check-input" name="voting_retain" id="retainVotesCheckbox">
             <label class="form-check-label" for="retainVotesCheckbox">Retain vote count across rounds</label>
             <div class="read-more-container">

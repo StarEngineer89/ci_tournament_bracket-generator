@@ -381,7 +381,6 @@ $(document).ready(function() {
         if (ptNames.length) {
             addParticipants({
                 names: ptNames,
-                user_id: <?= (auth()->user()) ? auth()->user()->id : 0 ?>,
                 tournament_id: tournament_id
             });
         }
@@ -434,11 +433,9 @@ $(document).ready(function() {
                 'hash': hash
             },
             success: function(result) {
-                result = JSON.parse(result);
-
                 if (result.result == 'success') {
                     $('#newList').html('')
-                    $('#indexList').html('')
+                    $('.participant-list .list-tool-bar .enableBtn').addClass('d-none')
                     $('.empty-message-wrapper').removeClass('d-none')
                     $('#clearParticipantsConfirmModal').modal('hide')
                     appendAlert('Participant list cleared!', 'success');
@@ -518,7 +515,7 @@ $(document).ready(function() {
             url: apiURL + '/participants/deletes',
             data: {
                 'p_ids': duplicates,
-                'tournament_id': 0,
+                'tournament_id': tournament ? tournament.id : 0,
                 'hash': hash
             },
             dataType: "JSON",
@@ -528,7 +525,7 @@ $(document).ready(function() {
             success: function(result) {
                 $('#beforeProcessing').addClass('d-none')
                 $('#removeDuplicationsConfirmModal').modal('hide')
-                if (result.count) {
+                if (result.status == 'success') {
                     renderParticipants(result.participants);
 
                     $('#participantNames').val(null);

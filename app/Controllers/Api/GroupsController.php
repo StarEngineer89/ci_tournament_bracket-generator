@@ -4,7 +4,10 @@ namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
 use App\Entities\Group;
-use App\Entities\GroupedParticipant;
+use App\Entities\GroupeMember;
+use App\Entities\GroupMember;
+use App\Entities\Participant;
+use App\Entities\TournamentMember;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -12,8 +15,9 @@ use Psr\Log\LoggerInterface;
 class GroupsController extends BaseController
 {
     protected $participantsModel;
+    protected $tournamentMembersModel;
     protected $groupsModel;
-    protected $group_participantsModel;
+    protected $groupMembersModel;
     
     public function initController(
         RequestInterface $request,
@@ -22,8 +26,9 @@ class GroupsController extends BaseController
     ) {
         parent::initController($request, $response, $logger);
         $this->participantsModel = model('\App\Models\ParticipantModel');
+        $this->tournamentMembersModel = model('\App\Models\TournamentMembersModel');
         $this->groupsModel = model('\App\Models\GroupsModel');
-        $this->group_participantsModel = model('\App\Models\GroupedParticipantsModel');
+        $this->groupMembersModel = model('\App\Models\GroupMembersModel');
     }
 
     public function getList()
@@ -46,78 +51,124 @@ class GroupsController extends BaseController
         helper('db_helper');
 
         $user_id = auth()->user() ? auth()->user()->id :0;
-        if ($this->request->getPost('tournament_id')) {
-            $tournament_id = $this->request->getPost('tournament_id');
-        } else {
-            $tournament_id = 0;
-        }
+        $tournament_id = $this->request->getPost('tournament_id') ?? 0;
+        $hash = $this->request->getPost('hash');
+        $previousMembers = [];
+        $participants = $this->request->getPost('participants');
 
         // Check if it's an AJAX request
         if ($this->request->isAJAX()) {
-            if (!$user_id) {
+            if (!$user_id || !$tournament_id) {
                 disableForeignKeyCheck();
             }
 
-            if ($group_id = $this->request->getPost('group_id')) {
-                $group = $this->groupsModel->find($group_id);
-
-                $groupEntity = new Group($group);
-                $groupEntity->group_name = $this->request->getPost('group_name');
-                $groupEntity->image_path = $this->request->getPost('image_path');
-                $groupEntity->user_id = $user_id;
-
-                $this->groupsModel->save($groupEntity);
-                $participantsInGroups = $this->group_participantsModel->having('g_id', $group_id)->details()->findAll();
-            } else {
-                $groupEntity = new Group();
-
-                if ($this->request->getPost('group_name')) {
-                    $groupEntity->group_name = $this->request->getPost('group_name');
+            if (($group_id = $this->request->getPost('group_id')) && ($group_name = $this->request->getPost('group_name'))) {
+                if ($group_name) {
+                    $groupEntity = $this->groupsModel->asObject()->find($group_id);
+                    $groupEntity->group_name = $group_name;
                     $groupEntity->image_path = $this->request->getPost('image_path');
                     $groupEntity->user_id = $user_id;
 
                     $this->groupsModel->save($groupEntity);
+                }
+            } elseif ($group_id) {
+                $groupEntity = $this->groupsModel->asObject()->find($group_id);
+                $participantsInGroups = $this->groupMembersModel->where('group_members.group_id', $group_id)->details()->groupBy('participant_id')->findAll();
+                if ($participantsInGroups) {
+                    foreach ($participantsInGroups as $participant) {
+                        // Check if the participants in the group are existing in this tournament
+                        $isExisting = false;
+                        if ($t_members = $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $participant['id']])->findAll()) {
+                            
+                            if ($tournament_id) {
+                                $previousMembers[] = $t_members[0]['id'];
+                                continue;
+                            }
 
-                    $group_id = $this->groupsModel->getInsertID();
+                            foreach ($t_members as $member) {
+                                if ($member['hash'] == $hash) {
+                                    $isExisting = true;
+                                    continue;
+                                }
+                            }
+                        }
+
+                        if ($isExisting) {
+                            continue;
+                        }
+
+                        // Add a previous participant as the member of the tournament
+                        if ($participant['id'] && !in_array($participant['id'], $participants)) {
+                            $memberEntity = new TournamentMember([
+                                'participant_id' => $participant['id'],
+                                'tournament_id' => $tournament_id,
+                                'created_by' => $user_id,
+                                'hash' => $hash
+                            ]);
+
+                            $previousMembers[] = $this->tournamentMembersModel->insert($memberEntity);
+                        }
+                    }
+                }
+            } elseif ($group_name = $this->request->getPost('group_name')) {
+                $groupEntity = new Group();
+                $groupEntity->group_name = $group_name;
+                $groupEntity->image_path = $this->request->getPost('image_path');
+                $groupEntity->user_id = $user_id;
+
+                $group_id = $this->groupsModel->insert($groupEntity);
+            }
+
+            // Add a group as the participant
+            if ($group_id) {
+                $participant = $this->participantsModel->where('group_id', $group_id)->findAll();
+                if (!$participant) {
+                    $participantEntity = new Participant([
+                        'name'  => $groupEntity->group_name,
+                        'image' => $groupEntity->image_path,
+                        'hash'  => $hash,
+                        'is_group' => true,
+                        'group_id' => $group_id,
+                        'active' => 1,
+                        'created_by'  => $user_id
+                    ]);
+                    $participant_id = $this->participantsModel->insert($participantEntity);
+
+                    $memberEntity = new TournamentMember([
+                        'participant_id' => $participant_id,
+                        'tournament_id' => $tournament_id,
+                        'created_by' => $user_id,
+                        'hash' => $hash
+                    ]);
+                    $this->tournamentMembersModel->insert($memberEntity);
                 }
             }
             
-            if (!$user_id) {
+            if ($group_id && $participants) {
+                $participantsList = $previousMembers;
+                foreach ($participants as $participant) {
+                    $teamMember = ($tournament_id) ? $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $participant])->first() : $this->tournamentMembersModel->where(['tournament_id' => 0, 'participant_id' => $participant, 'hash' => $hash])->first();
+                    if ($teamMember) {
+                        $participantsList[] = $teamMember['id'];
+                    }
+                }
+
+                if ($participantsList && is_array($participantsList)) {
+                    foreach ($participantsList as $participant) {
+                        $entity = new GroupMember();
+                        $entity->tournament_id = $tournament_id;
+                        $entity->tournament_member_id = $participant;
+                        $entity->group_id = $group_id;
+
+                        $this->groupMembersModel->save($entity);
+                    }
+                }
+            }
+            
+            if (!$user_id || !$tournament_id) {
                 enableForeignKeyCheck();
             }
 
-            if ($group_id) {
-                $participants = $this->request->getPost('participants');
-
-                if (isset($participantsInGroups) && $participantsInGroups) {
-                    foreach ($participantsInGroups as $participant) {
-                        $participant = new \App\Entities\Participant($participant);
-                        $participant->id = null;
-                        $participant->tournament_id = $tournament_id;
-                        $participant->sessionid = $this->request->getPost('hash');
-
-                        $this->participantsModel->save($participant);
-                        $insertId = $this->participantsModel->getInsertID();
-
-                        $participants[] = $insertId;
-                    }
-                }
-                
-                if ($participants && is_array($participants)) {
-                    foreach ($participants as $participant) {
-                        $entity = new GroupedParticipant();
-                        $entity->group_id = $group_id;
-                        $entity->participant_id = $participant;
-                        $entity->tournament_id = $tournament_id;
-
-                        $this->group_participantsModel->save($entity);
-                    }
-                }
-            } else {
-                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                    ->setJSON(['status' => 'error', 'message' => 'Failed to save the group info.']);
-            }
-            
             helper('participant_helper');            
             if ($tournament_id) {
                 $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
@@ -137,15 +188,27 @@ class GroupsController extends BaseController
     public function reset()
     {
         $user_id = auth()->user() ? auth()->user()->id :0;
-        if ($this->request->getPost('tournament_id')) {
-            $tournament_id = $this->request->getPost('tournament_id');
-        } else {
-            $tournament_id = 0;
-        }
+        $tournament_id = $this->request->getPost('tournament_id') ?? 0;
+        $hash = $this->request->getPost('hash');
 
         if ($this->request->isAJAX()) {
-            if ($this->request->getPost('participants')) {
-                $this->group_participantsModel->where(['group_id'=> $this->request->getPost('group_id')])->whereIn('participant_id', $this->request->getPost('participants'))->delete();
+            if ($list = $this->request->getPost('participants')) {
+                if ($tournament_id) {
+                    $members = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->whereIn('participant_id', $list)->select('id')->findAll();
+                } else {
+                    $members = $this->tournamentMembersModel->where(['tournament_id' => 0, 'hash' => $hash])->whereIn('participant_id', $list)->select('id')->findAll();
+                }
+
+                if (isset($members) && $members) {
+                    $members = array_map(function($item) {
+                            return (int)$item['id'];
+                        }, $members);
+
+                    $this->groupMembersModel->where(['group_id'=> $this->request->getPost('group_id')])->whereIn('tournament_member_id', $members)->delete();
+                } else {
+                    return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'error', 'message' => 'These participants are existing.']);
+                }
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                                     ->setJSON(['status' => 'error', 'message' => 'There is not the participants to remove.']);
@@ -170,15 +233,26 @@ class GroupsController extends BaseController
     public function delete()
     {
         $user_id = auth()->user() ? auth()->user()->id :0;
-        if ($this->request->getPost('tournament_id')) {
-            $tournament_id = $this->request->getPost('tournament_id');
-        } else {
-            $tournament_id = 0;
-        }
+        $tournament_id = $this->request->getPost('tournament_id') ?? 0;
+        $hash = $this->request->getPost('hash');
 
         if ($this->request->isAJAX()) {
             if ($this->request->getPost('group_id')) {
-                $this->group_participantsModel->where(['group_id'=> $this->request->getPost('group_id')])->delete();
+                if (count($this->groupMembersModel->where('group_id', $this->request->getPost('group_id'))->groupBy('tournament_id')->findAll()) > 1) {
+                    return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'error', 'message' => 'This group is associated to other tournaments.']);
+                }
+
+                if ($tournament_id) {
+                    $this->groupMembersModel->where(['group_id'=> $this->request->getPost('group_id'), 'tournament_id' => $tournament_id])->delete();
+                } else {
+                    $members = $this->tournamentMembersModel->where(['tournament_id' => 0, 'hash' => $hash])->findAll();
+                    $members = array_map(function($item) {
+                            return (int)$item['id'];
+                        }, $members);
+                    $this->groupMembersModel->where(['group_id'=> $this->request->getPost('group_id'), 'tournament_id' => 0])->whereIn('tournament_member_id', $members)->delete();
+                }
+
                 $this->groupsModel->where(['id'=> $this->request->getPost('group_id')])->delete();
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
@@ -204,15 +278,20 @@ class GroupsController extends BaseController
     public function removeParticipant()
     {
         $user_id = auth()->user() ? auth()->user()->id :0;
-        if ($this->request->getPost('tournament_id')) {
-            $tournament_id = $this->request->getPost('tournament_id');
-        } else {
-            $tournament_id = 0;
-        }
-
+        $tournament_id = $this->request->getPost('tournament_id') ?? 0;
+        $hash = $this->request->getPost('hash');
+        
         if ($this->request->isAJAX()) {
-            if ($this->request->getPost('participant_id')) {
-                $this->group_participantsModel->where(['group_id'=> $this->request->getPost('group_id'), 'participant_id' => $this->request->getPost('participant_id')])->delete();
+            if ($participant_id = $this->request->getPost('participant_id')) {
+                if ($tournament_id) {
+                    $member = $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $participant_id])->first();
+                } else {
+                    $member = $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $participant_id, 'hash' => $hash])->first();
+                }
+
+                if ($member) {
+                    $this->groupMembersModel->where(['group_id' => $this->request->getPost('group_id'), 'tournament_member_id' => $member['id']])->delete();
+                }
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                                     ->setJSON(['status' => 'error', 'message' => 'Failed to remove the participant.']);

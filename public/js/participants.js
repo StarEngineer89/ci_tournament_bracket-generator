@@ -129,13 +129,13 @@ function shuffleArray(array) {
 function renderParticipants(participantsData) {
     itemList.innerHTML = ''
     let enableBtn = document.querySelector('.list-tool-bar .enableBtn').cloneNode(true)
-    document.querySelector('.list-tool-bar').innerHTML = ''
 
     let participantsArray = participantsData.participants
 
     if (participantsArray.length) {
         $('.empty-message-wrapper').addClass('d-none')
         enableBtn.classList.remove('d-none')
+        document.querySelector('.list-tool-bar').innerHTML = ''
         document.querySelector('.list-tool-bar').appendChild(enableBtn)
     } else {
         $('.empty-message-wrapper').removeClass('d-none')
@@ -634,7 +634,7 @@ var addParticipants = (data) => {
                 appendAlert('Records inserted successfully!', 'success');
             }
 
-            if (result.notAllowedParticipants) {
+            if (result.notAllowedParticipants.length) {
                 let names = ''
                 result.notAllowedParticipants.forEach((name, i) => {
                     names += name

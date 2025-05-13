@@ -16,6 +16,7 @@ class TournamentController extends BaseController
 {
     protected $notificationService;
     protected $tournamentModel;
+    protected $tournamentMembersModel;
     protected $participantModel;
     protected $bracketModel;
     protected $shareSettingModel;
@@ -26,11 +27,12 @@ class TournamentController extends BaseController
     {
         $this->notificationService = new NotificationService();
         $this->tournamentModel = model('\App\Models\TournamentModel');
+        $this->tournamentMembersModel = model('\App\Models\TournamentMembersModel');
         $this->participantModel = model('\App\Models\ParticipantModel');
         $this->bracketModel = model('\App\Models\BracketModel');
         $this->shareSettingModel = model('\App\Models\ShareSettingsModel');
         $this->groupsModel = model('\App\Models\GroupsModel');
-        $this->groupMembersModel = model('\App\Models\GroupedParticipantsModel');
+        $this->groupMembersModel = model('\App\Models\GroupMembersModel');
     }
     
     public function index()
@@ -41,6 +43,7 @@ class TournamentController extends BaseController
     public function fetch()
     {
         $tournaments = $this->tournamentModel;
+
         $searchable = $this->request->getPost('search_tournament');
         $type = $this->request->getPost('type');
         $evaluation_method = $this->request->getPost('evaluation_method');
@@ -175,8 +178,7 @@ class TournamentController extends BaseController
                 $tournament['email'] = null;
             }
 
-            $participants = $this->participantModel->where('tournament_id', $tournament_id)->findAll();
-            if ($participants) {
+            if ($participants = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->findAll()) {
                 $tournament['participants_count'] = count($participants);
                 $result_tournaments[] = $tournament;
             }
@@ -269,13 +271,10 @@ class TournamentController extends BaseController
                 }
             }
 
-            $participantModel = model('\App\Models\ParticipantModel');
-            $temp['participants'] = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
-
             $sharedTournament = $this->shareSettingModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
             $temp['public_url'] = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
             
-            $participants = $this->participantModel->where('tournament_id', $tournament['id'])->findAll();
+            $participants = $this->tournamentMembersModel->where('tournament_members.tournament_id', $tournament['id'])->participantInfo()->findAll();
             $temp['participants_count'] = 0;
             if ($participants) {
                 $temp['participants_count'] = count($participants);
@@ -288,14 +287,14 @@ class TournamentController extends BaseController
 
     public function save()
     {
+        helper('db_helper');
+
         $tournamentModel = model('\App\Models\TournamentModel');
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
 
         /** Disable foreign key check for the guest users */
-        $db = \Config\Database::connect();
-        $dbDriver = $db->DBDriver;
-        if (!auth()->user() && $dbDriver === 'MySQLi') {
-            $db->query('SET FOREIGN_KEY_CHECKS = 0;');
+        if (!$user_id) {
+            disableForeignKeyCheck();
         }
 
         $existing = $tournamentModel->where(['name' => $this->request->getPost('title'), 'user_id' => $user_id])->findAll();
@@ -346,6 +345,7 @@ class TournamentController extends BaseController
         $tournamentData = new \App\Entities\Tournament($data);
 
         $tournament_id = $tournamentModel->insert($tournamentData);
+        // End saving the tournament settings
 
         if (!$tournament_id) {
             $data = ['errors' => "tournament_saving", 'message' => "Failed to save the tournament."];
@@ -433,13 +433,18 @@ class TournamentController extends BaseController
         /** End adding the tournament Id into the cookie for guest users */
         
         /**
-         * Add the tournament ID to the participants
+         * Assign the tournament ID to the participants and group members
          */
-        $this->participantModel->where(['tournament_id'=> 0, 'sessionid' => $this->request->getPost('hash')])->set(['tournament_id' => $tournament_id])->update();
+        $this->tournamentMembersModel->where(['tournament_id'=> 0, 'hash' => $this->request->getPost('hash')])->set(['tournament_id' => $tournament_id])->update();
+        $members = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->findAll();
+        $members = array_map(function($item) {
+                return (int)$item['id'];
+            }, $members);
+        $this->groupMembersModel->whereIn('tournament_member_id', $members)->set(['tournament_id' => $tournament_id])->update();
 
         /** Enable foreign key check */
-        if (!auth()->user() && $dbDriver === 'MySQLi') {
-            $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+        if (!$user_id) {
+            enableForeignKeyCheck();
         }
 
         $data['id'] = $tournament_id;
@@ -568,7 +573,7 @@ class TournamentController extends BaseController
              *  Notify the availability duration was updated
              */
             if ($availabilityChanged) {
-                $registeredUsers = $this->participantModel->where(['tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+                $registeredUsers = $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->participantInfo()->findColumn('registered_user_id');
 
                 if ($registeredUsers) {
                     $userProvider = auth()->getProvider();
@@ -1293,12 +1298,7 @@ class TournamentController extends BaseController
 
     public function reuseParticipants() {
         $reuse_Id = $this->request->getPost('id');
-        
-        if ($this->request->getPost('tournament_id')) {
-            $tournament_id = $this->request->getPost('tournament_id');
-        } else {
-            $tournament_id = 0;
-        }
+        $tournament_id = $this->request->getPost('tournament_id') ?? 0;
 
         if (!$tournament_id) {
             helper('db_helper');
@@ -1311,7 +1311,11 @@ class TournamentController extends BaseController
         }
 
         // Fetch the participants
-        $participants = $this->participantModel->where('tournament_id', $reuse_Id)->findAll();
+        $tournamentMembers = $this->tournamentMembersModel->asObject()->where('tournament_id', $reuse_Id)->findAll();
+        $groupMembers = $this->groupMembersModel->asObject()->where('group_members.tournament_id', $reuse_Id)->details()->findAll();
+        $ptIdsOfGroupMembers = array_map(function($item) {
+            return (int)$item->id;
+        }, $groupMembers);
 
         /** Clear existing participants */
         if (auth()->user()) {
@@ -1321,32 +1325,42 @@ class TournamentController extends BaseController
         }
 
         if ($user_id) {
-            $this->participantModel->where(['tournament_id' => $tournament_id, 'participants.user_id' => $user_id])->delete();
+            $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'created_by' => $user_id])->delete();
         } else {
-            $this->participantModel->where(['tournament_id' => $tournament_id, 'sessionid' => $this->request->getPost('hash')])->delete();
+            $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'hash' => $this->request->getPost('hash')])->delete();
         }
 
-        /** Create new participants list from previous tournaments */
-        foreach ($participants as $participant) {
-            if ($participant['name'] && !$participant['is_group']) {
-                $newParticipant = new \App\Entities\Participant([
-                    'name' => $participant['name'],
-                    'user_id' => $user_id,
-                    'tournament_id' => $tournament_id,
-                    'order' => $participant['order'],
-                    'active' => 1,
-                    'sessionid' => $this->request->getPost('hash'),
-                    'registered_user_id' => $participant['registered_user_id']
-                ]);
+        /** Create new tournament member and group member lists from previous tournaments */
+        foreach ($tournamentMembers as $member) {
+            $newMember = new \App\Entities\TournamentMember([
+                'participant_id' => $member->participant_id,
+                'tournament_id' => $tournament_id,
+                'order' => $member->order,
+                'created_by' => $user_id,
+                'hash' => $this->request->getPost('hash'),
+            ]);
 
-                $this->participantModel->save($newParticipant);
-                $newParticipantId = $this->participantModel->getInsertID();
-
-                // Check if the participant was included in the group and assign new participant to the group
-                if ($members = $this->groupMembersModel->where(['tournament_id' => $reuse_Id, 'participant_id' => $participant['id']])->findAll()) {
-                    foreach ($members as $member) {
-                        $this->groupMembersModel->insert(['tournament_id' => $tournament_id, 'participant_id' => $newParticipantId, 'group_id' => $member['group_id']]);
+            $member_id = $this->tournamentMembersModel->insert($newMember);
+            
+            // Add the group members
+            if ($ptIdsOfGroupMembers && in_array($member->participant_id, $ptIdsOfGroupMembers)) {
+                $group_id = null;
+                if ($groupMembers) {
+                    foreach ($groupMembers as $gMember) {
+                        if ($gMember->id == $member->participant_id) {
+                            $group_id = $gMember->group_id;
+                            break;
+                        }
                     }
+                }
+
+                if ($group_id) {
+                    $groupMember = new \App\Entities\GroupMember([
+                        'tournament_id' => $tournament_id,
+                        'tournament_member_id' => $member_id,
+                        'group_id' => $group_id
+                    ]);
+                    $this->groupMembersModel->insert($groupMember);
                 }
             }
         }
@@ -1499,16 +1513,8 @@ class TournamentController extends BaseController
                 $data['bracket_no'] = $bracket['bracketNo'];
                 $data['round_no'] = $saveData['round_no'];
                 
-                if (isset($saveData['is_group']) && $saveData['is_group']) {
-                    $participant = $this->groupsModel->find($saveData['participant_id']);
-                    if ($participant) {
-                        $data['participants'] = ['name' => $participant['group_name'], 'type' => 'group'];
-                    }
-                } else {
-                    $participant = $this->participantModel->find($saveData['participant_id']);
-                    if ($participant) {
-                        $data['participants'] = ['name' => $participant['name'], 'type' => null];
-                    }
+                if ($participant = $this->participantModel->find($saveData['participant_id'])) {
+                    $data['participants'] = ['name' => $participant['name'], 'type' => (isset($saveData['is_group']) && $saveData['is_group']) ? 'group' : null];
                 }
                 
                 $insert_data['params'] = json_encode($data);

@@ -24,22 +24,20 @@ class CreateGroupsTable extends Migration
         $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
         $this->forge->createTable('groups', false, $attributes);
 
-        // Groups participants Table
+        // GroupMembers Table
         $this->forge->addField([
             'id'            => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'group_id'      => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
-            'participant_id'=> ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'tournament_id' => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
+            'tournament_member_id'=> ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'created_at'    => ['type' => 'datetime', 'null' => false],
             'updated_at'    => ['type' => 'datetime', 'null' => false],
             'deleted_at'    => ['type' => 'datetime', 'null' => true],
         ]);
         $this->forge->addPrimaryKey('id');
-        $this->forge->addKey('group_id');
         $this->forge->addForeignKey('group_id', 'groups', 'id', '', 'CASCADE');
-        $this->forge->addKey('participant_id');
-        $this->forge->addForeignKey('participant_id', 'participants', 'id', '', 'CASCADE');
-        $this->forge->createTable('grouped_participants', false, $attributes);
+        $this->forge->addForeignKey('tournament_member_id', 'tournament_members', 'id', '', 'CASCADE');
+        $this->forge->createTable('group_members', false, $attributes);
     }
 
     public function down()
@@ -47,7 +45,7 @@ class CreateGroupsTable extends Migration
         $this->db->disableForeignKeyChecks();
 
         $this->forge->dropTable('groups', true);
-        $this->forge->dropTable('grouped_participants', true);
+        $this->forge->dropTable('group_members', true);
         
         $this->db->enableForeignKeyChecks();
     }

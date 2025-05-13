@@ -12,7 +12,7 @@ class ParticipantModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'registered_user_id', 'user_id', 'tournament_id', 'order', 'active', 'image', 'sessionid', 'is_group', 'group_id'];
+    protected $allowedFields    = ['name', 'active', 'image', 'hash', 'is_group', 'group_id', 'registered_user_id', 'created_by'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -44,12 +44,13 @@ class ParticipantModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
     
-    public function withGroupInfo()
-    {
-        $this->select('participants.*, groups.id as g_id, groups.group_name, groups.image_path as group_image, groups.user_id as group_creator_id');
-        $this->join('grouped_participants', 'grouped_participants.participant_id = participants.id', 'LEFT');
-        $this->join('groups', 'grouped_participants.group_id = groups.id', 'LEFT');
+    // public function withGroupInfo()
+    // {
+    //     $this->select('participants.*, groups.id as g_id, groups.group_name, groups.image_path as group_image, groups.user_id as group_creator_id');
+    //     $this->join('tournament_members', 'tournament_members.participant_id = participants.id', 'LEFT');
+    //     $this->join('grouped_participants', 'grouped_participants.tournament_member_id = tournament_members.id', 'LEFT');
+    //     $this->join('groups', 'grouped_participants.group_id = groups.id', 'LEFT');
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }

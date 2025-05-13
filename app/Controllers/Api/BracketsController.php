@@ -10,10 +10,11 @@ use Psr\Log\LoggerInterface;
 class BracketsController extends BaseController
 {
     protected $bracketsModel;
-    protected $participantsModel;
     protected $tournamentsModel;
+    protected $tournamentMembersModel;
+    protected $participantsModel;
     protected $groupsModel;
-    protected $groupedParticipantsModel;
+    protected $groupMembersModel;
     protected $votesModel;
     protected $tournamentRoundSettingsModel;
     protected $_base;
@@ -29,8 +30,9 @@ class BracketsController extends BaseController
         $this->bracketsModel = model('\App\Models\BracketModel');
         $this->participantsModel = model('\App\Models\ParticipantModel');
         $this->tournamentsModel = model('\App\Models\TournamentModel');
+        $this->tournamentMembersModel = model('\App\Models\TournamentMembersModel');
         $this->groupsModel = model('\App\Models\GroupsModel');
-        $this->groupedParticipantsModel = model('\App\Models\GroupedParticipantsModel');
+        $this->groupMembersModel = model('\App\Models\GroupMembersModel');
         $this->votesModel = model('\App\Models\VotesModel');
         $this->tournamentRoundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
     }
@@ -222,9 +224,7 @@ class BracketsController extends BaseController
                     $userId = (auth()->user()) ? auth()->user()->id : 0;
                     $participant = new \App\Entities\Participant([
                         'name' => $req->name,
-                        'user_id' => $userId,
-                        'tournament_id' => $bracket['tournament_id'],
-                        'order' => $order,
+                        'created_by' => $userId,
                         'image' => null,
                         'active' => 1
                     ]);
@@ -234,6 +234,15 @@ class BracketsController extends BaseController
                     }
 
                     $participant_id = $this->participantsModel->insert($participant);
+
+                    // Add the new participant as the tournament member
+                    $member = new \App\Entities\TournamentMember([
+                        'participant_id' => $participant_id,
+                        'tournament_id' => $tournament['id'],
+                        'order' => $order,
+                        'created_by' => $userId
+                    ]);
+                    $this->tournamentMembersModel->insert($member);
                     
                     /** Send the email to the registered user */
                     if($req->name[0] == '@' && $user) {
@@ -272,10 +281,10 @@ class BracketsController extends BaseController
                 if ($participant['is_group'] && $participant['group_id']) {
                     $teamnames[$req->index]['is_group'] = 1;
                     
-                    $members = $this->groupedParticipantsModel->where(['tournament_id' => $bracket['tournament_id'], 'group_id' => $participant['group_id']])->findAll();
+                    $members = $this->groupMembersModel->where(['group_members.tournament_id' => $bracket['tournament_id'], 'group_members.group_id' => $participant['group_id']])->details()->findAll();
                     if ($members) {
                         foreach ($members as $index => $member) {
-                            $teamnames[$req->index]['members'][] = ['id' => $member['participant_id'], 'order' => $index];
+                            $teamnames[$req->index]['members'][] = ['id' => $member['id'], 'order' => $index];
                         }
                     }
                 }
@@ -683,8 +692,8 @@ class BracketsController extends BaseController
         /**
          * Update tournament searchable data
          */
-        $tournament = $this->tournamentsModel->find($tournament_id);
-        $tournament['searchable'] = $tournament['name'];
+        $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
+        $tournament->searchable = $tournament->name;
         $this->tournamentsModel->save($tournament);
 
         /** Remove vote history */
@@ -694,7 +703,7 @@ class BracketsController extends BaseController
          * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
          */
         $logActionsModel = model('\App\Models\LogActionsModel');
-        $insert_data = ['tournament_id' => $tournament['id'], 'action' => BRACKET_ACTIONCODE_CLEAR];
+        $insert_data = ['tournament_id' => $tournament_id, 'action' => BRACKET_ACTIONCODE_CLEAR];
         $insert_data['user_id'] = auth()->user() ? auth()->user()->id : 0;
 
         $data = [];
@@ -707,13 +716,12 @@ class BracketsController extends BaseController
         $schedulesModel->where(['tournament_id' => $tournament_id])->delete();
 
         /** Send the notification and emails to the registered users */
-        $registeredUsers = $this->participantsModel->where(['tournament_id' => $tournament_id])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+        $registeredUsers = $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->where('registered_user_id Is Not Null')->participantInfo()->findColumn('registered_user_id');
         if ($registeredUsers) {
             $userProvider = auth()->getProvider();
             $userSettingService = service('userSettings');
             $notificationService = service('notification');
 
-            $tournamentEntity = new \App\Entities\Tournament($tournament);
             foreach ($registeredUsers as $user_id) {
                 $user = $userProvider->findById($user_id);
 
@@ -721,18 +729,18 @@ class BracketsController extends BaseController
                     continue;
                 }
 
-                $message = lang('Notifications.tournamentReset', [$tournamentEntity->name]);
-                $notificationService->addNotification(['user_id' => $insert_data['user_id'], 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_RESET, 'link' => "tournaments/$tournamentEntity->id/view"]);
+                $message = lang('Notifications.tournamentReset', [$tournament->name]);
+                $notificationService->addNotification(['user_id' => $insert_data['user_id'], 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_TOURNAMENT_RESET, 'link' => "tournaments/$tournament->id/view"]);
 
                 if (!$userSettingService->get('email_notification', $user_id) || $userSettingService->get('email_notification', $user_id) == 'on') {
-                    $creator = $userProvider->findById($tournamentEntity->user_id);
+                    $creator = $userProvider->findById($tournament->user_id);
                     $email = service('email');
                     $email->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
                     $email->setTo($user->email);
                     $email->setSubject(lang('Emails.tournamentResetEmailSubject'));
                     $email->setMessage(view(
                         'email/tournament-reset',
-                        ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                        ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
                         ['debug' => false]
                     ));
 
@@ -751,10 +759,11 @@ class BracketsController extends BaseController
     public function generateBrackets()
     {
         $list = $this->request->getPost('list');
+        $hash = $this->request->getPost('hash');
         
         if ($notAllowedList = $this->request->getPost('notAllowedList')) {
             foreach ($notAllowedList as $item) {
-                $this->participantsModel->delete($item);
+                $this->tournamentMembersModel->delete($item);
             }
         }
 
@@ -776,35 +785,15 @@ class BracketsController extends BaseController
 
         // Assign the tournament id to the participants
         if (count($list) > 0) {
-            $all_participants = []; // Participant list to assign the tournament id
-            $updatedList = []; // Participant list including the groups
+            $all_participants = [];
+            $updatedList = [];
             foreach($list as $item) {
                 if (isset($item['is_group']) && $item['is_group'] && count($item['members'])) {
-                    foreach($item['members'] as $member) {
-                        $all_participants[] = $member;
-                        $this->groupedParticipantsModel->where(['group_id' => $item['id'], 'participant_id' => $member['id']])->set(['tournament_id' => $tournament_id])->update();
-                    }
-
-                    $group = $this->groupsModel->find($item['id']);
-                    $participant = new \App\Entities\Participant($this->participantsModel->where(['tournament_id' => $tournament_id, 'group_id' => $item['id']])->first());
-
-                    if (!$participant->id) {
-                        $participant->tournament_id = $tournament_id;
-                        $participant->active = true;
-                        $participant->group_id = $item['id'];
-                        $participant->is_group = true;
-                        $participant->sessionid = $this->request->getPost('hash');
-                    }
-
-                    $participant->name = $group['group_name'];
-                    $participant->user_id = $user_id;
-                    $participant->image = $group['image_path'];
-                    $participant->order = $item['order'];
-                    $this->participantsModel->save($participant);
-
-                    $participant = $this->participantsModel->where(['tournament_id' => $tournament_id, 'group_id' => $item['id']])->first();
+                    $participant = $this->participantsModel->where('group_id', $item['id'])->first();
 
                     $item['id'] = $participant['id'];
+
+                    $all_participants = array_merge($all_participants, $item['members']);
                 } else {
                     $all_participants[] = $item;
                 }
@@ -812,20 +801,16 @@ class BracketsController extends BaseController
                 $updatedList[] = $item;
             }
 
+            // Generate the string for searchable field
             foreach ($all_participants as $item) {
-                $participant = new \App\Entities\Participant($this->participantsModel->find($item['id']));
-                $participant->order = $item['order'];
-                $participant->tournament_id = $this->request->getPost('tournament_id');
+                $member = $this->tournamentMembersModel->asObject()->where(['tournament_id' => $tournament_id, 'participant_id' => $item['id']])->first();
+                $member->order = $item['order'];
+                $this->tournamentMembersModel->save($member);
 
-                $this->participantsModel->save($participant);
-
+                $participant = $this->participantsModel->asObject()->find($item['id']);
                 $participant_name = $participant->name;
                 if ($participant_name[0] == '@') {
-                    $name = trim($participant_name, '@');
-                    $user = auth()->getProvider()->where('username', $name)->first();
-                    if ($user) {
-                        $participant->registered_user_id = $user->id;
-                    }
+                    $participant_name = trim($participant_name, '@');
                 }
 
                 $participant_names_string .= $participant_name .',';
@@ -848,39 +833,27 @@ class BracketsController extends BaseController
         }
 
         /** Fill the Searchable field into tournament */
-        $tournamentModel = model('\App\Models\TournamentModel');
-        if ($this->request->getPost('tournament_id')) {
-            $tournament = $tournamentModel->find($this->request->getPost('tournament_id'));
-            $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
-            $tournamentModel->save($tournament);
-        }
+        $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
+        $tournament->searchable = $tournament->name . ',' . $participant_names_string;
+        $this->tournamentsModel->save($tournament);
 
         /** Add a schedule to update rounds */
-        if ($this->request->getPost('tournament_id')) {
-            if ($tournament['availability']) {
-                $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
+        if ($tournament->availability) {
+            $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
 
-                $maxRound = $this->bracketsModel->where('tournament_id', $tournament['id'])->selectMax('roundNo')->first() ?? 1;
-                $scheduleLibrary->registerSchedule($tournament['id'], SCHEDULE_NAME_TOURNAMENTSTART, 1, $tournament['available_start']);
-                $scheduleLibrary->registerSchedule($tournament['id'], SCHEDULE_NAME_TOURNAMENTEND, $maxRound, $tournament['available_end']);
+            $maxRound = $this->bracketsModel->where('tournament_id', $tournament->id)->selectMax('roundNo')->first() ?? 1;
+            $scheduleLibrary->registerSchedule($tournament->id, SCHEDULE_NAME_TOURNAMENTSTART, 1, $tournament->available_start);
+            $scheduleLibrary->registerSchedule($tournament->id, SCHEDULE_NAME_TOURNAMENTEND, $maxRound, $tournament->available_end);
 
-                if ($tournament['round_duration_combine'] || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND)) {
-                    $scheduleLibrary->scheduleRoundUpdate($tournament['id']);
-                }
+            if ($tournament->round_duration_combine || ($tournament->evaluation_method == EVALUATION_METHOD_VOTING && $tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_ROUND)) {
+                $scheduleLibrary->scheduleRoundUpdate($tournament->id);
             }
-            
         }
 
         /** Send the notifications to the participants (registered users) */
-        $tournamentData = new \App\Entities\Tournament($tournament);
         $notificationService = new \App\Services\NotificationService();
 
-        if ($this->request->getPost('tournament_id')) {
-            $users = $this->participantsModel->where('participants.tournament_id', $this->request->getPost('tournament_id'))->where('registered_user_id is Not Null')->withGroupInfo()->findAll();
-        } else {
-            $users = $this->participantsModel->where('sessionid', $this->request->getPost('hash'))->where('registered_user_id is Not Null')->withGroupInfo()->findAll();
-        }
-
+        $users = $this->tournamentMembersModel->where('tournament_members.tournament_id', $tournament_id)->where('registered_user_id is Not Null')->participantInfo()->findAll();
         if ($users) {
             $userProvider = auth()->getProvider();
             $userSettingsService = service('userSettings');
@@ -893,7 +866,7 @@ class BracketsController extends BaseController
                 }
 
                 $string = $groupName ? 'Group: "' . $groupName . '"' : 'Individual Participant';
-                $message = "You've been added to tournament \"$tournamentData->name\" ($string)!";
+                $message = "You've been added to tournament \"$tournament->name\" ($string)!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
                 if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
@@ -903,7 +876,7 @@ class BracketsController extends BaseController
                     $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
                     $email->setMessage(view(
                         'email/invite-to-tournament',
-                        ['username' => $user->username, 'tournament' => $tournamentData, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $groupName],
+                        ['username' => $user->username, 'tournament' => $tournament, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $groupName],
                         ['debug' => false]
                     ));
 

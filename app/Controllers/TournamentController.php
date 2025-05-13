@@ -30,14 +30,10 @@ class TournamentController extends BaseController
     public function create()
     {
         $userSettingModel = model('\App\Models\UserSettingModel');
-        $participantModel = model('\App\Models\ParticipantModel');
-
+        
         // Convert settings to key-value array
         $settingsArray = [];
         if( auth()->user() ){
-
-            $participants = $participantModel->where(['user_id' => auth()->user()->id, 'tournament_id' => 0])->delete();
-
             $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
             if (count($userSettings)) {
                 foreach ($userSettings as $setting) {

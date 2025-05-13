@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class GroupedParticipantsModel extends Model
+class GroupMembersModel extends Model
 {
-    protected $table            = 'grouped_participants';
+    protected $table            = 'group_members';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['group_id', 'participant_id', 'tournament_id'];
+    protected $allowedFields    = ['tournament_id', 'tournament_member_id', 'group_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -46,8 +46,9 @@ class GroupedParticipantsModel extends Model
     
     public function details()
     {
-        $this->select('grouped_participants.group_id as g_id, participants.*');
-        $this->join('participants', 'grouped_participants.participant_id = participants.id', 'LEFT');
+        $this->select('participants.id, participants.name, participants.image, tournament_members.order, group_members.group_id');
+        $this->join('tournament_members', 'group_members.tournament_member_id = tournament_members.id', 'LEFT');
+        $this->join('participants', 'tournament_members.participant_id = participants.id', 'LEFT');
 
         return $this;
     }

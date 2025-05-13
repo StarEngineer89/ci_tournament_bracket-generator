@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class TournamentModel extends Model
+class TournamentMembersModel extends Model
 {
-    protected $table            = 'tournaments';
+    protected $table            = 'tournament_members';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_enabled', 'score_bracket', 'increment_score_enabled', 'increment_score', 'increment_score_type', 'visibility', 'availability', 'available_start', 'available_end', 'evaluation_method', 'voting_accessibility', 'voting_mechanism', 'max_vote_value', 'voting_retain', 'round_duration_combine', 'allow_host_override', 'pt_image_update_enabled', 'theme', 'winner_audio_everyone'];
+    protected $allowedFields    = ['tournament_id', 'participant_id', 'order', 'created_by', 'hash'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -43,4 +43,14 @@ class TournamentModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function participantInfo()
+    {
+        $this->select('participants.*, tournament_members.order, tournament_members.created_by as hosted_by, groups.id as g_id, groups.group_name, groups.image_path as group_image');
+        $this->join('participants', 'tournament_members.participant_id = participants.id', 'LEFT');
+        $this->join('group_members', 'tournament_members.id = group_members.tournament_member_id', 'LEFT');
+        $this->join('groups', 'group_members.group_id = groups.id', 'LEFT');
+
+        return $this;
+    }
 }

@@ -9,15 +9,15 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
      */
     function getParticipantsAndReusedGroupsInTournament ($tournament_id, $hash = null)
     {
-        $participantsModel = model('\App\Models\ParticipantModel');
-        $groupMembersModel = model('\App\Models\GroupedParticipantsModel');
+        $tournamentMembersModel = model('\App\Models\TournamentMembersModel');
+        $groupMembersModel = model('\App\Models\GroupMembersModel');
         $userSettingService = service('userSettings');
 
         $participants = [];
         if ($tournament_id) {
-            $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id])->withGroupInfo()->findAll();
+            $participants = $tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->participantInfo()->findAll();
         } else {
-            $participants = $participantsModel->where(['participants.tournament_id' => $tournament_id, 'sessionid' => $hash])->withGroupInfo()->findAll();
+            $participants = $tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id, 'tournament_members.hash' => $hash])->participantInfo()->findAll();
         }
 
         $filteredParticipants = [];
@@ -25,9 +25,9 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
         $reusedGroups = [];
         if ($participants) {
             foreach ($participants as $participant) {
-                if (isset($participant['g_id']) && $participant['g_id'] && !in_array($participant['g_id'], $reusedGroups)) {
-                    if (count($groupMembersModel->where('group_id', $participant['g_id'])->groupBy('tournament_id')->findAll()) > 1) {
-                        $reusedGroups[] = intval($participant['g_id']);
+                if (isset($participant['group_id']) && $participant['group_id'] && !in_array($participant['group_id'], $reusedGroups)) {
+                    if (count($groupMembersModel->where('group_id', $participant['group_id'])->groupBy('tournament_id')->findAll()) > 1) {
+                        $reusedGroups[] = intval($participant['group_id']);
                     }
                 }
 
