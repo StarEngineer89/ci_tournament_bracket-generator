@@ -159,8 +159,18 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
         {
             "data": null,
             "render": function(data, type, row, meta) {
-                if (parseInt(row.is_group)) {
-                    return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="Group: ${row.name}<br/>Members:<br/>${row.members}">${row.name}</span>`
+                if (parseInt(row.is_group) && row.members) {
+                    var members = row.members.split(",").map(item => item.trim())
+                    var membersHtml = ''
+                    if (members.length) {
+                        members.forEach((member, i) => {
+                            membersHtml += member
+                            if (i < members.length - 1) {
+                                membersHtml += '<br/>'
+                            }
+                        })
+                    }
+                    return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="<div class='text-start'>Group: ${row.name}<br/>Members:<br/><div class='ps-2'>${membersHtml}</div></div>">${row.name}</span>`
                 } else {
                     return `<span class="tooltip-span" data-bs-toggle="tooltip" data-placement="top" data-bs-html="true" data-bs-title="${row.email ? row.name + '<br/>(' + row.email + ')' : row.name}">${row.name}</span>`
                 }

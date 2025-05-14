@@ -359,7 +359,7 @@ class TournamentController extends BaseController
     public function export()
     {
         $tournamentModel = model('\App\Models\TournamentModel');
-        $participantModel = model('\App\Models\ParticipantModel');
+        $tournamentMembers = model('\App\Models\TournamentMembersModel');
         $shareSettingsModel = model('App\Models\ShareSettingsModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
         
@@ -494,7 +494,7 @@ class TournamentController extends BaseController
                     ]);
                 }
             } else {
-                $participants = count($participantModel->where('tournament_id', $tournament['id'])->findAll());
+                $participants = count($tournamentMembers->where('tournament_members.tournament_id', $tournament['id'])->participantInfo()->findAll());
                 $availability_start = $tournament['available_start'];
                 $availability_end = $tournament['available_end'];
 

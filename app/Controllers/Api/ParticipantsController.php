@@ -154,19 +154,6 @@ class ParticipantsController extends BaseController
                         $registered_user = auth()->getProvider()->findById($registered_user_id);
                         $participant['email'] = $registered_user ? $registered_user->email : null;
                     }
-                    
-                    // if (isset($registered_users[$registered_user_id])) {
-                    //     $registered_users[$registered_user_id]['brackets_won'] += $participant['brackets_won'];
-                    //     $registered_users[$registered_user_id]['tournaments_won'] += $participant['tournaments_won'];
-                    //     $registered_users[$registered_user_id]['accumulated_score'] += $participant['accumulated_score'];
-                    //     $registered_users[$registered_user_id]['votes'] += $participant['votes'];
-                        
-                    //     if (count($participant['won_tournaments'])) {
-                    //         $registered_users[$registered_user_id]['won_tournaments'] = array_merge($registered_users[$registered_user_id]['won_tournaments'], $participant['won_tournaments']);
-                    //     }
-                    // } else {
-                    //     $registered_users[$registered_user_id] = $participant;
-                    // }
                 }
 
                 $tournamentIds = $this->tournamentMembersModel->where('participant_id', $participant['id'])->groupBy('tournament_id')->findColumn('tournament_id');
@@ -227,15 +214,12 @@ class ParticipantsController extends BaseController
                                     $newList[$member['id']]['tournaments_list'] = array_merge($newList[$member['id']]['tournaments_list'], $group['tournaments_list']);
                                     $newList[$member['id']]['tournaments_list'] = array_map("unserialize", array_unique(array_map("serialize", $newList[$member['id']]['tournaments_list'])));
                                 }
-                                
-                                
-                                
                             }
                             
                             // make the member's name list for tooltip
                             $group['members'] .= $member['name'];
                             if ($index < count($members) - 1) {
-                                $group['members'] .= '<br/>';
+                                $group['members'] .= ',';
                             }
                         }
 
@@ -620,7 +604,7 @@ class ParticipantsController extends BaseController
     }
     
     public function export(){
-        $participants = $this->participantsModel->findAll();
+        $participants = $this->getParticipantsList();
         
         $filename = 'participants' . date('Ymd') . '.csv';
 
@@ -630,90 +614,13 @@ class ParticipantsController extends BaseController
         $output = fopen('php://output', 'w');
 
         // Add the CSV column headers
-        fputcsv($output, ['ID', 'Participant Name', 'Brackets Won', 'Tournaments Won', 'Won Tournaments', 'Participated Tournaments', 'Accumulated Score', 'Votes']);
+        fputcsv($output, ['ID', 'Participant Name', 'Participant Type', 'Group Members', 'Brackets Won', 'Tournaments Won', 'Won Tournaments', 'Participated Tournaments', 'Accumulated Score', 'Votes']);
 
         // Fetch the data and write it to the CSV
         if ($participants) {
-            $newList = [];
-            $registered_users = [];
             foreach ($participants as $participant) {
-                $brackets = $this->bracketsModel->where(['winner' => $participant['id']])->findAll();
-                $participant['brackets_won'] = ($brackets) ? count($brackets) : 0;
-
-                $finalBrackets = $this->bracketsModel->where(['winner' => $participant['id'], 'final_match' => 1])->findAll();
-                $participant['tournaments_won'] = ($finalBrackets) ? count($finalBrackets) : 0;
-
-                $participant['won_tournaments'] = [];
-                $won_tournament_names = [];
-                if ($finalBrackets) {
-                    foreach ($finalBrackets as $f_bracket) {
-                        $won_tournament = $this->tournamentsModel->find($f_bracket['tournament_id']);
-                        $participant['won_tournaments'][] = $won_tournament;
-                        $won_tournament_names[] = strtolower($won_tournament['name']);
-                    }
-                }
-
-                if ($this->request->getPost('won_tournament')) {
-                    if (empty(array_filter($won_tournament_names, fn($str) => stripos($str, $this->request->getPost('won_tournament')) !== false))) {
-                        continue;
-                    }
-                }
-
-                $scores = $this->calculateScores($participant['id'], $brackets);
-                $participant['top_score'] = $scores['top_score'];
-                $participant['accumulated_score'] = $scores['total_score'];
-
-                $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
-                $participant['votes'] = ($votes) ? count($votes) : 0;
-
-                if ($participant['name'][0] == '@' && $participant['registered_user_id']) {
-                    $registered_user_id = $participant['registered_user_id'];
-                    $tournament_ids = $this->participantsModel->where('registered_user_id', $registered_user_id)->findColumn('tournament_id');
-                                        
-                    if (isset($registered_users[$registered_user_id])) {
-                        $registered_users[$registered_user_id]['brackets_won'] += $participant['brackets_won'];
-                        $registered_users[$registered_user_id]['tournaments_won'] += $participant['tournaments_won'];
-                        $registered_users[$registered_user_id]['accumulated_score'] += $participant['accumulated_score'];
-                        $registered_users[$registered_user_id]['votes'] += $participant['votes'];
-                        
-                        if (count($participant['won_tournaments'])) {
-                            $registered_users[$registered_user_id]['won_tournaments'] = array_merge($registered_users[$registered_user_id]['won_tournaments'], $participant['won_tournaments']);
-                        }
-                    } else {
-                        $registered_users[$registered_user_id] = $participant;
-                    }
-
-                    $registered_users[$registered_user_id]['tournaments_list'] = $this->tournamentsModel->whereIn('id', $tournament_ids)->select(['id', 'name'])->findAll();
-                } else {
-                    if ($this->request->getPost('tournament')) {
-                        $participant['tournaments_list'] = $this->tournamentsModel->where('id', $participant['tournament_id'])->like('name', $this->request->getPost('tournament'))->select(['id', 'name'])->findAll();
-                        if ($participant['tournaments_list']) {
-                            $newList[] = $participant;
-                        }
-                    } else {
-                        $participant['tournaments_list'] = $this->tournamentsModel->where('id', $participant['tournament_id'])->select(['id', 'name'])->findAll();
-                        $newList[] = $participant;
-                    }
-                }
-            }
-
-            if ($registered_users) {
-                foreach ($registered_users as $user) {
-                    if ($this->request->getPost('tournament')) {
-                        if ($user['tournaments_list']) {
-                            array_push($newList, $user);
-                        }
-                    } else {
-                        array_push($newList, $user);
-                    }
-                    
-                }
-            }
-            
-            $keys = array_column($newList, 'tournaments_won');
-            array_multisort($keys, SORT_DESC, $newList);
-
-            foreach ($newList as $participant) {
+                $participantType = $participant['is_group'] ? "Group" : "Individual Participant";
+                $groupMembers = ($participant['is_group'] && isset($participant['members']) && $participant['members']) ? $participant['members'] : "N/A";
                 $won_list = '';
                 if ($participant['won_tournaments']) {
                     foreach ($participant['won_tournaments'] as $i => $won_t) {
@@ -739,6 +646,8 @@ class ParticipantsController extends BaseController
                 fputcsv($output, [
                     $participant['id'],
                     $participant['name'],
+                    $participantType,
+                    $groupMembers,
                     $participant['brackets_won'],
                     $participant['tournaments_won'],
                     $won_list,
