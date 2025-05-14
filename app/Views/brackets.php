@@ -56,10 +56,6 @@ const is_temp_tournament = false;
 
 const UUID = getOrCreateDeviceId()
 
-if (!tournament.vote_displaying) {
-    tournament.vote_displaying = 'n'
-}
-
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
 
 if (!location.href.includes('shared')) {
