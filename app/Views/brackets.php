@@ -56,6 +56,10 @@ const is_temp_tournament = false;
 
 const UUID = getOrCreateDeviceId()
 
+if (!tournament.vote_displaying) {
+    tournament.vote_displaying = 'n'
+}
+
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
 
 if (!location.href.includes('shared')) {
@@ -755,7 +759,7 @@ var changeVoteDisplayingMode = (element) => {
         <div class="display-mode text-center">
             <label for="inputPassword6" class="col-form-label mt-3 me-3"><strong>Vote Display :</strong> </label>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="vote-display-mode" id="votes_in_point" onchange="changeVoteDisplayingMode(this)" value="n" <?= ($tournament['vote_displaying'] == 'n') ? "checked" : ''; ?>>
+                <input class="form-check-input" type="radio" name="vote-display-mode" id="votes_in_point" onchange="changeVoteDisplayingMode(this)" value="n" <?= (!$tournament['vote_displaying'] || $tournament['vote_displaying'] == 'n') ? "checked" : ''; ?>>
                 <label class="form-check-label" for="votes_in_point">Points</label>
             </div>
             <div class="form-check form-check-inline">
