@@ -228,7 +228,10 @@ class TournamentController extends BaseController
             }
         }
 
-        $tournament['vote_displaying'] = $userSettingService->get('vote_displaying_mode', $user_id) ?? 'n';
+        $tournament['vote_displaying'] = $userSettingService->get('vote_displaying_mode', $user_id);
+        if (!$tournament['vote_displaying']) {
+            $tournament['vote_displaying'] = 'n';
+        }
         
         $users = auth()->getProvider()->limit(5)->findAll();
 
@@ -343,7 +346,10 @@ class TournamentController extends BaseController
             }
         }
 
-        $tournament['vote_displaying'] = $userSettingService->get('vote_displaying_mode', $user_id) ?? 'n';
+        $tournament['vote_displaying'] = $userSettingService->get('vote_displaying_mode', $user_id);
+        if (!$tournament['vote_displaying']) {
+            $tournament['vote_displaying'] = 'n';
+        }
         
         $users = auth()->getProvider()->limit(5)->findAll();
 
