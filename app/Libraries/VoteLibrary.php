@@ -72,7 +72,7 @@ class VoteLibrary
             $teams = json_decode($nextBracket['teamnames']);
             $teams[$index] = $participant;
             if (isset($voteData['is_double']) && $voteData['is_double']) {
-                $teams[$index]['is_double'] = 1;
+                $teams[$index]->is_double = 1;
             }
             $nextBracket['teamnames'] = json_encode($teams);
 
