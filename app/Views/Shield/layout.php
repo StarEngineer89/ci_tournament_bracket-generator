@@ -104,9 +104,6 @@
     <div id="cookieConsentModal" style="display:none; position:fixed; bottom:0; width:100%; background-color:#f1f1f1; padding:10px; text-align:center;">
         <p>
             This site uses cookies 🍪 to store information for the purpose of enhancing user experience. <br> If you reject cookies, you may experience limitations with functionality.
-            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='Your cookie consent preference is saved only in this browser. <br/>If you access this site from a different device or browser, you will need to set your preference again.'>
-                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-            </button>
         </p>
         <button onclick="acceptCookies()">Accept</button>
         <button onclick="rejectCookies()">Reject</button>

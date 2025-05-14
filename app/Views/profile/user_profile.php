@@ -397,7 +397,12 @@ let deleteAccount = () => {
                     </div>
 
                     <div class="row mb-3">
-                        <label for="inputEmail3" class="col-md-3 col-sm-6 col-form-label text-start">Cookie Permission Status</label>
+                        <label for="inputEmail3" class="col-md-3 col-sm-6 col-form-label text-start">
+                            Cookie Permission Status
+                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='Your cookie consent preference is saved only in this browser. <br/>If you access this site from a different device or browser, you will need to set your preference again.'>
+                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                            </button>
+                        </label>
                         <div class="col-md-9 col-sm-6">
                             <label class="cookie-status p-1 ps-2 pe-2 rounded-2">Pending</label><br />
                             <a href="javascript:;" class="cookie-reset-btn" data-bs-toggle="modal" data-bs-target="#resetCookieConsentModal">Reset Cookie Permissions</a>

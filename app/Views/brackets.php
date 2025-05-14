@@ -382,6 +382,33 @@ $(document).ready(function() {
         })
     }
 })
+
+var changeVoteDisplayingMode = (element) => {
+    localStorage.setItem('vote_displaying_mode', element.value)
+    tournament.vote_displaying = element.value
+    loadBrackets()
+
+    <?php if (auth()->user()): ?>
+    $.ajax({
+        type: "POST",
+        url: apiURL + '/usersettings/save',
+        contentType: "application/json",
+        data: {
+            'vote_displaying_mode': element.value
+        },
+        success: function(result) {
+            console.log(result)
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+    <?php endif; ?>
+}
 </script>
 
 <script src="/js/brackets.js"></script>
@@ -725,8 +752,19 @@ $(document).ready(function() {
             <?= $tournament['description'] ?>
         </div>
 
+        <div class="display-mode text-center">
+            <label for="inputPassword6" class="col-form-label mt-3 me-3"><strong>Vote Display :</strong> </label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="vote-display-mode" id="votes_in_point" onchange="changeVoteDisplayingMode(this)" value="n" <?= ($tournament['vote_displaying'] == 'n') ? "checked" : ''; ?>>
+                <label class="form-check-label" for="votes_in_point">Points</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="vote-display-mode" id="votes_in_percentage" onchange="changeVoteDisplayingMode(this)" value="p" <?= ($tournament['vote_displaying'] == 'p') ? "checked" : ''; ?>>
+                <label class="form-check-label" for="votes_in_percentage">Percentage</label>
+            </div>
+        </div>
         <div id="roundTimerPlaceholder"></div>
-        <div id="brackets" class="brackets d-flex p-5"></div>
+        <div id="brackets" class="brackets d-flex p-5 pt-2"></div>
     </div>
 </div>
 

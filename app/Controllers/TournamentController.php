@@ -74,6 +74,8 @@ class TournamentController extends BaseController
 
         $session = \Config\Services::session();
         
+        $userSettingService = service('userSettings');
+        
         $tournament = $tournamentModel->find($id);
 
         if (!$tournament) {
@@ -201,7 +203,6 @@ class TournamentController extends BaseController
             $users = auth()->getProvider()->limit(5)->findAll();
             
             /** Check if the registered user allows the invitations */
-            $userSettingService = service('userSettings');
 
             $filteredUsers = [];
             if ($users) {
@@ -226,6 +227,8 @@ class TournamentController extends BaseController
                 }
             }
         }
+
+        $tournament['vote_displaying'] = $userSettingService->get('vote_displaying_mode', $user_id) ?? 'n';
         
         $users = auth()->getProvider()->limit(5)->findAll();
 
@@ -240,6 +243,10 @@ class TournamentController extends BaseController
         $audioSettingModel = model('\App\Models\AudioSettingModel');
 
         $session = \Config\Services::session();
+
+        $userSettingService = service('userSettings');
+
+        $user_id = auth()->user() ? auth()->user()->id : 0;
 
         $settings = $shareSettingModel->where(['token'=> $token])->first();
         if (!$settings) {
@@ -336,6 +343,8 @@ class TournamentController extends BaseController
             }
         }
 
+        $tournament['vote_displaying'] = $userSettingService->get('vote_displaying_mode', $user_id) ?? 'n';
+        
         $users = auth()->getProvider()->limit(5)->findAll();
 
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'editable' => $editable, 'page' => 'view']);
