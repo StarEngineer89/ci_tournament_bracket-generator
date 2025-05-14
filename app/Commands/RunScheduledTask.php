@@ -64,7 +64,9 @@ class RunScheduledTask extends BaseCommand
         $notificationService = service('notification');
 
         $tournamentsModel = model('\App\Models\TournamentModel');
+        $tournamentMembersModel = model('\App\Models\TournamentMembersModel');
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
+        $participantsModel = model('\App\Models\ParticipantModel');
 
         $host_id = auth()->user() ? auth()->user()->id : 0;
         
@@ -73,13 +75,11 @@ class RunScheduledTask extends BaseCommand
                 $schedule_time = new \DateTime($schedule['schedule_time']);
                 $current_time = new \DateTime();
                 
-                $tournament = $tournamentsModel->find($schedule['tournament_id']);
-                $tournament = new \App\Entities\Tournament($tournament);
+                $tournament = $tournamentsModel->asObject()->find($schedule['tournament_id']);
 
                 $sendNotificationsTo = [];
                 if (($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART || $schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) && $current_time >= $schedule_time) {
-                    $participantsModel = model('\App\Models\ParticipantModel');
-                    $registeredUsers = $participantsModel->where(['tournament_id' => $schedule['tournament_id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+                    $registeredUsers = $tournamentMembersModel->where(['tournament_members.tournament_id' => $schedule['tournament_id']])->where('registered_user_id Is Not Null')->participantInfo()->findColumn('registered_user_id');
 
                     if ($registeredUsers) {
                         $sendNotificationsTo = $registeredUsers;
@@ -108,7 +108,7 @@ class RunScheduledTask extends BaseCommand
                                 continue;
                             }
 
-                            $participantWithGroupInfo = $participantsModel->withGroupInfo()->find($user_id);
+                            $participantWithGroupInfo = $tournamentMembersModel->where('participant_id', $user_id)->participantInfo()->first();
                             $groupName = $participantWithGroupInfo ? $participantWithGroupInfo['group_name'] : null;
                             
                             if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
@@ -168,7 +168,6 @@ class RunScheduledTask extends BaseCommand
         }
 
         /** Remove expired tournaments */
-        $tournamentsModel = model('\App\Models\TournamentModel');
         $tournamentLibrary = new \App\Libraries\TournamentLibrary();
 
         $tournaments = $tournamentsModel->where(['user_id' => 0])->findAll();
