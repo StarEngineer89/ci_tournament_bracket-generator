@@ -1302,6 +1302,8 @@ class TournamentController extends BaseController
         $reuse_Id = $this->request->getPost('id');
         $tournament_id = $this->request->getPost('tournament_id') ?? 0;
 
+        $userSettingService = service('userSettings');
+
         if (!$tournament_id) {
             helper('db_helper');
             disableForeignKeyCheck();
@@ -1334,6 +1336,12 @@ class TournamentController extends BaseController
 
         /** Create new tournament member and group member lists from previous tournaments */
         foreach ($tournamentMembers as $member) {
+            // Check if the participant allows the invitation
+            if (($participant = $this->tournamentMembersModel->asObject()->participantInfo()->find($member->id)) && $participant->registered_user_id) {
+                if ($disableInvitation = $userSettingService->get('disable_invitations', $participant->registered_user_id)) {
+                    continue;
+                }
+            }
             $newMember = new \App\Entities\TournamentMember([
                 'participant_id' => $member->participant_id,
                 'tournament_id' => $tournament_id,

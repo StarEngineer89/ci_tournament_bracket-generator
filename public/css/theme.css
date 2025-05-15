@@ -616,3 +616,10 @@
 .bg-mm .navbar-nav .nav-link.terms::before {
     background-image: url('../images/menu-icons/terms-white.svg');
 }
+
+.bg-cs .alert-btn-container #toggleVoteDisplayingModeBtn svg path,
+.bg-dr .alert-btn-container #toggleVoteDisplayingModeBtn svg path,
+.bg-gr .alert-btn-container #toggleVoteDisplayingModeBtn svg path,
+.bg-mm .alert-btn-container #toggleVoteDisplayingModeBtn svg path {
+    stroke: #fff;
+}

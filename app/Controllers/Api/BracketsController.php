@@ -221,26 +221,33 @@ class BracketsController extends BaseController
                         $user = auth()->getProvider()->where('username', $name)->first();
                     }
 
-                    $userId = (auth()->user()) ? auth()->user()->id : 0;
-                    $participant = new \App\Entities\Participant([
-                        'name' => $req->name,
-                        'created_by' => $userId,
-                        'image' => null,
-                        'active' => 1
-                    ]);
-
-                    if ($req->name[0] == '@' && $user) {
-                        $participant->registered_user_id = $user->id;
+                    if (isset($user) && $user->id) {
+                        $participant = $this->participantsModel->asObject()->where('registered_user_id', $user->id)->first();
                     }
 
-                    $participant_id = $this->participantsModel->insert($participant);
+                    if (!isset($participant) || !$participant) {
+                        $participant = new \App\Entities\Participant([
+                            'name' => $req->name,
+                            'created_by' => $user_id,
+                            'image' => null,
+                            'active' => 1
+                        ]);
+
+                        if ($req->name[0] == '@' && $user) {
+                            $participant->registered_user_id = $user->id;
+                        }
+
+                        $participant->id = $this->participantsModel->insert($participant);
+                    }
+
+                    $participant_id = $participant->id;
 
                     // Add the new participant as the tournament member
                     $member = new \App\Entities\TournamentMember([
-                        'participant_id' => $participant_id,
+                        'participant_id' => $participant->id,
                         'tournament_id' => $tournament['id'],
                         'order' => $order,
-                        'created_by' => $userId
+                        'created_by' => $user_id
                     ]);
                     $this->tournamentMembersModel->insert($member);
                     
@@ -248,7 +255,7 @@ class BracketsController extends BaseController
                     if($req->name[0] == '@' && $user) {
                         $tournamentObj = new \App\Entities\Tournament($tournament);
 
-                        $string = $participant['group_name'] ? 'Group: "' . $participant["group_name"] . '"' : 'Individual Participant';
+                        $string = 'Individual Participant';
                         $message = "You've been added to tournament \"$tournamentObj->name\" ($string)!";
                         $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournamentObj->id/view"]);
 
@@ -259,7 +266,7 @@ class BracketsController extends BaseController
                             $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
                             $email->setMessage(view(
                                 'email/invite-to-tournament',
-                                ['username' => $user->username, 'tournament' => $tournamentObj, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $participant['group_name']],
+                                ['username' => $user->username, 'tournament' => $tournamentObj, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => 'Individual Participant'],
                                 ['debug' => false]
                             ));
 

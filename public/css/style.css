@@ -574,10 +574,6 @@ a.disabled {
   cursor: pointer;
 }
 
-.alert-btn-container i {
-  font-size: 1.3em;
-}
-
 #descriptionPlaceholder img {
   max-width: 100%;
 }
@@ -585,6 +581,16 @@ a.disabled {
 .alert-btn-container {
   padding: 5px;
 }
+
+.alert-btn-container i {
+  font-size: 1.3em;
+}
+
+.alert-btn-container #toggleVoteDisplayingModeBtn svg {
+  display: block;
+  min-width: 30px;
+}
+
 #viewQRBtn i {
   font-size: 1.5em;
 }

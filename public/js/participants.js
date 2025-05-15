@@ -731,6 +731,10 @@ $(document).ready(function () {
 
 let enableGroupParticipants = () => {
     document.querySelectorAll('#newList > .list-group-item').forEach(element => {
+        if (element.classList.contains('not-allowed')) {
+            return
+        }
+        
         // Add checkboxs to the participant list
         const checkBoxWrapper = document.createElement('div')
         checkBoxWrapper.setAttribute('class', 'form-check')

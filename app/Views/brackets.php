@@ -330,6 +330,36 @@ $(document).ready(function() {
     $('#countTimerNoteBtn').click();
     <?php endif; ?>
 
+    <?php if ($votingEnabled): ?>
+    const voteDisplayingModePlaceholder = document.getElementById('voteDisplayingModePlaceholder')
+    const appendVoteDisplayingHtml = (html, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="container border pt-5 pe-3 alert alert-${type} alert-dismissible" id="voteDisplayingMode" role="alert">`,
+            `   <div class="text-center">${html}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        voteDisplayingModePlaceholder.append(wrapper)
+    }
+
+    const voteDisplayingModeTrigger = document.getElementById('toggleVoteDisplayingModeBtn')
+    if (voteDisplayingModeTrigger) {
+        const voteDisplayingHtml = $('#voteDisplayingHtml').html();
+        voteDisplayingModeTrigger.addEventListener('click', () => {
+            appendVoteDisplayingHtml(voteDisplayingHtml, 'secondary')
+            voteDisplayingModeTrigger.classList.add('d-none')
+
+            const voteDisplayingPlaceholder = document.getElementById('voteDisplayingMode')
+            voteDisplayingPlaceholder.addEventListener('closed.bs.alert', event => {
+                voteDisplayingModeTrigger.classList.remove('d-none')
+            })
+        })
+    }
+    $('#toggleVoteDisplayingModeBtn').click();
+    <?php endif; ?>
+
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
 
@@ -463,6 +493,19 @@ var changeVoteDisplayingMode = (element) => {
         <?php endif ?>
 
         <div class="container alert-btn-container mb-1 d-flex justify-content-end">
+            <?php if ($votingEnabled): ?>
+            <button type="button" class="btn ps-2 pe-2" id="toggleVoteDisplayingModeBtn">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <path d="M17.4 8h-1.8A1.6 1.6 0 0 0 14 9.6v4.8a1.6 1.6 0 0 0 1.6 1.6h1.8a1.6 1.6 0 0 0 1.6-1.6V9.6A1.6 1.6 0 0 0 17.4 8ZM8.4 4H6.6A1.6 1.6 0 0 0 5 5.6v12.8A1.6 1.6 0 0 0 6.6 20h1.8a1.6 1.6 0 0 0 1.6-1.6V5.6A1.6 1.6 0 0 0 8.4 4Z" fill="#000000" fill-opacity=".16" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10"></path>
+                        <path d="M2 12h3M19 12h3M10 12h4" stroke="#000000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"></path>
+                    </g>
+                </svg>
+            </button>
+            <?php endif ?>
+
             <?php if ($tournament['availability']): ?>
             <button type="button" class="btn" id="countTimerNoteBtn">
                 <i class="fa-solid fa-clock"></i>
@@ -752,17 +795,20 @@ var changeVoteDisplayingMode = (element) => {
             <?= $tournament['description'] ?>
         </div>
 
-        <div class="display-mode text-center">
+        <?php if ($votingEnabled): ?>
+        <div id="voteDisplayingModePlaceholder"></div>
+        <div id="voteDisplayingHtml" class="vote-display-mode text-center d-none">
             <label for="inputPassword6" class="col-form-label mt-3 me-3"><strong>Vote Display :</strong> </label>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="vote-display-mode" id="votes_in_point" onchange="changeVoteDisplayingMode(this)" value="n" <?= (!$tournament['vote_displaying'] || $tournament['vote_displaying'] == 'n') ? "checked" : ''; ?>>
+                <input class="form-check-input" type="radio" name="vote-display-mode" onchange="changeVoteDisplayingMode(this)" value="n" <?= (!$tournament['vote_displaying'] || $tournament['vote_displaying'] == 'n') ? "checked" : ''; ?>>
                 <label class="form-check-label" for="votes_in_point">Points</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="vote-display-mode" id="votes_in_percentage" onchange="changeVoteDisplayingMode(this)" value="p" <?= ($tournament['vote_displaying'] == 'p') ? "checked" : ''; ?>>
+                <input class="form-check-input" type="radio" name="vote-display-mode" onchange="changeVoteDisplayingMode(this)" value="p" <?= ($tournament['vote_displaying'] == 'p') ? "checked" : ''; ?>>
                 <label class="form-check-label" for="votes_in_percentage">Percentage</label>
             </div>
         </div>
+        <?php endif; ?>
         <div id="roundTimerPlaceholder"></div>
         <div id="brackets" class="brackets d-flex p-5 pt-2"></div>
     </div>
