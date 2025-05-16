@@ -187,7 +187,7 @@ class TournamentController extends BaseController
                     $audios[$audio['type']] = $audio;
                 }
 
-                $audioSettings = $audios;
+                $tournament['audio'] = $audios;
             }
             
             $userSettings = $userSettingModel->where('user_id', $user_id)->findAll();
@@ -215,7 +215,7 @@ class TournamentController extends BaseController
                 }
             }
 
-            return view('tournament/create', ['tournament' => $tournament, 'users' => $filteredUsers, 'settings' => $audioSettings, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
+            return view('tournament/create', ['tournament' => $tournament, 'users' => $filteredUsers, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();

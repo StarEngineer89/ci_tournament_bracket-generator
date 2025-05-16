@@ -1110,9 +1110,9 @@ var performReuseParticipants = (reuse_id = null) => {
                 </div>
 
                 <div class="video-wrapper col-12">
-                    <?php if (isset($settings) && isset($settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
-                    <video id="videoPlayer" class="col-12 d-none" preload="auto" data-starttime="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['start']) ? $settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['start'] : '' ?>" data-duration="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['duration']) ? $settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['duration'] : '' ?>">
-                        <source src="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['source'] == 'f') ? '/uploads/' . $settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['path'] : '/uploads/' . $settings[AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['path'] ?>" type="audio/mpeg" id="audioSrc">
+                    <?php if (isset($tournament['audio']) && isset($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO])) : ?>
+                    <video id="videoPlayer" class="col-12 d-none" preload="auto" data-starttime="<?= ($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['start']) ? $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['start'] : '' ?>" data-duration="<?= ($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['duration']) ? $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['duration'] : '' ?>">
+                        <source src="<?= ($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['source'] == 'f') ? '/uploads/' . $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['path'] : '/uploads/' . $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION_VIDEO]['path'] ?>" type="audio/mpeg" id="audioSrc">
                     </video>
                     <?php else: ?>
                     <video id="videoPlayer" class="col-12 d-none"></video>
@@ -1467,9 +1467,9 @@ var performReuseParticipants = (reuse_id = null) => {
     </div>
 </div>
 
-<?php if (isset($settings) && isset($settings[AUDIO_TYPE_BRACKET_GENERATION])) : ?>
-<audio id="myAudio" preload="auto" data-starttime="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION]['start']) ? $settings[AUDIO_TYPE_BRACKET_GENERATION]['start'] : '' ?>" data-duration="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION]['duration']) ? $settings[AUDIO_TYPE_BRACKET_GENERATION]['duration'] : '' ?>">
-    <source src="<?= ($settings[AUDIO_TYPE_BRACKET_GENERATION]['source'] == 'f') ? '/uploads/' . $settings[AUDIO_TYPE_BRACKET_GENERATION]['path'] : '/uploads/' . $settings[AUDIO_TYPE_BRACKET_GENERATION]['path'] ?>" type="audio/mpeg" id="audioSrc">
+<?php if (isset($tournament['audio']) && isset($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION])) : ?>
+<audio id="myAudio" preload="auto" data-starttime="<?= ($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION]['start']) ? $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION]['start'] : '' ?>" data-duration="<?= ($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION]['duration']) ? $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION]['duration'] : '' ?>">
+    <source src="<?= ($tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION]['source'] == 'f') ? '/uploads/' . $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION]['path'] : '/uploads/' . $tournament['audio'][AUDIO_TYPE_BRACKET_GENERATION]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
 <?php else : ?>
 <audio id="myAudio" preload="auto">
