@@ -468,6 +468,8 @@ function checkBig(el, element_id){
     }else{
         var formData = new FormData();
         formData.append('image', $("#image_" + element_id)[0].files[0]);
+        formData.append('tournament_id', tournament_id)
+        formData.append('hash', hash)
 
         $.ajax({
             type: "POST",
@@ -477,7 +479,6 @@ function checkBig(el, element_id){
             cache: false,
             processData: false,
             success: function (result) {
-                result = JSON.parse(result);
                 if (result.errors) {
                     $('#errorModal .errorDetails').html(result.errors.file)
                     $("#errorModal").modal('show');
@@ -485,10 +486,7 @@ function checkBig(el, element_id){
                     return false
                 }
 
-                $("#pimage_"+element_id).attr('src', result.data.image);
-                $("#pimage_"+element_id + ' ~ .btn').removeClass('d-none');
-                $("#pimage_" + element_id).removeClass('temp');
-                $("#pimage_"+element_id).parent().find('button').addClass('d-none')
+                renderParticipants(result)
             },
             error: function (error) {
                 console.log(error);
@@ -504,12 +502,9 @@ function removeImage(e, element_id){
     $.ajax({
         type: "POST",
         url: apiURL + '/participants/update/' + element_id,
-        data: {'action': 'removeImage'},
+        data: {'action': 'removeImage', 'tournament_id': tournament_id, 'hash': hash},
         success: function (result) {
-            result = JSON.parse(result);
-            $("#pimage_"+element_id).attr('src', '/images/avatar.jpg');
-            $("#pimage_" + element_id).addClass('temp');
-            $('#pimage_' + element_id).parent().find('button').addClass('d-none')
+            renderParticipants(result)
         },
         error: function (error) {
             console.log(error);

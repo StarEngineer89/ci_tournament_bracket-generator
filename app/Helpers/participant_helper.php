@@ -17,7 +17,7 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
         if ($tournament_id) {
             $participants = $tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->participantInfo()->findAll();
         } else {
-            $participants = $tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id, 'tournament_members.hash' => $hash])->participantInfo()->findAll();
+            $participants = $tournamentMembersModel->where(['tournament_members.tournament_id' => 0, 'tournament_members.hash' => $hash])->participantInfo()->findAll();
         }
 
         $filteredParticipants = [];
