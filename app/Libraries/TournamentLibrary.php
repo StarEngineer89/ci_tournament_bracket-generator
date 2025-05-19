@@ -7,6 +7,7 @@ class TournamentLibrary
     protected $bracketsModel;
     protected $participantsModel;
     protected $tournamentsModel;
+    protected $tournamentMembersModel;
     protected $votesModel;
     protected $shareSettingsModel;
     protected $audioSettingsModel;
@@ -21,6 +22,7 @@ class TournamentLibrary
         $this->bracketsModel = model('\App\Models\BracketModel');
         $this->participantsModel = model('\App\Models\ParticipantModel');
         $this->tournamentsModel = model('\App\Models\TournamentModel');
+        $this->tournamentMembersModel = model('\App\Models\TournamentMembersModel');
         $this->votesModel = model('\App\Models\VotesModel');
         $this->shareSettingsModel = model('\App\Models\ShareSettingsModel');
         $this->audioSettingsModel = model('\App\Models\AudioSettingModel');
@@ -36,16 +38,23 @@ class TournamentLibrary
         $this->logActionsModel->where(['tournament_id' => $tournament_id])->delete();
         $this->votesModel->where(['tournament_id' => $tournament_id])->delete();
 
-        $registeredUsers = $this->participantsModel->where(['tournament_id' => $tournament_id])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
-        $participants = $this->participantsModel->where(['tournament_id' => $tournament_id])->findAll();
+        $registeredUsers = $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->participantInfo()->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
+        $participants = $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->findAll();
         if ($participants) {
             foreach ($participants as $participant) {
+                // Check if the participant was participated to multiple tournaments and delete it if not
+                if (count($this->tournamentMembersModel->where('tournament_members.paricipant_id', $participant['id'])->groupBy('tournament_id')->findAll()) > 1) {
+                    continue;
+                }
+
                 if ($participant['image']) {
                     unlink(WRITEPATH . $participant['image']);
                 }
+
+                $this->participantsModel->delete($participant['id']);
             }
 
-            $this->participantsModel->where(['tournament_id' => $tournament_id])->delete();
+            $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->delete();
         }
 
         $audioSettings = $this->audioSettingsModel->where(['tournament_id' => $tournament_id])->findAll();
@@ -67,7 +76,6 @@ class TournamentLibrary
 
         /** Send the notification and emails to the registered users */
         $auth_user_id = auth()->user() ? auth()->user()->id : 0;
-        log_message('debug', json_encode($registeredUsers));
         if ($registeredUsers) {
             $userProvider = auth()->getProvider();
             $userSettingService = service('userSettings');
