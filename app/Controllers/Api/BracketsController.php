@@ -199,6 +199,13 @@ class BracketsController extends BaseController
 
         $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         
+        helper('db_helper');
+
+        /** Disable foreign key check for the guest users */
+        if (!$user_id) {
+            disableForeignKeyCheck();
+        }
+
         /** Change or Add Participant Action */
         if(isset($req->name) && $req->name){
             if (isset($req->index)) {
@@ -537,11 +544,11 @@ class BracketsController extends BaseController
 
             $insert_data['params'] = json_encode($data);
 
-            helper('db_helper');
-            disableForeignKeyCheck();
-
             $logActionsModel->insert($insert_data);
+        }
 
+        /** Enalbe foreign key check for the guest users */
+        if (!$user_id) {
             enableForeignKeyCheck();
         }
 
