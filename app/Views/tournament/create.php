@@ -322,6 +322,7 @@ $(document).ready(function() {
                 if (tournament.audio[0]) {
                     audio.load();
                     audio.currentTime = parseInt(tournament.audio[0].start);
+                    audio.src = '/uploads/' + tournament.audio[0].path
                     audio.play()
                     shuffle_duration = parseInt(tournament.audio[0].duration);
 
@@ -332,6 +333,7 @@ $(document).ready(function() {
                 if (tournament.audio[2]) {
                     videoPlayer.classList.remove('d-none')
                     videoPlayer.currentTime = parseInt(tournament.audio[2].start);
+                    videoPlayer.src = '/uploads/' + tournament.audio[2].path
                     videoPlayer.play()
                     shuffle_duration = parseInt(tournament.audio[2].duration);
 
