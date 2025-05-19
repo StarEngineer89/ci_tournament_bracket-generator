@@ -121,7 +121,7 @@ class GroupsController extends BaseController
 
             // Add a group as the participant
             if ($group_id) {
-                $participant = $this->participantsModel->where('group_id', $group_id)->findAll();
+                $participant = $this->participantsModel->where('group_id', $group_id)->first();
                 if (!$participant) {
                     $participantEntity = new Participant([
                         'name'  => $groupEntity->group_name,
@@ -133,7 +133,16 @@ class GroupsController extends BaseController
                         'created_by'  => $user_id
                     ]);
                     $participant_id = $this->participantsModel->insert($participantEntity);
+                } else {
+                    $participant_id = $participant['id'];
+                }
 
+                if ($tournament_id) {
+                    $member = $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $participant_id])->first();
+                } else {
+                    $member = $this->tournamentMembersModel->where(['tournament_id' => 0, 'hash' => $hash, 'participant_id' => $participant_id])->first();
+                }
+                if (!$member) {
                     $memberEntity = new TournamentMember([
                         'participant_id' => $participant_id,
                         'tournament_id' => $tournament_id,

@@ -35,7 +35,7 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
     scrollX: true,
     "columnDefs": [{
         "orderable": false,
-        "targets": [2, 3, 8]
+        "targets": [2, 3, 4, 8, 9]
     }],
     // Add custom initComplete to initialize select all checkbox
     "initComplete": function(settings, json) {

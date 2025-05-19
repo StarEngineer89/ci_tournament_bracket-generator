@@ -476,7 +476,7 @@ let editing_mode = false;
                     let totalVotes = 0;
                     if (teams[0]) totalVotes += parseInt(teams[0].votes)
                     if (teams[1]) totalVotes += parseInt(teams[1].votes)
-                    votes.textContent = teams[team_index].votes ? teams[team_index].votes/totalVotes * 100 + '%' : 0 + '%'
+                    votes.textContent = teams[team_index].votes ? Math.round(teams[team_index].votes/totalVotes * 100) + '%' : 0 + '%'
                 }
                 // Set up the tooltip with HTML content (a button)
                 wrapper.appendChild(votes)

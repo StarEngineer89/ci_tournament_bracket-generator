@@ -224,6 +224,8 @@ function renderParticipants(participantsData) {
         }
     });
 
+    $.contextMenu('destroy');
+
     $('#newList').contextMenu({
         selector: '.group-name',
         build: function ($triggerElement, e) {
@@ -536,7 +538,7 @@ function saveParticipant(e, element_id) {
 
     let ability = true;
     $('.p-name').each((i, e) => {
-        if (e.textContent.trim() == name) {
+        if (e.textContent.trim().toLowerCase() == name.toLowerCase()) {
             let confirm_result = confirm("The same name already exists in the list. Are you sure you want to proceed?");
 
             if (confirm_result == false) {
@@ -1215,7 +1217,7 @@ let deleteGroup = (el) => {
             data: data,
             success: function (result) {
                 if (result.status == 'error') {
-                    $('#errorModal .message').html(result.message)
+                    $('#errorModal .errorDetails').html(result.message)
                     $("#errorModal").modal('show');
 
                     return false

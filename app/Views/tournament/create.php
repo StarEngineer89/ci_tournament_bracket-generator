@@ -773,6 +773,13 @@ var drawTournamentsTable = () => {
         tournamentsTable.destroy();
     }
 
+    $('#searchTournament').val(null)
+    $('#typeFilter').val(null)
+    $('#evaluationFilter').val(null)
+    $('#stautsFilter').val(null)
+    $('#userByFilter').val(null)
+    $('#userByFilter').html('<option value="">All Users</option>')
+
     tournamentsTable = $('#tournamentTable').DataTable({
         "searching": true,
         "processing": true,
@@ -945,7 +952,7 @@ var drawTournamentsTable = () => {
         ],
         "columnDefs": [{
             "orderable": false,
-            "targets": [2, 3, 4, 6]
+            "targets": [2, 3, 4, 5, 7]
         }],
     });
 

@@ -223,7 +223,9 @@ class TournamentController extends BaseController
         }
 
         if ($this->request->getPost('is_reuse') && auth()->user()) {
-            $tournaments->orWhere('user_id', auth()->user()->id);
+            if (!$created_by) {
+                $tournaments->orWhere('user_id', auth()->user()->id);
+            }
 
             $sharedWithMe = $this->shareSettingModel->tournamentDetails()
                 ->groupStart()
