@@ -83,7 +83,6 @@ class TournamentLibrary
 
             $tournamentEntity = new \App\Entities\Tournament($tournament);
             foreach ($registeredUsers as $user_id) {
-                log_message('debug', $user_id);
                 $user = $userProvider->findById($user_id);
 
                 $message = lang('Notifications.tournamentDeleted', [$tournamentEntity->name]);
