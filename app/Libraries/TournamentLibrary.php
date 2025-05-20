@@ -39,7 +39,7 @@ class TournamentLibrary
         $this->votesModel->where(['tournament_id' => $tournament_id])->delete();
 
         $registeredUsers = $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->participantInfo()->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
-        $participants = $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->findAll();
+        $participants = $this->tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id])->participantInfo()->findAll();
         if ($participants) {
             foreach ($participants as $participant) {
                 // Check if the participant was participated to multiple tournaments and delete it if not
