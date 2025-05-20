@@ -25,7 +25,7 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
         $reusedGroups = [];
         if ($participants) {
             foreach ($participants as $participant) {
-                if (!$participant) {
+                if (!$participant || !$participant['name']) {
                     continue;
                 }
                 
