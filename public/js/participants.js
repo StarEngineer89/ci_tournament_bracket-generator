@@ -637,7 +637,7 @@ var addParticipants = (data) => {
             if (result.notAllowedParticipants.length) {
                 let names = ''
                 result.notAllowedParticipants.forEach((participant, i) => {
-                    names += participant.name
+                    names += participant
                     if (i < (result.notAllowedParticipants.length - 1)) {
                         names += ', '
                     }

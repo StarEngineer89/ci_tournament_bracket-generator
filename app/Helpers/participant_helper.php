@@ -62,3 +62,21 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
         return ['participants' => $filteredParticipants, 'notAllowed' => $notAllowdParticipants, 'reusedGroups' => $reusedGroups];
     }
 }
+
+if (!function_exists('checkAvailabilityAddToTournament')) {
+    /**
+     *
+     * @param int $user_id
+     * @return boolean
+     */
+    function checkAvailabilityAddToTournament ($user_id)
+    {
+        $userSettingsService = service('userSettings');
+
+        if ($userSettingsService->get('disable_invitations', $user_id)) {
+            return false;
+        } 
+        
+        return true;
+    }
+}

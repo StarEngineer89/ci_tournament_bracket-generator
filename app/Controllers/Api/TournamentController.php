@@ -1301,13 +1301,15 @@ class TournamentController extends BaseController
     }
 
     public function reuseParticipants() {
-        $reuse_Id = $this->request->getPost('id');
-        $tournament_id = $this->request->getPost('tournament_id') ?? 0;
+        helper('db');
+        helper('participant');
 
         $userSettingService = service('userSettings');
 
+        $reuse_Id = $this->request->getPost('id');
+        $tournament_id = $this->request->getPost('tournament_id') ?? 0;
+
         if (!$tournament_id) {
-            helper('db_helper');
             disableForeignKeyCheck();
         }
 
@@ -1336,11 +1338,14 @@ class TournamentController extends BaseController
             $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'hash' => $this->request->getPost('hash')])->delete();
         }
 
+        $notAllowedList = [];
+        
         /** Create new tournament member and group member lists from previous tournaments */
         foreach ($tournamentMembers as $member) {
             // Check if the participant allows the invitation
             if (($participant = $this->tournamentMembersModel->asObject()->participantInfo()->find($member->id)) && $participant->registered_user_id) {
-                if ($disableInvitation = $userSettingService->get('disable_invitations', $participant->registered_user_id)) {
+                if (!$available = checkAvailabilityAddToTournament($participant->registered_user_id)) {
+                    $notAllowedList[] = $participant->name;
                     continue;
                 }
             }
@@ -1384,7 +1389,7 @@ class TournamentController extends BaseController
         helper('participant_helper');
         $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
         
-        return $this->response->setJSON(["participants"=> $list['participants'], 'notAllowedParticipants' => $list['notAllowed'], "reusedGroups"=> $list['reusedGroups']]);
+        return $this->response->setJSON(["participants"=> $list['participants'], 'notAllowedParticipants' => $notAllowedList, "reusedGroups"=> $list['reusedGroups']]);
     }
 
     public function getParticipants($tournament_id)
@@ -1397,6 +1402,8 @@ class TournamentController extends BaseController
 
     public function getUsers()
     {
+        helper('participant');
+
         $query = $this->request->getGet('query');
 
         $userSettingService = service('userSettings');
@@ -1410,7 +1417,7 @@ class TournamentController extends BaseController
         $filteredUsers = [];
         if ($users = $users->findAll()) {
             foreach ($users as $user) {
-                if ($userSettingService->get('disable_invitations', $user->id)) {
+                if (!$available = checkAvailabilityAddToTournament($user->id)) {
                     continue;
                 }
 

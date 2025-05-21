@@ -199,7 +199,8 @@ class BracketsController extends BaseController
 
         $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         
-        helper('db_helper');
+        helper('db');
+        helper('participant');
 
         /** Disable foreign key check for the guest users */
         if (!$user_id) {
@@ -228,9 +229,7 @@ class BracketsController extends BaseController
                         $name = trim($req->name, '@');
                         $user = auth()->getProvider()->where('username', $name)->first();
 
-                        if ($userSettingsService->get('disable_invitations', $user->id)) {
-                            $availableToAdd = false;
-                        }
+                        $availableToAdd = checkAvailabilityAddToTournament($user->id);
                     }
 
                     if (!$availableToAdd) {

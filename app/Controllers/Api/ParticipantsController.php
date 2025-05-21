@@ -236,6 +236,9 @@ class ParticipantsController extends BaseController
 
     public function addParticipant($names = null)
     {
+        helper('db');
+        helper('participant');
+
         if (!$names) {
             $names = $this->request->getPost('name');
         }
@@ -245,11 +248,11 @@ class ParticipantsController extends BaseController
         $user_id = auth()->user()? auth()->user()->id : 0;
         
         if (!$user_id || !$tournament_id) {
-            helper('db_helper');
             disableForeignKeyCheck();
         }
 
         $inserted_count = 0;
+        $notAllowedList = [];        
         if ($names) {
             $userProvider = auth()->getProvider();
             foreach ($names as $name) {
@@ -264,8 +267,14 @@ class ParticipantsController extends BaseController
                         if ($user) {
                             $registered_user_id = $user->id;
 
-                            $participant = $this->participantsModel->where('registered_user_id', $user->id)->first();
-                            $participant = new \App\Entities\Participant($participant);
+                            $participant = $this->participantsModel->asObject()->where('registered_user_id', $user->id)->first();
+                            // Check if the participant allows the invitation
+                            if ($participant) {
+                                if (!$available = checkAvailabilityAddToTournament($participant->registered_user_id)) {
+                                    $notAllowedList[] = $participant->name;
+                                    continue;
+                                }
+                            }
                         }
                     }
                     
@@ -310,7 +319,7 @@ class ParticipantsController extends BaseController
         }
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                ->setJSON(['result' => 'success', "participants"=> $list['participants'], 'notAllowedParticipants' => $list['notAllowed'], "reusedGroups"=> $list['reusedGroups'], 'count' => $inserted_count]);
+                                ->setJSON(['result' => 'success', "participants"=> $list['participants'], 'notAllowedParticipants' => $notAllowedList, "reusedGroups"=> $list['reusedGroups'], 'count' => $inserted_count]);
     }
 
     public function updateParticipant($id)
