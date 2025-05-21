@@ -393,13 +393,6 @@ $(document).ready(function() {
     })
     <?php endif;?>
 
-    if (hasEditPermission) {
-        $(document).on("click", function(e) {
-            if (!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
-        })
-
-    }
-
     if (hasEditPermission || hasParticipantImageUpdatePermission) {
         $(document).on("click", ".p-image img", function(e) {
             var pid = $(this).data('pid');
@@ -409,6 +402,13 @@ $(document).ready(function() {
                 $(this).parent().addClass('active');
                 $(this).parent().find('.btn').removeClass('d-none')
             }
+        })
+
+        $(document).on("click", function(e) {
+            if (!$(e.target.parentElement).hasClass('p-image')) {
+                $(".p-image").removeClass('active')
+                $(".p-image button").addClass('d-none')
+            };
         })
     }
 })

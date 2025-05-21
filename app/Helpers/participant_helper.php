@@ -39,11 +39,23 @@ if (!function_exists('getParticipantsAndReusedGroupsInTournament')) {
                 if ($participant['name'][0] == '@' && $participant['registered_user_id']) {
                     if ($userSettingService->get('disable_invitations', $participant['registered_user_id'])) {
                         $participant['invitation_disabled'] = true;
-                        $notAllowdParticipants[] = $participant['name'];
+                        $notAllowdParticipants[] = $participant;
+                        continue;
                     }
                 }
 
                 $filteredParticipants[] = $participant;
+            }
+        }
+
+        // Remove the participants who refused the invitation in the profile setting
+        if ($notAllowdParticipants) {
+            foreach ($notAllowdParticipants as $participant) {
+                if ($tournament_id) {
+                    $participants = $tournamentMembersModel->where(['tournament_members.tournament_id' => $tournament_id, 'participant_id' => $participant['id']])->delete();
+                } else {
+                    $participants = $tournamentMembersModel->where(['tournament_members.tournament_id' => 0, 'tournament_members.hash' => $hash, 'participant_id' => $participant['id']])->delete();
+                }
             }
         }
         

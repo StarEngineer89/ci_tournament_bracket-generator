@@ -227,7 +227,6 @@ let editing_mode = false;
                                                 insertTpl: "@${username},",
                                                 callbacks: {
                                                     remoteFilter: function (query, callback) {
-                                                        console.log('quesry')
                                                         if (query.length < 1) return; // Don't fetch on empty query
                                                         $.ajax({
                                                             url: apiURL + '/tournaments/get-users', // Your API endpoint
@@ -652,7 +651,7 @@ let editing_mode = false;
             let force_add = false;
 
             $('.bracketbox span[data-round=' + participantElement.data("round") + ']').each((i, ele) => {
-                if ($(ele).find('.name').text() == name) {
+                if ($(ele).find('.name').text().toLowerCase() == name.toLowerCase()) {
                     duplicated = true;
                     force_add = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
                 }
@@ -675,8 +674,13 @@ let editing_mode = false;
             contentType: "application/json",
             dataType: "JSON",
             success: function (result) {
-                ws.send(['updated!', tournament_id]);
-                loadBrackets()
+                if (result.result == "success") {
+                    ws.send(['updated!', tournament_id]);
+                    loadBrackets()
+                } else {
+                    $('#errorModal .errorDetails').html(result.message)
+                    $("#errorModal").modal('show'); 
+                }
             },
             error: function (error) {
                 console.log(error);

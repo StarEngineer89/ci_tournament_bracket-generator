@@ -158,7 +158,7 @@ class BracketsController extends BaseController
                 }
 
                 /** Get the round duration for the Round mechanism */
-                if ($tournament_settings['availability'] && ($tournament_settings['round_duration_combine'] || ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND))) {
+                if ($tournament_settings['availability'] && ($tournament_settings['round_duration_combine'] || ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND || $tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_OPENEND)))) {
                     $bracket['start'] = $schedules[$bracket['roundNo'] - 1]['schedule_time'];
                     $bracket['end'] = $schedules[$bracket['roundNo']]['schedule_time'];
                 }
@@ -223,9 +223,19 @@ class BracketsController extends BaseController
                 }
 
                 if (!isset($req->participant) || intval($req->participant) == 0)  {
+                    $availableToAdd = true;
                     if ($req->name[0] == '@') {
                         $name = trim($req->name, '@');
                         $user = auth()->getProvider()->where('username', $name)->first();
+
+                        if ($userSettingsService->get('disable_invitations', $user->id)) {
+                            $availableToAdd = false;
+                        }
+                    }
+
+                    if (!$availableToAdd) {
+                        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                ->setJSON(['result' => 'failed', "message"=> "This user \"@$user->username\" declined invitations to tournaments"]);
                     }
 
                     if (isset($user) && $user->id) {
@@ -552,7 +562,8 @@ class BracketsController extends BaseController
             enableForeignKeyCheck();
         }
 
-        return json_encode(array('result' => 'success', 'data' => $result));
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                ->setJSON(['result' => 'success', 'data' => $result]);
     }
 
     public function deleteBracket($id)
@@ -855,11 +866,11 @@ class BracketsController extends BaseController
         if ($tournament->availability) {
             $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
 
-            $maxRound = $this->bracketsModel->where('tournament_id', $tournament->id)->selectMax('roundNo')->first() ?? 1;
+            $maxRoundBracket = $this->bracketsModel->where('tournament_id', $tournament->id)->selectMax('roundNo')->first() ?? 1;
             $scheduleLibrary->registerSchedule($tournament->id, SCHEDULE_NAME_TOURNAMENTSTART, 1, $tournament->available_start);
-            $scheduleLibrary->registerSchedule($tournament->id, SCHEDULE_NAME_TOURNAMENTEND, $maxRound, $tournament->available_end);
+            $scheduleLibrary->registerSchedule($tournament->id, SCHEDULE_NAME_TOURNAMENTEND, $maxRoundBracket['roundNo'], $tournament->available_end);
 
-            if ($tournament->round_duration_combine || ($tournament->evaluation_method == EVALUATION_METHOD_VOTING && $tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_ROUND)) {
+            if ($tournament->round_duration_combine || ($tournament->evaluation_method == EVALUATION_METHOD_VOTING && ($tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_ROUND || $tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_OPENEND))) {
                 $scheduleLibrary->scheduleRoundUpdate($tournament->id);
             }
         }

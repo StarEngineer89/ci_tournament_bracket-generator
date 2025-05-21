@@ -43,7 +43,7 @@ class TournamentLibrary
         if ($participants) {
             foreach ($participants as $participant) {
                 // Check if the participant was participated to multiple tournaments and delete it if not
-                if (count($this->tournamentMembersModel->where('tournament_members.participant_id', $participant['id'])->groupBy('tournament_id')->findAll()) > 1) {
+                if (!$participant['id'] || count($this->tournamentMembersModel->where('tournament_members.participant_id', $participant['id'])->groupBy('tournament_id')->findAll()) > 1) {
                     continue;
                 }
 

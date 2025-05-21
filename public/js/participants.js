@@ -443,8 +443,11 @@ $(document).on("click", "#group_image", function(){
     }
 })
 
-$(document).on("click", function(e){
-    if(!$(e.target.parentElement).hasClass('p-image')) $(".p-image").removeClass('active');
+$(document).on("click", function(e) {
+    if (!$(e.target.parentElement).hasClass('p-image')) {
+        $(".p-image").removeClass('active')
+        $(".p-image button").addClass('d-none')
+    };
 })
 
 function chooseImage(e, element_id){
@@ -633,8 +636,8 @@ var addParticipants = (data) => {
 
             if (result.notAllowedParticipants.length) {
                 let names = ''
-                result.notAllowedParticipants.forEach((name, i) => {
-                    names += name
+                result.notAllowedParticipants.forEach((participant, i) => {
+                    names += participant.name
                     if (i < (result.notAllowedParticipants.length - 1)) {
                         names += ', '
                     }

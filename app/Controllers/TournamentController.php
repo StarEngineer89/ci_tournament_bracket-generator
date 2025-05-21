@@ -69,7 +69,6 @@ class TournamentController extends BaseController
         $bracketModel = model('\App\Models\BracketModel');
         $audioSettingModel = model('\App\Models\AudioSettingModel');
         $userSettingModel = model('\App\Models\UserSettingModel');
-
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
 
         $session = \Config\Services::session();
@@ -85,8 +84,7 @@ class TournamentController extends BaseController
 
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
-        $users = auth()->getProvider();
-        $created_by = $users->findById($tournament['user_id']);
+        $created_by = auth()->getProvider()->findById($tournament['user_id']);
 
         $tournament['created_by'] = $created_by;
         
@@ -95,6 +93,22 @@ class TournamentController extends BaseController
             $session->setFlashdata(['error' => "This tournament doesn't exist!"]);
 
             return redirect()->to('/tournaments');
+        }
+
+        /** Fetch the user list for the actions "Change Participant/Add Participant */
+        $users = auth()->getProvider()->limit(5)->findAll();
+        //Filter the registered users allow the invitations
+        $filteredUsers = [];
+        if ($users) {
+            foreach ($users as $user) {
+                if ($userSettingService->get('disable_invitations', $user->id)) {
+                    continue;
+                }
+
+                $filteredUsers[] = $user;
+            }
+
+            $users = $filteredUsers;
         }
 
         $hosted_by_this = true;
@@ -200,22 +214,7 @@ class TournamentController extends BaseController
                 }
             }
 
-            $users = auth()->getProvider()->limit(5)->findAll();
-            
-            /** Check if the registered user allows the invitations */
-
-            $filteredUsers = [];
-            if ($users) {
-                foreach ($users as $user) {
-                    if ($userSettingService->get('disable_invitations', $user->id)) {
-                        continue;
-                    }
-
-                    $filteredUsers[] = $user;
-                }
-            }
-
-            return view('tournament/create', ['tournament' => $tournament, 'users' => $filteredUsers, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
+            return view('tournament/create', ['tournament' => $tournament, 'users' => $users, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
         $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
@@ -233,8 +232,6 @@ class TournamentController extends BaseController
             $tournament['vote_displaying'] = 'n';
         }
         
-        $users = auth()->getProvider()->limit(5)->findAll();
-
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'page' => 'view']);
     }
     
@@ -351,7 +348,21 @@ class TournamentController extends BaseController
             $tournament['vote_displaying'] = 'n';
         }
         
+        /** Fetch the user list for the actions "Change Participant/Add Participant */
         $users = auth()->getProvider()->limit(5)->findAll();
+        //Filter the registered users allow the invitations
+        $filteredUsers = [];
+        if ($users) {
+            foreach ($users as $user) {
+                if ($userSettingService->get('disable_invitations', $user->id)) {
+                    continue;
+                }
+
+                $filteredUsers[] = $user;
+            }
+
+            $users = $filteredUsers;
+        }
 
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'editable' => $editable, 'page' => 'view']);
     }

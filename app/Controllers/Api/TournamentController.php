@@ -396,7 +396,7 @@ class TournamentController extends BaseController
                 }
             }
         }
-        
+
         /**
          * Add the tournament created by guest users to share table
          */
@@ -677,7 +677,7 @@ class TournamentController extends BaseController
 
         /** Schedule to update the rounds by cron */
         if (isset($tournament['availability']) && $tournament['availability']) {
-            if ($tournament['round_duration_combine'] || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND)) {
+            if ($tournament['round_duration_combine'] || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && ($tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_ROUND || $tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_OPENEND))) {
                 $scheduleLibrary->scheduleRoundUpdate($tournament_id);
             }
         }
