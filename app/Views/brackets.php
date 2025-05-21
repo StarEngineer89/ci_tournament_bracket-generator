@@ -366,14 +366,22 @@ $(document).ready(function() {
     <?php if(!auth()->user() && isset($editable) && $editable && !$tournament['user_id']) : ?>
     var leaveUrl;
     $(document).on('click', function(e) {
+        var linkElement;
+        if (e.target.tagName == 'A') {
+            linkElement = e.target
+        }
 
-        if (e.target.tagName == 'A' || (e.target.parentElement && e.target.parentElement.tagName == 'A')) {
-            if (e.target.href && e.target.href.includes('login')) {
+        if (e.target.parentElement && e.target.parentElement.tagName == 'A') {
+            linkElement = e.target.parentElement
+        }
+
+        if (linkElement) {
+            if (linkElement.href && linkElement.href.includes('login')) {
                 return true
             }
 
             e.preventDefault();
-            leaveUrl = e.target.href;
+            leaveUrl = linkElement.href;
 
             // Show Bootstrap modal
             var modal = new bootstrap.Modal(document.getElementById('leaveConfirm'));
