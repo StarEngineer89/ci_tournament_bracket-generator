@@ -650,7 +650,7 @@ let editing_mode = false;
             let duplicated = false;
             let force_add = false;
 
-            $('.bracketbox span[data-round=' + participantElement.data("round") + ']').each((i, ele) => {
+            $('.bracketbox span.bracket-team').each((i, ele) => {
                 if ($(ele).find('.name').text().toLowerCase() == name.toLowerCase()) {
                     duplicated = true;
                     force_add = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
