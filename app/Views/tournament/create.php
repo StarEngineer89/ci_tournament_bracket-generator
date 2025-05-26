@@ -527,8 +527,8 @@ $(document).ready(function() {
             success: function(result) {
                 $('#beforeProcessing').addClass('d-none')
                 $('#removeDuplicationsConfirmModal').modal('hide')
-                if (result.status == 'success') {
-                    renderParticipants(result.participants);
+                if (result.result == 'success') {
+                    renderParticipants(result);
 
                     $('#participantNames').val(null);
                     $('input.csv-import').val(null)

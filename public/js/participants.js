@@ -355,6 +355,7 @@ function renderParticipants(participantsData) {
             items.delete = {
                 name: "Delete",
                 callback: (key, opt, e) => {
+                    var element = opt.$trigger
                     var element_id = opt.$trigger.data('id');
                     $.ajax({
                         type: "POST",
@@ -362,7 +363,16 @@ function renderParticipants(participantsData) {
                         data: {tournament_id: tournament_id, hash: hash},
                         success: function (result) {
                             if (result.status == 'success') {
+                                let group_id
+                                
+                                if (element.parents('.group')) {
+                                    group_id = element.parents('.group').data('id')
+                                }
+
                                 renderParticipants(result)
+
+                                if (group_id) 
+                                    collapseOutGroup(group_id, 'g')
                             }
                         },
                         error: function (error) {
@@ -455,6 +465,7 @@ function chooseImage(e, element_id){
 }
 function checkBig(el, element_id){
     var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const fileInput = el;
 
     if (!allowedTypes.includes(el.files[0].type)) {
         $('#errorModal .errorDetails').html('Please upload image as *.jpeg, *.jpg, *.png, *.gif format.')
@@ -491,7 +502,14 @@ function checkBig(el, element_id){
                     return false
                 }
 
+                let group_id
+                if ($(fileInput).parents('.group')) 
+                    group_id = $(fileInput).parents('.group').data('id')
+
                 renderParticipants(result)
+
+                if (group_id)
+                    collapseOutGroup(group_id, 'g')
             },
             error: function (error) {
                 console.log(error);
@@ -503,13 +521,21 @@ function checkBig(el, element_id){
         });
     }
 }
+
 function removeImage(e, element_id){
     $.ajax({
         type: "POST",
         url: apiURL + '/participants/update/' + element_id,
         data: {'action': 'removeImage', 'tournament_id': tournament_id, 'hash': hash},
         success: function (result) {
+            let group_id
+            if ($(e.target).parents('.group')) 
+                group_id = $(e.target).parents('.group').data('id')
+
             renderParticipants(result)
+
+            if (group_id)
+                collapseOutGroup(group_id, 'g')
         },
         error: function (error) {
             console.log(error);
@@ -520,6 +546,7 @@ function removeImage(e, element_id){
         }, 500);
     });
 }
+
 function saveParticipant(e, element_id) {
     const name = $(e.target).parents('.list-group-item').find('.name-input').val().trim();
 
@@ -565,7 +592,14 @@ function saveParticipant(e, element_id) {
             cache: false,
             processData: false,
             success: function (result) {
-                renderParticipants(result);
+                let group_id
+                if ($(e.target).parents('.group')) 
+                    group_id = $(e.target).parents('.group').data('id')
+
+                renderParticipants(result)
+
+                if (group_id)
+                    collapseOutGroup(group_id, 'g')
             },
             error: function (error) {
                 console.log(error);
@@ -1041,7 +1075,14 @@ let updateGroup = (e, forceUpdate = false) => {
         },
         success: function (result) {
             if (result.status == 'success') {
+                let group_id
+                if ($(e.target).parents('.group')) 
+                    group_id = $(e.target).parents('.group').data('id')
+
                 renderParticipants(result)
+
+                if (group_id)
+                    collapseOutGroup(group_id, 'g')
             }
         },
         error: function (e) {
@@ -1270,7 +1311,11 @@ let removeParticipantFromGroup = (el) => {
                     return false
                 }
 
+                let group_id = el.parent().data('group')
+
                 renderParticipants(result)
+
+                collapseOutGroup(group_id, 'g')
             },
             error: function (error) {
                 console.log(error);
@@ -1347,4 +1392,16 @@ let enableGroupEdit = (el) => {
     el.append(nameBox)
     el.append(buttonWrapper)
     el.removeAttr('data-bs-toggle')
+}
+
+let collapseOutGroup = (id, type = null) => {
+    let collapseElement
+    if (type == 'g') {
+        collapseElement = document.querySelector('.list-group[data-group="' + id + '"]')
+    } else {
+        collapseElement = document.querySelector('.participant[id="' + id + '"]').parentElement
+    }
+
+    if (collapseElement)
+        collapseElement.classList.add('show')
 }
