@@ -134,7 +134,7 @@ function renderParticipants(participantsData) {
 
     if (participantsArray.length) {
         $('.empty-message-wrapper').addClass('d-none')
-        enableBtn.classList.remove('d-none')
+        document.querySelector('.list-tool-bar').classList.remove('d-none')
         document.querySelector('.list-tool-bar').innerHTML = ''
         document.querySelector('.list-tool-bar').appendChild(enableBtn)
     } else {
@@ -592,6 +592,16 @@ function saveParticipant(e, element_id) {
             cache: false,
             processData: false,
             success: function (result) {
+                if (result.result !== "success") {
+                    $('#errorModal .errorDetails').html(result.message)
+                    $('#errorModal').modal('show')
+
+                    let name = $(e.target).parents('.participant').data('name')
+                    $(e.target).parents('.participant').find('.name-input').val(name)
+
+                    return false
+                }
+
                 let group_id
                 if ($(e.target).parents('.group')) 
                     group_id = $(e.target).parents('.group').data('id')

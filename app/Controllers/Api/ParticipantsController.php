@@ -324,44 +324,73 @@ class ParticipantsController extends BaseController
 
     public function updateParticipant($id)
     {
+        $name = $this->request->getPost('name');
+        $hash = $this->request->getPost('hash');
         $participant = $this->participantsModel->find($id);
-        
-        if($this->request->getPost('name')) {
-            $participant['name'] = $this->request->getPost('name');
+
+        helper('participant');
+
+        if (!$participant) {
+            return $this->response->setJSON(['result' => 'error', "message"=> "Participant ID is invalid."]);
         }
 
-        if ($participant['name'][0] == '@') {
-            $name = trim($participant['name'], '@');
-            $user = auth()->getProvider()->where('username', $name)->first();
-            if ($user) {
-                $participant['registered_user_id'] = $user->id;
+        if ($name) {
+            if ($tournament_id = $this->request->getPost('tournament_id')) {
+                $meamber = $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $id])->find();
+            } else {
+                $meamber = $this->tournamentMembersModel->where(['tournament_id' => 0, 'participant_id' => $id, 'hash' => $hash])->find();
+            }
+
+            if (!$meamber) {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                            ->setJSON(['result' => 'error', "message"=> "This participant didn't registered as a tournament member."]);
+            }
+
+            if ($name[0] == '@') {
+                $name = trim($name, '@');
+                $user = auth()->getProvider()->where('username', $name)->first();
+
+                if (!$user) {
+                    return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                            ->setJSON(['result' => 'error', "message"=> "The username @$name doesn't exist."]);
+                }
+
+                if (!checkAvailabilityAddToTournament($user->id)) {
+                    return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                            ->setJSON(['result' => 'failed', "message"=> "This user \"@$user->username\" declined invitations to tournaments"]);
+                }
+
+                $member['participant_id'] = $user->id;
+                $this->tournamentMembersModel->save($member);
+            } else {
+                $participant['name'] = $name;
+                $participant['registered_user_id'] = null;                
+                $this->participantsModel->update($id, $participant);
             }
         } else {
-            $participant['registered_user_id'] = null;
-        }
-
-        $uploadConfig = new UploadConfig();
-        
-		$file = $this->request->getFile('image');
-        if($file){
-            $filepath = '';
-            if (! $file->hasMoved()) {
-                $filepath = '/uploads/' . $file->store($uploadConfig->participantImagesUploadPath);
-                $participant['image'] = $filepath;
+            $uploadConfig = new UploadConfig();
+            
+            $file = $this->request->getFile('image');
+            if($file){
+                $filepath = '';
+                if (! $file->hasMoved()) {
+                    $filepath = '/uploads/' . $file->store($uploadConfig->participantImagesUploadPath);
+                    $participant['image'] = $filepath;
+                }
             }
-        }
-        
-        if($this->request->getPost('action') == 'removeImage'){
-            $participant['image'] = '';
-        }
+            
+            if($this->request->getPost('action') == 'removeImage'){
+                $participant['image'] = '';
+            }
 
-        $this->participantsModel->update($id, $participant);
-
+            $this->participantsModel->update($id, $participant);
+        }
         
         helper('participant_helper');
         $list = getParticipantsAndReusedGroupsInTournament($this->request->getPost('tournament_id'), $this->request->getPost('hash'));
         
-        return $this->response->setJSON(['result' => 'success', "participants"=> $list['participants'], "reusedGroups"=> $list['reusedGroups']]);
+        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                            ->setJSON(['result' => 'success', "participants"=> $list['participants'], "reusedGroups"=> $list['reusedGroups']]);
     }
 
     public function deleteParticipant($id)

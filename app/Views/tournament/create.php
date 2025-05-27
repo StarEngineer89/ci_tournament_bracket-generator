@@ -259,30 +259,39 @@ $(document).ready(function() {
                 $('#tournamentSettings').modal('hide');
                 $('#beforeProcessing').removeClass('d-none')
                 $("#err").fadeOut();
+                // Store the start time (in milliseconds)
+                this.startTime = new Date().getTime();
             },
             success: function(result) {
-                $('#beforeProcessing').addClass('d-none')
-                if (result.errors) {
-                    if (result.errors == 'duplicated') {
-                        const userConfirmed = confirm(result.message);
-                        if (userConfirmed) {
-                            values.push({
-                                name: 'confirm_duplicate_save',
-                                value: true
-                            })
-                            sendSubmitAjax(values)
+                // Calculate remaining time to enforce a 1s minimum delay
+                const elapsed = new Date().getTime() - this.startTime;
+                const remainingDelay = Math.max(1000 - elapsed, 0); // Ensure at least 0ms
+
+                setTimeout(() => {
+                    $('#beforeProcessing').addClass('d-none'); // Hide after delay
+
+                    if (result.errors) {
+                        if (result.errors === 'duplicated') {
+                            const userConfirmed = confirm(result.message);
+                            if (userConfirmed) {
+                                values.push({
+                                    name: 'confirm_duplicate_save',
+                                    value: true
+                                });
+                                sendSubmitAjax(values);
+                            } else {
+                                $('#tournamentSettings').modal('show');
+                            }
                         } else {
-                            $('#tournamentSettings').modal('show');
+                            $('#errorModal .errorDetails').html(
+                                "An error occurred while saving the tournament!");
                         }
                     } else {
-                        $('#errorModal .errorDetails').html("An error occurred while saving the tournament!");
+                        tournament = result.tournament;
+                        tournament_id = tournament.id;
+                        $('#generate').trigger('click');
                     }
-                } else {
-                    tournament = result.tournament
-                    tournament_id = tournament.id
-
-                    $('#generate').trigger('click')
-                }
+                }, remainingDelay);
             },
             error: function(e) {
                 $("#err").html(e).fadeIn();
@@ -437,7 +446,7 @@ $(document).ready(function() {
             success: function(result) {
                 if (result.result == 'success') {
                     $('#newList').html('')
-                    $('.participant-list .list-tool-bar .enableBtn').addClass('d-none')
+                    $('.participant-list .list-tool-bar').addClass('d-none')
                     $('.empty-message-wrapper').removeClass('d-none')
                     $('#clearParticipantsConfirmModal').modal('hide')
                     appendAlert('Participant list cleared!', 'success');
