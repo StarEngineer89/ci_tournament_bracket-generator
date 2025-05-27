@@ -65,6 +65,11 @@ class BracketsController extends BaseController
                         }
                         
                         $array[$index] = $this->participantsModel->find($team['id']);
+
+                        if (!$array[$index]) {
+                            continue;
+                        }
+                        
                         if (isset($team['is_group'])) {
                             $array[$index]['members'] = null;
                             $members = [];

@@ -537,7 +537,7 @@ a.disabled {
 #newList.list-group-numbered .list-group-item::before {
   content: counters(section, ".") ". ";
   counter-increment: section;
-  width: 30px;
+  width: 45px;
 }
 
 .list-group-item .front {

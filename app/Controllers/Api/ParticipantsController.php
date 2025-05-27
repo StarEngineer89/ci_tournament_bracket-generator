@@ -171,7 +171,7 @@ class ParticipantsController extends BaseController
                     if (isset($groups[$participant['group_id']])) {
                         $groups[$participant['group_id']]['brackets_won'] += $participant['brackets_won'];
                         $groups[$participant['group_id']]['tournaments_won'] += $participant['tournaments_won'];
-                        $groups[$participant['group_id']]['accumulated_score'] += $participant['accumulated_score'];
+                        $groups[$participant['group_id']]['accumulated_score'] += round($participant['accumulated_score'], 2);
                         $groups[$participant['group_id']]['votes'] += $participant['votes'];
                         
                         if (count($participant['won_tournaments'])) {

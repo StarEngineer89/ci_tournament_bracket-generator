@@ -240,33 +240,35 @@ participantsTable = $('#participantLeaderboardTable').DataTable({
                     let listHtml = ''
                     let moreHtml = ''
                     let shortner = '...'
-                    row.tournaments_list.forEach((tournament, i) => {
-                        if (!tournamentList.includes(tournament.name)) {
-                            tournamentList.push(tournament.name)
-                        }
+                    if (row.tournaments_list.length) {
+                        row.tournaments_list.forEach((tournament, i) => {
+                            if (!tournamentList.includes(tournament.name)) {
+                                tournamentList.push(tournament.name)
+                            }
 
-                        if (i >= 3) {
-                            moreHtml +=
+                            if (i >= 3) {
+                                moreHtml +=
+                                    `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
+
+                                if (i < row.tournaments_list.length - 1) {
+                                    if (moreHtml) {
+                                        moreHtml += ', '
+                                    }
+                                }
+
+                                return
+                            }
+
+                            listHtml +=
                                 `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
-
                             if (i < row.tournaments_list.length - 1) {
+                                listHtml += ', '
                                 if (moreHtml) {
                                     moreHtml += ', '
                                 }
                             }
-
-                            return
-                        }
-
-                        listHtml +=
-                            `<a href="<?= base_url('tournaments') ?>/${tournament.id}/view">${tournament.name}</a>`
-                        if (i < row.tournaments_list.length - 1) {
-                            listHtml += ', '
-                            if (moreHtml) {
-                                moreHtml += ', '
-                            }
-                        }
-                    })
+                        })
+                    }
 
                     if (row.tournaments_list.length > 3) {
                         return `<span class="list">${listHtml}</span><span class="more d-none">${moreHtml}</span><br/><span class="shortner float-start">${shortner}</span><a href="javascript:;" onclick="readMoreList(this)" class="read-more-btn more float-end">Show More</a>`
