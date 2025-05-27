@@ -143,7 +143,7 @@ class ParticipantsController extends BaseController
 
                 $scores = $this->calculateScores($participant['id'], $brackets);
                 $participant['top_score'] = $scores['top_score'];
-                $participant['accumulated_score'] = $scores['total_score'];
+                $participant['accumulated_score'] = round($scores['total_score'], 2);
 
                 $votes = $this->votesModel->where('participant_id', $participant['id'])->findAll();
                 $participant['votes'] = ($votes) ? count($votes) : 0;
