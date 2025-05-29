@@ -643,6 +643,7 @@ let editing_mode = false;
     }
     
     let saveNewParticipant = (element, index) => {
+        let ability = true;
         var name = element.val()
         var participantElement = element.parent().parent()
 
@@ -651,6 +652,9 @@ let editing_mode = false;
             let force_add = false;
 
             $('.bracketbox span.bracket-team').each((i, ele) => {
+                if (duplicated)
+                    return false
+
                 if ($(ele).find('.name').text().toLowerCase() == name.toLowerCase()) {
                     duplicated = true;
                     force_add = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
@@ -814,6 +818,9 @@ function changeParticipant(ele, index) {
     }
 
     $('.bracketbox span[data-round=' + parentElement.data("round") + ']').each((i, e) => {
+        if (!ability)
+            return
+        
         if (e.dataset.id == ele.val()) {
             let confirm_result = confirm("This participant already exists in this round's brackets. Are you sure you want to proceed?");
 
