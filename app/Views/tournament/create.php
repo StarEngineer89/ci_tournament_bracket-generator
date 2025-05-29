@@ -363,6 +363,10 @@ $(document).ready(function() {
                 shuffle_enable = 1
             }
 
+            document.querySelectorAll('.list-group.collapse').forEach(element => {
+                element.classList.remove('show')
+            })
+
             callShuffle(shuffle_enable);
         } else {
             $('#tournamentSettings').modal('show');
