@@ -143,11 +143,11 @@
                         <div class="accordion-item">
                             <h5 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#explainCustomScoring" aria-expanded="false" aria-controls="collapseThree">
-                                    <strong>Can a custom score be specified for a participant instead of the one set in the Tournament properties?</strong>
+                                    <strong>Can participants report their own scores, bypassing the score settings set in the Tournament properties?</strong>
                                 </button>
                             </h5>
                             <div id="explainCustomScoring" class="accordion-collapse collapse p-3" data-bs-parent="#faqItems">
-                                <p class="ps-2">Custom scoring is not an option at the moment to prevent overranking and abuse in the Participant Leaderboard statistics.</p>
+                                <p class="ps-2">Participants cannot report their own scores at the moment to prevent overranking and abuse in the Participant Leaderboard statistics.</p>
                             </div>
                         </div>
                     </div>
