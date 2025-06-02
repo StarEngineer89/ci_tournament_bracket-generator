@@ -1159,12 +1159,13 @@ class TournamentController extends BaseController
                     }
                 }
 
+                $time = auth()->user() ? convert_to_user_timezone($row['updated_at'], user_timezone(auth()->user()->id)) : $row['updated_at'];
                 $data[] = [
                     'name' => $row['username'],
                     'system_log' => intval($row['system_log']),
                     'type' => $type,
                     'description' => $description,
-                    'time' => convert_to_user_timezone($row['updated_at'], user_timezone(auth()->user()->id))
+                    'time' => $time
                 ];
             }
         }
