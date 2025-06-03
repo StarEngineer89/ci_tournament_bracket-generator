@@ -462,6 +462,12 @@ function drawChart(type = 'tournament') {
         $('#beforeProcessing').addClass('d-none')
     });
 }
+
+$(document).on('ready', () => {
+    if (localStorage.getItem('collapse-on-leaderboard')) {
+        document.getElementById('collapseBtn').click()
+    }
+})
 </script>
 <?= $this->endSection() ?>
 
@@ -475,6 +481,29 @@ function drawChart(type = 'tournament') {
                     and climbing to the top with every victory!</p>
             </div>
 
+            <div class="container alert-collapse-btn-container mb-1 d-flex justify-content-end">
+                <button type="button" class="btn collapsed p-0 d-none" id="expandBtn" onclick="toggleCollapseAlertBtns(this)">
+                    <svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <title>expand</title>
+                            <path d="M13.816 5.989l-7.785 0.046 0.003 7.735 2.59-2.591 3.454 3.454 2.665-2.665-3.453-3.454 2.526-2.525zM12.079 17.35l-3.454 3.455-2.59-2.592-0.003 7.799 7.785-0.018-2.526-2.525 3.454-3.453-2.666-2.666zM19.922 14.633l3.453-3.454 2.59 2.591 0.004-7.735-7.785-0.046 2.526 2.525-3.454 3.454 2.666 2.665zM23.375 20.805l-3.453-3.455-2.666 2.666 3.454 3.453-2.526 2.525 7.785 0.018-0.004-7.799-2.59 2.592z"></path>
+                        </g>
+                    </svg>
+                </button>
+                <button type="button" class="btn expanded p-0" id="collapseBtn" onclick="toggleCollapseAlertBtns(this)">
+                    <svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <title>collapse</title>
+                            <path d="M11.493 8.757l-3.454-3.453-2.665 2.665 3.454 3.453-2.59 2.59 7.797 0.004-0.017-7.784-2.525 2.525zM23.172 11.422l3.454-3.453-2.665-2.665-3.454 3.453-2.525-2.525-0.017 7.784 7.797-0.004-2.59-2.59zM8.828 20.578l-3.454 3.453 2.665 2.665 3.454-3.453 2.526 2.525 0.017-7.784-7.797 0.004 2.589 2.59zM25.762 17.988l-7.797-0.004 0.017 7.784 2.525-2.525 3.454 3.453 2.665-2.665-3.454-3.453 2.59-2.59z"></path>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+
             <div class="container alert-btn-container mb-1 d-flex justify-content-end">
                 <button type="button" class="btn" id="toggleNoteBtn">
                     <i class="fa-solid fa-circle-info"></i>
@@ -485,38 +514,40 @@ function drawChart(type = 'tournament') {
                 </button>
             </div>
 
-            <div id="notePlaceholder"></div>
-            <div id="noteMsg" class="d-none">
-                Note:<br />
-                By default, the top participants are ranked by the number of tournaments they’ve won.<br />
-                Registered participants (prefixed with @) who were explicitly added/invited by a host are grouped under
-                a single record, ensuring accurate tracking of their achievements.<br />
-                In contrast, anonymous participants have separate records for each tournament they join. <br />
-                Even if an anonymous participant uses the same name across multiple tournaments, there is no way to
-                verify if they are the same individual or different participants.<br />
-                This is one of the key benefits of registration—it allows for proper verification, ensuring consistency
-                and prioritizing registered participants on the leaderboard!
-            </div>
+            <div class="alert-container">
+                <div id="notePlaceholder"></div>
+                <div id="noteMsg" class="d-none">
+                    Note:<br />
+                    By default, the top participants are ranked by the number of tournaments they’ve won.<br />
+                    Registered participants (prefixed with @) who were explicitly added/invited by a host are grouped under
+                    a single record, ensuring accurate tracking of their achievements.<br />
+                    In contrast, anonymous participants have separate records for each tournament they join. <br />
+                    Even if an anonymous participant uses the same name across multiple tournaments, there is no way to
+                    verify if they are the same individual or different participants.<br />
+                    This is one of the key benefits of registration—it allows for proper verification, ensuring consistency
+                    and prioritizing registered participants on the leaderboard!
+                </div>
 
-            <div id="pieChartPlaceholder"></div>
-            <div id="pieChartContainer">
-                <div id="pieChart"></div>
-                <div id="pieChartTypes">
-                    <div class="form-check form-check-inline">
-                        <input class="piecharttype form-check-input" type="radio" id="tournamentWonChart" name="chartType" value="tournament" checked>
-                        <label class="form-check-label" for="tournamentWonChart">Tournaments Won</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="piecharttype form-check-input" type="radio" id="bracketsWonChart" name="chartType" value="bracket">
-                        <label class="form-check-label" for="bracketsWonChart">Brackets Won</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="piecharttype form-check-input" type="radio" id="topScoreChart" name="chartType" value="score">
-                        <label class="form-check-label" for="topScoreChart">Top Score</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="piecharttype form-check-input" type="radio" id="mostVotesChart" name="chartType" value="votes">
-                        <label class="form-check-label" for="mostVotesChart">Most Votes</label>
+                <div id="pieChartPlaceholder"></div>
+                <div id="pieChartContainer">
+                    <div id="pieChart"></div>
+                    <div id="pieChartTypes">
+                        <div class="form-check form-check-inline">
+                            <input class="piecharttype form-check-input" type="radio" id="tournamentWonChart" name="chartType" value="tournament" checked>
+                            <label class="form-check-label" for="tournamentWonChart">Tournaments Won</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="piecharttype form-check-input" type="radio" id="bracketsWonChart" name="chartType" value="bracket">
+                            <label class="form-check-label" for="bracketsWonChart">Brackets Won</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="piecharttype form-check-input" type="radio" id="topScoreChart" name="chartType" value="score">
+                            <label class="form-check-label" for="topScoreChart">Top Score</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="piecharttype form-check-input" type="radio" id="mostVotesChart" name="chartType" value="votes">
+                            <label class="form-check-label" for="mostVotesChart">Most Votes</label>
+                        </div>
                     </div>
                 </div>
             </div>

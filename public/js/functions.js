@@ -869,3 +869,41 @@ var copyClipboard = (url_id) => {
         document.execCommand('copy');
     }
 }
+
+let toggleCollapseAlertBtns = (element) => {
+    if (element.classList.contains('expanded')) {
+        document.getElementById('expandBtn').classList.remove('d-none')
+        document.getElementById('collapseBtn').classList.add('d-none')
+
+        document.querySelectorAll('.alert-container button.btn-close').forEach((btn) => {
+            if (btn.id == 'viewQRBtn') {
+                return
+            }
+            
+            btn.click()
+        })
+
+        if (typeof tournament_id !== 'undefined') {
+            localStorage.setItem('collapse-on-t-' + tournament_id, true)
+        } else {
+            localStorage.setItem('collapse-on-leaderboard', true)
+        }
+    } else {
+        document.getElementById('expandBtn').classList.add('d-none')
+        document.getElementById('collapseBtn').classList.remove('d-none')
+
+        document.querySelectorAll('.alert-btn-container button').forEach((btn) => {
+            if (btn.id == 'viewQRBtn') {
+                return
+            }
+            
+            btn.click()
+        })
+
+        if (typeof tournament_id !== 'undefined') {
+            localStorage.removeItem('collapse-on-t-' + tournament_id)
+        } else {
+            localStorage.removeItem('collapse-on-leaderboard')
+        }
+    }
+}

@@ -623,3 +623,27 @@
 .bg-mm .alert-btn-container #toggleVoteDisplayingModeBtn svg path {
     stroke: #fff;
 }
+
+.bg-cs .alert-collapse-btn-container,
+.bg-dr .alert-collapse-btn-container,
+.bg-gr .alert-collapse-btn-container,
+.bg-mm .alert-collapse-btn-container {
+    padding: .25rem;
+}
+
+.bg-cs .alert-collapse-btn-container button svg path,
+.bg-dr .alert-collapse-btn-container button svg path,
+.bg-gr .alert-collapse-btn-container button svg path,
+.bg-mm .alert-collapse-btn-container button svg path {
+    fill: #fff;
+}
+
+.bg-cs .alert-collapse-btn-container button,
+.bg-dr .alert-collapse-btn-container button,
+.bg-gr .alert-collapse-btn-container button,
+.bg-mm .alert-collapse-btn-container button {
+    background-color: rgb(107, 107, 107);
+    border: solid 1px;
+    color: #fff;
+    padding: .5rem !important;
+}

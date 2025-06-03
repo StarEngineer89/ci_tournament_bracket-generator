@@ -1698,3 +1698,8 @@ li.context-menu-item.context-menu-disabled span {
   display: flex;
   justify-content: space-between;
 }
+
+.alert-collapse-btn-container button svg {
+  width: 30px;
+  height: 30px;
+}

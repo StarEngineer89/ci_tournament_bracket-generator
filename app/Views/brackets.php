@@ -159,7 +159,6 @@ $(document).ready(function() {
     }
     $('#toggleWarningBtn').click();
 
-
     <?php if ($tournament['description']): ?>
     const descriptionPlaceholder = document.getElementById('descriptionPlaceholder')
     const appendDescription = (description, type) => {
@@ -194,7 +193,6 @@ $(document).ready(function() {
     }
     $('#toggleDescriptionBtn').click();
     <?php endif; ?>
-
 
     <?php if ($tournament['availability']): ?>
     // Update the countdown timer
@@ -363,6 +361,10 @@ $(document).ready(function() {
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
     document.getElementById('confirmDismissButton').addEventListener('click', dismissEdit)
 
+    if (localStorage.getItem('collapse-on-t-' + tournament_id)) {
+        document.getElementById('collapseBtn').click()
+    }
+
     <?php if(!auth()->user() && isset($editable) && $editable && !$tournament['user_id']) : ?>
     var leaveUrl;
     $(document).on('click', function(e) {
@@ -500,6 +502,29 @@ var changeVoteDisplayingMode = (element) => {
         <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
+        <div class="container alert-collapse-btn-container mb-1 d-flex justify-content-end">
+            <button type="button" class="btn collapsed p-0 d-none" id="expandBtn" onclick="toggleCollapseAlertBtns(this)">
+                <svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <title>expand</title>
+                        <path d="M13.816 5.989l-7.785 0.046 0.003 7.735 2.59-2.591 3.454 3.454 2.665-2.665-3.453-3.454 2.526-2.525zM12.079 17.35l-3.454 3.455-2.59-2.592-0.003 7.799 7.785-0.018-2.526-2.525 3.454-3.453-2.666-2.666zM19.922 14.633l3.453-3.454 2.59 2.591 0.004-7.735-7.785-0.046 2.526 2.525-3.454 3.454 2.666 2.665zM23.375 20.805l-3.453-3.455-2.666 2.666 3.454 3.453-2.526 2.525 7.785 0.018-0.004-7.799-2.59 2.592z"></path>
+                    </g>
+                </svg>
+            </button>
+            <button type="button" class="btn expanded p-0" id="collapseBtn" onclick="toggleCollapseAlertBtns(this)">
+                <svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <title>collapse</title>
+                        <path d="M11.493 8.757l-3.454-3.453-2.665 2.665 3.454 3.453-2.59 2.59 7.797 0.004-0.017-7.784-2.525 2.525zM23.172 11.422l3.454-3.453-2.665-2.665-3.454 3.453-2.525-2.525-0.017 7.784 7.797-0.004-2.59-2.59zM8.828 20.578l-3.454 3.453 2.665 2.665 3.454-3.453 2.526 2.525 0.017-7.784-7.797 0.004 2.589 2.59zM25.762 17.988l-7.797-0.004 0.017 7.784 2.525-2.525 3.454 3.453 2.665-2.665-3.454-3.453 2.59-2.59z"></path>
+                    </g>
+                </svg>
+            </button>
+        </div>
+
         <div class="container alert-btn-container mb-1 d-flex justify-content-end">
             <?php if ($votingEnabled): ?>
             <button type="button" class="btn ps-2 pe-2" id="toggleVoteDisplayingModeBtn">
@@ -548,275 +573,278 @@ var changeVoteDisplayingMode = (element) => {
             </button>
         </div>
 
-        <?php if ($tournament['availability']): ?>
-        <div id="countTimerAlertPlaceholder" class="text-center"></div>
-        <div id="countTimerAlertMsg" class="d-none">
-            <?php $startTime = new \DateTime($tournament['available_start']) ?>
-            <?php $endTime = new DateTime($tournament['available_end']) ?>
-            <?php $interval = $startTime->diff($endTime); ?>
+        <div class="alert-container">
+            <?php if ($tournament['availability']): ?>
+            <div id="countTimerAlertPlaceholder" class="text-center"></div>
+            <div id="countTimerAlertMsg" class="d-none">
+                <?php $startTime = new \DateTime($tournament['available_start']) ?>
+                <?php $endTime = new DateTime($tournament['available_end']) ?>
+                <?php $interval = $startTime->diff($endTime); ?>
 
-            <span class="me-5">
-                <strong>Duration: </strong><span class="start"><?= $tournament['available_start'] ?></span> - <span class="end"><?= $tournament['available_end'] ?></span>
+                <span class="me-5">
+                    <strong>Duration: </strong><span class="start"><?= $tournament['available_start'] ?></span> - <span class="end"><?= $tournament['available_end'] ?></span>
+                    <br />
+                    (<?= "{$interval->d} Days {$interval->h} Hours" ?>)
+                </span>
                 <br />
-                (<?= "{$interval->d} Days {$interval->h} Hours" ?>)
-            </span>
-            <br />
-            <span class="status pt-2"><span class="timer" id="availabilityTimer"></span></span>
-        </div>
-
-        <div id="availabilityAlertPlaceholder"></div>
-        <div id="availabilityAlertMsg" class="d-none">
-            <?php $created_by = $tournament['created_by'] ?>
-            <?php $created_by_name = $created_by ? $created_by->username : 'Guest' ?>
-            <?php $created_by_name .= (!$userSettingService->get('hide_email_host') && $created_by) ? " ($created_by->email)" : '' ?>
-            The tournament <strong><?= $tournament['name'] ?></strong> hosted by <strong><?= $created_by_name ?></strong> will be available starting <?= auth()->user() ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?> and ending on <?= auth()->user() ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?>. <br />
-            If voting is enabled, the voting period will begin once the tournament availability starts and conclude once the availability ends.
-        </div>
-        <?php endif; ?>
-
-        <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
-        <div id="warningPlaceholder"></div>
-        <div id="warningMsg" class="d-none">
-            <div class="text-center">⚠️ WARNING ⚠️</div>
-            This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin!
-            <br>
-            If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and audio settings and more!) from your very own dedicated Tournament Dashboard available for registered users!
-            <br>
-            Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
-            <div class="text-center">
-                <?php if(!auth()->user()): ?><br>
-                <a href="<?= base_url('/login')?>" class="btn btn-primary">Signup/Login to preserve tournament</a>
-                <?php endif;?>
+                <span class="status pt-2"><span class="timer" id="availabilityTimer"></span></span>
             </div>
-        </div>
-        <?php endif;?>
 
-        <div id="settingInfoAlertPlaceholder"></div>
-        <div id="settingInfoAlertMsg" class="d-none">
-            <div class="row">
-                <div class="col-md-7 col-sm-12 m-auto">
-                    <p class="text-center"><strong>Tournament Properties:</strong></p>
+            <div id="availabilityAlertPlaceholder"></div>
+            <div id="availabilityAlertMsg" class="d-none">
+                <?php $created_by = $tournament['created_by'] ?>
+                <?php $created_by_name = $created_by ? $created_by->username : 'Guest' ?>
+                <?php $created_by_name .= (!$userSettingService->get('hide_email_host') && $created_by) ? " ($created_by->email)" : '' ?>
+                The tournament <strong><?= $tournament['name'] ?></strong> hosted by <strong><?= $created_by_name ?></strong> will be available starting <?= auth()->user() ? convert_to_user_timezone($tournament['available_start'], user_timezone(auth()->user()->id)) : $tournament['available_start'] ?> and ending on <?= auth()->user() ? convert_to_user_timezone($tournament['available_end'], user_timezone(auth()->user()->id)) : $tournament['available_end'] ?>. <br />
+                If voting is enabled, the voting period will begin once the tournament availability starts and conclude once the availability ends.
+            </div>
+            <?php endif; ?>
 
-                    <p class="property-info d-flex justify-content-between mb-1">
-                        <strong>Elimination Type</strong>
-                        <span>
-                            <?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? "Single" : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? "Double" : "Knockout") ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? lang('Descriptions.tournamentSingleTypeDesc') : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? lang('Descriptions.tournamentDoubleTypeDesc') : lang('Descriptions.tournamentKockoutTypeDesc')) ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <p class="property-info d-flex justify-content-between mb-1">
-                        <strong>Visibility</strong>
-                        <span>
-                            <?= $tournament['visibility'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVisibilityDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <p class="property-info d-flex justify-content-between mb-1">
-                        <strong>Availability </strong>
-                        <span>
-                            <?= $tournament['availability'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAvailabilityDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <p class="property-info d-flex justify-content-between mb-1">
-                        <strong>Evaluation Method</strong>
-                        <span>
-                            <?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? "Manual" : "Voting" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentEvaluationManualDesc') : lang('Descriptions.tournamentEvaluationVotingDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING): ?>
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Voting Accessibility</strong>
-                        <span>
-                            <?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? "Restricted" : "Unrestricted" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? lang('Descriptions.tournamentVotingRestrictedgDesc') : lang('Descriptions.tournamentVotingUnrestrictedDesc') ?>'>
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Voting Mechanism</strong>
-                        <span>
-                            <?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? "Max Votes" : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? "Round Duration" : "Open-Ended") ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? lang('Descriptions.tournamentVotingMaxVotesDesc') : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? lang('Descriptions.tournamentVotingRoundDurationDesc') : lang('Descriptions.tournamentVotingOpenEndedDesc')) ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <?php if ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE): ?>
-                    <p class="property-info d-flex justify-content-between mb-1 ps-4">
-                        <strong>Max Votes</strong>
-                        <span>
-                            <?= $tournament['max_vote_value'] ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-                    <?php endif; ?>
-
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Retain vote count across rounds</strong>
-                        <span>
-                            <?= $tournament['voting_retain'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentRetainVoteCountDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Allow Host override</strong>
-                        <span>
-                            <?= $tournament['allow_host_override'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-                    <?php endif; ?>
-
-                    <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE)): ?>
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Round Duration</strong>
-                        <span>
-                            <?= $tournament['round_duration_combine'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentRoundDurationCombineManual') : lang('Descriptions.tournamentRoundDurationCombineMaxVote') ?>'>
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-                    <?php endif; ?>
-
-                    <p class="property-info d-flex justify-content-between mb-1">
-                        <strong>Participant Image Customization Access</strong>
-                        <span>
-                            <?= $tournament['pt_image_update_enabled'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <p class="property-info d-flex justify-content-between mb-1">
-                        <strong>Audio for Final Winner</strong>
-                        <span>
-                            <?= $tournament['win_audio_enabled'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAudioFinalWinnerDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <?php if ($tournament['winner_audio_everyone']): ?>
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Play for everyone</strong>
-                        <span>
-                            <?= $tournament['winner_audio_everyone'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentPlayForEveryoneDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-                    <?php endif; ?>
-
-                    <p class="property-info d-flex justify-content-between mb-1">
-                        <strong>Enable Scoring</strong>
-                        <span>
-                            <?= $tournament['score_enabled'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentEnableScoringDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <?php if ($tournament['score_enabled']): ?>
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Score per bracket per round</strong>
-                        <span>
-                            <?= $tournament['score_bracket'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
-                        </span>
-                    </p>
-                    <?php endif; ?>
-
-                    <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                        <strong>Increment Score</strong>
-                        <span>
-                            <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentIncrementScoreDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <?php if ($tournament['increment_score_enabled']): ?>
-                    <p class="property-info d-flex justify-content-between mb-1 ps-4">
-                        <strong>Increment Type</strong>
-                        <span>
-                            <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>
-                            <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? lang('Descriptions.tournamentIncrementScoreTypePlusDesc') : lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?>">
-                                <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                            </button>
-                        </span>
-                    </p>
-
-                    <p class="property-info d-flex justify-content-between mb-1 ps-4">
-                        <strong>Increment Value</strong>
-                        <span>
-                            <?= $tournament['increment_score'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
-                        </span>
-                    </p>
-                    <?php endif; ?>
+            <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
+            <div id="warningPlaceholder"></div>
+            <div id="warningMsg" class="d-none">
+                <div class="text-center">⚠️ WARNING ⚠️</div>
+                This tournament will only be available on the Tournament Gallery if visibility option was enabled; otherwise the tournament, alongside any progress, will be lost if the page is closed and you're not registered/loggedin!
+                <br>
+                If you didn't enable visibility setting in the tournament properties and would like to preserve the tournament and its progress, please Signup/Login and unlock much more features (such as controlling availability, visibility, sharing and audio settings and more!) from your very own dedicated Tournament Dashboard available for registered users!
+                <br>
+                Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
+                <div class="text-center">
+                    <?php if(!auth()->user()): ?><br>
+                    <a href="<?= base_url('/login')?>" class="btn btn-primary">Signup/Login to preserve tournament</a>
+                    <?php endif;?>
                 </div>
             </div>
-        </div>
+            <?php endif;?>
 
-        <div id="liveAlertPlaceholder"></div>
-        <div id="liveAlertMsg" class="d-none">
-            Note: <br />
-            The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
-            <?php if ((auth()->user() && auth()->user()->id == $tournament['user_id']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
-            You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box throughout the tournament availability window (assuming its set).<br>
-            This limitation isn't applicable to the tournament host.<br>
-            In other words, actions will be restricted for all after availability ends (e.g. if tournament is shared with edit permissions) except for the host, in which even if availability ends, the host would still be able to control actions.
-            <br />
-            <?php endif ?>
-        </div>
+            <div id="settingInfoAlertPlaceholder"></div>
+            <div id="settingInfoAlertMsg" class="d-none">
+                <div class="row">
+                    <div class="col-md-7 col-sm-12 m-auto">
+                        <p class="text-center"><strong>Tournament Properties:</strong></p>
 
-        <div id="descriptionPlaceholder"></div>
-        <div id="description" class="d-none">
-            <?= $tournament['description'] ?>
-        </div>
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Elimination Type</strong>
+                            <span>
+                                <?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? "Single" : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? "Double" : "Knockout") ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? lang('Descriptions.tournamentSingleTypeDesc') : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? lang('Descriptions.tournamentDoubleTypeDesc') : lang('Descriptions.tournamentKockoutTypeDesc')) ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
 
-        <?php if ($votingEnabled): ?>
-        <div id="voteDisplayingModePlaceholder"></div>
-        <div id="voteDisplayingHtml" class="vote-display-mode text-center d-none">
-            <label for="inputPassword6" class="col-form-label mt-3 me-3"><strong>Vote Display :</strong> </label>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="vote-display-mode" onchange="changeVoteDisplayingMode(this)" value="n" <?= (!$tournament['vote_displaying'] || $tournament['vote_displaying'] == 'n') ? "checked" : ''; ?>>
-                <label class="form-check-label" for="votes_in_point">Points</label>
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Visibility</strong>
+                            <span>
+                                <?= $tournament['visibility'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVisibilityDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Availability </strong>
+                            <span>
+                                <?= $tournament['availability'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAvailabilityDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Evaluation Method</strong>
+                            <span>
+                                <?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? "Manual" : "Voting" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentEvaluationManualDesc') : lang('Descriptions.tournamentEvaluationVotingDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING): ?>
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Voting Accessibility</strong>
+                            <span>
+                                <?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? "Restricted" : "Unrestricted" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['voting_accessibility'] == EVALUATION_VOTING_RESTRICTED ? lang('Descriptions.tournamentVotingRestrictedgDesc') : lang('Descriptions.tournamentVotingUnrestrictedDesc') ?>'>
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Voting Mechanism</strong>
+                            <span>
+                                <?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? "Max Votes" : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? "Round Duration" : "Open-Ended") ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE ? lang('Descriptions.tournamentVotingMaxVotesDesc') : ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_ROUND ? lang('Descriptions.tournamentVotingRoundDurationDesc') : lang('Descriptions.tournamentVotingOpenEndedDesc')) ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <?php if ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE): ?>
+                        <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                            <strong>Max Votes</strong>
+                            <span>
+                                <?= $tournament['max_vote_value'] ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+                        <?php endif; ?>
+
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Retain vote count across rounds</strong>
+                            <span>
+                                <?= $tournament['voting_retain'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentRetainVoteCountDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Allow Host override</strong>
+                            <span>
+                                <?= $tournament['allow_host_override'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+                        <?php endif; ?>
+
+                        <?php if ($tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL || ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE)): ?>
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Round Duration</strong>
+                            <span>
+                                <?= $tournament['round_duration_combine'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['evaluation_method'] == EVALUATION_METHOD_MANUAL ? lang('Descriptions.tournamentRoundDurationCombineManual') : lang('Descriptions.tournamentRoundDurationCombineMaxVote') ?>'>
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+                        <?php endif; ?>
+
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Participant Image Customization Access</strong>
+                            <span>
+                                <?= $tournament['pt_image_update_enabled'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentParticipantImageCustomizationDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Audio for Final Winner</strong>
+                            <span>
+                                <?= $tournament['win_audio_enabled'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentAudioFinalWinnerDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <?php if ($tournament['winner_audio_everyone']): ?>
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Play for everyone</strong>
+                            <span>
+                                <?= $tournament['winner_audio_everyone'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentPlayForEveryoneDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+                        <?php endif; ?>
+
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Enable Scoring</strong>
+                            <span>
+                                <?= $tournament['score_enabled'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentEnableScoringDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <?php if ($tournament['score_enabled']): ?>
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Score per bracket per round</strong>
+                            <span>
+                                <?= $tournament['score_bracket'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>
+                        </p>
+                        <?php endif; ?>
+
+                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                            <strong>Increment Score</strong>
+                            <span>
+                                <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentIncrementScoreDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <?php if ($tournament['increment_score_enabled']): ?>
+                        <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                            <strong>Increment Type</strong>
+                            <span>
+                                <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? lang('Descriptions.tournamentIncrementScoreTypePlusDesc') : lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                            <strong>Increment Value</strong>
+                            <span>
+                                <?= $tournament['increment_score'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="vote-display-mode" onchange="changeVoteDisplayingMode(this)" value="p" <?= ($tournament['vote_displaying'] == 'p') ? "checked" : ''; ?>>
-                <label class="form-check-label" for="votes_in_percentage">Percentage</label>
+
+            <div id="liveAlertPlaceholder"></div>
+            <div id="liveAlertMsg" class="d-none">
+                Note: <br />
+                The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
+                <?php if ((auth()->user() && auth()->user()->id == $tournament['user_id']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
+                You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box throughout the tournament availability window (assuming its set).<br>
+                This limitation isn't applicable to the tournament host.<br>
+                In other words, actions will be restricted for all after availability ends (e.g. if tournament is shared with edit permissions) except for the host, in which even if availability ends, the host would still be able to control actions.
+                <br />
+                <?php endif ?>
             </div>
+
+            <div id="descriptionPlaceholder"></div>
+            <div id="description" class="d-none">
+                <?= $tournament['description'] ?>
+            </div>
+
+            <?php if ($votingEnabled): ?>
+            <div id="voteDisplayingModePlaceholder"></div>
+            <div id="voteDisplayingHtml" class="vote-display-mode text-center d-none">
+                <label for="inputPassword6" class="col-form-label mt-3 me-3"><strong>Vote Display :</strong> </label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="vote-display-mode" onchange="changeVoteDisplayingMode(this)" value="n" <?= (!$tournament['vote_displaying'] || $tournament['vote_displaying'] == 'n') ? "checked" : ''; ?>>
+                    <label class="form-check-label" for="votes_in_point">Points</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="vote-display-mode" onchange="changeVoteDisplayingMode(this)" value="p" <?= ($tournament['vote_displaying'] == 'p') ? "checked" : ''; ?>>
+                    <label class="form-check-label" for="votes_in_percentage">Percentage</label>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
-        <?php endif; ?>
+
         <div id="roundTimerPlaceholder"></div>
         <div id="brackets" class="brackets d-flex p-5 pt-2"></div>
     </div>
