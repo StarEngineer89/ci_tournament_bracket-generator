@@ -778,7 +778,7 @@ let editing_mode = false;
         next_bracket = next_bracketObj.dataset.bracket;
 
         let is_final = false
-        if (next_bracketObj.parentElement.classList.contains('final')) {
+        if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
             is_final = true
         }
 

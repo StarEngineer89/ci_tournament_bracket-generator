@@ -138,6 +138,9 @@ class VoteLibrary
                     $insert_data = ['tournament_id' => $tournament_id, 'action' => BRACKET_ACTIONCODE_MARK_WINNER, 'user_id' => 0, 'system_log' => 1];
 
                     $participant = $this->participantsModel->find($winner['id']);
+                    if (!$participant) {
+                        continue;
+                    }
                     
                     $data = [];
                     $data['bracket_no'] = $bracket['bracketNo'];

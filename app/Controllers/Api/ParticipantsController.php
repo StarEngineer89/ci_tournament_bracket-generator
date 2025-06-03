@@ -400,12 +400,14 @@ class ParticipantsController extends BaseController
 
         if ($tournament_id) {
             $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $id])->delete();
+            $this->votesModel->where(['tournament_id'=> $tournament_id, 'participant_id' => $id])->delete();
         } else {
             $this->tournamentMembersModel->where(['hash' => $hash, 'participant_id' => $id])->delete();
         }
 
         if (!$this->tournamentMembersModel->where('participant_id', $id)->findAll()) {
             $this->participantsModel->where('id', $id)->delete();
+            $this->votesModel->where(['participant_id' => $id])->delete();
         }
 
         helper('participant_helper');            

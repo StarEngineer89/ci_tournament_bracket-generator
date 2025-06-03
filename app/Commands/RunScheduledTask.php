@@ -156,6 +156,18 @@ class RunScheduledTask extends BaseCommand
 
                     if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTSTART) {
                         $schedulesModel->update($schedule['id'], ['result' => 1]);
+
+                        if ($tournament) {
+                            $tournament->status = TOURNAMENT_STATUS_INPROGRESS;
+                            $tournamentsModel->save($tournament);
+                        }
+                    }
+
+                    if ($schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) {
+                        if ($tournament) {
+                            $tournament->status = TOURNAMENT_STATUS_COMPLETED;
+                            $tournamentsModel->save($tournament);
+                        }
                     }
                 }
                 
@@ -182,6 +194,15 @@ class RunScheduledTask extends BaseCommand
         $this->checkAndNotifyInactivity(30);
         $this->checkAndNotifyInactivity(60);
         $this->checkAndNotifyInactivity(90);
+
+        /** Update the tournament status completed */
+        $tournaments = $tournamentsModel->findAll();
+        foreach ($tournaments as $tournament) {
+            if($tournament['available_end'] && (time() > strtotime($tournament['available_end'])) && ($tournament['status'] != TOURNAMENT_STATUS_COMPLETED)){
+                $tournament['status'] = TOURNAMENT_STATUS_COMPLETED;
+                $tournamentsModel->save($tournament);
+            }
+        }
     }
 
     private function checkAndNotifyInactivity($days)
