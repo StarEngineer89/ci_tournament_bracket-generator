@@ -256,7 +256,7 @@ class TournamentController extends BaseController
             }
         }
 
-        $tournaments = $tournaments->findAll();
+        $tournaments = $tournaments->orderBy('available_start', 'DESC')->orderBy('created_at', 'DESC')->findAll();
 
         $newTournaments = array();
         $existingHistory = $this->request->getCookie('guest_tournaments');
