@@ -439,12 +439,12 @@ class TournamentController extends BaseController
         /**
          * Assign the tournament ID to the participants and group members
          */
-        $this->tournamentMembersModel->where(['tournament_id'=> 0, 'hash' => $this->request->getPost('hash')])->set(['tournament_id' => $tournament_id])->update();
-        $members = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->findAll();
-        $members = array_map(function($item) {
-                return (int)$item['id'];
-            }, $members);
-        $this->groupMembersModel->whereIn('tournament_member_id', $members)->set(['tournament_id' => $tournament_id])->update();
+        // $this->tournamentMembersModel->where(['tournament_id'=> 0, 'hash' => $this->request->getPost('hash')])->set(['tournament_id' => $tournament_id])->update();
+        // $members = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->findAll();
+        // $members = array_map(function($item) {
+        //         return (int)$item['id'];
+        //     }, $members);
+        // $this->groupMembersModel->whereIn('tournament_member_id', $members)->set(['tournament_id' => $tournament_id])->update();
 
         /** Enable foreign key check */
         if (!$user_id) {

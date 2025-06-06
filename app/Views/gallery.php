@@ -131,6 +131,18 @@ tournamentsTable = $('#tournamentGalleryTable').DataTable({
                     type = "Knockout"
                 }
 
+                if (row.type == <?= TOURNAMENT_TYPE_FFA ?>) {
+                    type = "FFA"
+                }
+
+                if (row.type == <?= TOURNEMENT_TYPE_RROBIN ?>) {
+                    type = "Round Robin"
+                }
+
+                if (row.type == <?= TOURNEMENT_TYPE_SWISS ?>) {
+                    type = "Swiss"
+                }
+
                 return type;
             },
             "className": "text-center"
@@ -280,6 +292,9 @@ function handleKeyPress(event) {
                                 <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
                                 <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
                                 <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+                                <option value="<?= TOURNAMENT_TYPE_FFA ?>">FFA</option>
+                                <option value="<?= TOURNEMENT_TYPE_RROBIN ?>">Round Robin</option>
+                                <option value="<?= TOURNEMENT_TYPE_SWISS ?>">Swiss</option>
                             </select>
                         </th>
                         <th scope="col">

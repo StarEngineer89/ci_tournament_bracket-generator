@@ -55,6 +55,9 @@
                         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
                         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
                         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+                        <option value="<?= TOURNAMENT_TYPE_FFA ?>">FFA</option>
+                        <option value="<?= TOURNEMENT_TYPE_RROBIN ?>">Round Robin</option>
+                        <option value="<?= TOURNEMENT_TYPE_SWISS ?>">Swiss</option>
                     </select>
                 </th>
                 <th scope="col">
@@ -107,6 +110,9 @@
                         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
                         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
                         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+                        <option value="<?= TOURNAMENT_TYPE_FFA ?>">FFA</option>
+                        <option value="<?= TOURNEMENT_TYPE_RROBIN ?>">Round Robin</option>
+                        <option value="<?= TOURNEMENT_TYPE_SWISS ?>">Swiss</option>
                     </select>
                 </th>
                 <th scope="col">
@@ -150,6 +156,9 @@
                         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>">Single</option>
                         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
                         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+                        <option value="<?= TOURNAMENT_TYPE_FFA ?>">FFA</option>
+                        <option value="<?= TOURNEMENT_TYPE_RROBIN ?>">Round Robin</option>
+                        <option value="<?= TOURNEMENT_TYPE_SWISS ?>">Swiss</option>
                     </select>
                 </th>
                 <th scope="col">

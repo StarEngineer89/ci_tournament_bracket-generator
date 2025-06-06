@@ -10,6 +10,9 @@
         <option value="<?= TOURNAMENT_TYPE_SINGLE ?>" selected>Single</option>
         <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
         <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+        <option value="<?= TOURNAMENT_TYPE_FFA ?>">Free For All (FFA) </option>
+        <option value="<?= TOURNEMENT_TYPE_RROBIN ?>">Round Robin</option>
+        <option value="<?= TOURNEMENT_TYPE_SWISS ?>">Swiss</option>
     </select>
     <div class="read-more-container">
         <div class="single-type-hint form-text text-content">

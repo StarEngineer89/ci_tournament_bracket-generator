@@ -626,7 +626,7 @@ var changeVoteDisplayingMode = (element) => {
                         <p class="property-info d-flex justify-content-between mb-1">
                             <strong>Elimination Type</strong>
                             <span>
-                                <?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? "Single" : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? "Double" : "Knockout") ?>
+                                <?= $tournament['type'] ?>
                                 <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['type'] == TOURNAMENT_TYPE_SINGLE ? lang('Descriptions.tournamentSingleTypeDesc') : ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE ? lang('Descriptions.tournamentDoubleTypeDesc') : lang('Descriptions.tournamentKockoutTypeDesc')) ?>">
                                     <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                                 </button>

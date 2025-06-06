@@ -586,6 +586,18 @@ $(document).ready(function() {
                         type = "Knockout"
                     }
 
+                    if (row.type == <?= TOURNAMENT_TYPE_FFA ?>) {
+                        type = "FFA"
+                    }
+
+                    if (row.type == <?= TOURNEMENT_TYPE_RROBIN ?>) {
+                        type = "Round Robin"
+                    }
+
+                    if (row.type == <?= TOURNEMENT_TYPE_SWISS ?>) {
+                        type = "Swiss"
+                    }
+
                     return type;
                 }
             },
@@ -813,6 +825,18 @@ $(document).ready(function() {
 
                     if (row.type == <?= TOURNAMENT_TYPE_KNOCKOUT ?>) {
                         type = "Knockout"
+                    }
+
+                    if (row.type == <?= TOURNAMENT_TYPE_FFA ?>) {
+                        type = "FFA"
+                    }
+
+                    if (row.type == <?= TOURNEMENT_TYPE_RROBIN ?>) {
+                        type = "Round Robin"
+                    }
+
+                    if (row.type == <?= TOURNEMENT_TYPE_SWISS ?>) {
+                        type = "Swiss"
                     }
 
                     return type;
@@ -1170,220 +1194,6 @@ $(document).ready(function() {
         })
     }
 
-    $('#confirmDelete').on('click', function() {
-        const tournament_id = deleteModal.getAttribute('data-id');
-
-        $.ajax({
-            type: "get",
-            url: `${apiURL}/tournaments/${tournament_id}/delete`,
-            success: function(result) {
-                const msg = JSON.parse(result).msg;
-                alert(msg);
-                window.location.href = "/tournaments";
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function() {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-    });
-
-    $('#submit').on('click', function() {
-        const form = document.getElementById('tournamentForm');
-
-        let isValid = true;
-
-        if (document.getElementById('enableAvailability').checked) {
-            const currentDate = new Date()
-            const startDate = new Date(document.getElementById('startAvPickerInput').value)
-            const endDate = new Date(document.getElementById('endAvPickerInput').value)
-
-            let startDateInput = document.getElementById('startAvPickerInput')
-            let endDateInput = document.getElementById('endAvPickerInput')
-            if (!startDateInput.value.trim()) {
-                // Trigger validation error for empty readonly field
-                document.getElementById('startAvPicker').classList.add("is-invalid");
-                startDateInput.addEventListener('change', () => {
-                    availability_start_changed = true;
-                    if (startDateInput.value.trim()) {
-                        document.getElementById('startAvPicker').classList.remove("is-invalid");
-                    }
-                })
-                startDateInput.reportValidity(); // Shows default browser error message
-                event.preventDefault(); // Prevent form submission
-
-                isValid = false
-            } else {
-                startDateInput.addEventListener('change', () => {
-                    availability_start_changed = true;
-                })
-            }
-
-            if (!endDateInput.value.trim()) {
-                // Trigger validation error for empty readonly field
-                document.getElementById('endAvPicker').classList.add("is-invalid");
-                endDateInput.addEventListener('change', () => {
-                    if (endDateInput.value.trim()) {
-                        document.getElementById('endAvPicker').classList.remove("is-invalid");
-                    }
-                })
-                endDateInput.reportValidity(); // Shows default browser error message
-                event.preventDefault(); // Prevent form submission
-
-                isValid = false
-            }
-
-            if (startDate > endDate) {
-                isValid = false
-                document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
-                document.getElementById('availability-end-date-error').textContent = "Stop date must be greater than start date."
-                document.getElementById('availability-end-date-error').classList.remove('d-none')
-            }
-
-            if (availability_start_changed) {
-                if (startDate < currentDate) {
-                    isValid = false
-                    document.getElementById('availability-start-date-error').previousElementSibling.classList.add('is-invalid')
-                    document.getElementById('availability-start-date-error').textContent = "You cannot select a past date/time!"
-                    document.getElementById('availability-start-date-error').classList.remove('d-none')
-                } else {
-                    document.getElementById('availability-start-date-error').classList.add('d-none')
-                }
-            }
-
-            if (endDate < currentDate) {
-                isValid = false
-                document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
-                document.getElementById('availability-end-date-error').textContent = "You cannot select a past date/time!"
-                document.getElementById('availability-end-date-error').classList.remove('d-none')
-            } else {
-                document.getElementById('availability-end-date-error').classList.add('d-none')
-            }
-        }
-
-        changeEvaluationMethod(document.getElementById('evaluationMethod'))
-
-        $('.audio-setting').each((i, settingBox) => {
-            const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
-            const stopTime0 = document.getElementsByName('stop[' + i + ']')[0].value;
-
-            if (parseInt(stopTime0) <= parseInt(startTime0)) {
-                document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
-                document.getElementById('start-time-error-' + i + '').classList.remove('d-none');
-                document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
-                document.getElementById('stop-time-error-' + i + '').classList.remove('d-none');
-                isValid = false;
-            } else {
-                document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
-                document.getElementById('start-time-error-' + i + '').classList.add('d-none');
-                document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
-                document.getElementById('stop-time-error-' + i + '').classList.add('d-none');
-            }
-        })
-
-        if (!isValid || !form.checkValidity()) {
-            event.preventDefault()
-            event.stopPropagation()
-            form.classList.add('was-validated');
-            return false;
-        }
-
-        const values = $('#tournamentForm').serializeArray();
-        $('#tournamentForm input[type="checkbox"]:not(:checked)').each(function(i, e) {
-            values.push({
-                name: e.getAttribute("name"),
-                value: false
-            });
-        });
-
-        const data = Object.fromEntries(values.map(({
-            name,
-            value
-        }) => [name, value]));
-
-        $.ajax({
-            url: apiURL + '/tournaments/' + $('#tournamentForm').data('id') + '/update',
-            type: "POST",
-            data: data,
-            beforeSend: function() {
-                $('#beforeProcessing').removeClass('d-none')
-            },
-            success: function(result) {
-                $('#beforeProcessing').addClass('d-none')
-
-                var result = JSON.parse(result);
-                if (result.error) {
-                    // invalid file format.
-                    $("#err").html("Invalid File !").fadeIn();
-                } else {
-                    $('#tournamentSettings').modal('hide');
-                    window.location.reload()
-                }
-            },
-            error: function(e) {
-                $("#err").html(e).fadeIn();
-            }
-        });
-    });
-
-    $('#urlCopyBtn').on('click', function() {
-        copyClipboard("tournamentURL");
-    });
-
-    $('#confirmShare').on('click', function() {
-        var validator = $("#privateUserTagsInputForm").data("bootstrapValidator");
-        validator.validate();
-
-        if (!validator.isValid()) {
-            return;
-        }
-
-        const tournament_id = shareModal.dataset.id;
-        const url = new URL($('#tournamentURL').val());
-        var path = url.pathname.split("/");
-
-        $.ajax({
-            url: apiURL + '/tournaments/' + tournament_id + '/share',
-            type: "POST",
-            data: {
-                'tournament_id': tournament_id,
-                'target': $('input[name="usertype"]:checked').val(),
-                'users': $('#userTagsInput').val(),
-                'permission': $('select[name="permission"]').val(),
-                'token': path[3]
-            },
-            beforeSend: function() {
-                //$("#preview").fadeOut();
-                $("#err").fadeOut();
-                $('#beforeProcessing').removeClass('d-none');
-            },
-            success: function(result) {
-                $('#shareModal').modal('hide');
-                $('#beforeProcessing').addClass('d-none');
-                window.location.reload()
-            },
-            error: function(e) {
-                $("#err").html(e).fadeIn();
-            }
-        });
-    });
-
-    $('#confirmPurgeShare').on('click', function() {
-        const shareSettingId = $('#purgeShareConfirm').attr('data-id');
-        purgeShare(shareSettingId);
-    })
-
-    $('input[name="share-type"]').on('change', function(ele) {
-        if ($(this).val() == 'wh') {
-            window.location = "<?= base_url('tournaments?filter=shared&type=wh') ?>"
-        } else {
-            window.location = "<?= base_url('tournaments?filter=shared') ?>"
-        }
-    })
-
     const archiveModal = document.getElementById('archiveConfirmModal');
     if (archiveModal) {
         archiveModal.addEventListener('show.bs.modal', event => {
@@ -1393,31 +1203,6 @@ $(document).ready(function() {
         })
     }
 
-    $('#archiveConfirmBtn').on('click', function() {
-        const tournament_id = archiveModal.getAttribute('data-id');
-        let data = {
-            'archive': 1
-        }
-
-        $.ajax({
-            type: "post",
-            url: `${apiURL}/tournaments/${tournament_id}/update`,
-            data: data,
-            success: function(result) {
-                const msg = JSON.parse(result).msg;
-                alert(msg);
-                window.location.href = "/tournaments";
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function() {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-    });
-
     const restoreModal = document.getElementById('restoreConfirmModal');
     if (restoreModal) {
         restoreModal.addEventListener('show.bs.modal', event => {
@@ -1426,31 +1211,6 @@ $(document).ready(function() {
             modalTitle.textContent = event.relatedTarget.getAttribute('data-name');
         })
     }
-
-    $('#restoreConfirmBtn').on('click', function() {
-        const tournament_id = restoreModal.getAttribute('data-id');
-        let data = {
-            'archive': 0
-        }
-
-        $.ajax({
-            type: "post",
-            url: `${apiURL}/tournaments/${tournament_id}/update`,
-            data: data,
-            success: function(result) {
-                const msg = JSON.parse(result).msg;
-                alert(msg);
-                window.location.href = "/tournaments";
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        }).done(() => {
-            setTimeout(function() {
-                $("#overlay").fadeOut(300);
-            }, 500);
-        });
-    });
 
     var elt = $("#userTagsInput");
     elt.tagsinput({
@@ -1463,6 +1223,275 @@ $(document).ready(function() {
         }
     });
 });
+
+$('#confirmDelete').on('click', function() {
+    const tournament_id = deleteModal.getAttribute('data-id');
+
+    $.ajax({
+        type: "get",
+        url: `${apiURL}/tournaments/${tournament_id}/delete`,
+        success: function(result) {
+            const msg = JSON.parse(result).msg;
+            alert(msg);
+            window.location.href = "/tournaments";
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+});
+
+$('#submit').on('click', function() {
+    const form = document.getElementById('tournamentForm');
+
+    let isValid = true;
+
+    if (document.getElementById('enableAvailability').checked) {
+        const currentDate = new Date()
+        const startDate = new Date(document.getElementById('startAvPickerInput').value)
+        const endDate = new Date(document.getElementById('endAvPickerInput').value)
+
+        let startDateInput = document.getElementById('startAvPickerInput')
+        let endDateInput = document.getElementById('endAvPickerInput')
+        if (!startDateInput.value.trim()) {
+            // Trigger validation error for empty readonly field
+            document.getElementById('startAvPicker').classList.add("is-invalid");
+            startDateInput.addEventListener('change', () => {
+                availability_start_changed = true;
+                if (startDateInput.value.trim()) {
+                    document.getElementById('startAvPicker').classList.remove("is-invalid");
+                }
+            })
+            startDateInput.reportValidity(); // Shows default browser error message
+            event.preventDefault(); // Prevent form submission
+
+            isValid = false
+        } else {
+            startDateInput.addEventListener('change', () => {
+                availability_start_changed = true;
+            })
+        }
+
+        if (!endDateInput.value.trim()) {
+            // Trigger validation error for empty readonly field
+            document.getElementById('endAvPicker').classList.add("is-invalid");
+            endDateInput.addEventListener('change', () => {
+                if (endDateInput.value.trim()) {
+                    document.getElementById('endAvPicker').classList.remove("is-invalid");
+                }
+            })
+            endDateInput.reportValidity(); // Shows default browser error message
+            event.preventDefault(); // Prevent form submission
+
+            isValid = false
+        }
+
+        if (startDate > endDate) {
+            isValid = false
+            document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
+            document.getElementById('availability-end-date-error').textContent = "Stop date must be greater than start date."
+            document.getElementById('availability-end-date-error').classList.remove('d-none')
+        }
+
+        if (availability_start_changed) {
+            if (startDate < currentDate) {
+                isValid = false
+                document.getElementById('availability-start-date-error').previousElementSibling.classList.add('is-invalid')
+                document.getElementById('availability-start-date-error').textContent = "You cannot select a past date/time!"
+                document.getElementById('availability-start-date-error').classList.remove('d-none')
+            } else {
+                document.getElementById('availability-start-date-error').classList.add('d-none')
+            }
+        }
+
+        if (endDate < currentDate) {
+            isValid = false
+            document.getElementById('availability-end-date-error').previousElementSibling.classList.add('is-invalid')
+            document.getElementById('availability-end-date-error').textContent = "You cannot select a past date/time!"
+            document.getElementById('availability-end-date-error').classList.remove('d-none')
+        } else {
+            document.getElementById('availability-end-date-error').classList.add('d-none')
+        }
+    }
+
+    changeEvaluationMethod(document.getElementById('evaluationMethod'))
+
+    $('.audio-setting').each((i, settingBox) => {
+        const startTime0 = document.getElementsByName('start[' + i + ']')[0].value;
+        const stopTime0 = document.getElementsByName('stop[' + i + ']')[0].value;
+
+        if (parseInt(stopTime0) <= parseInt(startTime0)) {
+            document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
+            document.getElementById('start-time-error-' + i + '').classList.remove('d-none');
+            document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.add('is-invalid')
+            document.getElementById('stop-time-error-' + i + '').classList.remove('d-none');
+            isValid = false;
+        } else {
+            document.getElementById('start-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
+            document.getElementById('start-time-error-' + i + '').classList.add('d-none');
+            document.getElementById('stop-time-error-' + i + '').previousElementSibling.classList.remove('is-invalid')
+            document.getElementById('stop-time-error-' + i + '').classList.add('d-none');
+        }
+    })
+
+    if (!isValid || !form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+        form.classList.add('was-validated');
+        return false;
+    }
+
+    const values = $('#tournamentForm').serializeArray();
+    $('#tournamentForm input[type="checkbox"]:not(:checked)').each(function(i, e) {
+        values.push({
+            name: e.getAttribute("name"),
+            value: false
+        });
+    });
+
+    const data = Object.fromEntries(values.map(({
+        name,
+        value
+    }) => [name, value]));
+
+    $.ajax({
+        url: apiURL + '/tournaments/' + $('#tournamentForm').data('id') + '/update',
+        type: "POST",
+        data: data,
+        beforeSend: function() {
+            $('#beforeProcessing').removeClass('d-none')
+        },
+        success: function(result) {
+            $('#beforeProcessing').addClass('d-none')
+
+            var result = JSON.parse(result);
+            if (result.error) {
+                // invalid file format.
+                $("#err").html("Invalid File !").fadeIn();
+            } else {
+                $('#tournamentSettings').modal('hide');
+                window.location.reload()
+            }
+        },
+        error: function(e) {
+            $("#err").html(e).fadeIn();
+        }
+    });
+});
+
+$('#urlCopyBtn').on('click', function() {
+    copyClipboard("tournamentURL");
+});
+
+$('#confirmShare').on('click', function() {
+    var validator = $("#privateUserTagsInputForm").data("bootstrapValidator");
+    validator.validate();
+
+    if (!validator.isValid()) {
+        return;
+    }
+
+    const tournament_id = shareModal.dataset.id;
+    const url = new URL($('#tournamentURL').val());
+    var path = url.pathname.split("/");
+
+    $.ajax({
+        url: apiURL + '/tournaments/' + tournament_id + '/share',
+        type: "POST",
+        data: {
+            'tournament_id': tournament_id,
+            'target': $('input[name="usertype"]:checked').val(),
+            'users': $('#userTagsInput').val(),
+            'permission': $('select[name="permission"]').val(),
+            'token': path[3]
+        },
+        beforeSend: function() {
+            //$("#preview").fadeOut();
+            $("#err").fadeOut();
+            $('#beforeProcessing').removeClass('d-none');
+        },
+        success: function(result) {
+            $('#shareModal').modal('hide');
+            $('#beforeProcessing').addClass('d-none');
+            window.location.reload()
+        },
+        error: function(e) {
+            $("#err").html(e).fadeIn();
+        }
+    });
+});
+
+$('#confirmPurgeShare').on('click', function() {
+    const shareSettingId = $('#purgeShareConfirm').attr('data-id');
+    purgeShare(shareSettingId);
+})
+
+$('input[name="share-type"]').on('change', function(ele) {
+    if ($(this).val() == 'wh') {
+        window.location = "<?= base_url('tournaments?filter=shared&type=wh') ?>"
+    } else {
+        window.location = "<?= base_url('tournaments?filter=shared') ?>"
+    }
+})
+
+$('#archiveConfirmBtn').on('click', function() {
+    const tournament_id = archiveModal.getAttribute('data-id');
+    let data = {
+        'archive': 1
+    }
+
+    $.ajax({
+        type: "post",
+        url: `${apiURL}/tournaments/${tournament_id}/update`,
+        data: data,
+        success: function(result) {
+            const msg = JSON.parse(result).msg;
+            alert(msg);
+            window.location.href = "/tournaments";
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+});
+
+$('#restoreConfirmBtn').on('click', function() {
+    const tournament_id = restoreModal.getAttribute('data-id');
+    let data = {
+        'archive': 0
+    }
+
+    $.ajax({
+        type: "post",
+        url: `${apiURL}/tournaments/${tournament_id}/update`,
+        data: data,
+        success: function(result) {
+            const msg = JSON.parse(result).msg;
+            alert(msg);
+            window.location.href = "/tournaments";
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    }).done(() => {
+        setTimeout(function() {
+            $("#overlay").fadeOut(300);
+        }, 500);
+    });
+});
+
+const initTournamentCreate = () => {
+    $('#tournamentForm')[0].reset()
+    $('#tournamentForm').modal()
+}
 
 const initCollapseActions = (rows) => {
     let myCollapsible = $('.collapse', rows)
@@ -2253,10 +2282,8 @@ function confirmBulkAction() {
             alert('Please select the tournaments.')
         }
     }
-
 }
 
-// handling bulk action (e.g., delete)
 function bulkDelete() {
     var selectedIds = [];
     var rows = tournamentsTable.rows({
@@ -2398,6 +2425,7 @@ function bulkRestore() {
     var rows = tournamentsTable.rows({
         'search': 'applied'
     }).nodes();
+
     $('.item-checkbox:checked', rows).each(function() {
         selectedIds.push($(this).closest('tr').data('id'));
     });
@@ -2423,7 +2451,7 @@ function bulkRestore() {
             $("#overlay").fadeOut(300);
         }, 500);
     });
-};
+}
 </script>
 <?= $this->endSection() ?>
 

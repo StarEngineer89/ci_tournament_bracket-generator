@@ -231,6 +231,30 @@ class TournamentController extends BaseController
         if (!$tournament['vote_displaying']) {
             $tournament['vote_displaying'] = 'n';
         }
+
+        if ($tournament['type'] == TOURNAMENT_TYPE_SINGLE) {
+            $tournament['type'] = "Single";
+        }
+        
+        if ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE) {
+            $tournament['type'] = "Double";
+        }
+        
+        if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
+            $tournament['type'] = "Knockout";
+        }
+        
+        if ($tournament['type'] == TOURNAMENT_TYPE_FFA) {
+            $tournament['type'] = "Free For All (FFA) ";
+        }
+        
+        if ($tournament['type'] == TOURNEMENT_TYPE_RROBIN) {
+            $tournament['type'] = "Round Robin";
+        }
+        
+        if ($tournament['type'] == TOURNEMENT_TYPE_SWISS) {
+            $tournament['type'] = "Swiss";
+        }
         
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'page' => 'view']);
     }
@@ -364,6 +388,30 @@ class TournamentController extends BaseController
             $users = $filteredUsers;
         }
 
+        if ($tournament['type'] == TOURNAMENT_TYPE_SINGLE) {
+            $tournament['type'] = "Single";
+        }
+        
+        if ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE) {
+            $tournament['type'] = "Double";
+        }
+        
+        if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
+            $tournament['type'] = "Knockout";
+        }
+        
+        if ($tournament['type'] == TOURNAMENT_TYPE_FFA) {
+            $tournament['type'] = "Free For All (FFA) ";
+        }
+        
+        if ($tournament['type'] == TOURNEMENT_TYPE_RROBIN) {
+            $tournament['type'] = "Round Robin";
+        }
+        
+        if ($tournament['type'] == TOURNEMENT_TYPE_SWISS) {
+            $tournament['type'] = "Swiss";
+        }
+        
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'editable' => $editable, 'page' => 'view']);
     }
 
