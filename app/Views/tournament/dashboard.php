@@ -6,9 +6,9 @@
 
 
 <div class="nav nav-tabs nav-underline d-flex flex-nowrap" role="tablist">
-    <a class="nav-link <?= ($navActive == 'all') ? 'active' : '' ?>" id="v-pills-home-tab" href="<?= base_url('tournaments')?>">Current Tournaments</a>
-    <a class="nav-link <?= ($navActive == 'archived') ? 'active' : '' ?>" id="v-pills-profile-tab" href="<?= base_url('tournaments?filter=archived')?>">Archived Tournaments</a>
-    <a class="nav-link <?= ($navActive == 'shared') ? 'active' : '' ?>" id="v-pills-settings-tab" href="<?= base_url('tournaments?filter=shared')?>">Shared Tournaments</a>
+    <a class="nav-link <?= ($navActive == 'all') ? 'active' : '' ?>" id="v-pills-home-tab" href="<?= base_url('tournaments') ?>">Current Tournaments</a>
+    <a class="nav-link <?= ($navActive == 'archived') ? 'active' : '' ?>" id="v-pills-profile-tab" href="<?= base_url('tournaments?filter=archived') ?>">Archived Tournaments</a>
+    <a class="nav-link <?= ($navActive == 'shared') ? 'active' : '' ?>" id="v-pills-settings-tab" href="<?= base_url('tournaments?filter=shared') ?>">Shared Tournaments</a>
 </div>
 
 <div class="card shadow-sm">
@@ -17,22 +17,22 @@
             <? //= lang('Auth.login') ?>Tournament Dashboard
         </h5>
 
-        <?php if (session('error') !== null) : ?>
+        <?php if (session('error') !== null): ?>
         <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
-        <?php elseif (session('errors') !== null) : ?>
+        <?php elseif (session('errors') !== null): ?>
         <div class="alert alert-danger" role="alert">
-            <?php if (is_array(session('errors'))) : ?>
-            <?php foreach (session('errors') as $error) : ?>
+            <?php if (is_array(session('errors'))): ?>
+            <?php foreach (session('errors') as $error): ?>
             <?= $error ?>
             <br>
             <?php endforeach ?>
-            <?php else : ?>
+            <?php else: ?>
             <?= session('errors') ?>
             <?php endif ?>
         </div>
         <?php endif ?>
 
-        <?php if (session('message') !== null) : ?>
+        <?php if (session('message') !== null): ?>
         <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
@@ -1038,11 +1038,11 @@ $(document).ready(function() {
 
             $('#userTagsInput').tagsinput('removeAll');
 
-            if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_VIEW?>") {
+            if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_VIEW ?>") {
                 shareModal.querySelector('#sharePermissionHelpBlock').textContent = "User(s) can view the tournament brackets."
             }
 
-            if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_EDIT?>") {
+            if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_EDIT ?>") {
                 shareModal.querySelector('#sharePermissionHelpBlock').innerHTML = 'User(s) can view and execute actions on the tournament brackets. <br/> Note that actions are logged for tracking purposes in the "View Log" feature of the tournament.'
             }
 
@@ -1063,11 +1063,11 @@ $(document).ready(function() {
             })
 
             $('select[name="permission"]').on('change', event => {
-                if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_VIEW?>") {
+                if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_VIEW ?>") {
                     shareModal.querySelector('#sharePermissionHelpBlock').textContent = "User(s) can view the tournament brackets."
                 }
 
-                if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_EDIT?>") {
+                if (shareModal.querySelector('select[name="permission"]').value == "<?= SHARE_PERMISSION_EDIT ?>") {
                     shareModal.querySelector('#sharePermissionHelpBlock').innerHTML = 'User(s) can view and execute actions on the tournament brackets. <br/> Note that actions are logged for tracking purposes in the "View Log" feature of the tournament.'
                 }
             })
@@ -2240,16 +2240,23 @@ function updateShareSetting(ele) {
 }
 
 function generateURL() {
-    var url = $('#tournamentURL').val();
-    url = new URL(url);
-    var path = url.pathname.split("/");
-    var token = '';
-    for (var i = 0; i < path[3].length; i++) {
-        var randomIndex = Math.floor(Math.random() * path[3].length);
-        token += path[3].charAt(randomIndex);
-    }
+    $.ajax({
+        url: apiURL + '/tournaments/' + shareModal.dataset.id + '/generateShareUrl',
+        type: "GET",
+        beforeSend: function() {
+            $("#err").fadeOut();
+        },
+        success: function(result) {
+            if (result.status == 'success') {
+                $('#shareModal #tournamentURL').val("<?= base_url('/tournaments/shared/') ?>" + result.token);
+            }
+        },
+        error: function(e) {
+            $("#err").html(e).fadeIn();
+        }
+    });
 
-    $('#shareModal #tournamentURL').val("<?= base_url('/tournaments/shared/') ?>" + token);
+
 }
 
 function handleKeyPress(event) {

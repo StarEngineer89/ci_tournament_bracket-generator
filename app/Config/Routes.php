@@ -72,6 +72,7 @@ $routes->group('api', static function ($routes) {
         $routes->get('(:num)/delete', 'Api\TournamentController::delete/$1');
         $routes->post('(:num)/share', 'Api\TournamentController::share/$1');
         $routes->get('(:num)/share', 'Api\TournamentController::fetchShareSettings/$1');
+        $routes->get('(:num)/generateShareUrl', 'Api\TournamentController::generateShareToken/$1');
         $routes->get('purge-share/(:num)', 'Api\TournamentController::purgechShareSettings/$1');
         $routes->get('(:num)/getActionHistory', 'Api\TournamentController::getActionHistory/$1');
         $routes->get('fetchUsersList', 'Api\TournamentController::fetchUsersList');
@@ -106,7 +107,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('delete', 'Api\GroupsController::delete');
         $routes->post('remove-participant', 'Api\GroupsController::removeParticipant');
     });
-    
+
     $routes->post('upload-image', 'Api\GeneralController::uploadImage');
     $routes->post('remove-image', 'Api\GeneralController::removeImage');
 });
@@ -127,7 +128,7 @@ $routes->group('api/shared', static function ($routes) {
         $routes->delete('delete/(:num)', 'Api\BracketsController::deleteBracket/$1');
         $routes->post('save-round', 'Api\BracketsController::saveRoundSettings');
     });
-    
+
     $routes->group('participants', static function ($routes) {
         $routes->post('new', 'Api\ParticipantsController::addParticipant');
         $routes->post('update/(:num)', 'Api\ParticipantsController::updateParticipant/$1');
@@ -143,7 +144,7 @@ $routes->get('auth/google/callback', 'GoogleAuthController::callback');
 $routes->get('auth/resend-verification', 'Auth\RegisterController::resendVerification');
 $routes->get('auth/a/abort-verification', 'Auth\RegisterController::abortVerification');
 $routes->post('register', 'Auth\RegisterController::registerAction');
-$routes->get('auth/verification-success', function() {
+$routes->get('auth/verification-success', function () {
     return view('shield/verification_success');
 });
 

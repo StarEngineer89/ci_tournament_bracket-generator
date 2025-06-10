@@ -34,7 +34,7 @@ class TournamentController extends BaseController
         $this->groupsModel = model('\App\Models\GroupsModel');
         $this->groupMembersModel = model('\App\Models\GroupMembersModel');
     }
-    
+
     public function index()
     {
         //
@@ -50,7 +50,7 @@ class TournamentController extends BaseController
         $status = $this->request->getPost('status');
         $created_by = $this->request->getPost('created_by');
         $accessibility = $this->request->getPost('accessibility');
-        
+
         $userProvider = auth()->getProvider();
         $userSettingService = service('userSettings');
 
@@ -86,13 +86,13 @@ class TournamentController extends BaseController
                     ->groupEnd()
                     ->orLike('share_settings.users', strval(auth()->user()->id));
                 $tempRows = $tournaments->findAll();
-                
+
                 $tournaments = [];
                 $access_tokens = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
                         $user_ids = $tempRow['users'] ? explode(',', $tempRow['users']) : null;
-                        
+
                         $add_in_list = false;
                         if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
                             $add_in_list = true;
@@ -116,7 +116,7 @@ class TournamentController extends BaseController
                 }
             } else {
                 $tempRows = $tournaments->where('share_settings.user_id', auth()->user()->id)->findAll();
-                
+
                 $tournaments = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
@@ -146,7 +146,7 @@ class TournamentController extends BaseController
             if ($status) {
                 $tournaments->where('status', $status);
             }
-        
+
             if ($this->request->getGet('filter') == 'archived') {
                 $tournaments->where(['archive' => 1]);
             } else {
@@ -157,7 +157,7 @@ class TournamentController extends BaseController
             if ($searchable) {
                 $tournaments->like('searchable', $searchable);
             }
-            
+
             // Fetch the tournaments
             $tournaments = $tournaments->findAll();
         }
@@ -168,7 +168,7 @@ class TournamentController extends BaseController
             $tournament_id = (isset($tournament['tournament_id'])) ? $tournament['tournament_id'] : $tournament['id'];
             $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
             $tournament['public_url'] = '';
-            if($shareSetting) {
+            if ($shareSetting) {
                 $tournament['public_url'] = base_url('/tournaments/shared/') . $shareSetting['token'];
             }
 
@@ -182,14 +182,14 @@ class TournamentController extends BaseController
             if ($participants = $this->tournamentMembersModel->where('tournament_id', $tournament_id)->findAll()) {
                 $tournament['participants_count'] = count($participants);
             }
-            
+
             $result_tournaments[] = $tournament;
         }
 
         // Return the tournaments as a JSON response
         return $this->response->setJSON($result_tournaments);
     }
-    
+
     public function fetch_gallery()
     {
         $type = $this->request->getPost('type');
@@ -205,7 +205,7 @@ class TournamentController extends BaseController
         if ($searchString = $this->request->getPost('search_tournament')) {
             $tournaments->like(['tournaments.searchable' => $searchString]);
         }
-        
+
         if ($type) {
             $tournaments->where('type', $type);
         }
@@ -240,7 +240,7 @@ class TournamentController extends BaseController
             if ($sharedWithMe) {
                 foreach ($sharedWithMe as $tempRow) {
                     $user_ids = $tempRow['users'] ? explode(',', $tempRow['users']) : null;
-                    
+
                     if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
                         $shared_ids[] = $tempRow['tournament_id'];
                     }
@@ -250,7 +250,7 @@ class TournamentController extends BaseController
                     }
                 }
             }
-                
+
             if ($shared_ids) {
                 $tournaments->orWhereIn('id', $shared_ids);
             }
@@ -261,12 +261,12 @@ class TournamentController extends BaseController
         $newTournaments = array();
         $existingHistory = $this->request->getCookie('guest_tournaments');
         $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
-        
-        foreach($tournaments as $tournament){
+
+        foreach ($tournaments as $tournament) {
             $temp = $tournament;
-            
+
             $temp['username'] = 'Guest User';
-            if($tournament['user_id'] > 0){
+            if ($tournament['user_id'] > 0) {
                 $user = $userProvider->findById($tournament['user_id']);
                 $temp['username'] = $user->username;
 
@@ -277,7 +277,7 @@ class TournamentController extends BaseController
 
             $sharedTournament = $this->shareSettingModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
             $temp['public_url'] = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
-            
+
             $participants = $this->tournamentMembersModel->where('tournament_members.tournament_id', $tournament['id'])->participantInfo()->findAll();
             $temp['participants_count'] = 0;
             if ($participants) {
@@ -305,7 +305,7 @@ class TournamentController extends BaseController
 
         if ($existing && !$this->request->getPost('confirm_duplicate_save')) {
             $data = ['errors' => "duplicated", 'message' => "Chosen tournament name already exists. Do you want to proceed saving anyways?"];
-            
+
             return $this->response->setJSON($data);
         }
 
@@ -345,7 +345,7 @@ class TournamentController extends BaseController
                 $data['status'] = TOURNAMENT_STATUS_NOTSTARTED;
             }
         }
-        
+
         $tournamentData = new \App\Entities\Tournament($data);
 
         $tournament_id = $tournamentModel->insert($tournamentData);
@@ -353,7 +353,7 @@ class TournamentController extends BaseController
 
         if (!$tournament_id) {
             $data = ['errors' => "tournament_saving", 'message' => "Failed to save the tournament."];
-            
+
             return $this->response->setJSON($data);
         }
 
@@ -388,7 +388,7 @@ class TournamentController extends BaseController
 
                     if (!$audio_setting) {
                         $data = ['errors' => "audio_saving", 'message' => "Failed to save the audio settings."];
-            
+
                         return $this->response->setJSON($data);
                     }
 
@@ -400,9 +400,9 @@ class TournamentController extends BaseController
         /**
          * Add the tournament created by guest users to share table
          */
-        if($tournamentData->visibility){
+        if ($tournamentData->visibility) {
             $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'user_id' => $user_id])->first();
-            if(!$shareSetting){
+            if (!$shareSetting) {
                 $config = new \Config\Encryption();
                 $token = hash_hmac('sha256', 'tournament_' . $tournament_id . "_created_by_" . $user_id . "_" . time(), $config->key);
                 $token = substr($token, 0, 5);
@@ -417,7 +417,7 @@ class TournamentController extends BaseController
             }
         }
 
-        /** Add the tournament Id into the cookie for guest users */        
+        /** Add the tournament Id into the cookie for guest users */
         if (!$user_id) {
             $existingHistory = $this->request->getCookie('guest_tournaments');
             $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
@@ -435,7 +435,7 @@ class TournamentController extends BaseController
             $this->response->setCookie('guest_tournaments', json_encode($tournamentHistory), 24 * 60 * 60);
         }
         /** End adding the tournament Id into the cookie for guest users */
-        
+
         /** Enable foreign key check */
         if (!$user_id) {
             enableForeignKeyCheck();
@@ -467,7 +467,7 @@ class TournamentController extends BaseController
         $html = view('tournament/audio-setting', []);
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                            ->setJSON(['msg' => "Tournament was updated successfully.", 'audioSettings' => $settings, 'tournamentSettings' => $tournament, 'settingsBlock' => $settingsBlock, 'html' => $html]);
+            ->setJSON(['msg' => "Tournament was updated successfully.", 'audioSettings' => $settings, 'tournamentSettings' => $tournament, 'settingsBlock' => $settingsBlock, 'html' => $html]);
     }
 
     public function update($tournament_id)
@@ -476,7 +476,7 @@ class TournamentController extends BaseController
         $tournament = $tournamentModel->find(intval($tournament_id));
 
         $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
-        
+
         if ($this->request->getPost('title')) {
             $tournament['name'] = $this->request->getPost('title');
         }
@@ -489,13 +489,13 @@ class TournamentController extends BaseController
         if ($this->request->getPost('status')) {
             $tournament['status'] = $this->request->getPost('status');
         }
-            
+
         if ($this->request->getPost('visibility')) {
             $tournament['visibility'] = ($this->request->getPost('visibility') == 'on') ? 1 : 0;
 
             if ($this->request->getPost('visibility') == 'on') {
                 $shareSetting = $this->shareSettingModel->where(['tournament_id' => $tournament_id, 'user_id' => $tournament['user_id']])->first();
-                if(!$shareSetting){
+                if (!$shareSetting) {
                     $config = new \Config\Encryption();
                     $token = hash_hmac('sha256', 'tournament_' . $tournament_id . "_created_by_" . $tournament['user_id'] . "_" . time(), $config->key);
                     $shareData = array(
@@ -523,7 +523,7 @@ class TournamentController extends BaseController
         if ($this->request->getPost('score_bracket')) {
             $tournament['score_bracket'] = $this->request->getPost('score_bracket');
         }
-        
+
         if ($this->request->getPost('increment_score_enabled')) {
             $tournament['increment_score_enabled'] = ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
         }
@@ -531,17 +531,17 @@ class TournamentController extends BaseController
         if ($this->request->getPost('increment_score')) {
             $tournament['increment_score'] = $this->request->getPost('increment_score');
         }
-        
+
         if ($this->request->getPost('increment_score_type')) {
             $tournament['increment_score_type'] = $this->request->getPost('increment_score_type');
         }
-        
+
         if ($this->request->getPost('availability')) {
             $tournament['availability'] = ($this->request->getPost('availability') == 'on') ? 1 : 0;
 
             $availabilityChanged = false;
 
-            if($tournament['availability']){
+            if ($tournament['availability']) {
                 if ($tournament['available_start'] != date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')))) {
                     $availabilityChanged = true;
                 }
@@ -572,7 +572,7 @@ class TournamentController extends BaseController
                 if ($registeredUsers) {
                     $userProvider = auth()->getProvider();
                     $userSettingService = service('userSettings');
-                        
+
                     $creator = $userProvider->findById($tournament['user_id']);
                     $tournamentEntity = new \App\Entities\Tournament($tournament);
                     foreach ($registeredUsers as $user_id) {
@@ -614,10 +614,10 @@ class TournamentController extends BaseController
                 }
             }
         }
-        
+
         if ($this->request->getPost('evaluation_method')) {
             $tournament['evaluation_method'] = $this->request->getPost('evaluation_method');
-            if($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING){
+            if ($tournament['evaluation_method'] == EVALUATION_METHOD_VOTING) {
                 $tournament['voting_accessibility'] = $this->request->getPost('voting_accessibility');
                 $tournament['voting_mechanism'] = $this->request->getPost('voting_mechanism');
                 if ($tournament['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE) {
@@ -630,7 +630,7 @@ class TournamentController extends BaseController
                 $tournament['voting_mechanism'] = null;
                 $tournament['max_vote_value'] = null;
             }
-            
+
             if ($this->request->getPost('voting_retain')) {
                 $tournament['voting_retain'] = ($this->request->getPost('voting_retain') == 'on') ? 1 : 0;
             }
@@ -644,7 +644,7 @@ class TournamentController extends BaseController
                 $tournament['vote_displaying'] = $this->request->getPost('vote_display');
             }
         }
-        
+
         if ($this->request->getPost('pt_image_update_enabled')) {
             $tournament['pt_image_update_enabled'] = ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0;
         }
@@ -671,7 +671,7 @@ class TournamentController extends BaseController
                 $scheduleLibrary->scheduleRoundUpdate($tournament_id);
             }
         }
-        
+
         /**
          * Update Audio Settings
          */
@@ -682,7 +682,7 @@ class TournamentController extends BaseController
             foreach ($this->request->getPost('audioType') as $index => $value) {
 
                 $audioSetting = $audioSettingModel->where(['tournament_id' => $tournament_id, 'type' => $value])->findAll();
-                
+
                 if (count($audioSetting)) {
                     $audioSetting = $audioSetting[0];
                 } else {
@@ -695,7 +695,7 @@ class TournamentController extends BaseController
                     } else {
                         $path = ($this->request->getPost('source')[$index] == 'f') ? $this->request->getPost('file-path')[$index] : $uploadConfig->urlAudioUploadPath . $this->process($this->request->getPost('url')[$index]);
                     }
-                    
+
                     $audioSetting['path'] = $path;
                     $audioSetting['source'] = $this->request->getPost('source')[$index];
                     $audioSetting['tournament_id'] = $tournament_id;
@@ -705,7 +705,7 @@ class TournamentController extends BaseController
                     $audioSetting['start'] = $this->request->getPost('start')[$index];
                     $audioSetting['end'] = $this->request->getPost('stop')[$index];
                     $audioSetting['url'] = ($this->request->getPost('source')[$index] == 'f') ? null : $this->request->getPost('url')[$index];
-                    
+
                     $audioSettingModel->save($audioSetting);
                 } else {
                     if ($audioSetting) {
@@ -729,11 +729,11 @@ class TournamentController extends BaseController
     }
 
     public function process($youtubeLink, $type = 'audio')
-    {   
+    {
         $uploadConfig = new UploadConfig();
-        
-        parse_str( parse_url( $youtubeLink, PHP_URL_QUERY ), $vars );
-        
+
+        parse_str(parse_url($youtubeLink, PHP_URL_QUERY), $vars);
+
         if (isset($vars['v'])) {
             $video_id = $vars['v'];
         }
@@ -812,10 +812,10 @@ class TournamentController extends BaseController
                 ],
             ],
         ];
-        
+
         if (!$this->validateData([], $validationRule)) {
             $data = ['errors' => $this->validator->getErrors()];
-            
+
             return $this->response->setJSON($data);
         }
 
@@ -853,10 +853,10 @@ class TournamentController extends BaseController
                 ],
             ],
         ];
-        
+
         if (!$this->validateData([], $validationRule)) {
             $data = ['errors' => $this->validator->getErrors()];
-            
+
             return $this->response->setJSON($data);
         }
 
@@ -877,27 +877,25 @@ class TournamentController extends BaseController
         return $this->response->setJSON($data);
     }
 
-    public function fetchShareSettings($tournament_id) {
-        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-        $tournamentModel = model('\App\Models\TournamentModel');
-
-        $tournament = $tournamentModel->find($tournament_id);
+    public function fetchShareSettings($tournament_id)
+    {
+        $tournament = $this->tournamentModel->find($tournament_id);
         if (!$tournament) {
-            return json_encode(['status'=> 'failed', 'msg'=> 'Tournament was not found!']);
+            return json_encode(['status' => 'failed', 'msg' => 'Tournament was not found!']);
         }
 
-        $settings = $shareSettingsModel->where('tournament_id', $tournament_id)->findAll();
-        
+        $settings = $this->shareSettingModel->where('tournament_id', $tournament_id)->findAll();
+
         $settings_with_users = [];
         if ($settings) {
             $userModel = model('CodeIgniter\Shield\Models\UserModel');
 
             foreach ($settings as $setting) {
                 $setting['private_users'] = null;
-                
+
                 if ($setting['target'] == SHARE_TO_USERS) {
                     $users = explode(',', $setting['users']);
-                    
+
                     $setting['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
                 }
 
@@ -907,12 +905,58 @@ class TournamentController extends BaseController
                 $settings_with_users[] = $setting;
             }
         }
-        
-        $config = new \Config\Encryption();
-        $token = hash_hmac('sha256', 'tournament_' . $tournament_id . '_created_by_' . auth()->user()->id . '_' . time(), $config->key);
-        $token = substr($token, 0, 5);
 
-        return json_encode(['status' => 'success','settings'=> $settings_with_users, 'token' => $token]);
+        $token = $this->generateUniqueTokenToShare($tournament_id);
+
+        return json_encode(['status' => 'success', 'settings' => $settings_with_users, 'token' => $token]);
+    }
+
+    public function generateShareToken($tournament_id)
+    {
+        if ($this->request->isAJAX()) {
+            $token = $this->generateUniqueTokenToShare($tournament_id);
+
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'token' => $token]);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+            ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+
+    private function generateUniqueTokenToShare($tournament_id)
+    {
+        $config = new \Config\Encryption();
+
+        $maxAttempts = 10; // Prevent infinite loops
+        $attempts = 0;
+
+        do {
+            // Generate a longer token for better uniqueness
+            $rawToken = hash_hmac(
+                'sha256',
+                'tournament_' . $tournament_id .
+                '_user_' . auth()->user()->id .
+                '_time_' . microtime(true),
+                $config->key
+            );
+
+            // Take a portion of the hash (consider 8-10 chars for better uniqueness)
+            $token = substr($rawToken, 0, 8);
+
+            // Check if token exists in database
+            $exists = $this->shareSettingModel->where('token', $token)->first();
+
+            $attempts++;
+
+            if ($attempts >= $maxAttempts) {
+                throw new \RuntimeException('Failed to generate unique token after multiple attempts');
+            }
+
+        } while ($exists !== null);
+
+        return $token;
     }
 
     public function share($id)
@@ -924,7 +968,7 @@ class TournamentController extends BaseController
         if ($shareSetting) {
             $data['id'] = $shareSetting['id'];
         }
-        
+
         $this->shareSettingModel->save($data);
 
         $share = $this->shareSettingModel->where(['tournament_id' => $data['tournament_id'], 'token' => $data['token']])->first();
@@ -933,7 +977,7 @@ class TournamentController extends BaseController
         if ($share['target'] == SHARE_TO_USERS) {
             $userModel = model('CodeIgniter\Shield\Models\UserModel');
             $users = explode(',', $share['users']);
-            
+
             $share['private_users'] = implode(',', array_column($userModel->select('username')->find($users), 'username'));
         }
 
@@ -947,7 +991,7 @@ class TournamentController extends BaseController
             $userSettingsService = service('userSettings');
             $tournament = $this->tournamentModel->find($data['tournament_id']);
             $tournamentEntity = new \App\Entities\Tournament($tournament);
-        
+
             foreach ($users as $user) {
                 if ($shareSetting && $shareSetting['target'] == SHARE_TO_USERS) {
                     $msg = lang('Notifications.tournamentShareUpdated', [$tournamentEntity->name]);
@@ -960,7 +1004,7 @@ class TournamentController extends BaseController
                     $emailSubject = lang('Emails.tournamentShareEmailSubject');
                     $emailTemplate = 'email/tournament-share';
                 }
-                
+
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;
 
                 $notification = ['message' => $msg, 'type' => $notificationType, 'user_id' => $shared_by, 'user_to' => $user, 'link' => 'tournaments/shared/' . $share['token']];
@@ -996,21 +1040,22 @@ class TournamentController extends BaseController
         return json_encode(['msg' => "Success to save the sharing information.", 'share' => $share]);
     }
 
-    public function purgechShareSettings($share_id) {
+    public function purgechShareSettings($share_id)
+    {
         $share = $this->shareSettingModel->find($share_id);
         if ($share['target'] == SHARE_TO_USERS) {
             $users = explode(',', $share['users']);
         }
 
         $this->shareSettingModel->delete([$share_id]);
-        $shares = $this->shareSettingModel->where(['tournament_id'=> $share['tournament_id']])->findAll();
+        $shares = $this->shareSettingModel->where(['tournament_id' => $share['tournament_id']])->findAll();
 
         /** Notifiy to the users */
         if (isset($users) && count($users)) {
             $userSettingsService = service('userSettings');
             $tournament = $this->tournamentModel->find($share['tournament_id']);
             $tournamentEntity = new \App\Entities\Tournament($tournament);
-        
+
             foreach ($users as $user) {
                 $shared_by = (auth()->user()) ? auth()->user()->id : 0;
 
@@ -1045,22 +1090,21 @@ class TournamentController extends BaseController
             }
         }
 
-        return json_encode(['status'=> 'success', 'shares'=> $shares, 'tournament_id' => $share['tournament_id']]);
+        return json_encode(['status' => 'success', 'shares' => $shares, 'tournament_id' => $share['tournament_id']]);
     }
 
-    public function fetchShareSetting($share_id) {
-        $shareSettingsModel = model('\App\Models\ShareSettingsModel');
-
-        $share = $shareSettingsModel->find($share_id);
+    public function fetchShareSetting($share_id)
+    {
+        $share = $this->shareSettingModel->find($share_id);
         $share['private_users'] = null;
         if ($share['target'] == SHARE_TO_USERS) {
             $userModel = model('CodeIgniter\Shield\Models\UserModel');
             $users = explode(',', $share['users']);
-            
+
             $share['private_users'] = $userModel->find($users);
         }
 
-        return json_encode(['status'=> 'success', 'share' => $share]);
+        return json_encode(['status' => 'success', 'share' => $share]);
     }
 
     public function getActionHistory($tournament_id)
@@ -1077,7 +1121,7 @@ class TournamentController extends BaseController
         $description = null;
         if ($history && count($history)) {
             foreach ($history as $row) {
-                
+
                 if ($row['action'] == BRACKET_ACTIONCODE_CLEAR) {
                     $tournamentName = $tournament['name'];
                     $type = 'Reset';
@@ -1090,7 +1134,7 @@ class TournamentController extends BaseController
                     }
 
                     $roundSetting = $roundSettingsModel->where(['tournament_id' => $row['tournament_id'], 'round_no' => $params->round_no])->first();
-                    
+
                     $roundName = ($roundSetting) ? $roundSetting['round_name'] : "round $params->round_no";
                     if ($row['action'] == BRACKET_ACTIONCODE_MARK_WINNER) {
                         $type = 'Mark Winner';
@@ -1108,7 +1152,7 @@ class TournamentController extends BaseController
                         $type = 'Change Participant';
                         $ptName1 = $participants[0] ? $participants[0]->name : "Empty";
                         $ptName2 = $participants[1]->name;
-                        
+
                         $name2 = isset($participants[1]->type) ? "Group \"$ptName2\"" : "Participant \"$ptName2\"";
 
                         if ($participants[0]) {
@@ -1144,7 +1188,7 @@ class TournamentController extends BaseController
                     if ($row['action'] == BRACKET_ACTIONCODE_VOTE) {
                         $type = 'Vote';
                         $name = $participants->type ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
-                        
+
                         $description = "$name in bracket #$params->bracket_no of $roundName was voted";
                     }
                 }
@@ -1169,13 +1213,13 @@ class TournamentController extends BaseController
 
         if ($this->request->getPost('query')) {
             $userModel->like('username', $this->request->getPost('query'));
-        }        
-        
+        }
+
         $users = $userModel->select(['id', 'username'])->findAll();
 
-        return json_encode(['result'=> 'success','users'=> $users, 'query' => $this->request->getPost()]);
+        return json_encode(['result' => 'success', 'users' => $users, 'query' => $this->request->getPost()]);
     }
-    
+
     public function bulkDelete()
     {
         $ids = $this->request->getPost('id');
@@ -1189,7 +1233,7 @@ class TournamentController extends BaseController
             if ($index == (count($tournaments) - 1)) {
                 $tournament_names .= $tournament['name'];
             } else {
-                $tournament_names .= $tournament['name'] .',';
+                $tournament_names .= $tournament['name'] . ',';
             }
 
             $tournamentLibrary->deleteTournament($tournament['id']);
@@ -1216,9 +1260,9 @@ class TournamentController extends BaseController
             if ($index == (count($tournaments) - 1)) {
                 $tournament_names .= $tournament['name'];
             } else {
-                $tournament_names .= $tournament['name'] .',';
+                $tournament_names .= $tournament['name'] . ',';
             }
-            
+
             /** Send the notification and emails to the registered users */
             $registeredUsers = $this->participantModel->where(['tournament_id' => $tournament['id']])->where('registered_user_id Is Not Null')->findColumn('registered_user_id');
             if ($registeredUsers) {
@@ -1284,14 +1328,15 @@ class TournamentController extends BaseController
             if ($index == (count($tournaments) - 1)) {
                 $tournament_names .= $tournament['name'];
             } else {
-                $tournament_names .= $tournament['name'] .',';
+                $tournament_names .= $tournament['name'] . ',';
             }
         }
 
         return json_encode(['status' => 'success', 'msg' => $msg . $tournament_names, 'data' => $ids]);
     }
 
-    public function reuseParticipants() {
+    public function reuseParticipants()
+    {
         helper('db');
         helper('participant');
 
@@ -1313,8 +1358,8 @@ class TournamentController extends BaseController
         // Fetch the participants
         $tournamentMembers = $this->tournamentMembersModel->asObject()->where('tournament_id', $reuse_Id)->findAll();
         $groupMembers = $this->groupMembersModel->asObject()->where('group_members.tournament_id', $reuse_Id)->details()->findAll();
-        $ptIdsOfGroupMembers = array_map(function($item) {
-            return (int)$item->id;
+        $ptIdsOfGroupMembers = array_map(function ($item) {
+            return (int) $item->id;
         }, $groupMembers);
 
         /** Clear existing participants */
@@ -1325,7 +1370,7 @@ class TournamentController extends BaseController
         }
 
         $notAllowedList = [];
-        
+
         /** Create new tournament member and group member lists from previous tournaments */
         foreach ($tournamentMembers as $member) {
             // Check if the participant allows the invitation
@@ -1344,7 +1389,7 @@ class TournamentController extends BaseController
             ]);
 
             $member_id = $this->tournamentMembersModel->insert($newMember);
-            
+
             // Add the group members
             if ($ptIdsOfGroupMembers && in_array($member->participant_id, $ptIdsOfGroupMembers)) {
                 $group_id = null;
@@ -1374,16 +1419,16 @@ class TournamentController extends BaseController
 
         helper('participant_helper');
         $list = getParticipantsAndReusedGroupsInTournament($tournament_id, $this->request->getPost('hash'));
-        
-        return $this->response->setJSON(["participants"=> $list['participants'], 'notAllowedParticipants' => $notAllowedList, "reusedGroups"=> $list['reusedGroups']]);
+
+        return $this->response->setJSON(["participants" => $list['participants'], 'notAllowedParticipants' => $notAllowedList, "reusedGroups" => $list['reusedGroups']]);
     }
 
     public function getParticipants($tournament_id)
     {
         helper('participant_helper');
         $list = getParticipantsAndReusedGroupsInTournament($tournament_id);
-        
-        return $this->response->setJSON(["participants"=> $list['participants'],"reusedGroups"=> $list['reusedGroups']]);
+
+        return $this->response->setJSON(["participants" => $list['participants'], "reusedGroups" => $list['reusedGroups']]);
     }
 
     public function getUsers()
@@ -1412,7 +1457,7 @@ class TournamentController extends BaseController
         }
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                    ->setJSON($filteredUsers);
+            ->setJSON($filteredUsers);
     }
 
     public function saveVote()
@@ -1423,7 +1468,7 @@ class TournamentController extends BaseController
             $voteData['is_group'] = (isset($voteData['is_group']) && $voteData['is_group']) ? 1 : 0;
 
             $voteModel = model('\App\Models\VotesModel');
-            
+
             $bracket = $this->bracketModel->find($voteData['bracket_id']);
             $nextBracket = $this->bracketModel->where(['tournament_id' => $bracket['tournament_id'], 'bracketNo' => $bracket['nextGame']])->findAll();
             if (count($nextBracket) == 1) {
@@ -1449,7 +1494,7 @@ class TournamentController extends BaseController
 
             if (!$validation->run($voteData)) {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
-                                      ->setJSON(['status' => 'error', 'message' => $validation->getErrors()]);
+                    ->setJSON(['status' => 'error', 'message' => $validation->getErrors()]);
             }
 
             $saveData = $voteData;
@@ -1470,7 +1515,7 @@ class TournamentController extends BaseController
             if ($prevVote) {
                 if ($prevVote['participant_id'] == $voteData['participant_id']) {
                     return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
-                                      ->setJSON(['status' => 'error', 'message' => 'You have already voted for this participant.']);
+                        ->setJSON(['status' => 'error', 'message' => 'You have already voted for this participant.']);
                 } else {
                     $prevVote['participant_id'] = $voteData['participant_id'];
                 }
@@ -1498,7 +1543,7 @@ class TournamentController extends BaseController
             if (!auth()->user() && $dbDriver === 'MySQLi') {
                 $db->query('SET FOREIGN_KEY_CHECKS = 0;');
             }
-            
+
             if (!auth()->user() && $dbDriver === 'SQLite3') {
                 $db->query('PRAGMA foreign_keys = OFF');
             }
@@ -1513,25 +1558,25 @@ class TournamentController extends BaseController
                 } else {
                     $insert_data['user_id'] = 0;
                 }
-                
+
                 $data = [];
                 $data['bracket_no'] = $bracket['bracketNo'];
                 $data['round_no'] = $saveData['round_no'];
-                
+
                 if ($participant = $this->participantModel->find($saveData['participant_id'])) {
                     $data['participants'] = ['name' => $participant['name'], 'type' => (isset($saveData['is_group']) && $saveData['is_group']) ? 'group' : null];
                 }
-                
+
                 $insert_data['params'] = json_encode($data);
 
                 $logActionsModel->insert($insert_data);
-                
+
                 /** Mark Participant win if max vote count reaches */
                 $voteData['is_double'] = $isDouble;
                 $vote_max_limit = intval($tournament_settings['max_vote_value']);
                 $search_params = array_diff_key($voteData, array('bracket_id' => true, 'user_id' => true, 'uuid' => true));
                 $votes_in_round = $voteModel->where($search_params)->findAll();
-                
+
                 if ($tournament_settings['evaluation_method'] == EVALUATION_METHOD_VOTING && $tournament_settings['voting_retain']) {
                     $search_params = array_diff_key($search_params, array('round_no' => true));
                 }
@@ -1539,14 +1584,14 @@ class TournamentController extends BaseController
                 if ($nextBracket && is_null($nextBracket['nextGame'])) {
                     $search_params = array_diff_key($search_params, array('is_double' => true));
                 }
-                
+
                 /** Get Votes count in a round */
                 $votes = $voteModel->where($search_params)->findAll();
                 $saveData['votes'] = count($votes);
                 if ($tournament_settings['voting_mechanism'] == EVALUATION_VOTING_MECHANISM_MAXVOTE && count($votes_in_round) >= $vote_max_limit) {
                     $voteLibrary = new VoteLibrary();
                     $result = $voteLibrary->markWinParticipant($voteData);
-                    
+
                     if ($tournament_settings && $tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $nextBracket['knockout_final']) {
                         $saveData['final_win'] = true;
                     }
@@ -1555,18 +1600,18 @@ class TournamentController extends BaseController
                         $saveData['final_win'] = true;
                     }
                 }
-                
+
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                      ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'data' => $saveData]);
+                    ->setJSON(['status' => 'success', 'message' => 'Vote saved successfully', 'data' => $saveData]);
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
-                                      ->setJSON(['status' => 'error', 'message' => 'Failed to save vote']);
+                    ->setJSON(['status' => 'error', 'message' => 'Failed to save vote']);
             }
-            
+
             if (!auth()->user() && $dbDriver === 'MySQLi') {
                 $db->query('SET FOREIGN_KEY_CHECKS = 1;');
             }
-            
+
             if (!auth()->user() && $dbDriver === 'SQLite3') {
                 $db->query('PRAGMA foreign_keys = ON');
             }
@@ -1575,7 +1620,7 @@ class TournamentController extends BaseController
 
         // If not an AJAX request, return a 403 error
         return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
-                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+            ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
     public function exportLogs()
     {
