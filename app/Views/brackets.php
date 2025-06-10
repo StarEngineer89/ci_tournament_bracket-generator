@@ -585,7 +585,7 @@ var changeVoteDisplayingMode = (element) => {
             <?php endif ?>
 
             <?php if ($tournament['user_id'] == 0 && isset($editable) && $editable): ?>
-            <button type="button" class="btn" id="toggleWarningBtn" data-code="tw">
+            <button type="button" class="btn" id="toggleWarningBtn" data-code="wn">
                 <i class="fa-solid fa-warning"></i>
             </button>
             <?php endif; ?>
