@@ -17,9 +17,9 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script type="text/javascript">
-<?php if (url_is('/tournaments/shared/*')) : ?>
+<?php if (url_is('/tournaments/shared/*')): ?>
 apiURL = "<?= base_url('api/shared') ?>";
-<?php else : ?>
+<?php else: ?>
 apiURL = "<?= base_url('api') ?>";
 <?php endif; ?>
 
@@ -44,9 +44,9 @@ let voteActionAvailable = <?= $votingBtnEnabled ? $votingBtnEnabled : 0 ?>;
 let votingMechanism = <?= $tournament['voting_mechanism'] ? intval($tournament['voting_mechanism']) : 1 ?>;
 let allowHostOverride = <?= $tournament['allow_host_override'] ? $tournament['allow_host_override'] : 0 ?>;
 let maxVoteCount = <?= $tournament['max_vote_value'] ? $tournament['max_vote_value'] : 0 ?>;
-const votingMechanismRoundDurationCode = <?= EVALUATION_VOTING_MECHANISM_ROUND?>;
-const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE?>;
-const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
+const votingMechanismRoundDurationCode = <?= EVALUATION_VOTING_MECHANISM_ROUND ?>;
+const votingMechanismMaxVoteCode = <?= EVALUATION_VOTING_MECHANISM_MAXVOTE ?>;
+const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND ?>;
 const evaluationMethodVotingCode = "<?= EVALUATION_METHOD_VOTING ?>";
 let winnerAudioPlayingForEveryone = <?= $tournament['winner_audio_everyone'] ? $tournament['winner_audio_everyone'] : 0 ?>;
 let initialUsers = <?= json_encode($users) ?>;
@@ -59,11 +59,11 @@ const UUID = getOrCreateDeviceId()
 let currentDescriptionDiv, newDescriptionContent, originalDescriptionContent
 
 if (!location.href.includes('shared')) {
-    <?php if(!auth()->user()){ ?>
+    <?php if (!auth()->user()) { ?>
     var dc = new Date();
     dc.setTime(dc.getTime() + (24 * 60 * 60 * 1000));
     document.cookie = 'device_id=' + UUID + 'tournament_id=<?= $tournament["id"] ?>;expires=' + dc.toUTCString() + ';path=/';
-    <?php }else{?>
+    <?php } else { ?>
     document.cookie = 'device_id=' + UUID + 'tournament_id=;Max-Age=0'
     <?php } ?>
 } else {
@@ -376,8 +376,6 @@ $(document).ready(function() {
 
     if (localStorage.getItem('collapse-on-t-' + tournament_id)) {
         document.getElementById('collapseBtn').click()
-    } else {
-        document.getElementById('expandBtn').click()
     }
 
     if (localStorage.getItem('alert-expanded-' + tournament_id)) {
@@ -389,7 +387,7 @@ $(document).ready(function() {
         }
     }
 
-    <?php if(!auth()->user() && isset($editable) && $editable && !$tournament['user_id']) : ?>
+    <?php if (!auth()->user() && isset($editable) && $editable && !$tournament['user_id']): ?>
     var leaveUrl;
     $(document).on('click', function(e) {
         var linkElement;
@@ -425,7 +423,7 @@ $(document).ready(function() {
         $('#leaveConfirm').modal('hide');
         location.href = leaveUrl;
     })
-    <?php endif;?>
+    <?php endif; ?>
 
     if (hasEditPermission || hasParticipantImageUpdatePermission) {
         $(document).on("click", ".p-image img", function(e) {
@@ -507,22 +505,22 @@ var changeVoteDisplayingMode = (element) => {
             <?php endif ?>
         </h5>
 
-        <?php if (session('error') !== null) : ?>
+        <?php if (session('error') !== null): ?>
         <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
-        <?php elseif (session('errors') !== null) : ?>
+        <?php elseif (session('errors') !== null): ?>
         <div class="alert alert-danger" role="alert">
-            <?php if (is_array(session('errors'))) : ?>
-            <?php foreach (session('errors') as $error) : ?>
+            <?php if (is_array(session('errors'))): ?>
+            <?php foreach (session('errors') as $error): ?>
             <?= $error ?>
             <br>
             <?php endforeach ?>
-            <?php else : ?>
+            <?php else: ?>
             <?= session('errors') ?>
             <?php endif ?>
         </div>
         <?php endif ?>
 
-        <?php if (session('message') !== null) : ?>
+        <?php if (session('message') !== null): ?>
         <div class="alert alert-success" role="alert"><?= session('message') ?></div>
         <?php endif ?>
 
@@ -551,7 +549,7 @@ var changeVoteDisplayingMode = (element) => {
 
         <div class="container alert-btn-container mb-1 d-flex justify-content-end">
             <?php if ($votingEnabled): ?>
-            <button type="button" class="btn ps-2 pe-2" id="toggleVoteDisplayingModeBtn">
+            <button type="button" class="btn ps-2 pe-2" id="toggleVoteDisplayingModeBtn" data-code="vd">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -586,7 +584,7 @@ var changeVoteDisplayingMode = (element) => {
             </button>
             <?php endif ?>
 
-            <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
+            <?php if ($tournament['user_id'] == 0 && isset($editable) && $editable): ?>
             <button type="button" class="btn" id="toggleWarningBtn" data-code="tw">
                 <i class="fa-solid fa-warning"></i>
             </button>
@@ -624,7 +622,7 @@ var changeVoteDisplayingMode = (element) => {
             </div>
             <?php endif; ?>
 
-            <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
+            <?php if ($tournament['user_id'] == 0 && isset($editable) && $editable): ?>
             <div id="warningPlaceholder"></div>
             <div id="warningMsg" class="d-none">
                 <div class="text-center">⚠️ WARNING ⚠️</div>
@@ -634,12 +632,12 @@ var changeVoteDisplayingMode = (element) => {
                 <br>
                 Note: Unaffiliated tournaments, meaning those created by unregistered visitors, will be deleted after 24 hours from the Tournament Gallery.
                 <div class="text-center">
-                    <?php if(!auth()->user()): ?><br>
-                    <a href="<?= base_url('/login')?>" class="btn btn-primary">Signup/Login to preserve tournament</a>
-                    <?php endif;?>
+                    <?php if (!auth()->user()): ?><br>
+                    <a href="<?= base_url('/login') ?>" class="btn btn-primary">Signup/Login to preserve tournament</a>
+                    <?php endif; ?>
                 </div>
             </div>
-            <?php endif;?>
+            <?php endif; ?>
 
             <div id="settingInfoAlertPlaceholder"></div>
             <div id="settingInfoAlertMsg" class="d-none">
@@ -840,7 +838,7 @@ var changeVoteDisplayingMode = (element) => {
             <div id="liveAlertMsg" class="d-none">
                 Note: <br />
                 The tournament brackets are generated along a sequence of [2, 4, 8, 16, 32] in order to maintain bracket advancement integrity, otherwise there would be odd matchups that wouldn't make sense to the tournament structure.
-                <?php if ((auth()->user() && auth()->user()->id == $tournament['user_id']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)) : ?>
+                <?php if ((auth()->user() && auth()->user()->id == $tournament['user_id']) || (session('share_permission') && session('share_permission') == SHARE_PERMISSION_EDIT)): ?>
                 You also have actions available to you by right clicking (or holding on mobile devices) the individual bracket box throughout the tournament availability window (assuming its set).<br>
                 This limitation isn't applicable to the tournament host.<br>
                 In other words, actions will be restricted for all after availability ends (e.g. if tournament is shared with edit permissions) except for the host, in which even if availability ends, the host would still be able to control actions.
@@ -894,7 +892,7 @@ var changeVoteDisplayingMode = (element) => {
     </div>
 </div>
 
-<?php if (isset($audioSettings) && $audioSettings) : ?>
+<?php if (isset($audioSettings) && $audioSettings): ?>
 <audio id="myAudio" preload="auto" data-starttime="<?= ($audioSettings[0]['start']) ? $audioSettings[0]['start'] : '' ?>" data-duration="<?= ($audioSettings[0]['duration']) ? $audioSettings[0]['duration'] : '' ?>">
     <source src="<?= ($audioSettings[0]['source'] == 'f') ? '/uploads/' . $audioSettings[0]['path'] : '/uploads/' . $audioSettings[0]['path'] ?>" type="audio/mpeg" id="audioSrc">
 </audio>
