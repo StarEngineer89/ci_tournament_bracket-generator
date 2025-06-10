@@ -1299,8 +1299,9 @@ class TournamentController extends BaseController
 
         $reuse_Id = $this->request->getPost('id');
         $tournament_id = $this->request->getPost('tournament_id') ?? 0;
+        $user_id = auth()->user() ? auth()->user()->id : 0;
 
-        if (!$tournament_id) {
+        if (!$tournament_id || !$user_id) {
             disableForeignKeyCheck();
         }
 
@@ -1317,12 +1318,6 @@ class TournamentController extends BaseController
         }, $groupMembers);
 
         /** Clear existing participants */
-        if (auth()->user()) {
-            $user_id = auth()->user()->id;
-        } else {
-            $user_id = 0;
-        }
-
         if ($user_id) {
             $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'created_by' => $user_id])->delete();
         } else {
@@ -1373,7 +1368,7 @@ class TournamentController extends BaseController
             }
         }
 
-        if (!$tournament_id) {
+        if (!$tournament_id || !$user_id) {
             enableForeignKeyCheck();
         }
 

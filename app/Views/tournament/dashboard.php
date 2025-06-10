@@ -1176,6 +1176,7 @@ $(document).ready(function() {
                 var label = $('<label class="col-form-label col-auto justify-content-end">Status:</label>');
                 // Create select box element
                 var selectBox = $('<select class="form-control" id="statusUpdateTo">');
+                selectBox.append('<option value="<?= TOURNAMENT_STATUS_NOTSTARTED ?>">Not Started</option>');
                 selectBox.append('<option value="<?= TOURNAMENT_STATUS_INPROGRESS ?>">In Progress</option>');
                 selectBox.append('<option value="<?= TOURNAMENT_STATUS_COMPLETED ?>">Completed</option>');
                 selectBox.append('<option value="<?= TOURNAMENT_STATUS_ABANDONED ?>">Abandoned</option>');
