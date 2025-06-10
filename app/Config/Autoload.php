@@ -17,8 +17,6 @@ use CodeIgniter\Config\AutoloadConfig;
  *
  * NOTE: This class is required prior to Autoloader instantiation,
  *       and does not extend BaseConfig.
- *
- * @immutable
  */
 class Autoload extends AutoloadConfig
 {
@@ -41,7 +39,6 @@ class Autoload extends AutoloadConfig
      */
     public $psr4 = [
         APP_NAMESPACE => APPPATH,
-        'Google_Client' => ROOTPATH . 'vendor/google/apiclient/src/Google/Client.php',
     ];
 
     /**
@@ -91,5 +88,5 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = ['auth', 'setting', 'url', 'usersettings'];
+    public $helpers = ['auth', 'setting'];
 }
