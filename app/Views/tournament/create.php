@@ -63,12 +63,17 @@ let users = <?= json_encode($users) ?>
 
 let group_participants = [];
 
+let submitSucces = false;
+
 $(window).on('load', function() {
     $("#preview").fadeIn();
 });
 $(document).ready(function() {
     if (tournament) {
+        document.querySelector('.card-title .tournament-title').textContent(tournament.name)
         loadParticipants()
+    } else {
+        $('#tournamentSettings').modal('show');
     }
 
     const linkedPicker1Element = document.getElementById('startAvPicker');
@@ -256,7 +261,6 @@ $(document).ready(function() {
             data: data,
             beforeSend: function() {
                 //$("#preview").fadeOut();
-                $('#tournamentSettings').modal('hide');
                 $('#beforeProcessing').removeClass('d-none')
                 $("#err").fadeOut();
                 // Store the start time (in milliseconds)
@@ -279,17 +283,18 @@ $(document).ready(function() {
                                     value: true
                                 });
                                 sendSubmitAjax(values);
-                            } else {
-                                $('#tournamentSettings').modal('show');
                             }
                         } else {
+                            $('#tournamentSettings').modal('hide');
                             $('#errorModal .errorDetails').html(
                                 "An error occurred while saving the tournament!");
                         }
                     } else {
                         tournament = result.tournament;
                         tournament_id = tournament.id;
-                        $('#generate').trigger('click');
+                        document.querySelector('.card-title .tournament-name').textContent = tournament.name
+
+                        $('#tournamentSettings').modal('hide');
                     }
                 }, remainingDelay);
             },
@@ -569,6 +574,12 @@ $(document).ready(function() {
             tournamentSettingsModal.querySelectorAll(".read-more-container").forEach(container => {
                 adjustReadMore(container)
             })
+        })
+
+        tournamentSettingsModal.addEventListener('hidden.bs.modal', event => {
+            if (!tournament) {
+                window.history.back();
+            }
         })
     }
 
@@ -1078,7 +1089,7 @@ var performReuseParticipants = (reuse_id = null) => {
         <?php endif ?>
 
         <h5 class="card-title d-flex justify-content-center">
-            <? //= lang('Auth.login') ?>Tournament Participants
+            Participants in tournament "<span class="tournament-name"></span>"
         </h5>
 
         <div id="liveAlertPlaceholder"></div>
