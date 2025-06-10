@@ -73,18 +73,19 @@ class GroupsController extends BaseController
                 }
             } elseif ($group_id) {
                 $groupEntity = $this->groupsModel->asObject()->find($group_id);
-                $participantsInGroups = $this->groupMembersModel->where('group_members.group_id', $group_id)->details()->groupBy('participant_id')->findAll();
+                $participantsInGroups = $this->groupMembersModel->where(['group_members.tournament_id' => $tournament_id, 'group_members.group_id' => $group_id])->details()->groupBy('participant_id')->findAll();
                 if ($participantsInGroups) {
+                    log_message('debug', json_encode($participantsInGroups));
                     foreach ($participantsInGroups as $participant) {
                         // Check if the participants in the group are existing in this tournament
                         $isExisting = false;
                         if ($t_members = $this->tournamentMembersModel->where(['tournament_id' => $tournament_id, 'participant_id' => $participant['id']])->findAll()) {
-                            
+                            log_message('debug', 't_members:' . json_encode($t_members));
                             if ($tournament_id) {
-                                $previousMembers[] = $t_members[0]['id'];
+                                $isExisting = true;
                                 continue;
                             }
-
+                            log_message('debug', 't_id: ' . $tournament_id);
                             foreach ($t_members as $member) {
                                 if ($member['hash'] == $hash) {
                                     $isExisting = true;

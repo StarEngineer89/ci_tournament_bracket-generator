@@ -874,7 +874,7 @@ let drawGroupsInModal = () => {
                 result.groups.forEach(group => {
                     let option = document.createElement('option')
                     option.setAttribute('value', group.id)
-                    option.setAttribute('data-image', group.image_path)
+                    option.setAttribute('data-image', group.image_path ?? '')
                     option.textContent = group.group_name
                     document.querySelector('#makeGroupModal #select_group select').appendChild(option)
                 })

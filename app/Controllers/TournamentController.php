@@ -292,8 +292,7 @@ class TournamentController extends BaseController
             return view('/errors/html/error_404', ['message' => "This Tournament doesn't exist!"]);
         }
 
-        $users = auth()->getProvider();
-        $created_by = $users->findById($tournament['user_id']);
+        $created_by = auth()->getProvider()->findById($tournament['user_id']);
 
         $tournament['created_by'] = $created_by;
         
