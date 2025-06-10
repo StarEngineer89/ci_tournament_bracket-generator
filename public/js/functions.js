@@ -159,6 +159,60 @@ function getOrCreateDeviceId() {
     return deviceId;
 }
 
+var updateStorage = (key, value, type = 'add') => {
+    let existingValue
+
+    if ((typeof tournament_id !== 'undefined' && key == 'alert-expanded-' + tournament_id) || (key == 'alert-expanded-pl')) {
+        existingValue = JSON.parse(localStorage.getItem(key))
+        if (!existingValue) {
+            existingValue = []
+        }
+
+        if (type == 'add') {
+            if (!existingValue.filter(item => item == value).length) {
+                existingValue.push(value)
+            }
+        }
+
+        if (type == 'remove') {
+            existingValue = existingValue.filter(item => item !== value)
+        }
+
+        value = JSON.stringify(existingValue)
+    }
+
+    if (typeof tournament_id !== 'undefined' && key == 'alert-expanded-' + tournament_id) {
+
+        if (!existingValue.length || existingValue.length < (document.querySelectorAll('.alert-btn-container .btn').length - 1)) {
+            localStorage.setItem('collapse-on-t-' + tournament_id, true)
+            document.getElementById('expandBtn').classList.remove('d-none')
+            document.getElementById('collapseBtn').classList.add('d-none')
+        }
+
+        if (existingValue.length && existingValue.length == (document.querySelectorAll('.alert-btn-container .btn').length - 1)) {
+            localStorage.removeItem('collapse-on-t-' + tournament_id)
+            document.getElementById('expandBtn').classList.add('d-none')
+            document.getElementById('collapseBtn').classList.remove('d-none')
+        }
+    }
+
+    if (key == 'alert-expanded-pl') {
+        if (!existingValue.length || existingValue.length < (document.querySelectorAll('.alert-btn-container .btn').length)) {
+            localStorage.removeItem('collapse-on-pl')
+            document.getElementById('expandBtn').classList.remove('d-none')
+            document.getElementById('collapseBtn').classList.add('d-none')
+        }
+
+        if (existingValue.length && existingValue.length == (document.querySelectorAll('.alert-btn-container .btn').length)) {
+            localStorage.setItem('collapse-on-pl', true)
+            document.getElementById('expandBtn').classList.add('d-none')
+            document.getElementById('collapseBtn').classList.remove('d-none')
+        }
+    }
+
+    localStorage.setItem(key, value)
+}
+
 let appendAlert = (message, type) => {
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
     if (alertPlaceholder) {
@@ -886,12 +940,20 @@ let toggleCollapseAlertBtns = (element) => {
         if (typeof tournament_id !== 'undefined') {
             localStorage.setItem('collapse-on-t-' + tournament_id, true)
         } else {
-            localStorage.setItem('collapse-on-leaderboard', true)
+            localStorage.setItem('collapse-on-pl', true)
         }
     } else {
         document.getElementById('expandBtn').classList.add('d-none')
         document.getElementById('collapseBtn').classList.remove('d-none')
 
+        document.querySelectorAll('.alert-container button.btn-close').forEach((btn) => {
+            if (btn.id == 'viewQRBtn') {
+                return
+            }
+            
+            btn.click()
+        })
+        
         document.querySelectorAll('.alert-btn-container button').forEach((btn) => {
             if (btn.id == 'viewQRBtn') {
                 return
@@ -903,7 +965,7 @@ let toggleCollapseAlertBtns = (element) => {
         if (typeof tournament_id !== 'undefined') {
             localStorage.removeItem('collapse-on-t-' + tournament_id)
         } else {
-            localStorage.removeItem('collapse-on-leaderboard')
+            localStorage.removeItem('collapse-on-pl')
         }
     }
 }

@@ -4,27 +4,6 @@
 
 <?= $this->section('pageStyles') ?>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
-<style>
-* {
-    font-family: Corbel;
-}
-
-p,
-div,
-input {
-    font-size: 18px;
-}
-
-.ui-autocomplete {
-    cursor: pointer;
-    height: 300px;
-    overflow-y: scroll;
-}
-
-a {
-    color: blue;
-}
-</style>
 <?= $this->endSection() ?>
 
 <?= $this->section('pageScripts') ?>
@@ -345,11 +324,14 @@ if (noteAlertTrigger) {
         const myAlert = document.getElementById('noteAlert')
         myAlert.addEventListener('closed.bs.alert', event => {
             noteAlertTrigger.classList.remove('d-none')
+            updateStorage('alert-expanded-pl', 'nt', 'remove')
         })
+
+        updateStorage('alert-expanded-pl', 'nt')
     })
 }
 
-$('#toggleNoteBtn').click();
+drawChart()
 
 const pieChartPlaceholder = document.getElementById('pieChartPlaceholder')
 const appendPieChart = (message, type) => {
@@ -370,7 +352,6 @@ const msg = '';
 if (pieChartAlertTrigger) {
     pieChartAlertTrigger.addEventListener('click', () => {
         appendPieChart(msg, 'light')
-        drawChart()
 
         pieChartAlertTrigger.classList.add('d-none')
 
@@ -378,7 +359,10 @@ if (pieChartAlertTrigger) {
         myAlert.addEventListener('closed.bs.alert', event => {
             pieChartAlertTrigger.classList.remove('d-none')
             document.getElementById('pieChartContainer').classList.add('d-none')
+            updateStorage('alert-expanded-pl', 'chart', 'remove')
         })
+
+        updateStorage('alert-expanded-pl', 'chart')
 
         document.querySelectorAll('input.piecharttype').forEach((element) => {
             element.addEventListener('change', event => {
@@ -387,8 +371,6 @@ if (pieChartAlertTrigger) {
         })
     })
 }
-
-$('#togglePieChartBtn').click();
 
 function drawChart(type = 'tournament') {
     $.ajax({
@@ -454,6 +436,7 @@ function drawChart(type = 'tournament') {
                 }]
             };
             $("#pieChart").CanvasJSChart(options);
+            toggleAlertCollapse()
         },
         error: function(error) {
             console.log(error);
@@ -463,11 +446,20 @@ function drawChart(type = 'tournament') {
     });
 }
 
-$(document).on('ready', () => {
-    if (localStorage.getItem('collapse-on-leaderboard')) {
+let toggleAlertCollapse = () => {
+    if (localStorage.getItem('collapse-on-pl')) {
         document.getElementById('collapseBtn').click()
     }
-})
+
+    if (localStorage.getItem('alert-expanded-pl')) {
+        let expanded = JSON.parse(localStorage.getItem('alert-expanded-pl'))
+        if (expanded.length) {
+            expanded.forEach(value => {
+                document.querySelector(`.alert-btn-container .btn[data-code="${value}"]`).click()
+            })
+        }
+    }
+}
 </script>
 <?= $this->endSection() ?>
 
@@ -505,11 +497,11 @@ $(document).on('ready', () => {
             </div>
 
             <div class="container alert-btn-container mb-1 d-flex justify-content-end">
-                <button type="button" class="btn" id="toggleNoteBtn">
+                <button type="button" class="btn" id="toggleNoteBtn" data-code="nt">
                     <i class="fa-solid fa-circle-info"></i>
                 </button>
 
-                <button type="button" class="btn" id="togglePieChartBtn">
+                <button type="button" class="btn" id="togglePieChartBtn" data-code="chart">
                     <i class="fa-classic fa-solid fa-chart-pie fa-fw"></i>
                 </button>
             </div>
@@ -529,7 +521,7 @@ $(document).on('ready', () => {
                 </div>
 
                 <div id="pieChartPlaceholder"></div>
-                <div id="pieChartContainer">
+                <div id="pieChartContainer" class="d-none">
                     <div id="pieChart"></div>
                     <div id="pieChartTypes">
                         <div class="form-check form-check-inline">

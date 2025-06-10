@@ -50,7 +50,7 @@ const votingMechanismOpenEndCode = <?= EVALUATION_VOTING_MECHANISM_OPENEND?>;
 const evaluationMethodVotingCode = "<?= EVALUATION_METHOD_VOTING ?>";
 let winnerAudioPlayingForEveryone = <?= $tournament['winner_audio_everyone'] ? $tournament['winner_audio_everyone'] : 0 ?>;
 let initialUsers = <?= json_encode($users) ?>;
-let timezone = "<?= config('app')->appTimezone ?>"
+let timezone = "<?= config('app')->appTimezone ?>";
 
 const is_temp_tournament = false;
 
@@ -71,6 +71,7 @@ if (!location.href.includes('shared')) {
 }
 
 $(document).ready(function() {
+
     const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
     const appendAlert = (message, type) => {
         const wrapper = document.createElement('div')
@@ -94,11 +95,12 @@ $(document).ready(function() {
             const myAlert = document.getElementById('tournamentInfoAlert')
             myAlert.addEventListener('closed.bs.alert', event => {
                 alertTrigger.classList.remove('d-none')
+                updateStorage('alert-expanded-' + tournament_id, 'al', 'remove')
             })
+
+            updateStorage('alert-expanded-' + tournament_id, 'al')
         })
     }
-
-    $('#liveAlertBtn').click();
 
     const settingInfoAlertPlaceholder = document.getElementById('settingInfoAlertPlaceholder')
     const appendSettingInfoAlert = (message, type) => {
@@ -123,14 +125,15 @@ $(document).ready(function() {
             const myAlert = document.getElementById('settingInfoAlert')
             myAlert.addEventListener('closed.bs.alert', event => {
                 settingInfoAlertTrigger.classList.remove('d-none')
+                updateStorage('alert-expanded-' + tournament_id, 'st', 'remove')
             })
+
+            updateStorage('alert-expanded-' + tournament_id, 'st')
 
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
         })
     }
-
-    $('#settingInfoAlertBtn').click();
 
     const warningPlaceholder = document.getElementById('warningPlaceholder')
     const appendWarning = (message, type) => {
@@ -154,10 +157,12 @@ $(document).ready(function() {
             const warning = document.getElementById('tournamentWarning')
             warning.addEventListener('closed.bs.alert', event => {
                 warningTrigger.classList.remove('d-none')
+                updateStorage('alert-expanded-' + tournament_id, 'wn', 'remove')
             })
+
+            updateStorage('alert-expanded-' + tournament_id, 'wn')
         })
     }
-    $('#toggleWarningBtn').click();
 
     <?php if ($tournament['description']): ?>
     const descriptionPlaceholder = document.getElementById('descriptionPlaceholder')
@@ -188,10 +193,12 @@ $(document).ready(function() {
             const myAlert = document.getElementById('descriptionAlert')
             myAlert.addEventListener('closed.bs.alert', event => {
                 descriptionTrigger.classList.remove('d-none')
+                updateStorage('alert-expanded-' + tournament_id, 'ds', 'remove')
             })
+
+            updateStorage('alert-expanded-' + tournament_id, 'ds')
         })
     }
-    $('#toggleDescriptionBtn').click();
     <?php endif; ?>
 
     <?php if ($tournament['availability']): ?>
@@ -278,10 +285,12 @@ $(document).ready(function() {
             const myAlert = document.getElementById('availabilityAlert')
             myAlert.addEventListener('closed.bs.alert', event => {
                 availabilityAlertTrigger.classList.remove('d-none')
+                updateStorage('alert-expanded-' + tournament_id, 'vw', 'remove')
             })
+
+            updateStorage('alert-expanded-' + tournament_id, 'vw')
         })
     }
-    $('#toggleVoteWarningBtn').click();
 
     const countTimerAlertPlaceholder = document.getElementById('countTimerAlertPlaceholder')
     const appendCountTimerAlert = (content, type) => {
@@ -322,10 +331,12 @@ $(document).ready(function() {
             const myAlert = document.getElementById('countTimerAlert')
             myAlert.addEventListener('closed.bs.alert', event => {
                 countTimerAlertTrigger.classList.remove('d-none')
+                updateStorage('alert-expanded-' + tournament_id, 'ct', 'remove')
             })
+
+            updateStorage('alert-expanded-' + tournament_id, 'ct')
         })
     }
-    $('#countTimerNoteBtn').click();
     <?php endif; ?>
 
     <?php if ($votingEnabled): ?>
@@ -352,10 +363,12 @@ $(document).ready(function() {
             const voteDisplayingPlaceholder = document.getElementById('voteDisplayingMode')
             voteDisplayingPlaceholder.addEventListener('closed.bs.alert', event => {
                 voteDisplayingModeTrigger.classList.remove('d-none')
+                updateStorage('alert-expanded-' + tournament_id, 'vd', 'remove')
             })
+
+            updateStorage('alert-expanded-' + tournament_id, 'vd')
         })
     }
-    $('#toggleVoteDisplayingModeBtn').click();
     <?php endif; ?>
 
     document.getElementById('confirmSaveButton').addEventListener('click', saveDescription)
@@ -363,6 +376,17 @@ $(document).ready(function() {
 
     if (localStorage.getItem('collapse-on-t-' + tournament_id)) {
         document.getElementById('collapseBtn').click()
+    } else {
+        document.getElementById('expandBtn').click()
+    }
+
+    if (localStorage.getItem('alert-expanded-' + tournament_id)) {
+        let expanded = JSON.parse(localStorage.getItem('alert-expanded-' + tournament_id))
+        if (expanded.length) {
+            expanded.forEach(value => {
+                document.querySelector(`.alert-btn-container .btn[data-code="${value}"]`).click()
+            })
+        }
     }
 
     <?php if(!auth()->user() && isset($editable) && $editable && !$tournament['user_id']) : ?>
@@ -540,30 +564,30 @@ var changeVoteDisplayingMode = (element) => {
             <?php endif ?>
 
             <?php if ($tournament['availability']): ?>
-            <button type="button" class="btn" id="countTimerNoteBtn">
+            <button type="button" class="btn" id="countTimerNoteBtn" data-code="ct">
                 <i class="fa-solid fa-clock"></i>
             </button>
-            <button type="button" class="btn" id="toggleVoteWarningBtn">
+            <button type="button" class="btn" id="toggleVoteWarningBtn" data-code="vw">
                 <i class="fa-solid fa-calendar"></i>
             </button>
             <?php endif ?>
 
-            <button type="button" class="btn" id="liveAlertBtn">
+            <button type="button" class="btn" id="liveAlertBtn" data-code="al">
                 <i class="fa-classic fa-solid fa-circle-exclamation fa-fw"></i>
             </button>
 
-            <button type="button" class="btn" id="settingInfoAlertBtn">
+            <button type="button" class="btn" id="settingInfoAlertBtn" data-code="st">
                 <i class="fa-solid fa-gear"></i>
             </button>
 
             <?php if ($tournament['description']): ?>
-            <button type="button" class="btn" id="toggleDescriptionBtn">
+            <button type="button" class="btn" id="toggleDescriptionBtn" data-code="ds">
                 <i class="fa-solid fa-book"></i>
             </button>
             <?php endif ?>
 
             <?php if($tournament['user_id'] == 0 && isset($editable) && $editable) :?>
-            <button type="button" class="btn" id="toggleWarningBtn">
+            <button type="button" class="btn" id="toggleWarningBtn" data-code="tw">
                 <i class="fa-solid fa-warning"></i>
             </button>
             <?php endif; ?>
