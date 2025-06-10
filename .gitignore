@@ -127,3 +127,4 @@ nb-configuration.xml
 
 writable/database.db
 public/uploads
+./composer.lock
