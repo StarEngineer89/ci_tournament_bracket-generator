@@ -33,6 +33,11 @@ class GoogleAuthController extends Controller
     {
         $code = $this->request->getVar('code');
 
+        if (auth()->user()) {
+            session()->setTempdata('welcome_message', 'Welcome, ' . auth()->user()->username . '!');
+            return redirect()->to('/');
+        }
+
         if ($code) {
             $token = $this->googleClient->fetchAccessTokenWithAuthCode($code);
             $this->googleClient->setAccessToken($token['access_token']);
@@ -42,7 +47,7 @@ class GoogleAuthController extends Controller
 
             $userModel = new UserModel();
             $existingUser = $userModel->findByCredentials(['email' => $googleUser->email]);
-            
+
             $users = $this->getUserProvider();
 
             if ($existingUser) {
@@ -91,7 +96,7 @@ class GoogleAuthController extends Controller
 
         return redirect()->to('/login');
     }
-    
+
     /**
      * Returns the User provider
      */
