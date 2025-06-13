@@ -474,7 +474,7 @@ let toggleAlertCollapse = () => {
             </div>
 
             <div class="container alert-collapse-btn-container mb-1 d-flex justify-content-end">
-                <button type="button" class="btn collapsed p-0 d-none" id="expandBtn" onclick="toggleCollapseAlertBtns(this)">
+                <button type="button" class="btn expand p-0 d-none" id="expandBtn" onclick="toggleCollapseAlertBtns(this)">
                     <svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -484,7 +484,7 @@ let toggleAlertCollapse = () => {
                         </g>
                     </svg>
                 </button>
-                <button type="button" class="btn expanded p-0" id="collapseBtn" onclick="toggleCollapseAlertBtns(this)">
+                <button type="button" class="btn collapsee p-0" id="collapseBtn" onclick="toggleCollapseAlertBtns(this)">
                     <svg fill="#000000" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>

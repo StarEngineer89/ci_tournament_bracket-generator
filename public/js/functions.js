@@ -945,7 +945,7 @@ var copyClipboard = (url_id) => {
 }
 
 let toggleCollapseAlertBtns = (element) => {
-    if (element.classList.contains('expanded')) {
+    if (element.classList.contains('collapsee')) {
         document.getElementById('expandBtn').classList.remove('d-none')
         document.getElementById('collapseBtn').classList.add('d-none')
 
