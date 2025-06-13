@@ -63,13 +63,13 @@ class BracketsController extends BaseController
                             $array[$index] = null;
                             continue;
                         }
-                        
+
                         $array[$index] = $this->participantsModel->find($team['id']);
 
                         if (!$array[$index]) {
                             continue;
                         }
-                        
+
                         if (isset($team['is_group'])) {
                             $array[$index]['members'] = null;
                             $members = [];
@@ -94,7 +94,7 @@ class BracketsController extends BaseController
                         if (isset($team['is_double'])) {
                             $array[$index]['is_double'] = $team['is_double'];
                         }
-                        
+
                         $array[$index]['order'] = $team['order'];
                     }
                     $teams = $array;
@@ -105,7 +105,7 @@ class BracketsController extends BaseController
                 } else {
                     $vote_in_bracket = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'bracket_id' => $bracket['bracketNo'], 'uuid' => $uuid])->first();
                 }
-                
+
                 if ($bracket['is_double'] == 0) {
                     $bracket['is_double'] = null;
                 }
@@ -115,11 +115,11 @@ class BracketsController extends BaseController
                 for ($r = 1; $r <= $round_no; $r++) {
                     $r_list[] = $r;
                 }
-                
+
                 if ($teams[0]) {
                     $isDouble = (isset($teams[0]['is_double'])) ? 1 : null;
                     $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $isDouble, 'round_no' => $bracket['roundNo']])->findAll();
-                    
+
                     if ($tournament_settings['voting_retain'] || $bracket['knockout_final'] || ($tournament_settings['type'] != TOURNAMENT_TYPE_KNOCKOUT && $bracket['final_match'])) {
                         $votes_0 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[0]['id'], 'is_double' => $isDouble])->whereIn('round_no', $r_list)->findAll();
                         if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['knockout_final']) {
@@ -133,10 +133,10 @@ class BracketsController extends BaseController
                     $teams[0]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[0]['id']) ? true : false;
                 }
 
-                if ($teams[1]) {
+                if (isset($teams[1]) && $teams[1]) {
                     $isDouble = (isset($teams[1]['is_double'])) ? 1 : null;
                     $votes_in_round = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $isDouble, 'round_no' => $bracket['roundNo']])->findAll();
-                    
+
                     if ($tournament_settings['voting_retain'] || $bracket['knockout_final'] || ($tournament_settings['type'] != TOURNAMENT_TYPE_KNOCKOUT && $bracket['final_match'])) {
                         $votes_1 = $this->votesModel->where(['tournament_id' => $bracket['tournament_id'], 'participant_id' => $teams[1]['id'], 'is_double' => $isDouble])->whereIn('round_no', $r_list)->findAll();
                         if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['knockout_final']) {
@@ -145,14 +145,14 @@ class BracketsController extends BaseController
                     } else {
                         $votes_1 = $votes_in_round;
                     }
-                    
+
                     $teams[1]['votes'] = count($votes_1);
                     $teams[1]['votes_in_round'] = count($votes_in_round);
                     $teams[1]['voted'] = (auth()->user() && $vote_in_bracket && $vote_in_bracket['participant_id'] == $teams[1]['id']) ? true : false;
                 }
-                
+
                 $bracket['teamnames'] = json_encode($teams);
-                
+
                 /** Get round name */
                 if (!isset($roundSettings[$bracket['roundNo']])) {
                     $roundSettings[$bracket['roundNo']] = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
@@ -172,7 +172,7 @@ class BracketsController extends BaseController
                 if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['final_match']) {
                     $nextBracket = $this->bracketsModel->where(['tournament_id' => $id, 'knockout_final' => 1])->first();
                 }
-                
+
                 $rounds[] = $bracket;
             }
         }
@@ -186,7 +186,7 @@ class BracketsController extends BaseController
         $result = array();
         $bracket = $this->bracketsModel->find($id);
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
-        
+
         $notificationService = service('notification');
         $userSettingsService = service('userSettings');
 
@@ -203,7 +203,7 @@ class BracketsController extends BaseController
         $original = $teamnames;
 
         $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
-        
+
         helper('db');
         helper('participant');
 
@@ -213,7 +213,7 @@ class BracketsController extends BaseController
         }
 
         /** Change or Add Participant Action */
-        if(isset($req->name) && $req->name){
+        if (isset($req->name) && $req->name) {
             if (isset($req->index)) {
                 $order = ($req->order - 1) * 2 + $req->index;
                 if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
@@ -225,10 +225,10 @@ class BracketsController extends BaseController
                     $single_count = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'roundNo' => $bracket['roundNo'], 'is_double' => 1])->countAllResults();
                     if ($bracket['is_double']) {
                         $order = ($req->order - $single_count - 1) * 2 + $req->index;
-                    }    
+                    }
                 }
 
-                if (!isset($req->participant) || intval($req->participant) == 0)  {
+                if (!isset($req->participant) || intval($req->participant) == 0) {
                     $availableToAdd = true;
                     if ($req->name[0] == '@') {
                         $name = trim($req->name, '@');
@@ -239,7 +239,7 @@ class BracketsController extends BaseController
 
                     if (!$availableToAdd) {
                         return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                ->setJSON(['result' => 'failed', "message"=> "This user \"@$user->username\" declined invitations to tournaments"]);
+                            ->setJSON(['result' => 'failed', "message" => "This user \"@$user->username\" declined invitations to tournaments"]);
                     }
 
                     if (isset($user) && $user->id) {
@@ -271,9 +271,9 @@ class BracketsController extends BaseController
                         'created_by' => $user_id
                     ]);
                     $this->tournamentMembersModel->insert($member);
-                    
+
                     /** Send the email to the registered user */
-                    if($req->name[0] == '@' && $user) {
+                    if ($req->name[0] == '@' && $user) {
                         $tournamentObj = new \App\Entities\Tournament($tournament);
 
                         $string = 'Individual Participant';
@@ -301,14 +301,14 @@ class BracketsController extends BaseController
                 } else {
                     $participant_id = $req->participant;
                 }
-                
+
                 $participant = $this->participantsModel->find($participant_id);
 
                 $teamnames[$req->index] = ['id' => $participant_id, 'order' => $order];
 
                 if ($participant['is_group'] && $participant['group_id']) {
                     $teamnames[$req->index]['is_group'] = 1;
-                    
+
                     $members = $this->groupMembersModel->where(['group_members.tournament_id' => $bracket['tournament_id'], 'group_members.group_id' => $participant['group_id']])->details()->findAll();
                     if ($members) {
                         foreach ($members as $index => $member) {
@@ -338,15 +338,15 @@ class BracketsController extends BaseController
             $this->bracketsModel->save($bracket);
 
             $removedParticipantData = $this->participantsModel->find($removedParticipant['id']);
-            
-            /** Check if the participant exists in other brackets */   
+
+            /** Check if the participant exists in other brackets */
             helper('bracket');
             $participantIsExists = checkParticipantExistingInTournament($tournament['id'], $removedParticipant['id']);
 
             /** Remove the participant and send the email add the notification if it was removed from all the brackets */
             if (!$participantIsExists) {
                 $this->participantsModel->where('id', $removedParticipant['id'])->delete();
-                
+
                 /** Send the notification and email if the participant was removed if it's registered user */
                 if (isset($removedParticipantData['registered_user_id']) && $removedParticipantData['registered_user_id']) {
                     $user = auth()->getProvider()->findById($removedParticipantData['registered_user_id']);
@@ -386,7 +386,7 @@ class BracketsController extends BaseController
                 $final_bracket_ids = $this->bracketsModel->where(['tournament_id' => $bracket['tournament_id'], 'final_match' => 1])->findColumn('id');
                 $this->bracketsModel->update($final_bracket_ids, ['winner' => null]);
             }
-            
+
             $bracket['winner'] = $req->winner;
             $bracket['win_by_host'] = 1;
             $this->bracketsModel->save($bracket);
@@ -411,7 +411,7 @@ class BracketsController extends BaseController
                 $participant = $this->participantsModel->find($req->winner);
                 $teamnames = json_decode($nextBracket['teamnames'], true);
                 $teamnames[$req->index] = $original[$selectedIndex];
-                
+
                 if ($is_double) {
                     $teamnames[$req->index]['is_double'] = 1;
                 }
@@ -422,7 +422,7 @@ class BracketsController extends BaseController
                 }
                 $this->bracketsModel->save($nextBracket);
             }
-            
+
             $wsClient->sendMessage("tournamentUpdated");
         }
 
@@ -439,7 +439,7 @@ class BracketsController extends BaseController
                 $nextBracket['winner'] = null;
                 $this->bracketsModel->save($nextBracket);
             }
-            
+
             $wsClient->sendMessage("tournamentUpdated");
         }
         /** Change the tournament status
@@ -487,8 +487,8 @@ class BracketsController extends BaseController
         }
 
         /** Update tournament searchable data  */
-        $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
-        
+        $brackets = $this->bracketsModel->where(array('tournament_id' => $bracket['tournament_id']))->findAll();
+
         $participant_names_string = '';
         if ($brackets) {
             foreach ($brackets as $brck) {
@@ -496,12 +496,12 @@ class BracketsController extends BaseController
                 foreach ($teams as $team) {
                     if ($team) {
                         $participant = $this->participantsModel->find($team->id);
-                        $participant_names_string .= $participant['name'] .',';
+                        $participant_names_string .= $participant['name'] . ',';
                     }
                 }
             }
         }
-        
+
         $tournament['searchable'] = $tournament['name'] . ',' . $participant_names_string;
         $this->tournamentsModel->save($tournament);
 
@@ -531,7 +531,7 @@ class BracketsController extends BaseController
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_UNMARK_WINNER) {
-                    $participant = $this->participantsModel->find($req->participant);
+                $participant = $this->participantsModel->find($req->participant);
                 if (isset($req->is_group)) {
                     $data['participants'] = ['name' => $participant['name'], 'type' => 'group'];
                 } else {
@@ -553,7 +553,7 @@ class BracketsController extends BaseController
             }
 
             if ($req->action_code == BRACKET_ACTIONCODE_REMOVE_PARTICIPANT) {
-                $data['participants'] = ['name' => $removedParticipantData['name'],'type'=> ($original[$req->index] && isset($original[$req->index]['is_group'])) ? 'group' : null];
+                $data['participants'] = ['name' => $removedParticipantData['name'], 'type' => ($original[$req->index] && isset($original[$req->index]['is_group'])) ? 'group' : null];
             }
 
             $insert_data['params'] = json_encode($data);
@@ -567,7 +567,7 @@ class BracketsController extends BaseController
         }
 
         return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                ->setJSON(['result' => 'success', 'data' => $result]);
+            ->setJSON(['result' => 'success', 'data' => $result]);
     }
 
     public function deleteBracket($id)
@@ -587,8 +587,8 @@ class BracketsController extends BaseController
          */
         $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
         $tournamentEntity = new \App\Entities\Tournament($tournament);
-        $brackets = $this->bracketsModel->where(array('tournament_id'=> $bracket['tournament_id']))->findAll();
-        
+        $brackets = $this->bracketsModel->where(array('tournament_id' => $bracket['tournament_id']))->findAll();
+
         $participant_names_string = '';
         if ($brackets) {
             foreach ($brackets as $br) {
@@ -598,16 +598,16 @@ class BracketsController extends BaseController
                         $pt = $this->participantsModel->find($team->id);
                         $teamName = $pt ? $pt['name'] : '';
 
-                        $participant_names_string .= $teamName .',';
+                        $participant_names_string .= $teamName . ',';
                     }
                 }
             }
         }
-        
+
         $tournamentEntity->searchable = $tournamentEntity->name . ',' . $participant_names_string;
         // $this->tournamentsModel->save($tournamentEntity);
 
-        /** Check if the participant exists in other brackets and send the notification */   
+        /** Check if the participant exists in other brackets and send the notification */
         helper('bracket');
         $notificationService = service('notification');
         $userSettingsService = service('userSettings');
@@ -618,7 +618,7 @@ class BracketsController extends BaseController
                     $checkExist = checkParticipantExistingInTournament($tournamentEntity->id, $team->id);
 
                     $deletedParticipants = [];
-                    
+
                     $pt = $this->participantsModel->find($team->id);
                     $teamInfo[$index] = $pt;
 
@@ -673,7 +673,7 @@ class BracketsController extends BaseController
                 }
             }
         }
-        
+
 
         /**
          * Prepare the log data
@@ -717,7 +717,7 @@ class BracketsController extends BaseController
     {
         $user_id = auth()->user() ? auth()->user()->id : 0;
         $this->bracketsModel->where(['tournament_id' => $tournament_id, 'user_id' => auth()->user()->id])->delete();
-        
+
         /**
          * Update tournament searchable data
          */
@@ -789,7 +789,7 @@ class BracketsController extends BaseController
     {
         $list = $this->request->getPost('list');
         $hash = $this->request->getPost('hash');
-        
+
         if ($notAllowedList = $this->request->getPost('notAllowedList')) {
             foreach ($notAllowedList as $item) {
                 $this->tournamentMembersModel->delete($item);
@@ -798,25 +798,26 @@ class BracketsController extends BaseController
 
         $participant_names_string = '';
         $tournament_id = $this->request->getPost('tournament_id');
-
+        $brackets_type = $this->request->getPost('type');
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
+        $tournamentObj = $this->tournamentsModel->asObject()->find($tournament_id);
+
         $min_count = 2;
-        if ($this->request->getPost('type') == TOURNAMENT_TYPE_KNOCKOUT) {
+        if ($brackets_type == TOURNAMENT_TYPE_KNOCKOUT) {
             $min_count = 4;
         }
 
         if (count($list) < $min_count) {
             $message = "There should be at least $min_count or more participants.";
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                              ->setJSON(['status' => 'error', 'message' => $message]);
+                ->setJSON(['status' => 'error', 'message' => $message]);
         }
 
-        // Assign the tournament id to the participants
         if (count($list) > 0) {
             $all_participants = [];
             $updatedList = [];
-            foreach($list as $item) {
+            foreach ($list as $item) {
                 if (isset($item['is_group']) && $item['is_group'] && count($item['members'])) {
                     $participant = $this->participantsModel->where('group_id', $item['id'])->first();
 
@@ -842,11 +843,9 @@ class BracketsController extends BaseController
                     $participant_name = trim($participant_name, '@');
                 }
 
-                $participant_names_string .= $participant_name .',';
+                $participant_names_string .= $participant_name . ',';
             }
         }
-        
-        $brackets_type = $this->request->getPost('type');
 
         $brackets = array();
         if ($brackets_type == TOURNAMENT_TYPE_SINGLE) {
@@ -861,21 +860,24 @@ class BracketsController extends BaseController
             $brackets = $this->createKnockoutBrackets($updatedList);
         }
 
+        if ($brackets_type == TOURNAMENT_TYPE_FFA) {
+            $brackets = $this->createFFABrackets($updatedList, $tournamentObj->max_group_size, $tournamentObj->advance_count);
+        }
+
         /** Fill the Searchable field into tournament */
-        $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
-        $tournament->searchable = $tournament->name . ',' . $participant_names_string;
-        $this->tournamentsModel->save($tournament);
+        $tournamentObj->searchable = $tournamentObj->name . ',' . $participant_names_string;
+        $this->tournamentsModel->save($tournamentObj);
 
         /** Add a schedule to update rounds */
-        if ($tournament->availability) {
+        if ($tournamentObj->availability) {
             $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
 
-            $maxRoundBracket = $this->bracketsModel->where('tournament_id', $tournament->id)->selectMax('roundNo')->first() ?? 1;
-            $scheduleLibrary->registerSchedule($tournament->id, SCHEDULE_NAME_TOURNAMENTSTART, 1, $tournament->available_start);
-            $scheduleLibrary->registerSchedule($tournament->id, SCHEDULE_NAME_TOURNAMENTEND, $maxRoundBracket['roundNo'], $tournament->available_end);
+            $maxRoundBracket = $this->bracketsModel->where('tournament_id', $tournamentObj->id)->selectMax('roundNo')->first() ?? 1;
+            $scheduleLibrary->registerSchedule($tournamentObj->id, SCHEDULE_NAME_TOURNAMENTSTART, 1, $tournamentObj->available_start);
+            $scheduleLibrary->registerSchedule($tournamentObj->id, SCHEDULE_NAME_TOURNAMENTEND, $maxRoundBracket['roundNo'], $tournamentObj->available_end);
 
-            if ($tournament->round_duration_combine || ($tournament->evaluation_method == EVALUATION_METHOD_VOTING && ($tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_ROUND || $tournament->voting_mechanism == EVALUATION_VOTING_MECHANISM_OPENEND))) {
-                $scheduleLibrary->scheduleRoundUpdate($tournament->id);
+            if ($tournamentObj->round_duration_combine || ($tournamentObj->evaluation_method == EVALUATION_METHOD_VOTING && ($tournamentObj->voting_mechanism == EVALUATION_VOTING_MECHANISM_ROUND || $tournamentObj->voting_mechanism == EVALUATION_VOTING_MECHANISM_OPENEND))) {
+                $scheduleLibrary->scheduleRoundUpdate($tournamentObj->id);
             }
         }
 
@@ -889,13 +891,13 @@ class BracketsController extends BaseController
             foreach ($users as $user) {
                 $groupName = $user['group_name'];
                 $user = $userProvider->findById($user['registered_user_id']);
-                
+
                 if (!$user) {
                     continue;
                 }
 
                 $string = $groupName ? 'Group: "' . $groupName . '"' : 'Individual Participant';
-                $message = "You've been added to tournament \"$tournament->name\" ($string)!";
+                $message = "You've been added to tournament \"$tournamentObj->name\" ($string)!";
                 $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_INVITE, 'link' => "tournaments/$tournament_id/view"]);
 
                 if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
@@ -905,7 +907,7 @@ class BracketsController extends BaseController
                     $email->setSubject(lang('Emails.inviteToTournamentEmailSubject'));
                     $email->setMessage(view(
                         'email/invite-to-tournament',
-                        ['username' => $user->username, 'tournament' => $tournament, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $groupName],
+                        ['username' => $user->username, 'tournament' => $tournamentObj, 'tournamentCreatorName' => setting('Email.fromName'), 'groupName' => $groupName],
                         ['debug' => false]
                     ));
 
@@ -948,38 +950,31 @@ class BracketsController extends BaseController
     public function createBrackets($participants, $type = 's')
     {
         $user_id = (auth()->user()) ? auth()->user()->id : 0;
-        
-        $knownBrackets = array(2, 4, 8, 16, 32);
 
         $this->_base = count($participants);
 
-        // $closest = current(array_filter($knownBrackets, function ($e) {
-        //     return $e >= $this->_base;
-        // }));
+        $closest = pow(2, ceil(log($this->_base, 2))); /* Find the closest number from 2, 4, 8, 16, 32, ... */
 
-        $closest = pow(2, ceil(log($this->_base, 2)));
-        
         $byes = $closest - $this->_base;
 
-        if ($byes > 0)    $this->_base = $closest;
+        if ($byes > 0)
+            $this->_base = $closest;
 
         for ($i = 1; $i <= $byes; $i++) {
             $participants[] = null;
         }
-
-        $participants_count = count($participants);
 
         if ($type == 'd') {
             $participants = array_merge($participants, $participants);
             $this->_base = count($participants);
         }
 
-        $brackets     = array();
-        $round         = 1;
-        $baseT         = $this->_base / 2;
-        $baseC         = $this->_base / 2;
-        $teamMark    = 0;
-        $nextInc        = $this->_base / 2;
+        $brackets = array();
+        $round = 1;
+        $baseT = $this->_base / 2;
+        $baseC = $this->_base / 2;
+        $teamMark = 0;
+        $nextInc = $this->_base / 2;
         $isBye = false;
 
         for ($i = 1; $i <= ($this->_base - 1); $i++) {
@@ -1052,7 +1047,8 @@ class BracketsController extends BaseController
             $bracket_id = $this->bracketsModel->insert($bracketEntity);
 
             $teamMark += 2;
-            if ($i % 2 != 0)    $nextInc--;
+            if ($i % 2 != 0)
+                $nextInc--;
             while ($baseR >= 1) {
                 $round++;
                 $baseC /= 2;
@@ -1110,7 +1106,8 @@ class BracketsController extends BaseController
         return $brackets;
     }
 
-    public function createKnockoutBrackets($participants) {
+    public function createKnockoutBrackets($participants)
+    {
         $list_1 = [];
         $list_2 = [];
 
@@ -1134,11 +1131,91 @@ class BracketsController extends BaseController
         return array_merge($brackets_1, $brackets_2);
     }
 
-    public function saveRoundSettings() {
+    public function createFFABrackets($participants, $max_group_size, $advanceCount)
+    {
+        $this->_base = count($participants);
+
+        $closest = ceil($this->_base / $max_group_size) * $max_group_size; /* Find the closest number like n * $max_group_size */
+
+        $byes = $closest - $this->_base;
+
+        if ($byes > 0) {
+            $this->_base = $closest;
+        }
+
+        for ($i = 1; $i <= $byes; $i++) {
+            $participants[] = null;
+        }
+
+        $brackets = array();
+        $round = 1;
+        $bracketNo = 0;
+        $countInRound = 0;
+        $matches = $this->_base / $max_group_size;
+
+        if ($byes > 0 && $byes > intval($this->_base / $max_group_size)) {
+            $max_group_size--;
+        }
+
+        $bracket = new \App\Entities\Bracket();
+        $bracket->tournament_id = $this->request->getPost('tournament_id');
+        $bracket->user_id = (auth()->user()) ? auth()->user()->id : 0;
+
+        /* Create the brackets in round 1 */
+        while ($matches >= 1) {
+            $teams = array_fill(0, $max_group_size, null);
+            for ($i = 0; $i < $max_group_size; $i++) {
+                $teams[$i] = ($round == 1) ? $participants[$bracketNo * $max_group_size + $i] : null;
+            }
+
+            $bracketNo++;
+            $countInRound++;
+            $bracketEntity = $bracket;
+            $bracketEntity->teamnames = json_encode($teams);
+            $bracketEntity->bracketNo = $bracketNo;
+            $bracketEntity->roundNo = $round;
+            $bracketEntity->bye = 0;
+
+            $bracket_id = $this->bracketsModel->insert($bracketEntity);
+            array_push($brackets, $bracketEntity);
+
+            if ($matches == 1) {
+                $matches = 0;
+            }
+
+            /* Reset the variables for next round */
+            if ($countInRound == $matches) {
+                $round++;
+                $countInRound = 0;
+
+                $this->_base = $matches * $advanceCount;
+
+                $closest = ceil($this->_base / $max_group_size) * $max_group_size;
+                $byes = $closest - $this->_base;
+                if ($byes > 0)
+                    $this->_base = $closest;
+
+                $matches = $this->_base / $max_group_size;
+            }
+        }
+
+        /* Create Winner */
+        $bracket->teamnames = json_encode([null]);
+        $bracket->bracketNo = $bracketNo;
+        $bracket->roundNo = $round + 1;
+        $bracket->bye = 0;
+        $bracket->final_match = true;
+        $this->bracketsModel->insert($bracket);
+
+        return $brackets;
+    }
+
+    public function saveRoundSettings()
+    {
         if ($this->request->isAJAX()) {
             $tournament_id = $this->request->getPost('tournament_id');
             $round_no = $this->request->getPost('round_no');
-            
+
             $setting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->first();
 
             if ($setting) {
@@ -1154,7 +1231,7 @@ class BracketsController extends BaseController
                 $setting->round_no = $round_no;
                 $setting->round_name = $this->request->getPost('round_name');
             }
-            
+
             $db = \Config\Database::connect();
             $dbDriver = $db->DBDriver;
             if (!auth()->user() && $dbDriver === 'MySQLi') {
@@ -1167,10 +1244,10 @@ class BracketsController extends BaseController
 
             if ($this->tournamentRoundSettingsModel->save($setting)) {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
-                                      ->setJSON(['status' => 'success', 'message' => 'Round settings was saved successfully', 'setting' => $setting]);
+                    ->setJSON(['status' => 'success', 'message' => 'Round settings was saved successfully', 'setting' => $setting]);
             } else {
                 return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
-                                      ->setJSON(['status' => 'error', 'message' => 'Failed to save settings']);
+                    ->setJSON(['status' => 'error', 'message' => 'Failed to save settings']);
             }
 
             if (!auth()->user() && $dbDriver === 'MySQLi') {
@@ -1181,9 +1258,9 @@ class BracketsController extends BaseController
                 $db->query('PRAGMA foreign_keys = ON');
             }
         }
-        
+
         // If not an AJAX request, return a 403 error
         return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
-                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+            ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 }

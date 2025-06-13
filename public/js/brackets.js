@@ -13,7 +13,7 @@ let editing_mode = false;
         var minWidth = 240 * groupCount
 
         // tournament type (3) is Knockout bracket
-        if (tournament_type !== KNOCKOUT_TOURNAMENT_TYPE) {
+        if (parseInt(tournament.type) !== KNOCKOUT_TOURNAMENT_TYPE) {
             minWidth = minWidth + 150
         }
 
@@ -27,7 +27,7 @@ let editing_mode = false;
 
         for (g = 1; g <= groupCount; g++) {
             var round = $('<div class="round r' + g + '"></div>');
-            if (tournament_type !== KNOCKOUT_TOURNAMENT_TYPE && g == groupCount) {
+            if (parseInt(tournament.type) !== KNOCKOUT_TOURNAMENT_TYPE && g == groupCount) {
                 round = $('<div class="round r' + g + '" style="min-width: 350px"></div>');
             }
             
@@ -78,7 +78,7 @@ let editing_mode = false;
                 bracket.append(bracketBorder)
                 
                 if (parseInt(gg.final_match) || !isArray(lastGames)) {
-                    if (tournament_type == KNOCKOUT_TOURNAMENT_TYPE && !isArray(lastGames)) {
+                    if (parseInt(tournament.type) == KNOCKOUT_TOURNAMENT_TYPE && !isArray(lastGames)) {
                         bracket.className = "bracketbox knockout-semi-final"
                     } else {
                         bracket.className = "bracketbox final"
@@ -100,7 +100,7 @@ let editing_mode = false;
                     teamwrapper.append(teamb)
                 }
 
-                if (tournament_type != KNOCKOUT_TOURNAMENT_TYPE && parseInt(gg.final_match)) {
+                if (parseInt(tournament.type) != KNOCKOUT_TOURNAMENT_TYPE && parseInt(gg.final_match)) {
                     let trophy = document.createElement('div')
                     trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap d-none"
                     trophy.style.minHeight = '100px'
@@ -357,6 +357,351 @@ let editing_mode = false;
         return group
     }
     
+    function renderFFABrackets(struct, direction = 'ltr') {
+        var groupCount = _.uniq(_.map(struct, function (s) { return s.roundNo; })).length;
+
+        var html = ''
+        var roundNameHtml = ''
+        var minWidth = 240 * groupCount
+
+        // tournament type (3) is Knockout bracket
+        if (parseInt(tournament.type) !== KNOCKOUT_TOURNAMENT_TYPE) {
+            minWidth = minWidth + 150
+        }
+
+        if (direction == 'rtl') {
+            html = `<div class="groups d-flex align-items-center flex-row-reverse rtl" style="min-width:${minWidth}px"></div>`
+            roundNameHtml = `<div class="round-names d-flex flex-row-reverse rtl" style="min-width:${minWidth}px"></div>`
+        } else {
+            html = `<div class="groups d-flex align-items-center" style="min-width:${minWidth}px"></div>`
+            roundNameHtml = `<div class="round-names d-flex" style="min-width:${minWidth}px"></div>`
+        }
+        var group = $(html),
+            grouped = _.groupBy(struct, function (s) { return s.roundNo; });
+        
+        var roundNames = $(roundNameHtml)
+
+        for (g = 1; g <= groupCount; g++) {
+            var round = $('<div class="round r' + g + '"></div>');
+            if (parseInt(tournament.type) !== KNOCKOUT_TOURNAMENT_TYPE && g == groupCount) {
+                round = $('<div class="round r' + g + '" style="min-width: 350px"></div>');
+            }
+            
+            let timerIcon = ''
+            if (parseInt(tournament.availability) && (tournament.round_duration_combine || (tournament.evaluation_method == evaluationMethodVotingCode && tournament.voting_mechanism == votingMechanismRoundDurationCode))) {
+                let roundDuration = $(`<div class="round-duration-wrapper text-center p-2 m-2 d-none"></div>`)
+                let roundStart = `<strong>Start:</strong> <span class="start">${grouped[g][0].start}</span>`
+                let roundEnd = `<strong>End :</strong> <span class="end">${grouped[g][0].end}</span>`
+
+                roundDuration.html(`${roundStart}<br/>${roundEnd}<br/><span class="remaining">&nbsp;</span>`)
+                round.append(roundDuration)
+
+                timerIcon = '<button type="button" class="timerTrigger btn btn-light p-0" data-bs-toggle="popover" data-bs-placement="top"><span class="fa-solid fa-clock"></span></button>'
+            }
+
+            let editIcon = ''
+            if (hasEditPermission) {
+                editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
+            }
+            
+            let roundName = $(`<div class="round-name-wrapper text-center p-2 m-1 border" style="height: auto" data-round-no="${g}" ${parseInt(grouped[g][0].is_double) ? 'data-knockout-second="true"' : ''}></div>`)
+            let round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}`
+            if (grouped[g][0].final_match && grouped[g][0].final_match !== "0") {
+                round_name = (grouped[g][0].round_name) ? grouped[g][0].round_name : `Round ${grouped[g][0].roundNo}: Grand Final`
+            }
+
+            roundName.html(`<span class="round-name">${round_name}</span> ${editIcon} ${timerIcon}`)
+            roundNames.append(roundName)
+
+            var bracketBoxList = $('<div class="bracketbox-list"></div>')
+
+            _.each(grouped[g], function (gg) {
+                var teamwrapper = document.createElement('div')
+                teamwrapper.className = "participants"
+
+                var teams = JSON.parse(gg.teamnames);
+                teams.forEach((team, i) => {
+                    teamwrapper.append(drawParticipant(gg, i, direction))
+                })
+                var lastGames = JSON.parse(gg.lastGames)
+                if (!lastGames) {
+                    lastGames = []
+                }
+
+                var bracket = document.createElement('div')
+
+                var bracketBorder = document.createElement('div')
+                bracketBorder.className = "bracket-border-line"
+                bracket.append(bracketBorder)
+                
+                if (parseInt(gg.final_match) || !isArray(lastGames)) {
+                    bracket.className = "bracketbox final"
+                } else {
+                    var bracketNo = document.createElement('span')
+                    bracketNo.classList.add('bracketNo')
+                    bracketNo.innerHTML = gg.bracketNo
+                    bracket.append(bracketNo)
+                    bracket.className = "bracketbox d-flex align-items-center";
+                }
+                
+                if (parseInt(tournament.type) != KNOCKOUT_TOURNAMENT_TYPE && parseInt(gg.final_match)) {
+                    let trophy = document.createElement('div')
+                    trophy.className = "trophy d-flex align-content-between justify-content-center flex-wrap d-none"
+                    trophy.style.minHeight = '100px'
+                    bracket.append(trophy)
+
+                    $(trophy).append(`<img src="/images/trophy.png" height="150px" width="150px"/>`)
+                    
+                    var svg = drawChampionTextSVG()
+                    $(trophy).append(`<div class="champion-text animate">${svg}</div>`)
+
+                    if (parseInt(gg.winner)) {
+                        trophy.classList.remove('d-none')
+                    }
+                }
+
+                bracket.append(teamwrapper)
+
+                bracketBoxList.append(bracket);
+            });
+
+            round.append(bracketBoxList)
+
+            group.append(round);
+        }
+
+        if (hasEditPermission) {
+            $.contextMenu({
+                selector: '.bracket-team',
+                build: function ($triggerElement, e) {
+                    let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
+                    let items = {}
+                    if (!votingEnabled || ![votingMechanismRoundDurationCode, votingMechanismMaxVoteCode].includes(votingMechanism) || allowHostOverride) {
+                        items.mark = {
+                                name: (!isWinner) ? "🏆 Mark as Winner" : "❌ Unmark as winner",
+                                callback: (key, opt, e) => {
+                                    if (!isWinner)
+                                        markWinner(key, opt, e)
+                                    else
+                                        unmarkWinner(key, opt, e)
+                                },
+                        }
+                    }
+
+                    items.change = {
+                                name: "✏️ Change participant",
+                                callback: (key, opt, e) => {
+                                    const element = opt.$trigger;
+                                    $.ajax({
+                                        type: "GET",
+                                        url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
+                                        success: function (result) {
+                                            let originalWrapper = document.createElement('div')
+                                            originalWrapper.classList.add('original-wrapper', 'd-none')
+                                            originalWrapper.innerHTML = element.html()
+
+                                            element.contents().remove();
+                                            element.append(originalWrapper)
+
+                                            var select = document.createElement('select');
+                                            select.setAttribute('id', "participantSelector");
+                                            select.setAttribute('class', "form-control");
+                                            var index = (element.hasClass("teama")) ? 0 : 1;
+
+                                            if (result.participants.length > 0) {
+                                                let group_ids = []
+                                                result.participants.forEach((participant, i) => {
+                                                    let pt_group
+                                                    if (participant.group_id) {
+                                                        if (group_ids.includes(participant.group_id)) {
+                                                            return
+                                                        }
+
+                                                        pt_group = true
+                                                        group_ids.push(participant.group_id)
+                                                    }
+
+                                                    var option = document.createElement('option');
+                                                    option.setAttribute('value', participant.id);
+                                                    option.textContent = participant.name;
+                                                    if (participant.id == element.data('id')) {
+                                                        option.setAttribute('selected', true)
+                                                    }
+
+                                                    if (pt_group) {
+                                                        option.setAttribute('data-group', true)
+                                                    }
+
+                                                    select.appendChild(option);
+                                                });
+
+                                                var saveBtn = document.createElement('button')
+                                                saveBtn.setAttribute('class', 'btn btn-primary p-1')
+                                                saveBtn.setAttribute('onclick', `changeParticipant($('#participantSelector'), ${index})`)
+                                                saveBtn.textContent = 'Save'
+                                                
+                                                var cancelBtn = document.createElement('button')
+                                                cancelBtn.textContent = 'Cancel'
+                                                cancelBtn.setAttribute('class', 'btn btn-secondary p-1')
+                                                cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+                                                
+                                                var elementGroup = document.createElement('div')
+                                                elementGroup.setAttribute('class', 'input-group')
+                                                elementGroup.append(select)
+                                                elementGroup.append(saveBtn)
+                                                elementGroup.append(cancelBtn)
+
+                                                element.append(elementGroup)
+
+                                                editing_mode = true;
+                                            } else {
+                                                alert("There is no participants to be selected");
+                                            }
+
+                                            $(select).select2({
+                                                width: 115
+                                            })
+
+                                            $('.select2-search input').atwho({
+                                                at: "@",
+                                                searchKey: 'username',
+                                                data: initialUsers,
+                                                limit: 5, // Show only 5 suggestions
+                                                displayTpl: "<li data-value='@${id}'>${username}</li>",
+                                                insertTpl: "@${username},",
+                                                callbacks: {
+                                                    remoteFilter: function (query, callback) {
+                                                        if (query.length < 1) return; // Don't fetch on empty query
+                                                        $.ajax({
+                                                            url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                                            type: "GET",
+                                                            data: {
+                                                                query: query
+                                                            },
+                                                            dataType: "json",
+                                                            success: function(data) {
+                                                                callback(data);
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        },
+                                        error: function (error) {
+                                            console.log(error);
+                                        }
+                                    }).done(() => {
+                                        setTimeout(function () {
+                                            $("#overlay").fadeOut(300);
+                                        }, 500);
+                                    });
+                                }
+                    }
+                    if (!$triggerElement.attr('data-id')) {
+                        items.create = {
+                            name: "➕ Add participant",
+                            callback: (key, opt, e) => {
+                                var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
+                                var originalInput = document.getElementById('newParticipantNameInput')
+                                if (originalInput) {
+                                    originalInput.parentElement.remove()
+                                }
+
+                                var inputElement = document.createElement('input')
+                                inputElement.setAttribute('class', "form-control form-control-sm")
+                                inputElement.setAttribute('id', "newParticipantNameInput")
+                                inputElement.focus()
+                                $(inputElement).atwho({
+                                    at: "@",
+                                    searchKey: 'username',
+                                    data: initialUsers,
+                                    limit: 5, // Show only 5 suggestions
+                                    displayTpl: "<li data-value='@${id}'>${username}</li>",
+                                    insertTpl: "@${username}",
+                                    callbacks: {
+                                        remoteFilter: function (query, callback) {
+                                            if (query.length < 1) return; // Don't fetch on empty query
+                                            $.ajax({
+                                                url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                                type: "GET",
+                                                data: {
+                                                    query: query
+                                                },
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    callback(data);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+
+                                var buttonElement = document.createElement('button')
+                                buttonElement.setAttribute('class', 'btn btn-primary')
+                                buttonElement.setAttribute('onclick', `saveNewParticipant($('#newParticipantNameInput'), ${index})`)
+                                buttonElement.textContent = 'Save'
+                                
+                                var cancelBtn = document.createElement('button')
+                                cancelBtn.textContent = 'Cancel'
+                                cancelBtn.classList.add('btn', 'btn-secondary')
+                                cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+
+                                var elementGroup = document.createElement('div')
+                                elementGroup.setAttribute('class', 'input-group input-group-sm')
+                                elementGroup.appendChild(inputElement)
+                                elementGroup.appendChild(buttonElement)
+                                elementGroup.append(cancelBtn)
+
+                                opt.$trigger.append(elementGroup)
+                            }
+                        }
+                    }
+                    if ($triggerElement.attr('data-id')) {
+                        items.remove = {
+                            name: "➖️ Remove participant",
+                            callback: (key, opt, e) => {
+                                const element = opt.$trigger;
+                                var index = (element.hasClass("teama")) ? 0 : 1;
+                                    
+                                updateBracket(opt.$trigger, { index: index, action_code: removeParticipantActionCode });
+                            }
+                        }
+                    }
+                    items.delete = {
+                                name: "🗑️ Delete Bracket",
+                                callback: (key, opt, e) => {
+                                    var element_id = opt.$trigger.data('bracket');
+                                    let triggerElement = opt.$trigger
+                                    $.ajax({
+                                        type: "delete",
+                                        url: apiURL + '/brackets/delete/' + element_id,
+                                        success: function (result) {
+                                            loadBrackets()
+
+                                            // triggerElement.parent().parent().remove();
+                                            ws.send(['Deleted Brackets!', tournament_id]);
+                                        },
+                                        error: function (error) {
+                                            console.log(error);
+                                        }
+                                    }).done(() => {
+                                        setTimeout(function () {
+                                            $("#overlay").fadeOut(300);
+                                        }, 500);
+                                    });
+                                }
+                            }
+                    return {
+                        items: items
+                    }
+                }
+            });
+        }
+
+        $('#brackets').html(roundNames)
+        $('#brackets').append(group)
+    }
+    
     function drawParticipant(bracket, team_index = 0, direction = 'ltr') {
         let round_no = bracket.roundNo
         var participant = document.createElement('span');
@@ -376,6 +721,11 @@ let editing_mode = false;
         } else {
             participant.className = 'bracket-team teamb';
         }
+
+        if (tournament.type == 4) {
+            participant.className = "bracket-team"
+        }
+
         participant.classList.add('d-flex')
         if (direction == 'rtl') {
             participant.classList.add('flex-row-reverse')
@@ -431,7 +781,7 @@ let editing_mode = false;
                 var scorePoint = 0
 
                 let is_final_match = false
-                if (tournament_type == 3) {
+                if (parseInt(tournament.type) == 3) {
                     is_final_match = (parseInt(bracket.knockout_final)) ? true : false;
                 } else {
                     is_final_match = (parseInt(bracket.final_match)) ? true : false;
@@ -482,7 +832,7 @@ let editing_mode = false;
 
                 // Check if vote history is existing
                 let storage_key = 'vote_t' + tournament_id + '_n' + bracket.roundNo + '_b' + bracket.id
-                if (tournament_type == 3 && parseInt(bracket.final_match)) {
+                if (parseInt(tournament.type) == 3 && parseInt(bracket.final_match)) {
                     storage_key = 'vote_t' + tournament_id + '_n' + bracket.roundNo + '_b' + bracket.next_id
                 }
 
@@ -491,7 +841,7 @@ let editing_mode = false;
                     teams[team_index].voted = true
                 }
 
-                if (tournament_type == 3 && bracket.knockout_final) {
+                if (parseInt(tournament.type) == 3 && bracket.knockout_final) {
                     teams[team_index].voted = true
                 }
                 
@@ -499,7 +849,7 @@ let editing_mode = false;
                 if (parseInt(bracket.win_by_host) || teams[team_index].voted) {
                     voteBtnAvailable = false
                 }
-                if ((tournament_type != 3 && parseInt(bracket.final_match) == 1) || (tournament_type == 3 && parseInt(bracket.knockout_final) == 1)) {
+                if ((parseInt(tournament.type) != 3 && parseInt(bracket.final_match) == 1) || (parseInt(tournament.type) == 3 && parseInt(bracket.knockout_final) == 1)) {
                     voteBtnAvailable = false
                 }
                 if ( (votingMechanism == votingMechanismMaxVoteCode) && !(maxVoteCount > 0 && teams[team_index].votes_in_round < maxVoteCount) ) {
@@ -556,7 +906,7 @@ let editing_mode = false;
             success: function (result) {
                 result = JSON.parse(result);
                 if (result.length > 0) {
-                    if (tournament_type == 3) {
+                    if (parseInt(tournament.type) == KNOCKOUT_TOURNAMENT_TYPE) {
                         let list_1 = []
                         let list_2 = []
                         let knockout_final
@@ -611,6 +961,11 @@ let editing_mode = false;
                         $('#brackets').append(left_wrapper, center_wrapper, right_wrapper)
                         adjustBracketsStyles(document.getElementById('left_wrapper'))
                         adjustBracketsStyles(document.getElementById('right_wrapper'))
+                    } else if (parseInt(tournament.type) == 4) {
+                        renderFFABrackets(result);
+                        // $('#brackets').html(brackets);
+                        
+                        // adjustBracketsStyles(document.getElementById('brackets'))
                     } else {
                         let brackets = renderBrackets(result);
                         $('#brackets').html(brackets);
@@ -707,7 +1062,7 @@ let editing_mode = false;
         if (next_bracketObj.parentElement.parentElement.classList.contains('final')) {
             is_final = true
         }
-        if (tournament_type == 3 && next_bracketObj.parentElement.classList.contains('knockout-final')) {
+        if (parseInt(tournament.type) == 3 && next_bracketObj.parentElement.classList.contains('knockout-final')) {
             is_final = true
         }
 
@@ -719,7 +1074,7 @@ let editing_mode = false;
             success: function (result) {
                 let final_win = false
 
-                if (tournament_type == 3) {
+                if (parseInt(tournament.type) == 3) {
                     if (next_bracketObj.parentElement.classList.contains('knockout-final')) {
                         final_win = true
                     }
@@ -1186,7 +1541,7 @@ function scrollToMiddle(element) {
 
     // Calculate the middle position
     let middle = 0
-    if (tournament_type == 3) {
+    if (parseInt(tournament.type) == 3) {
         middle = element.scrollWidth / 2 - container.offsetWidth / 2
     } else {
         middle = element.scrollWidth

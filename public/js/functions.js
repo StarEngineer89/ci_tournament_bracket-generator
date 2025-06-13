@@ -649,6 +649,7 @@ var changeEliminationType = (element) => {
     parent.find('.form-text').addClass('d-none');
     parent.find('.form-text').removeClass('text-content');
     parent.find('.elimination-type-update-note').html('')
+    document.getElementById('FFA_Option').classList.add('d-none')
 
     if ($(element).val() == 1) {
         parent.find('.single-type-hint').removeClass('d-none');
@@ -661,6 +662,25 @@ var changeEliminationType = (element) => {
     if ($(element).val() == 3) {
         parent.find('.knockout-type-hint').removeClass('d-none');
         parent.find('.knockout-type-hint').addClass('text-content');
+    }
+
+    if ($(element).val() == 4) {
+        parent.find('.ffa-type-hint').removeClass('d-none');
+        parent.find('.ffa-type-hint').addClass('text-content');
+        document.getElementById('FFA_Option').classList.remove('d-none')
+        $('#max_group_size, #advance_count').attr('disabled', false)
+    } else {
+        $('#max_group_size, #advance_count').attr('disabled', true)
+    }
+
+    if ($(element).val() == 5) {
+        parent.find('.round-robbin-type-hint').removeClass('d-none');
+        parent.find('.round-robbin-type-hint').addClass('text-content');
+    }
+
+    if ($(element).val() == 6) {
+        parent.find('.swiss-type-hint').removeClass('d-none');
+        parent.find('.swiss-type-hint').addClass('text-content');
     }
 
     if (typeof actionLogsTable != 'undefined') {

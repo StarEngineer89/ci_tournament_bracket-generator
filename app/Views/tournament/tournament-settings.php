@@ -33,6 +33,38 @@
     </div>
 </div>
 
+<div class="row g-3 ms-2 mb-5 d-none" id="FFA_Option">
+    <div class="d-flex align-items-center">
+        <div class="col-4">
+            <label for="match_group_size" class="col-form-label">Max of group members <span class="text-danger">*</span></label>
+        </div>
+        <div class="col-1">
+            <input type="number" id="max_group_size" name="max_group_size" class="form-control" aria-describedby="matchGroupSizeHelpInline" required>
+        </div>
+        <div class="col-auto ps-3">
+            <span id="matchGroupSizeHelpInline" class="form-text">
+                Max number of participants per match
+            </span>
+        </div>
+    </div>
+    <div class="d-flex align-items-center">
+        <div class="col-4">
+            <label for="advance_count" class="col-form-label">Advancing Count <span class="text-danger">*</span></label>
+        </div>
+        <div class="col-1">
+            <input type="number" id="advance_count" name="advance_count" class="form-control" aria-describedby="matchGroupSizeHelpInline" required>
+        </div>
+        <div class="col-auto ps-3">
+            <span id="matchGroupSizeHelpInline" class="form-text">
+                Count of participants advancing
+            </span>
+        </div>
+    </div>
+</div>
+<div class="row g-3 ms-2 mb-5 align-items-center d-none" id="FFA_Option">
+
+</div>
+
 <div class="input-group mb-3">
     <span class="input-group-text" id="theme">Theme</span>
     <select class="form-select" id="tournamentTheme" name="theme" aria-label="Theme" onchange="changeTournamentTheme(this)" required>
@@ -42,7 +74,7 @@
         <option value="<?= TOURNAMENT_THEME_GRIDIRON ?>">Gridiron</option>
         <option value="<?= TOURNAMENT_THEME_MODERNMETAL ?>">Modern Metal</option>
     </select>
-    <div class="tournament-theme-settings-hints">
+    <div class="tournament-theme-settings-hints ms-2">
         <div class="theme-classic-hint form-text ps-md-3"><?= lang('Descriptions.tournamentThemeClassicDesc') ?></div>
         <div class="theme-champion-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeChampionDesc') ?></div>
         <div class="theme-darkroyale-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeDarkroyaleDesc') ?></div>
@@ -111,7 +143,7 @@
         <div class="col-auto">
             <select class="form-select" id="evaluationMethod" name="evaluation_method" aria-label="Evaluation Method" onchange="changeEvaluationMethod(this)" required>
                 <option value="<?= EVALUATION_METHOD_MANUAL ?>" selected>Manual</option>
-                <option value="<?= EVALUATION_METHOD_VOTING  ?>">Voting</option>
+                <option value="<?= EVALUATION_METHOD_VOTING ?>">Voting</option>
             </select>
         </div>
         <div class="read-more-container">
@@ -129,7 +161,7 @@
             <div class="col-auto">
                 <select class="form-select" id="votingAccessbility" name="voting_accessibility" aria-label="voting Accessibility" onchange="changeVotingAccessbility(this)" required>
                     <option value="<?= EVALUATION_VOTING_RESTRICTED ?>" selected>Restricted</option>
-                    <option value="<?= EVALUATION_VOTING_UNRESTRICTED  ?>">Unrestricted</option>
+                    <option value="<?= EVALUATION_VOTING_UNRESTRICTED ?>">Unrestricted</option>
                 </select>
             </div>
             <div class="read-more-container">
@@ -145,8 +177,8 @@
             <div class="col-auto">
                 <select class="form-select" id="votingMechanism" name="voting_mechanism" aria-label="Voting Mechanism" onchange="changeVotingMechanism(this)" required>
                     <option value="<?= EVALUATION_VOTING_MECHANISM_ROUND ?>" selected>Round Duration</option>
-                    <option value="<?= EVALUATION_VOTING_MECHANISM_MAXVOTE  ?>">Max Votes</option>
-                    <option value="<?= EVALUATION_VOTING_MECHANISM_OPENEND  ?>">Open-Ended</option>
+                    <option value="<?= EVALUATION_VOTING_MECHANISM_MAXVOTE ?>">Max Votes</option>
+                    <option value="<?= EVALUATION_VOTING_MECHANISM_OPENEND ?>">Open-Ended</option>
                 </select>
             </div>
             <div class="read-more-container">

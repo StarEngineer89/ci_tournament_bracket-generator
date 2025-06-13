@@ -9,7 +9,7 @@ class TournamentController extends BaseController
 {
     public function index()
     {
-        $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') :'all';
+        $navActive = ($this->request->getGet('filter')) ? $this->request->getGet('filter') : 'all';
         $searchString = $this->request->getGet('query');
 
         $table = view('tournament/list', ['navActive' => $navActive, 'searchString' => $searchString, 'shareType' => $this->request->getGet('type')]);
@@ -30,10 +30,10 @@ class TournamentController extends BaseController
     public function create()
     {
         $userSettingModel = model('\App\Models\UserSettingModel');
-        
+
         // Convert settings to key-value array
         $settingsArray = [];
-        if( auth()->user() ){
+        if (auth()->user()) {
             $userSettings = $userSettingModel->where('user_id', auth()->user()->id)->findAll();
             if (count($userSettings)) {
                 foreach ($userSettings as $setting) {
@@ -72,9 +72,9 @@ class TournamentController extends BaseController
         $shareSettingsModel = model('\App\Models\ShareSettingsModel');
 
         $session = \Config\Services::session();
-        
+
         $userSettingService = service('userSettings');
-        
+
         $tournament = $tournamentModel->find($id);
 
         if (!$tournament) {
@@ -87,7 +87,7 @@ class TournamentController extends BaseController
         $created_by = auth()->getProvider()->findById($tournament['user_id']);
 
         $tournament['created_by'] = $created_by;
-        
+
         if (!$tournament) {
             $session = \Config\Services::session();
             $session->setFlashdata(['error' => "This tournament doesn't exist!"]);
@@ -112,7 +112,7 @@ class TournamentController extends BaseController
         }
 
         $hosted_by_this = true;
-        if($tournament['user_id'] == 0){
+        if ($tournament['user_id'] == 0) {
             $hosted_by_this = false;
             $existingHistory = $this->request->getCookie('guest_tournaments');
             $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
@@ -141,8 +141,8 @@ class TournamentController extends BaseController
             $editable = true;
             $votingBtnEnabled = true;
         }
-        
-        if($tournament['user_id'] == 0 && $hosted_by_this){
+
+        if ($tournament['user_id'] == 0 && $hosted_by_this) {
             $editable = true;
             $votingBtnEnabled = true;
         }
@@ -183,7 +183,7 @@ class TournamentController extends BaseController
         }
 
         $brackets = $bracketModel->where('tournament_id', $id)->findAll();
-        
+
         if (!$brackets) {
             if (auth()->user() && $tournament['user_id'] != auth()->user()->id) {
                 $session = \Config\Services::session();
@@ -194,7 +194,7 @@ class TournamentController extends BaseController
 
             $settingsBlock = view('tournament/tournament-settings', []);
             $audioSettingsBlock = view('tournament/audio-setting', []);
-            $audioSettings = $audioSettingModel->where(['tournament_id' => $id])->whereIn('type', [AUDIO_TYPE_BRACKET_GENERATION, AUDIO_TYPE_BRACKET_GENERATION_VIDEO])->orderBy('type','asc')->findAll();
+            $audioSettings = $audioSettingModel->where(['tournament_id' => $id])->whereIn('type', [AUDIO_TYPE_BRACKET_GENERATION, AUDIO_TYPE_BRACKET_GENERATION_VIDEO])->orderBy('type', 'asc')->findAll();
             if ($audioSettings) {
                 $audios = [];
                 foreach ($audioSettings as $audio) {
@@ -203,7 +203,7 @@ class TournamentController extends BaseController
 
                 $tournament['audio'] = $audios;
             }
-            
+
             $userSettings = $userSettingModel->where('user_id', $user_id)->findAll();
 
             // Convert settings to key-value array
@@ -217,7 +217,7 @@ class TournamentController extends BaseController
             return view('tournament/create', ['tournament' => $tournament, 'users' => $users, 'settingsBlock' => $settingsBlock, 'audioSettingsBlock' => $audioSettingsBlock, 'userSettings' => $settingsArray]);
         }
 
-        $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        $audioSettings = $audioSettingModel->where(['tournament_id' => $id, 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type', 'asc')->findAll();
         $tournament['win_audio_enabled'] = 0;
         if ($audioSettings) {
             foreach ($audioSettings as $aSetting) {
@@ -233,32 +233,32 @@ class TournamentController extends BaseController
         }
 
         if ($tournament['type'] == TOURNAMENT_TYPE_SINGLE) {
-            $tournament['type'] = "Single";
+            $tournament['type_name'] = "Single";
         }
-        
+
         if ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE) {
-            $tournament['type'] = "Double";
+            $tournament['type_name'] = "Double";
         }
-        
+
         if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
-            $tournament['type'] = "Knockout";
+            $tournament['type_name'] = "Knockout";
         }
-        
+
         if ($tournament['type'] == TOURNAMENT_TYPE_FFA) {
-            $tournament['type'] = "Free For All (FFA) ";
+            $tournament['type_name'] = "Free For All (FFA) ";
         }
-        
+
         if ($tournament['type'] == TOURNEMENT_TYPE_RROBIN) {
-            $tournament['type'] = "Round Robin";
+            $tournament['type_name'] = "Round Robin";
         }
-        
+
         if ($tournament['type'] == TOURNEMENT_TYPE_SWISS) {
-            $tournament['type'] = "Swiss";
+            $tournament['type_name'] = "Swiss";
         }
-        
+
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'audioSettings' => $audioSettings, 'editable' => $editable, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'page' => 'view']);
     }
-    
+
     public function viewShared($token)
     {
         $shareSettingModel = model('\App\Models\ShareSettingsModel');
@@ -272,14 +272,14 @@ class TournamentController extends BaseController
 
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
-        $settings = $shareSettingModel->where(['token'=> $token])->first();
+        $settings = $shareSettingModel->where(['token' => $token])->first();
         if (!$settings) {
             return view('bracket-invisible');
-        }else{
-            if($settings['user_id'] == 0 && (time() - strtotime($settings['created_at'])) > 24*60*60){
+        } else {
+            if ($settings['user_id'] == 0 && (time() - strtotime($settings['created_at'])) > 24 * 60 * 60) {
                 $session = \Config\Services::session();
                 $session->setFlashdata(['error' => "This link has been expired!"]);
-                $shareSettingModel->where(['token'=> $token])->delete();
+                $shareSettingModel->where(['token' => $token])->delete();
                 $tournamentModel->where(['tournament_id' => $settings['tournament_id']])->delete();
 
                 return redirect()->to('/gallery');
@@ -295,11 +295,11 @@ class TournamentController extends BaseController
         $created_by = auth()->getProvider()->findById($tournament['user_id']);
 
         $tournament['created_by'] = $created_by;
-        
+
         if (!auth()->user() && !$tournament['visibility']) {
             return view('bracket-invisible', ['tournament' => $tournament, 'created_by' => $created_by]);
         }
-        
+
         $brackets = $bracketModel->where('tournament_id', $settings['tournament_id'])->findAll();
 
         $shareAccessModel = model('\App\Models\TournamentShareAccessLogModel');
@@ -308,7 +308,7 @@ class TournamentController extends BaseController
         } else {
             //$shareAccessModel->insert(['share_id' => $settings['id'], 'user_id' => 0]);
         }
-        
+
         /** Check if the user has the editable permission */
         $editable = false;
         if ($settings['permission'] == SHARE_PERMISSION_EDIT) {
@@ -320,7 +320,7 @@ class TournamentController extends BaseController
                 $editable = true;
             }
         }
-        
+
         /** 
          * Check if vote is available 
          */
@@ -342,7 +342,7 @@ class TournamentController extends BaseController
                 $votingBtnEnabled = true;
             }
 
-            
+
             if ($tournament['status'] == TOURNAMENT_STATUS_COMPLETED) {
                 $votingBtnEnabled = false;
             }
@@ -356,7 +356,7 @@ class TournamentController extends BaseController
             return redirect()->to('/tournaments');
         }
 
-        $audioSettings = $audioSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type','asc')->findAll();
+        $audioSettings = $audioSettingModel->where(['tournament_id' => $settings['tournament_id'], 'type' => AUDIO_TYPE_FINAL_WINNER])->orderBy('type', 'asc')->findAll();
         $tournament['win_audio_enabled'] = 0;
         if ($audioSettings) {
             foreach ($audioSettings as $aSetting) {
@@ -370,7 +370,7 @@ class TournamentController extends BaseController
         if (!$tournament['vote_displaying']) {
             $tournament['vote_displaying'] = 'n';
         }
-        
+
         /** Fetch the user list for the actions "Change Participant/Add Participant */
         $users = auth()->getProvider()->limit(5)->findAll();
         //Filter the registered users allow the invitations
@@ -388,29 +388,29 @@ class TournamentController extends BaseController
         }
 
         if ($tournament['type'] == TOURNAMENT_TYPE_SINGLE) {
-            $tournament['type'] = "Single";
+            $tournament['type_name'] = "Single";
         }
-        
+
         if ($tournament['type'] == TOURNAMENT_TYPE_DOUBLE) {
-            $tournament['type'] = "Double";
+            $tournament['type_name'] = "Double";
         }
-        
+
         if ($tournament['type'] == TOURNAMENT_TYPE_KNOCKOUT) {
-            $tournament['type'] = "Knockout";
+            $tournament['type_name'] = "Knockout";
         }
-        
+
         if ($tournament['type'] == TOURNAMENT_TYPE_FFA) {
-            $tournament['type'] = "Free For All (FFA) ";
+            $tournament['type_name'] = "Free For All (FFA) ";
         }
-        
+
         if ($tournament['type'] == TOURNEMENT_TYPE_RROBIN) {
-            $tournament['type'] = "Round Robin";
+            $tournament['type_name'] = "Round Robin";
         }
-        
+
         if ($tournament['type'] == TOURNEMENT_TYPE_SWISS) {
-            $tournament['type'] = "Swiss";
+            $tournament['type_name'] = "Swiss";
         }
-        
+
         return view('brackets', ['brackets' => $brackets, 'tournament' => $tournament, 'users' => $users, 'settings' => $settings, 'audioSettings' => $audioSettings, 'votingEnabled' => $votingEnabled, 'votingBtnEnabled' => $votingBtnEnabled, 'editable' => $editable, 'page' => 'view']);
     }
 
@@ -420,28 +420,28 @@ class TournamentController extends BaseController
         $tournamentMembers = model('\App\Models\TournamentMembersModel');
         $shareSettingsModel = model('App\Models\ShareSettingsModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
-        
+
         if ($this->request->getGet('filter') == 'shared') {
             $tournaments = $shareSettingsModel->tournamentDetails();
-            
+
             if ($this->request->getGet('query')) {
                 $searchString = $this->request->getGet('query');
                 $tournaments->like(['tournaments.searchable' => $searchString]);
             }
-            
+
             if ($this->request->getGet('type') == 'wh') {
                 $tournaments->groupStart();
                 $tournaments->whereIn('share_settings.target', [SHARE_TO_EVERYONE, SHARE_TO_PUBLIC]);
                 $tournaments->orLike('share_settings.users', strval(auth()->user()->id));
                 $tournaments->groupEnd();
                 $tempRows = $tournaments->findAll();
-                
+
                 $tournaments = [];
                 $access_tokens = [];
                 if ($tempRows) {
                     foreach ($tempRows as $tempRow) {
                         $user_ids = $tempRow['users'] ? explode(',', $tempRow['users']) : null;
-                        
+
                         $add_in_list = false;
                         if ($tempRow['target'] == SHARE_TO_USERS && in_array(auth()->user()->id, $user_ids)) {
                             $add_in_list = true;
@@ -486,7 +486,7 @@ class TournamentController extends BaseController
                 $searchString = $this->request->getGet('query');
                 $tournaments->like(['searchable' => $searchString]);
             }
-            
+
             $tournaments = $tournaments->findAll();
         }
 
@@ -518,7 +518,7 @@ class TournamentController extends BaseController
 
             if ($this->request->getGet('filter') == 'shared') {
                 $createdTime = convert_to_user_timezone($tournament['access_time'], user_timezone(auth()->user()->id));
-                
+
                 if ($this->request->getGet('type') == 'wh') {
                     if ($tournament['permission'] == SHARE_PERMISSION_EDIT) {
                         $tournament['permission'] = 'Can Edit';
@@ -559,7 +559,7 @@ class TournamentController extends BaseController
                 $sharedTournament = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
                 $public_url = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
                 $createdTime = convert_to_user_timezone($tournament['created_at'], user_timezone(auth()->user()->id));
-                
+
                 $user = $userModel->find($tournament['user_id']);
                 $username = ($user) ? $user->username : 'Guest';
 
@@ -584,7 +584,8 @@ class TournamentController extends BaseController
         exit;
     }
 
-    public function exportGallery(){
+    public function exportGallery()
+    {
         $tournamentModel = model('\App\Models\TournamentModel');
         $participantModel = model('\App\Models\ParticipantModel');
         $userModel = model('CodeIgniter\Shield\Models\UserModel');
@@ -613,7 +614,7 @@ class TournamentController extends BaseController
 
             $sharedTournament = $shareSettingsModel->where(['tournament_id' => $tournament['id'], 'target' => SHARE_TO_PUBLIC])->orderBy('created_at', 'DESC')->first();
             $public_url = ($sharedTournament) ? base_url('/tournaments/shared/') . $sharedTournament['token'] : '';
-            
+
             $tournamentId = ($tournament['tournament_id']) ?? $tournament['id'];
 
             $user = $userModel->find($tournament['user_id']);
@@ -649,7 +650,7 @@ class TournamentController extends BaseController
     {
         // Validate the input
         $validation = \Config\Services::validation();
-        
+
         $validation->setRules([
             'name' => 'required',
             'participation_mode' => 'required',

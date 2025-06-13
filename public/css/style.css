@@ -775,7 +775,8 @@ a.disabled {
   height: 320px;
 }
 
-.brackets .groups>div {
+.brackets .round-names > div,
+.brackets .groups > div {
   width: 240px;
 }
 
@@ -886,6 +887,26 @@ a.disabled {
   right: -50%;
 }
 
+.brackets.ffa .bracketbox .participants {
+  height: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: none;
+}
+.brackets.ffa > div .bracket-team {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.brackets.ffa div.bracketbox .bracket-border-line {
+  border: none;
+}
+.brackets.ffa .r1 div.bracketbox span.bracketNo {
+  top: inherit;
+  border-radius: 100%;
+  height: 25px;
+  padding: 0;
+}
 @keyframes fadeInUp {
   0% {
     transform: translate(0px, 100px);

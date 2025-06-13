@@ -334,7 +334,9 @@ class TournamentController extends BaseController
             'allow_host_override' => ($this->request->getPost('allow_host_override') == 'on') ? 1 : 0,
             'pt_image_update_enabled' => ($this->request->getPost('pt_image_update_enabled') == 'on') ? 1 : 0,
             'theme' => $this->request->getPost('theme'),
-            'winner_audio_everyone' => ($this->request->getPost('winner_audio_everyone') == 'on') ? 1 : null
+            'winner_audio_everyone' => ($this->request->getPost('winner_audio_everyone') == 'on') ? 1 : null,
+            'max_group_size' => $this->request->getPost('max_group_size'),
+            'advance_count' => $this->request->getPost('advance_count'),
         ];
 
         if ($this->request->getPost('availability')) {
@@ -482,6 +484,11 @@ class TournamentController extends BaseController
         }
         if ($this->request->getPost('type')) {
             $tournament['type'] = $this->request->getPost('type');
+
+            if ($tournament['type'] == TOURNAMENT_TYPE_FFA) {
+                $tournament['max_group_size'] = $this->request->getPost('max_group_size');
+                $tournament['advance_count'] = $this->request->getPost('advance_count');
+            }
         }
         if ($this->request->getPost('description')) {
             $tournament['description'] = $this->request->getPost('description');
