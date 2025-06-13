@@ -263,6 +263,11 @@ class TournamentController extends BaseController
         $tournamentHistory = $existingHistory ? json_decode($existingHistory, true) : [];
 
         foreach ($tournaments as $tournament) {
+            /* Check if participants added */
+            if (!$this->tournamentMembersModel->where('tournament_id', $tournament['id'])->findAll()) {
+                continue;
+            }
+
             $temp = $tournament;
 
             $temp['username'] = 'Guest User';
