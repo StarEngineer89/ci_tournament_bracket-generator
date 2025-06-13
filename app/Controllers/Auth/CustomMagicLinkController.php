@@ -17,10 +17,11 @@ use SendGrid\Mail\Mail;
 
 class CustomMagicLinkController extends MagicLinkController
 {
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
-    
+
     /**
      * Receives the email from the user, creates the hash
      * to a user identity, and sends an email to the given
@@ -30,19 +31,25 @@ class CustomMagicLinkController extends MagicLinkController
      */
     public function loginAction()
     {
-        if (! setting('Auth.allowMagicLinkLogins')) {
+        /* Check if the user already loggedin */
+        if (auth()->user()) {
+            session()->setTempdata('welcome_message', 'Welcome, ' . auth()->user()->username . '!');
+            return redirect()->to('/');
+        }
+
+        if (!setting('Auth.allowMagicLinkLogins')) {
             return redirect()->route('login')->with('error', lang('Auth.magicLinkDisabled'));
         }
 
         // Validate email format
         $rules = $this->getValidationRules();
-        if (! $this->validateData($this->request->getPost(), $rules, [], config('Auth')->DBGroup)) {
+        if (!$this->validateData($this->request->getPost(), $rules, [], config('Auth')->DBGroup)) {
             return redirect()->route('magic-link')->with('errors', $this->validator->getErrors());
         }
 
         // Check if the user exists
         $email = $this->request->getPost('email');
-        $user  = $this->provider->findByCredentials(['email' => $email]);
+        $user = $this->provider->findByCredentials(['email' => $email]);
 
         if ($user === null) {
             return redirect()->route('magic-link')->with('error', lang('Auth.invalidEmail'));
@@ -60,8 +67,8 @@ class CustomMagicLinkController extends MagicLinkController
 
         $identityModel->insert([
             'user_id' => $user->id,
-            'type'    => Session::ID_TYPE_MAGIC_LINK,
-            'secret'  => $token,
+            'type' => Session::ID_TYPE_MAGIC_LINK,
+            'secret' => $token,
             'expires' => Time::now()->addSeconds(setting('Auth.magicLinkLifetime')),
         ]);
 
@@ -81,11 +88,11 @@ class CustomMagicLinkController extends MagicLinkController
             ['token' => $token, 'username' => $username, 'sendername' => $sendername],
             ['debug' => false]
         ));
-        
+
         if ($email->send(false) === false) {
             return redirect()->route('magic-link')->with('error', lang('Auth.unableSendEmailToUser', [$user->email]));
         }
-        
+
         return $this->displayMessage();
     }
 }

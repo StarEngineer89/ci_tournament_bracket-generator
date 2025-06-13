@@ -16,6 +16,12 @@ class LoginController extends ShieldLogin
 
     public function loginAction(): RedirectResponse
     {
+        /* Check if the user already loggedin */
+        if (auth()->user()) {
+            session()->setTempdata('welcome_message', 'Welcome, ' . auth()->user()->username . '!');
+            return redirect()->to('/');
+        }
+
         $result = parent::loginAction();
 
         if (auth()->user()) {
