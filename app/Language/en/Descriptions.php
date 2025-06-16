@@ -4,6 +4,15 @@ return [
     'tournamentSingleTypeDesc' => 'During a Single Elimination tournament, a single loss means that the competitor is eliminated and has no more matches to play. The tournament will naturally conclude with a Grand Final between the two remaining undefeated participants.',
     'tournamentDoubleTypeDesc' => 'A Double Elimination tournament allows each competitor to be eliminated twice. The tournament is generated with the brackets duplicated.',
     'tournamentKockoutTypeDesc' => 'A Knockout Bracket/Stage is a typical single-elimination bracket. It showcases a mirrored tree of participants converging to the final stage, in the center, in which the winner is determined.',
+    'tournamentFFAMaxGroupSizeDesc' => "
+            Max number of participants per match (group). The system will automatically divide participants into groups based on this value.<br />
+            In case the number of participants doesn’t divide evenly, the system will try to adjust group sizes for fairness. <br />
+            For example, if you set the max group size to 5 and have 11 participants, the group size may be reduced to 4 to avoid a final group with just 1 player.
+            The goal is to ensure no group is unfairly small or unbalanced, while staying close to your configured limit",
+    'tournamentFFAAdvancingSizeDesc' => "
+            Number of participants who advance from each match (group).<br />
+            This setting controls how many top performers from each group will move on to the next round.<br />
+            For example, if 3 players advance per group and you have 3 groups, then 9 players total will advance.",
     'tournamentThemeClassicDesc' => 'A clean and simple bracket design, perfect for any tournament.',
     'tournamentThemeChampionDesc' => 'Bring a touch of luxury and prestige to your tournament.',
     'tournamentThemeDarkroyaleDesc' => 'A sleek and intense theme for high-stakes competition.',

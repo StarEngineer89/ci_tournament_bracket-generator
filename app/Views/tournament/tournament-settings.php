@@ -41,9 +41,11 @@
         <div class="col-1">
             <input type="number" id="max_group_size" name="max_group_size" class="form-control" aria-describedby="matchGroupSizeHelpInline" required>
         </div>
-        <div class="col-auto ps-3">
-            <span id="matchGroupSizeHelpInline" class="form-text">
-                Max number of participants per match
+    </div>
+    <div class="d-flex align-items-center m-0">
+        <div class="col-12 ps-3 read-more-container">
+            <span id="matchGroupSizeHelpInline" class="form-text text-content">
+                <?= lang('Descriptions.tournamentFFAMaxGroupSizeDesc') ?>
             </span>
         </div>
     </div>
@@ -54,9 +56,11 @@
         <div class="col-1">
             <input type="number" id="advance_count" name="advance_count" class="form-control" aria-describedby="matchGroupSizeHelpInline" required>
         </div>
-        <div class="col-auto ps-3">
+    </div>
+    <div class="d-flex align-items-center m-0">
+        <div class="col-12 ps-3 read-more-container">
             <span id="matchGroupSizeHelpInline" class="form-text">
-                Count of participants advancing
+                <?= lang('Descriptions.tournamentFFAAdvancingSizeDesc') ?>
             </span>
         </div>
     </div>

@@ -669,6 +669,8 @@ var changeEliminationType = (element) => {
         parent.find('.ffa-type-hint').addClass('text-content');
         document.getElementById('FFA_Option').classList.remove('d-none')
         $('#max_group_size, #advance_count').attr('disabled', false)
+        
+        adjustReadMore(document.querySelector('#FFA_Option .read-more-container'))
     } else {
         $('#max_group_size, #advance_count').attr('disabled', true)
     }
