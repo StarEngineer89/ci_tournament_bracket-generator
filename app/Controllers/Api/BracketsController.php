@@ -1154,7 +1154,8 @@ class BracketsController extends BaseController
         $matches = $this->_base / $max_group_size;
 
         if ($byes > 0 && $byes > intval($this->_base / $max_group_size)) {
-            $max_group_size--;
+            $moveCount = intval($byes / intval($this->_base / $max_group_size));
+            $max_group_size = $max_group_size - $moveCount;
         }
 
         $bracket = new \App\Entities\Bracket();
