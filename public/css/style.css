@@ -648,7 +648,8 @@ a.disabled {
   font-size: 0.85em;
   min-height: 40px;
 }
-.brackets span.score {
+.brackets span.score,
+.brackets span.ranking {
   font-size: 0.85em;
   padding: 1px 5px 0;
   background: #fad684;
@@ -712,7 +713,26 @@ a.disabled {
 .brackets .vote-btn:active {
   top: 1px;
 }
-
+.brackets span.ranking {
+  background-color: #17b875;
+}
+.brackets span.ranking:after {
+  content: 'ranking';
+  display: table-caption;
+  line-height: 12px;
+  font-size: 0.8em;
+}
+.brackets span.ranking.editing {
+  padding: 0;
+  background: none;
+}
+.brackets span.ranking.editing::after {
+  content: '';
+}
+.brackets span.ranking select option:disabled {
+  color: #f5f5f5;
+  background-color: #bdbdbd;
+}
 .brackets span.score-wrapper {
   position: absolute;
   right: 0;

@@ -476,16 +476,11 @@ let editing_mode = false;
                 build: function ($triggerElement, e) {
                     let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
                     let items = {}
-                    if (!votingEnabled || ![votingMechanismRoundDurationCode, votingMechanismMaxVoteCode].includes(votingMechanism) || allowHostOverride) {
-                        items.mark = {
-                                name: (!isWinner) ? "🏆 Mark as Winner" : "❌ Unmark as winner",
-                                callback: (key, opt, e) => {
-                                    if (!isWinner)
-                                        markWinner(key, opt, e)
-                                    else
-                                        unmarkWinner(key, opt, e)
-                                },
-                        }
+                    items.mark = {
+                        name: "🏆 Set Ranking",
+                        callback: (key, opt, e) => {
+                            setRanking(key, opt, e)
+                        },
                     }
 
                     items.change = {
@@ -871,6 +866,14 @@ let editing_mode = false;
 
                     wrapper.appendChild(voteBtn)
                 }
+            }
+
+            if ( parseInt( tournament.type ) == 4 )
+            {
+                var rankingSpan = document.createElement('span')
+                rankingSpan.classList.add('ranking')
+                rankingSpan.textContent = teams[ team_index ].ranking ?? "-"
+                wrapper.appendChild(rankingSpan)
             }
 
             participant.appendChild(wrapper)
@@ -1674,4 +1677,74 @@ let adjustRoundCountdown = () => {
             }
         }, 1000);
     });
+}
+
+let setRanking = ( key, opt, e ) =>
+{
+    const bracketId = parseInt( opt.$trigger.data( 'bracket' ) )
+    const participantId = parseInt( opt.$trigger.data( 'id' ) )
+    const roundNo = parseInt( opt.$trigger.data( 'round' ) )
+    
+    opt.$trigger.find( '.ranking' ).addClass( 'editing' )
+    
+    // Create the select element
+    const selectElement = document.createElement('select');
+    selectElement.className = 'form-select form-select';
+
+    // Add options to the select element (you can customize these)
+    let options = ['-'];
+    let existingRankings = [];
+    opt.$trigger.parent().children().each((index, ele) => {
+        options.push( index + 1 )
+        
+        if ( ele.querySelector('.ranking').textContent != '-' )
+        {
+            existingRankings.push( parseInt(ele.querySelector('.ranking').textContent) );
+        }
+    } )
+    
+    options.forEach(optionValue => {
+        const option = document.createElement('option');
+        option.value = optionValue;
+        option.textContent = optionValue;
+
+        if ( existingRankings.includes( optionValue ) )
+        {
+            option.disabled = true;
+        }
+
+        selectElement.appendChild(option);
+    });
+
+    // Find the .ranking span and replace its content with the select element
+    const rankingSpan = opt.$trigger.find( '.ranking' )[0];
+    if (rankingSpan) {
+        rankingSpan.textContent = ''; // Clear existing content
+        rankingSpan.appendChild(selectElement);
+    }
+
+    selectElement.addEventListener('change', (e) => {
+        $.ajax({
+            type: "POST",
+            url: apiURL + '/brackets/save-ranking',
+            data: {'tournament_id': parseInt(tournament.id), 'bracket_id': bracketId, 'participant_id': participantId, 'roundNo': roundNo, 'ranking': parseInt(e.target.value)},
+            success: function (result) {
+                if (result.status == 'error') {
+                    $('#errorModal .errorDetails').html(result.errors.file)
+                    $("#errorModal").modal('show');
+
+                    return false
+                }
+
+                loadBrackets()
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }).done(() => {
+            setTimeout(function () {
+                $("#overlay").fadeOut(300);
+            }, 500);
+        });
+    })
 }

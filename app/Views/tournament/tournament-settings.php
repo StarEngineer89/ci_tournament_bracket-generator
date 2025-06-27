@@ -233,7 +233,7 @@
     </div>
 </div>
 
-<div class="scoring-settings form-check mb-3 pb-3">
+<div class="scoring-settings border-bottom form-check mb-3 pb-3">
     <div class="ps-2">
         <input type="checkbox" class="form-check-input" name="score_enabled" id="enableScoreOption" onChange="toggleScoreOption(this)" checked>
         <label class="form-check-label" for="enableScoreOption">
@@ -278,6 +278,38 @@
                 <div class="plus text-content"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></div>
                 <div class="multiply d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="manage-metrics border-bottom mb-3">
+    <div class="form-check mb-3">
+        <div class="ps-2">
+            <input type="checkbox" class="form-check-input" name="allow_participant_match_metrics" id="allowParticipantMatchMetrics" onChange="toggleAllowParticipantMatchMetrics(this)" checked>
+            <label class="form-check-label" for="allowParticipantMatchMetrics">
+                <h6>Allow Participants to Manage Match Metrics</h6>
+            </label>
+            <div class="allow-participant-match-metrics-hint form-text"><?= lang('Descriptions.allowParticipantMatchMetrics') ?></div>
+        </div>
+    </div>
+
+    <div class="form-check mb-3">
+        <div class="ps-2">
+            <input type="checkbox" class="form-check-input" name="allow_host_match_metrics" id="allowHostMatchMetrics" onChange="toggleAllowHostMatchMetrics(this)" checked>
+            <label class="form-check-label" for="allowHostMatchMetrics">
+                <h6>Allow Organizer/Host to Manage Match Metrics</h6>
+            </label>
+            <div class="allow-host-match-metrics-hint form-text"><?= lang('Descriptions.allowHostMatchMetrics') ?></div>
+        </div>
+    </div>
+
+    <div class="form-check mb-3">
+        <div class="ps-2">
+            <input type="checkbox" class="form-check-input" name="allow_metric_edits" id="allowMetricEdits" onChange="toggleAllowMetricEdits(this)" checked>
+            <label class="form-check-label" for="allowMetricEdits">
+                <h6>Allow Metric Edits After Submission</h6>
+            </label>
+            <div class="allow-metric-edits-hint form-text"><?= lang('Descriptions.allowMetricEdits') ?></div>
         </div>
     </div>
 </div>
