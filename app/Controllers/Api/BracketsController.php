@@ -56,15 +56,15 @@ class BracketsController extends BaseController
         $roundSettings = [];
         
         if (count($brackets) > 0) {
-            foreach ($brackets as $bracket) {
+            foreach ($brackets as $bracket) {              
+                $r_list = [];
                 $round_no = $bracket['roundNo'];
                 for ($r = 1; $r <= $round_no; $r++) {
                     $r_list[] = $r;
                 }
 
                 /** Get the counts of votes and assign to the teamnames */
-                $teams = json_decode($bracket['teamnames'], true);                
-                $r_list = [];
+                $teams = json_decode($bracket['teamnames'], true);  
                 if ($teams) {
                     $array = [];
                     foreach ($teams as $index => $team) {
