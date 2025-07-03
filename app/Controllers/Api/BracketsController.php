@@ -718,6 +718,9 @@ class BracketsController extends BaseController
         /** Remove vote history */
         $this->votesModel->where(['tournament_id' => $tournament_id])->delete();
 
+        /** Remove rankings */
+        $this->rankingsModel->where(['tournament_id'=> $tournament_id])->delete();
+
         /**
          * Log User Actions to update brackets such as Mark as Winner, Add Participant, Change Participant, Delete Bracket.
          */
@@ -1137,16 +1140,20 @@ class BracketsController extends BaseController
             $participants[] = null;
         }
 
+        $lastBracket = $this->bracketsModel->asObject()->where('tournament_id', $this->request->getPost('tournament_id'))->orderBy('bracketNo','DESC')->first();
+
         $brackets = array();
         $round = 1;
-        $bracketNo = 0;
+        $bracketNo = $lastBracket ? $lastBracket->bracketNo : 0;
         $countInRound = 0;
         $matches = $this->_base / $max_group_size;
 
         if ($byes > 0 && $byes > intval($this->_base / $max_group_size)) {
             $moveCount = intval($byes / intval($this->_base / $max_group_size));
-            $max_group_size = $max_group_size - $moveCount;
+            $group_size = $max_group_size - $moveCount;
         }
+
+        $nextInc = $this->_base / $group_size;
 
         $bracket = new \App\Entities\Bracket();
         $bracket->tournament_id = $this->request->getPost('tournament_id');
@@ -1154,9 +1161,9 @@ class BracketsController extends BaseController
 
         /* Create the brackets in round 1 */
         while ($matches >= 1) {
-            $teams = array_fill(0, $max_group_size, null);
-            for ($i = 0; $i < $max_group_size; $i++) {
-                $teams[$i] = ($round == 1) ? $participants[$bracketNo * $max_group_size + $i] : null;
+            $teams = array_fill(0, $group_size, null);
+            for ($i = 0; $i < $group_size; $i++) {
+                $teams[$i] = ($round == 1) ? $participants[$bracketNo * $group_size + $i] : null;
             }
 
             $bracketNo++;
@@ -1178,15 +1185,21 @@ class BracketsController extends BaseController
             if ($countInRound == $matches) {
                 $round++;
                 $countInRound = 0;
+                $group_size = $max_group_size;
 
                 $this->_base = $matches * $advanceCount;
 
-                $closest = ceil($this->_base / $max_group_size) * $max_group_size;
+                $closest = ceil($this->_base / $group_size) * $group_size;
                 $byes = $closest - $this->_base;
                 if ($byes > 0)
                     $this->_base = $closest;
 
-                $matches = $this->_base / $max_group_size;
+                $matches = $this->_base / $group_size;
+                
+                if ($byes > 0 && $byes > intval($this->_base / $group_size)) {
+                    $moveCount = intval($byes / intval($this->_base / $group_size));
+                    $group_size = $group_size - $moveCount;
+                }
             }
         }
 
@@ -1279,6 +1292,15 @@ class BracketsController extends BaseController
 
             $this->rankingsModel->save($rankingEntity);
 
+            $tournamentObj = $this->tournamentsModel->asObject()->find($tournament_id);
+            $advance_count = intval($tournamentObj->advance_count);
+            $advanceParticipants = $this->rankingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->where('ranking <', $advance_count + 1)->findAll();
+            $brackets = $this->bracketsModel->where(['tournament_id' => $tournament_id, 'roundNo' => $round_no])->findAll();
+
+            if (count($advanceParticipants) == count($brackets) * $advance_count) {
+                $this->advanceFFABrackets($advanceParticipants);
+            }
+            
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                                     ->setJSON(['status' => 'success']);
         }
@@ -1286,5 +1308,28 @@ class BracketsController extends BaseController
         // If not an AJAX request, return a 403 error
         return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
                               ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+
+    public function advanceFFABrackets($participants) {
+        $tournament_id = $this->request->getPost('tournament_id');
+        $round_no = $this->request->getPost('roundNo');
+
+        $nextBrackets = $this->bracketsModel->asObject()->where(['tournament_id' => $tournament_id, 'roundNo' => $round_no + 1])->findAll();
+
+        if ($nextBrackets) {
+            foreach ($nextBrackets as $bracket) {
+                $teams = json_decode($bracket->teamnames, true);
+                $members = array_splice($participants, 0, count($teams));
+
+                foreach ($members as $index => $member) {
+                    $teams[$index] = ['id' => $member['participant_id'], 'order'=> 0];
+                }
+
+                $bracket->teamnames = json_encode($teams);
+                $this->bracketsModel->save($bracket);
+            }
+        }
+
+        return true;
     }
 }

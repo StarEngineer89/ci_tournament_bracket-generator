@@ -1697,7 +1697,7 @@ let setRanking = ( key, opt, e ) =>
     opt.$trigger.parent().children().each((index, ele) => {
         options.push( index + 1 )
         
-        if ( ele.querySelector('.ranking').textContent != '-' )
+        if (ele.querySelector('.ranking') && ele.querySelector('.ranking').textContent != '-' )
         {
             existingRankings.push( parseInt(ele.querySelector('.ranking').textContent) );
         }
