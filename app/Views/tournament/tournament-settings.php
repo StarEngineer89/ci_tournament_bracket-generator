@@ -39,7 +39,7 @@
             <label for="match_group_size" class="col-form-label">Max of group members <span class="text-danger">*</span></label>
         </div>
         <div class="col-4">
-            <input type="number" id="max_group_size" name="max_group_size" class="form-control" aria-describedby="matchGroupSizeHelpInline" required>
+            <input type="number" id="max_group_size" name="max_group_size" class="form-control" aria-describedby="matchGroupSizeHelpInline" required disabled>
         </div>
     </div>
     <div class="d-flex align-items-center m-0">
@@ -54,7 +54,7 @@
             <label for="advance_count" class="col-form-label">Advancing Count <span class="text-danger">*</span></label>
         </div>
         <div class="col-4">
-            <input type="number" id="advance_count" name="advance_count" class="form-control" aria-describedby="matchGroupSizeHelpInline" required>
+            <input type="number" id="advance_count" name="advance_count" class="form-control" aria-describedby="matchGroupSizeHelpInline" required disabled>
         </div>
     </div>
     <div class="d-flex align-items-center m-0">
