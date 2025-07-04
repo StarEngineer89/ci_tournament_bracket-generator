@@ -918,6 +918,15 @@ a.disabled {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.brackets.ffa .bracket-team.first {
+  background-color: #ff6b79;
+}
+.brackets.ffa .bracket-team.second {
+  background-color: #76ebaa;
+}
+.brackets.ffa .bracket-team.third {
+  background-color: #aea4e5;
+}
 .brackets.ffa div.bracketbox .bracket-border-line {
   border: none;
 }

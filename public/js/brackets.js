@@ -514,7 +514,13 @@ function renderFFABrackets ( result, direction = 'ltr' )
         $.contextMenu({
             selector: '.bracket-team',
             build: function ($triggerElement, e) {
-                let isWinner = ($triggerElement.hasClass('winner')) ? true : false;
+                let isWinner = ( $triggerElement.hasClass( 'winner' ) ) ? true : false;
+                
+                if ( isWinner )
+                {
+                    return false
+                }
+
                 let items = {}
                 items.mark = {
                     name: "🏆 Set Ranking",
@@ -917,12 +923,26 @@ function renderFFABrackets ( result, direction = 'ltr' )
                 }
             }
 
-            if ( parseInt( tournament.type ) == 4 )
+            if ( parseInt( tournament.type ) == 4 && !bracket.final_match)
             {
                 var rankingSpan = document.createElement('span')
                 rankingSpan.classList.add('ranking')
                 rankingSpan.textContent = teams[ team_index ].ranking ?? "-"
-                wrapper.appendChild(rankingSpan)
+                wrapper.appendChild( rankingSpan )
+                
+                // Set background color of 1st, 2nd, 3rd ranking
+                if ( parseInt( teams[team_index].ranking ) == 1 )
+                {
+                    participant.classList.add('first')
+                }
+                if ( parseInt( teams[team_index].ranking ) == 2 )
+                {
+                    participant.classList.add('second')
+                }
+                if ( parseInt( teams[team_index].ranking ) == 3 )
+                {
+                    participant.classList.add('third')
+                }
             }
 
             participant.appendChild(wrapper)
@@ -1777,7 +1797,13 @@ let setRanking = ( key, opt, e ) =>
                     return false
                 }
 
-                loadBrackets()
+                let confettii = null
+                if ( typeof result.championSelected !== 'undefined' )
+                {
+                    confettii = true
+                }
+
+                loadBrackets(confettii)
             },
             error: function (error) {
                 console.log(error);

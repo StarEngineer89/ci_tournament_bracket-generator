@@ -1300,7 +1300,9 @@ class BracketsController extends BaseController
             $round_no = $this->request->getPost('roundNo');
             $ranking = ($this->request->getPost('ranking') != '-') ? $this->request->getPost('ranking') : null;
             
+            $originalRanking = null;
             if ($rankingEntity = $this->rankingsModel->asObject()->where(['tournament_id' => $tournament_id, 'bracket_id' => $bracket_id, 'participant_id' => $participant_id, 'round_no' => $round_no])->first()) {
+                $originalRanking = $rankingEntity->ranking;
                 $rankingEntity->ranking = $ranking;
             } else {
                 $rankingEntity = new \App\Entities\TournamentRoundRanking();
@@ -1311,9 +1313,56 @@ class BracketsController extends BaseController
                 $rankingEntity->ranking = $ranking;
             }
             
-            $rankingEntity->created_by = auth()->user() ? auth()->user()->id : 0;
+            $user_id = auth()->user() ? auth()->user()->id : 0;
+            $rankingEntity->created_by = $user_id;
+
+            helper('db');
+
+            /** Disable foreign key check for the guest users */
+            if (!$user_id) {
+                disableForeignKeyCheck();
+            }
 
             $this->rankingsModel->save($rankingEntity);
+
+            if (!$user_id) {
+                enableForeignKeyCheck();
+            }
+
+            /** If the bracket is final match, mark the final winner */
+            if (intval($ranking) == 1) {
+                $brackets = $this->bracketsModel->where(['tournament_id' => $tournament_id, 'roundNo' => $round_no])->findAll();
+                if (count($brackets) == 1) {
+                    $finalBracket = $this->bracketsModel->asObject()->where(['tournament_id' => $tournament_id, 'final_match' => 1])->first();
+                    if ($finalBracket) {
+                        $team = ['id' => $participant_id, 'order' => 0];
+                        $finalBracket->teamnames = json_encode([$team]);
+                        $finalBracket->winner = $participant_id;
+                        $this->bracketsModel->save($finalBracket);
+
+                        $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
+                        $tournament->status = TOURNAMENT_STATUS_COMPLETED;
+                        $this->tournamentsModel->save($tournament);
+
+                        return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'success', 'championSelected' => true]);
+                    }
+                }
+            }
+
+            /** Check if the champion was decided, and remove it */
+            if ($originalRanking && intval($originalRanking) == 1) {
+                $finalBracket = $this->bracketsModel->asObject()->where(['tournament_id' => $tournament_id, 'final_match' => 1])->first();
+                if ($finalBracket) {
+                    $finalBracket->teamnames = json_encode([null]);
+                    $finalBracket->winner = null;
+                    $this->bracketsModel->save($finalBracket);
+
+                    $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
+                    $tournament->status = TOURNAMENT_STATUS_INPROGRESS;
+                    $this->tournamentsModel->save($tournament);
+                }
+            }
 
             $tournamentObj = $this->tournamentsModel->asObject()->find($tournament_id);
             $advance_count = intval($tournamentObj->advance_count);
