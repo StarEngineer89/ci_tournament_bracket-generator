@@ -1744,3 +1744,7 @@ li.context-menu-item.context-menu-disabled span {
   width: 30px;
   height: 30px;
 }
+
+#progressContainer span {
+  font-size: .8em;
+}
