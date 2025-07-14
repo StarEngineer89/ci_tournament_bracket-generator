@@ -40,5 +40,10 @@ class Tournament extends Entity
         'winner_audio_everyone' => null,
         'max_group_size' => null,
         'advance_count' => null,
+        'participant_manage_metrics' => null,
+        'host_manage_metrics' => null,
+        'allow_metric_edits' => null,
+        'scoring_method' => null, 
+        'score_manual_override' => null,
     ];
 }

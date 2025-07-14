@@ -529,6 +529,16 @@ function renderFFABrackets ( result, direction = 'ltr' )
                     },
                 }
 
+                if ( manageMetricsPermission && ( manageMetricsTarget == 'all' || manageMetricsTarget == $triggerElement.attr( 'data-id' ) ) )
+                {
+                    items.metrics = {
+                        name: "🏆 Set the metrics",
+                        callback: (key, opt, e) => {
+                            setMetrics(key, opt, e)
+                        },
+                    }
+                }
+
                 items.change = {
                             name: "✏️ Change participant",
                             callback: (key, opt, e) => {
@@ -830,36 +840,51 @@ function renderFFABrackets ( result, direction = 'ltr' )
                 score.classList.add('score')
                 var scorePoint = 0
 
-                let is_final_match = false
-                if (parseInt(tournament.type) == 3) {
-                    is_final_match = (parseInt(bracket.knockout_final)) ? true : false;
-                } else {
-                    is_final_match = (parseInt(bracket.final_match)) ? true : false;
-                }
+                if ( tournament.scoring_method == "d" && tournament.score_manual_override ) // "d": System defined scoring
+                {
+                    let is_final_match = false
+                    if ( parseInt( tournament.type ) == 3 )
+                    {
+                        is_final_match = ( parseInt( bracket.knockout_final ) ) ? true : false;
+                    } else
+                    {
+                        is_final_match = ( parseInt( bracket.final_match ) ) ? true : false;
+                    }
                 
-                if (incrementScoreType == 'p') {
-                    for (round_i = 0; round_i < round_no - 1; round_i++) {
-                        scorePoint += scoreBracket
-                        scorePoint += incrementScore * round_i
-                    }
+                    if ( incrementScoreType == 'p' )
+                    {
+                        for ( round_i = 0; round_i < round_no - 1; round_i++ )
+                        {
+                            scorePoint += scoreBracket
+                            scorePoint += incrementScore * round_i
+                        }
 
-                    if (!is_final_match && teams[team_index].id == bracket.winner) {
+                        if ( !is_final_match && teams[team_index].id == bracket.winner )
+                        {
+                            scorePoint += scoreBracket
+                            scorePoint += incrementScore * ( round_no - 1 )
+                        }
+                    } else
+                    {
                         scorePoint += scoreBracket
-                        scorePoint += incrementScore * (round_no - 1)
-                    }
-                } else {
-                    scorePoint += scoreBracket
-                    if (round_no == 1 && teams[team_index].id !== bracket.winner) {
-                        scorePoint = 0
-                    }
+                        if ( round_no == 1 && teams[team_index].id !== bracket.winner )
+                        {
+                            scorePoint = 0
+                        }
 
-                    for (round_i = 0; round_i < round_no - 2; round_i++) {
-                        scorePoint += scorePoint * incrementScore 
-                    }
+                        for ( round_i = 0; round_i < round_no - 2; round_i++ )
+                        {
+                            scorePoint += scorePoint * incrementScore
+                        }
                     
-                    if (!is_final_match && round_no > 1 && teams[team_index].id == bracket.winner) {
-                        scorePoint += scorePoint * incrementScore
+                        if ( !is_final_match && round_no > 1 && teams[team_index].id == bracket.winner )
+                        {
+                            scorePoint += scorePoint * incrementScore
+                        }
                     }
+                } else
+                {
+                    scorePoint = teams[team_index].score ?? scorePoint;
                 }
             
                 score.textContent = scorePoint
@@ -1815,3 +1840,123 @@ let setRanking = ( key, opt, e ) =>
         });
     })
 }
+
+let setMetrics = (key, opt, e) => {
+    const bracketId = parseInt(opt.$trigger.data('bracket'));
+    const participantId = parseInt(opt.$trigger.data('id'));
+    const roundNo = parseInt(opt.$trigger.data('round'));
+
+    const triggerEl = opt.$trigger[0];
+
+    // Remove existing popover if present
+    const existing = bootstrap.Popover.getInstance(triggerEl);
+    if (existing) {
+        existing.dispose();
+    }
+
+    // Create a container element
+    const content = document.createElement('div');
+    content.classList.add('d-flex', 'gap-3', 'align-items-end');
+
+    content.innerHTML = `
+        <div>
+            <label class="form-label text-center m-0 d-block">Score</label>
+            <input type="text" class="form-control" name="score" />
+        </div>
+        <div>
+            <label class="form-label text-center m-0 d-block">Time</label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-stopwatch"></i>
+                </span>
+                <input type="text" class="form-control" name="time" />
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-success" id="saveMetricsBtn">Save</button>
+        </div>
+    `;
+
+    // Create the popover
+    const popover = new bootstrap.Popover(triggerEl, {
+        content: content,
+        html: true,
+        placement: 'bottom',
+        trigger: 'manual',
+        container: 'body'
+    });
+
+    // Show the popover
+    setTimeout(() => {
+        popover.show();
+
+        let timerInterval = null;
+
+        // Start timer
+        const timeInput = document.querySelector('.popover-body input[name="time"]');
+        let seconds = 0;
+
+        if (timeInput) {
+            timerInterval = setInterval(() => {
+                seconds += 1;
+                timeInput.value = seconds;
+            }, 1000);
+        }
+
+        // Handle Save click
+        setTimeout(() => {
+            const saveBtn = document.getElementById('saveMetricsBtn');
+            saveBtn?.addEventListener( 'click', ( event ) =>
+            {
+                const score = document.querySelector( '.popover-body input[name="score"]' ).value
+                const time = document.querySelector( '.popover-body input[name="time"]' ).value
+
+                clearInterval(timerInterval);
+
+                $.ajax({
+                    type: "POST",
+                    url: apiURL + '/brackets/save-score',
+                    data: {'tournament_id': parseInt(tournament.id), 'bracket_id': bracketId, 'participant_id': participantId, 'roundNo': roundNo, 'score': parseInt(score), 'time': parseInt(time)},
+                    success: function (result) {
+                        if (result.status == 'error') {
+                            $('#errorModal .errorDetails').html(result.errors.file)
+                            $("#errorModal").modal('show');
+        
+                            return false
+                        }
+        
+                        loadBrackets()
+                        popover.hide();
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                }).done(() => {
+                    setTimeout(function () {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+            } );
+        }, 10);
+
+        // Hide on outside click
+        const onClickOutside = (event) => {
+            const popoverEl = document.querySelector('.popover');
+            if (
+                popoverEl &&
+                !popoverEl.contains(event.target) &&
+                !triggerEl.contains(event.target)
+            )
+            {
+                clearInterval(timerInterval);
+
+                popover.hide();
+                document.removeEventListener('click', onClickOutside, true);
+            }
+        };
+
+        setTimeout(() => {
+            document.addEventListener('click', onClickOutside, true);
+        }, 0);
+    }, 10);
+};

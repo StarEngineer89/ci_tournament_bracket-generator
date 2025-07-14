@@ -34,6 +34,7 @@ return [
     'tournamentRoundDurationCombineManual' => "Participants automatically advance (randomly) when the duration ends for the round. Duration is determined by dividing the tournament availability window equally amongst all the rounds. Note: This option can only be activated if Availability setting is enabled.",
     'tournamentRoundDurationCombineMaxVote' => "Winning participants automatically advance when the duration is reached and the voting period ends each round. Duration is determined by dividing the tournament availability window equally amongst all the rounds. In case of a tie in votes (for example, suppose both participants in the same bracket in the same round attain 100 votes) then the system will automatically mark a participant amongst the two as winner of the bracket randomly. Note: This option can only be activated if Availability setting is enabled.",
     'tournamentEnableScoringDesc' => "If enabled, a score associated with each bracket will be accumulated towards a final score.",
+    'tournamentEnableScoreOverrideDesc' => "Allow host to manually edit scores even when system-defined scoring is enabled.",
     'tournamentShuffleParticipantsEnabledDesc' => "If enabled, the contestant brackets will be generated with the participants shuffled.",
     'tournamentShuffleParticipantsDisabledDesc' => "If disabled, the participants will not be shuffled and the contestant brackets will be generated in the same order displayed in the participants list.",
     'tournamentParticipantImageCustomizationDesc' => "

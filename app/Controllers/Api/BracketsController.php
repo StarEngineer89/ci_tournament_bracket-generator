@@ -134,6 +134,8 @@ class BracketsController extends BaseController
                             // Set the ranking in the bracket
                             $ranking = $this->rankingsModel->where(['tournament_id' => $id, 'bracket_id'=> $bracket['id'], 'participant_id' => $team['id'], 'round_no' => $bracket['roundNo']])->asObject()->first();
                             $array[$index]['ranking'] = $ranking ? $ranking->ranking : null;
+                            $array[$index]['score'] = $ranking ? $ranking->score : null;
+                            $array[$index]['time'] = $ranking ? $ranking->time : null;
                         }
                         
                         $teams = $array;
@@ -1371,6 +1373,53 @@ class BracketsController extends BaseController
 
             if (count($advanceParticipants) == count($brackets) * $advance_count) {
                 $this->advanceFFABrackets($advanceParticipants);
+            }
+            
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                    ->setJSON(['status' => 'success']);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+
+    public function saveScore() {
+        // Check if it's an AJAX request
+        if ($this->request->isAJAX()) {
+            $tournament_id = $this->request->getPost('tournament_id');
+            $bracket_id = $this->request->getPost('bracket_id');
+            $participant_id = $this->request->getPost('participant_id');
+            $round_no = $this->request->getPost('roundNo');
+            $score = $this->request->getPost('score');
+            $time = $this->request->getPost('time');
+            
+            $rankingEntity = $this->rankingsModel->asObject()->where(['tournament_id' => $tournament_id, 'bracket_id' => $bracket_id, 'participant_id' => $participant_id, 'round_no' => $round_no])->first();
+            if (!$rankingEntity) {
+                $rankingEntity = new \App\Entities\TournamentRoundRanking();
+                $rankingEntity->tournament_id = $tournament_id;
+                $rankingEntity->bracket_id = $bracket_id;
+                $rankingEntity->participant_id = $participant_id;
+                $rankingEntity->round_no = $round_no;
+            }
+            
+            $rankingEntity->score = $score;
+            $rankingEntity->time = $time;
+            
+            $user_id = auth()->user() ? auth()->user()->id : 0;
+            $rankingEntity->created_by = $user_id;
+
+            helper('db');
+
+            /** Disable foreign key check for the guest users */
+            if (!$user_id) {
+                disableForeignKeyCheck();
+            }
+
+            $this->rankingsModel->save($rankingEntity);
+
+            if (!$user_id) {
+                enableForeignKeyCheck();
             }
             
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)

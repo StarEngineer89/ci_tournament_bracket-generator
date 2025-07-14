@@ -19,11 +19,38 @@ class AddMaxGroupSizeColumnToTournamentsTable extends Migration
                 'null' => true,
                 'default' => 0
             ],
+            'participant_manage_metrics' => [
+                'type' => 'tinyint',
+                'null' => false,
+                'default' => 0
+            ],
+            'host_manage_metrics' => [
+                'type' => 'tinyint',
+                'null' => false,
+                'default' => 0
+            ],
+            'allow_metric_edits' => [
+                'type' => 'tinyint',
+                'null' => false,
+                'default' => 0
+            ],
+            'scoring_method' => [
+                'type' => 'varchar',
+                'constraint' => 1,
+                'default' => TOURNAMENT_SCORE_MANUAL_ENTRY,
+                'after' => "score_enabled"
+            ],
+            'score_manual_override' => [
+                'type' => 'tinyint',
+                'null' => false,
+                'default' => 0,
+                'after' => "scoring_method"
+            ],
         ]);
     }
 
     public function down()
     {
-        $this->forge->dropColumn('tournaments', ['max_group_size', 'advance_count']);
+        $this->forge->dropColumn('tournaments', ['max_group_size', 'advance_count', 'participant_manage_metrics', 'host_manage_metrics', 'allow_metric_edits', 'scoring_method', 'score_manual_override']);
     }
 }

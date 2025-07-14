@@ -12,7 +12,7 @@ class TournamentRoundRankingsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['tournament_id', 'round_no', 'bracket_id', 'participant_id', 'ranking', 'created_by'];
+    protected $allowedFields    = ['tournament_id', 'round_no', 'bracket_id', 'participant_id', 'ranking', 'score', 'time', 'created_by'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

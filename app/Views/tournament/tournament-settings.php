@@ -241,7 +241,16 @@
         </label>
         <div class="enable-scoreoption-hint form-text"><?= lang('Descriptions.tournamentEnableScoringDesc') ?></div>
     </div>
-    <div class="ps-2" id="scoreOptions">
+    <div class="ps-2">
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="type">Scoring Method</span>
+            <select class="form-select" id="scoringMethod" name="scoring_method" aria-label="type" onchange="changeScoringMethod(this)" required>
+                <option value="<?= TOURNAMENT_SCORE_SYSTEM_DEFINED ?>" data-option="system">System-Defined Scoring</option>
+                <option value="<?= TOURNAMENT_SCORE_MANUAL_ENTRY ?>" data-option="manual" selected>Manual Score Entry</option>
+            </select>
+        </div>
+    </div>
+    <div class="ps-2" id="scoreOptions" class="d-none">
         <div class="row mb-2">
             <div class="col-auto">
                 <label for="scorePerBracket" class="col-form-label">Score per bracket per round <span class="text-danger">*</span> :</label>
@@ -272,12 +281,19 @@
                 </div>
             </div>
         </div>
-        <div class="enable-increamentscoreoption-hint form-text">
+        <div class="enable-increamentscoreoption-hint form-text ps-3">
             <div class="read-more-container">
                 <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
                 <div class="plus text-content"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></div>
                 <div class="multiply d-none"><?= lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?></div>
             </div>
+        </div>
+        <div class="ps-3">
+            <input type="checkbox" class="form-check-input" name="score_manual_override" id="enableScoreOverride" checked>
+            <label class="form-check-label" for="enableScoreOverride">
+                <h6>Enable Manual Override</h6>
+            </label>
+            <div class="enable-scoreoverride-hint form-text"><?= lang('Descriptions.tournamentEnableScoreOverrideDesc') ?></div>
         </div>
     </div>
 </div>
@@ -285,7 +301,7 @@
 <div class="manage-metrics border-bottom mb-3">
     <div class="form-check mb-3">
         <div class="ps-2">
-            <input type="checkbox" class="form-check-input" name="allow_participant_match_metrics" id="allowParticipantMatchMetrics" onChange="toggleAllowParticipantMatchMetrics(this)" checked>
+            <input type="checkbox" class="form-check-input" name="participant_manage_metrics" id="allowParticipantManageMetrics" checked>
             <label class="form-check-label" for="allowParticipantMatchMetrics">
                 <h6>Allow Participants to Manage Match Metrics</h6>
             </label>
@@ -295,7 +311,7 @@
 
     <div class="form-check mb-3">
         <div class="ps-2">
-            <input type="checkbox" class="form-check-input" name="allow_host_match_metrics" id="allowHostMatchMetrics" onChange="toggleAllowHostMatchMetrics(this)" checked>
+            <input type="checkbox" class="form-check-input" name="host_manage_metrics" id="allowHostManageMetrics" checked>
             <label class="form-check-label" for="allowHostMatchMetrics">
                 <h6>Allow Organizer/Host to Manage Match Metrics</h6>
             </label>
@@ -305,7 +321,7 @@
 
     <div class="form-check mb-3">
         <div class="ps-2">
-            <input type="checkbox" class="form-check-input" name="allow_metric_edits" id="allowMetricEdits" onChange="toggleAllowMetricEdits(this)" checked>
+            <input type="checkbox" class="form-check-input" name="allow_metric_edits" id="allowMetricEdits" checked>
             <label class="form-check-label" for="allowMetricEdits">
                 <h6>Allow Metric Edits After Submission</h6>
             </label>

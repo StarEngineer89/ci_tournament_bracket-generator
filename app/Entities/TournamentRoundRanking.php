@@ -16,6 +16,8 @@ class TournamentRoundRanking extends Entity
         'bracket_id' => null,
         'participant_id' => null,
         'ranking' => null,
+        'score' => null,
+        'time' => null,
         'created_by' => null
     ];
 }

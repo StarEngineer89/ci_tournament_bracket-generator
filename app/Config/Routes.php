@@ -49,6 +49,7 @@ $routes->group('api', static function ($routes) {
         $routes->post('switch', 'Api\BracketsController::switchBrackets');
         $routes->post('save-round', 'Api\BracketsController::saveRoundSettings');
         $routes->post('save-ranking', 'Api\BracketsController::saveRanking');
+        $routes->post('save-score', 'Api\BracketsController::saveScore');
     });
 
     $routes->group('participants', static function ($routes) {

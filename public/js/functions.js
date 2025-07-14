@@ -525,15 +525,15 @@ let toggleScoreOption = (checkbox) => {
     if ($(checkbox).is(':checked')) {
         $('#scorePerBracket').prop('disabled', false)
         //$('#incrementScore').prop('disabled', false)
-        $('#scoreOptions').removeClass('d-none')
         $('.enable-scoreoption-hint').removeClass('d-none')
     } else {
         $('#scorePerBracket').prop('disabled', true)
         $('#enableIncrementScore').prop('checked', false)
         $('#incrementScore').prop('disabled', true)
-        $('#scoreOptions').addClass('d-none')
         $('.enable-scoreoption-hint').addClass('d-none')
     }
+    
+    changeScoringMethod(document.getElementById('scoringMethod'))
 }
 
 let toggleIncrementScore = (element) => {
@@ -896,6 +896,29 @@ var changeTournamentTheme = (element) => {
     }
     if ($(element).val() == "mm") {
         $('.theme-modernmetal-hint').removeClass('d-none')
+    }
+}
+
+var changeScoringMethod = ( element ) =>
+{
+    if ( element.options[element.selectedIndex].dataset.option == 'system' )
+    {
+        document.getElementById( 'scoreOptions' ).classList.remove( 'd-none' )
+        document.querySelectorAll( '#scoreOptions input' ).forEach( ele =>
+        {
+            ele.disabled = false
+        } )
+        
+        document.querySelectorAll("#tournamentSettings .scoring-settings .read-more-container").forEach(container => {
+            adjustReadMore(container)
+        })
+    } else
+    {
+        document.getElementById( 'scoreOptions' ).classList.add( 'd-none' )
+        document.querySelectorAll( '#scoreOptions input' ).forEach( ele =>
+        {
+            ele.disabled = true
+        })
     }
 }
 

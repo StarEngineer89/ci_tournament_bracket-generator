@@ -12,7 +12,7 @@ class TournamentModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_enabled', 'score_bracket', 'increment_score_enabled', 'increment_score', 'increment_score_type', 'visibility', 'availability', 'available_start', 'available_end', 'evaluation_method', 'voting_accessibility', 'voting_mechanism', 'max_vote_value', 'voting_retain', 'round_duration_combine', 'allow_host_override', 'pt_image_update_enabled', 'theme', 'winner_audio_everyone', 'max_group_size', 'advance_count'];
+    protected $allowedFields = ['name', 'user_id', 'type', 'status', 'searchable', 'archive', 'shuffle_enabled', 'description', 'score_enabled', 'scoring_method', 'score_manual_override', 'score_bracket', 'increment_score_enabled', 'increment_score', 'increment_score_type', 'visibility', 'availability', 'available_start', 'available_end', 'evaluation_method', 'voting_accessibility', 'voting_mechanism', 'max_vote_value', 'voting_retain', 'round_duration_combine', 'allow_host_override', 'pt_image_update_enabled', 'theme', 'winner_audio_everyone', 'max_group_size', 'advance_count', 'participant_manage_metrics', 'host_manage_metrics', 'allow_metric_edits'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

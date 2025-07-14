@@ -324,6 +324,8 @@ class TournamentController extends BaseController
             'description' => $this->request->getPost('description'),
             'score_enabled' => ($this->request->getPost('score_enabled') == 'on') ? 1 : 0,
             'score_bracket' => $this->request->getPost('score_bracket'),
+            'scoring_method' => $this->request->getPost('scoring_method'),
+            'score_manual_override' => ($this->request->getPost('score_manual_override') == 'on') ? 1 : 0,
             'increment_score' => $this->request->getPost('increment_score'),
             'increment_score_enabled' => ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0,
             'increment_score_type' => $this->request->getPost('increment_score_type'),
@@ -342,6 +344,9 @@ class TournamentController extends BaseController
             'winner_audio_everyone' => ($this->request->getPost('winner_audio_everyone') == 'on') ? 1 : null,
             'max_group_size' => $this->request->getPost('max_group_size'),
             'advance_count' => $this->request->getPost('advance_count'),
+            'participant_manage_metrics' => ($this->request->getPost('participant_manage_metrics') == 'on') ? 1 : 0,
+            'host_manage_metrics' => ($this->request->getPost('host_manage_metrics') == 'on') ? 1 : 0,
+            'allow_metric_edits' => ($this->request->getPost('allow_metric_edits') == 'on') ? 1 : 0,
         ];
 
         if ($this->request->getPost('availability')) {
@@ -536,6 +541,14 @@ class TournamentController extends BaseController
             $tournament['score_bracket'] = $this->request->getPost('score_bracket');
         }
 
+        if ($this->request->getPost('scoring_method')) {
+            $tournament['scoring_method'] = $this->request->getPost('scoring_method');
+        }
+
+        if ($this->request->getPost('score_manual_override')) {
+            $tournament['score_manual_override'] = ($this->request->getPost('score_manual_override') == 'on') ? 1 : 0;
+        }
+
         if ($this->request->getPost('increment_score_enabled')) {
             $tournament['increment_score_enabled'] = ($this->request->getPost('increment_score_enabled') == 'on') ? 1 : 0;
         }
@@ -655,6 +668,18 @@ class TournamentController extends BaseController
             if ($this->request->getPost('vote_display')) {
                 $tournament['vote_displaying'] = $this->request->getPost('vote_display');
             }
+        }
+
+        if ($this->request->getPost('participant_manage_metrics')) {
+            $tournament['participant_manage_metrics'] = ($this->request->getPost('participant_manage_metrics') == 'on') ? 1 : 0;
+        }
+
+        if ($this->request->getPost('host_manage_metrics')) {
+            $tournament['host_manage_metrics'] = ($this->request->getPost('host_manage_metrics') == 'on') ? 1 : 0;
+        }
+
+        if ($this->request->getPost('allow_metric_edits')) {
+            $tournament['allow_metric_edits'] = ($this->request->getPost('allow_metric_edits') == 'on') ? 1 : 0;
         }
 
         if ($this->request->getPost('pt_image_update_enabled')) {
