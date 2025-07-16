@@ -1777,6 +1777,72 @@ const changeSettings = (event) => {
                 } else {
                     $('#ptImageUpdatePermission').prop('checked', false)
                 }
+
+                if (result.tournamentSettings.timer_option == "<?= AUTOMATIC ?>") {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="auto"]').checked = true
+                    document.getElementById('customTimerOptions').classList.add('d-none')
+                    document.querySelectorAll('#customTimerOptions input').forEach(element => {
+                        element.disabled = true
+                    })
+                } else {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="custom"]').checked = true
+                    document.getElementById('customTimerOptions').classList.remove('d-none')
+                    document.querySelectorAll('#customTimerOptions input').forEach(element => {
+                        element.disabled = false
+                    })
+
+                    if (parseInt(result.tournamentSettings.timer_auto_advance)) {
+                        $('#timerAutoAdvance').prop('checked', true)
+                    } else {
+                        $('#timerAutoAdvance').prop('checked', false)
+                    }
+
+                    if (parseInt(result.tournamentSettings.timer_require_scores)) {
+                        $('#timerRequireScores').prop('checked', true)
+                    } else {
+                        $('#timerRequireScores').prop('checked', false)
+                    }
+
+                    if (parseInt(result.tournamentSettings.timer_start_manually)) {
+                        $('#timerStartManually').prop('checked', true)
+                    } else {
+                        $('#timerStartManually').prop('checked', false)
+                    }
+                }
+
+                $('#collapseAdvancedRoundSettings input[name="timer_option"]').on('change', (e) => {
+                    if (e.target.value == "auto") {
+                        document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="auto"]').checked = true
+                        document.getElementById('customTimerOptions').classList.add('d-none')
+                        document.querySelectorAll('#customTimerOptions input').forEach(element => {
+                            element.disabled = true
+                        })
+                    } else {
+                        document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="custom"]').checked = true
+                        document.getElementById('customTimerOptions').classList.remove('d-none')
+                        document.querySelectorAll('#customTimerOptions input').forEach(element => {
+                            element.disabled = false
+                        })
+                    }
+                })
+
+                if (result.tournamentSettings.timer_start_option == "<?= AUTOMATIC ?>") {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="timer_start_option"][value="<?= AUTOMATIC ?>"]').checked = true
+                } else {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="timer_start_option"][value="<?= MANUAL ?>"]').checked = true
+                }
+
+                if (parseInt(result.tournamentSettings.round_score_editing)) {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="round_score_editing"][value="1"]').checked = true
+                } else {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="round_score_editing"][value="0"]').checked = true
+                }
+
+                if (result.tournamentSettings.round_advance_method == "<?= AUTOMATIC ?>") {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="round_advance_method"][value="<?= AUTOMATIC ?>"]').checked = true
+                } else {
+                    document.querySelector('#collapseAdvancedRoundSettings input[name="round_advance_method"][value="<?= MANUAL ?>"]').checked = true
+                }
             }
 
             if (result.audioSettings) {

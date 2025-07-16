@@ -62,4 +62,19 @@ return [
         For example, resetting the timer or changing a submitted score.<br/>
         Edits are tracked via audit logs.
     ",
+    'roundAutoCalculateDescription' => "
+        The system evenly divides the tournament start/end window across all rounds to set round durations automatically. <br/>Note: This option can only be activated if Availability setting is enabled.
+    ",
+    'manualRoundDurationDescription' => "
+        Manually set duration for each round.
+    ",
+    'autoAdvanceByTimerEndDescription' => "
+        When enabled, the system automatically determines advancing participants when the timer expires. Otherwise, the host must manually advance participants.
+    ",
+    'requireScoresBeforeDeadlineDescription' => "
+        When enabled, hosts and participants must submit all scores before the timer ends. Afterward, scores are locked and cannot be changed.
+    ",
+    'startTimerManuallyDescription' => "
+        If enabled, the timer won’t start automatically when the round is created. The host must press “Start Timer” in the round dashboard.
+    ",
 ];

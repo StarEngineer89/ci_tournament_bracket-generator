@@ -231,6 +231,108 @@
             </div>
         </div>
     </div>
+    <div class="advanced-round-duration-settings ps-md-3 ps-sm-2">
+        <div class="collapse-toggle" role="button" data-bs-toggle="collapse" href="#collapseAdvancedRoundSettings" aria-expanded="false" aria-controls="collapseExample">
+            Advanced Timer Options
+        </div>
+        <div class="collapse" id="collapseAdvancedRoundSettings">
+            <div class="ps-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="timer_option" value="auto" id="timerOptionAuto" checked>
+                    <label class="form-check-label" for="timerOptionAuto">
+                        Auto-calculate from Tournament Availability
+                    </label>
+                    <br />
+                    <span class="form-text"><?= lang('Descriptions.roundAutoCalculateDescription') ?></span>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="timer_option" value="custom" id="timerOptionCustom">
+                    <label class="form-check-label" for="timerOptionCustom">
+                        Custom per Round
+                    </label>
+                    <br />
+                    <span class="form-text"><?= lang('Descriptions.manualRoundDurationDescription') ?></span>
+
+                    <div class="custom-timer-options" id="customTimerOptions">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="timer_auto_advance" id="timerAutoAdvance" checked>
+                            <label class="form-check-label" for="timerAutoAdvance">
+                                Auto-Advance when timer ends
+                            </label>
+                            <br />
+                            <span class="form-text"><?= lang('Descriptions.autoAdvanceByTimerEndDescription') ?></span>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="timer_require_scores" id="timerRequireScores" checked>
+                            <label class="form-check-label" for="timerRequireScores">
+                                Require scores before deadline
+                            </label>
+                            <br />
+                            <span class="form-text"><?= lang('Descriptions.requireScoresBeforeDeadlineDescription') ?></span>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="timer_start_manually" id="timerStartManually">
+                            <label class="form-check-label" for="timerStartManually">
+                                Start timer manually
+                            </label>
+                            <br />
+                            <span class="form-text"><?= lang('Descriptions.startTimerManuallyDescription') ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ps-md-3 ps-sm-4 pt-2" id="manualRoundSettings">
+                    <label class="form-label pt-2">⏱️ Timer Start</label>
+                    <div class="timer-start-options ps-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="timer_start_option" value="<?= AUTOMATIC ?>" id="timerAutoStart" checked>
+                            <label class="form-check-label" for="timerAutoStart">
+                                Start automatically when round begins
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="timer_start_option" value="<?= MANUAL ?>" id="timerManualStart">
+                            <label class="form-check-label" for="timerManualStart">
+                                Start manually
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="form-label pt-2">🔒 Lock Scores at Deadline</label>
+                    <div class="timer-start-options ps-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="round_score_editing" value="0" id="preventScoreEditing" checked>
+                            <label class="form-check-label" for="preventScoreEditing">
+                                Prevent score editing after timer ends
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="round_score_editing" value="1" id="allowScoreEditing">
+                            <label class="form-check-label" for="allowScoreEditing">
+                                Allow editing even after timer ends
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="form-label pt-2">🔄 Auto-Advance at Deadline</label>
+                    <div class="timer-start-options ps-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="round_advance_method" value="<?= AUTOMATIC ?>" id="roundAutoAdvance" checked>
+                            <label class="form-check-label" for="roundAutoAdvance">
+                                Automatically determine advancing participants when timer ends
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="round_advance_method" value="<?= MANUAL ?>" id="roundManualAdvance">
+                            <label class="form-check-label" for="roundManualAdvance">
+                                Require host approval before advancing
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="scoring-settings border-bottom form-check mb-3 pb-3">

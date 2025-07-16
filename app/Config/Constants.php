@@ -96,6 +96,9 @@ define('EVENT_PRIORITY_HIGH', 10);
 /**
  * Tournament Status
  */
+define('AUTOMATIC', 'a');
+define('MANUAL', 'm');
+
 define('TOURNAMENT_STATUS_NOTSTARTED', 4);
 define('TOURNAMENT_STATUS_INPROGRESS', 1);
 define('TOURNAMENT_STATUS_COMPLETED', 2);

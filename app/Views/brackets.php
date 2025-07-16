@@ -785,6 +785,76 @@ var changeVoteDisplayingMode = (element) => {
                         </p>
                         <?php endif; ?>
 
+                        <div class="advanced-timer-settings">
+                            <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                                <strong>Round Timer</strong>
+                                <span>
+                                    <?= $tournament['timer_option'] == AUTOMATIC ? "Auto-calculate" : "Custom per Round" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['timer_option'] == AUTOMATIC ? lang('Descriptions.roundAutoCalculateDescription') : lang('Descriptions.manualRoundDurationDescription') ?>'>
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+
+                            <?php if ($tournament['timer_option'] == MANUAL) : ?>
+                            <p class="property-info d-flex justify-content-between mb-1 ps-3">
+                                <strong>Auto-Advance when timer ends</strong>
+                                <span>
+                                    <?= $tournament['timer_auto_advance'] ? "On" : "Off" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= lang('Descriptions.autoAdvanceByTimerEndDescription') ?>'>
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+                            <p class="property-info d-flex justify-content-between mb-1 ps-3">
+                                <strong>Require scores before deadline</strong>
+                                <span>
+                                    <?= $tournament['timer_require_scores'] ? "On" : "Off" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= lang('Descriptions.requireScoresBeforeDeadlineDescription') ?>'>
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+                            <p class="property-info d-flex justify-content-between mb-1 ps-3">
+                                <strong>Start timer manually</strong>
+                                <span>
+                                    <?= $tournament['timer_start_manually'] ? "On" : "Off" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= lang('Descriptions.startTimerManuallyDescription') ?>'>
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+                            <?php endif; ?>
+
+                            <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                                <strong>⏱️ Timer Start</strong>
+                                <span>
+                                    <?= $tournament['timer_start_option'] == AUTOMATIC ? "Automatic" : "Manual" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['timer_start_option'] == AUTOMATIC ? "Start automatically when round begins" : "Start manually (host must click “Start Timer”)" ?>'>
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+                            <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                                <strong>🔒 Lock Scores at Deadline</strong>
+                                <span>
+                                    <?= $tournament['round_score_editing'] ? "On" : "Off" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['round_score_editing'] ? "Prevent score editing after timer ends" : "Allow editing even after timer ends" ?>'>
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+                            <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                                <strong>🔄 Auto-Advance at Deadline</strong>
+                                <span>
+                                    <?= $tournament['round_advance_method'] == AUTOMATIC ? "On" : "Off" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['round_advance_method'] == AUTOMATIC ? "Automatically determine advancing participants when timer ends" : "Require host approval before advancing" ?>'>
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+                        </div>
+
                         <p class="property-info d-flex justify-content-between mb-1">
                             <strong>Participant Image Customization Access</strong>
                             <span>

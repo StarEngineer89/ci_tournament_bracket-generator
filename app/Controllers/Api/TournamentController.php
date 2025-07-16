@@ -347,6 +347,13 @@ class TournamentController extends BaseController
             'participant_manage_metrics' => ($this->request->getPost('participant_manage_metrics') == 'on') ? 1 : 0,
             'host_manage_metrics' => ($this->request->getPost('host_manage_metrics') == 'on') ? 1 : 0,
             'allow_metric_edits' => ($this->request->getPost('allow_metric_edits') == 'on') ? 1 : 0,
+            'timer_option'=> ($this->request->getPost('timer_option') == 'auto') ? AUTOMATIC : MANUAL,
+            'timer_auto_advance'=> ($this->request->getPost('timer_auto_advance') == 'on') ? 1 : 0,
+            'timer_require_scores'=> ($this->request->getPost('timer_require_scores') == 'on') ? 1 : 0,
+            'timer_start_manually'=> ($this->request->getPost('timer_start_manually') == 'on') ? 1 : 0,
+            'timer_start_option'=> $this->request->getPost('timer_start_option'),
+            'round_score_editing'=> $this->request->getPost('round_score_editing'),
+            'round_advance_method'=> $this->request->getPost('round_advance_method'),
         ];
 
         if ($this->request->getPost('availability')) {
@@ -668,6 +675,32 @@ class TournamentController extends BaseController
             if ($this->request->getPost('vote_display')) {
                 $tournament['vote_displaying'] = $this->request->getPost('vote_display');
             }
+        }
+
+        if ($this->request->getPost('timer_option')) {
+            $tournament['timer_option'] = ($this->request->getPost('timer_option') == 'auto') ? AUTOMATIC : MANUAL;
+        }
+
+        if ($this->request->getPost('timer_auto_advance')) {
+            $tournament['timer_auto_advance'] = ($this->request->getPost('timer_auto_advance') == 'on') ? 1 : 0;
+        }
+
+        if ($this->request->getPost('timer_require_scores')) {
+            $tournament['timer_require_scores'] = ($this->request->getPost('timer_require_scores') == 'on') ? 1 : 0;
+        }
+
+        if ($this->request->getPost('timer_start_manually')) {
+            $tournament['timer_start_manually'] = ($this->request->getPost('timer_start_manually') == 'on') ? 1 : 0;
+        }
+
+        if ($this->request->getPost('timer_start_option')) {
+            $tournament['timer_start_option'] = $this->request->getPost('timer_start_option');
+        }
+
+        $tournament['round_score_editing'] = intval($this->request->getPost('round_score_editing'));
+
+        if ($this->request->getPost('round_advance_method')) {
+            $tournament['round_advance_method'] = $this->request->getPost('round_advance_method');
         }
 
         if ($this->request->getPost('participant_manage_metrics')) {

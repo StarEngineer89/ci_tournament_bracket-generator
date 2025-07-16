@@ -44,6 +44,13 @@ class Tournament extends Entity
         'host_manage_metrics' => null,
         'allow_metric_edits' => null,
         'scoring_method' => null, 
-        'score_manual_override' => null,
+        'score_manual_override' => null, 
+        'timer_option' => null, 
+        'timer_auto_advance' => null, 
+        'timer_require_scores' => null, 
+        'timer_start_manually' => null, 
+        'timer_start_option' => null, 
+        'round_score_editing' => null,
+        'round_advance_method' => null,
     ];
 }

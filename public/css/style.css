@@ -1757,3 +1757,15 @@ li.context-menu-item.context-menu-disabled span {
 #progressContainer span {
   font-size: .8em;
 }
+
+.collapse-toggle::before {
+  content: '\f285';
+  font-family: 'bootstrap-icons';
+  display: inline-block;
+  transition: transform 0.3s ease;
+  margin-right: 6px;
+}
+
+[aria-expanded="true"].collapse-toggle::before {
+  content: '\f282';
+}
