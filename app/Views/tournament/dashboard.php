@@ -340,6 +340,7 @@
 <script type="text/javascript">
 var users_json = '<?= json_encode($users) ?>';
 var tournamentsTable = null;
+var tournamentSettings = null;
 var datatableRows;
 var actionLogsTable = null;
 var actionLogsTableRows;
@@ -989,6 +990,10 @@ $(document).ready(function() {
                 adjustReadMore(container)
             })
         })
+
+        tournamentSettingsModal.addEventListener('hide.bs.modal', event => {
+            tournamentSettings = null;
+        })
     }
 
     const resetModal = document.getElementById('resetConfirm');
@@ -1563,7 +1568,9 @@ const changeSettings = (event) => {
         type: "GET",
         url: apiURL + '/tournaments/' + tournament_id + '/fetch-settings',
         success: function(result) {
-            $("#staticBackdropLabel").text(result.tournamentSettings.name + ' Tournament Settings');
+            tournamentSettings = result.tournamentSettings;
+
+            $("#staticBackdropLabel").text(tournamentSettings.name + ' Tournament Settings');
             $('#audio-settings-panel').html(result.html);
             $('#audio-settings-panel').html(result.html).promise().done(function() {
                 // Once the HTML is loaded, apply the inputmask
@@ -1584,10 +1591,10 @@ const changeSettings = (event) => {
             });
             $('#tournamentForm').data('id', tournament_id);
 
-            if (result.tournamentSettings) {
-                $('#tournamentTitle').val(result.tournamentSettings.name)
-                $('#eliminationType').val(result.tournamentSettings.type)
-                if (result.tournamentSettings.type == '<?= TOURNAMENT_TYPE_SINGLE ?>') {
+            if (tournamentSettings) {
+                $('#tournamentTitle').val(tournamentSettings.name)
+                $('#eliminationType').val(tournamentSettings.type)
+                if (tournamentSettings.type == '<?= TOURNAMENT_TYPE_SINGLE ?>') {
                     $('.single-type-hint').removeClass('d-none')
                     $('.double-type-hint').addClass('d-none')
                 } else {
@@ -1595,19 +1602,19 @@ const changeSettings = (event) => {
                     $('.single-type-hint').addClass('d-none')
                 }
 
-                if (result.tournamentSettings.type == '<?= TOURNAMENT_TYPE_FFA ?>') {
-                    $('#max_group_size').val(result.tournamentSettings.max_group_size)
-                    $('#advance_count').val(result.tournamentSettings.advance_count)
+                if (tournamentSettings.type == '<?= TOURNAMENT_TYPE_FFA ?>') {
+                    $('#max_group_size').val(tournamentSettings.max_group_size)
+                    $('#advance_count').val(tournamentSettings.advance_count)
                 }
 
                 changeEliminationType($('#eliminationType'))
 
-                if (result.tournamentSettings.theme) {
-                    $('#tournamentTheme').val(result.tournamentSettings.theme)
+                if (tournamentSettings.theme) {
+                    $('#tournamentTheme').val(tournamentSettings.theme)
                 }
 
                 $('#description').summernote('destroy');
-                $('#description').text(result.tournamentSettings.description)
+                $('#description').text(tournamentSettings.description)
 
                 $("textarea#description").summernote({
                     callbacks: {
@@ -1624,22 +1631,22 @@ const changeSettings = (event) => {
                     }
                 });
 
-                if (result.tournamentSettings.visibility == 1) {
+                if (tournamentSettings.visibility == 1) {
                     $('#enableVisibility').attr('checked', true)
                 } else {
                     $('#enableVisibility').attr('checked', false)
                 }
-                if (result.tournamentSettings.availability == 1) {
+                if (tournamentSettings.availability == 1) {
                     $('#enableAvailability').attr('checked', true);
 
-                    if (result.tournamentSettings.available_start && result.tournamentSettings.available_start != '0000-00-00 00:00:00') {
-                        const [startDate, startTime] = result.tournamentSettings.available_start.split(' ');
+                    if (tournamentSettings.available_start && tournamentSettings.available_start != '0000-00-00 00:00:00') {
+                        const [startDate, startTime] = tournamentSettings.available_start.split(' ');
                         const [startHour, startMinute] = startTime.split(':');
                         $('#startAvPickerInput').val(`${startDate} ${startHour}:${startMinute}`);
                     }
 
-                    if (result.tournamentSettings.available_end && result.tournamentSettings.available_end != '0000-00-00 00:00:00') {
-                        const [endDate, endTime] = result.tournamentSettings.available_end.split(' ');
+                    if (tournamentSettings.available_end && tournamentSettings.available_end != '0000-00-00 00:00:00') {
+                        const [endDate, endTime] = tournamentSettings.available_end.split(' ');
                         const [endHour, endMinute] = endTime.split(':');
                         $('#endAvPickerInput').val(`${endDate} ${endHour}:${endMinute}`);
                     }
@@ -1677,34 +1684,34 @@ const changeSettings = (event) => {
                 toggleVisibility(document.getElementById('enableVisibility'))
                 toggleAvailability(document.getElementById('enableAvailability'))
 
-                if (result.tournamentSettings.score_enabled == 1) {
+                if (tournamentSettings.score_enabled == 1) {
                     $('#enableScoreOption').attr('checked', true)
-                    $('#scorePerBracket').val(result.tournamentSettings.score_bracket)
+                    $('#scorePerBracket').val(tournamentSettings.score_bracket)
                 } else {
                     $('#enableScoreOption').removeAttr('checked')
                 }
 
-                if (result.tournamentSettings.increment_score_enabled == 1) {
+                if (tournamentSettings.increment_score_enabled == 1) {
                     $('#enableIncrementScore').attr('checked', true)
                     $('#incrementScore').removeAttr('disabled')
-                    $('#incrementScore').val(result.tournamentSettings.increment_score)
+                    $('#incrementScore').val(tournamentSettings.increment_score)
                 } else {
                     $('#enableIncrementScore').removeAttr('checked')
                     $('#incrementScore').attr('disabled', true)
-                    $('#incrementScore').val(result.tournamentSettings.increment_score)
+                    $('#incrementScore').val(tournamentSettings.increment_score)
                 }
 
-                if (result.tournamentSettings.scoring_method) {
-                    $('#scoringMethod').val(result.tournamentSettings.scoring_method)
+                if (tournamentSettings.scoring_method) {
+                    $('#scoringMethod').val(tournamentSettings.scoring_method)
                 }
 
-                if (result.tournamentSettings.score_manual_override == 1) {
+                if (tournamentSettings.score_manual_override == 1) {
                     $('#enableScoreOverride').attr('checked', true)
                 } else {
                     $('#enableScoreOverride').removeAttr('checked')
                 }
 
-                if (result.tournamentSettings.increment_score_type == '<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>') {
+                if (tournamentSettings.increment_score_type == '<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>') {
                     $('#scoreOptions #incrementPlus').prop('checked', true)
                     $('#scoreOptions #incrementMultiply').prop('checked', false)
                     $('.enable-increamentscoreoption-hint .plus').removeClass('d-none')
@@ -1719,7 +1726,7 @@ const changeSettings = (event) => {
                 toggleScoreOption(document.getElementById('enableScoreOption'))
                 toggleIncrementScore(document.getElementById('enableIncrementScore'))
 
-                if (result.tournamentSettings.shuffle_enabled == 1) {
+                if (tournamentSettings.shuffle_enabled == 1) {
                     $('#enableShuffle').prop('checked', true)
                 } else {
                     $('#enableShuffle').prop('checked', false)
@@ -1727,26 +1734,26 @@ const changeSettings = (event) => {
                 toggleShuffleParticipants(document.getElementById('enableShuffle'))
 
                 /** Initialize the settings for Evaluation Method */
-                if (!result.tournamentSettings.evaluation_method) {
-                    result.tournamentSettings.evaluation_method = '<?= EVALUATION_METHOD_MANUAL ?>'
+                if (!tournamentSettings.evaluation_method) {
+                    tournamentSettings.evaluation_method = '<?= EVALUATION_METHOD_MANUAL ?>'
                 }
-                $('#evaluationMethod').val(result.tournamentSettings.evaluation_method)
+                $('#evaluationMethod').val(tournamentSettings.evaluation_method)
                 changeEvaluationMethod(document.getElementById('evaluationMethod'))
-                if (!result.tournamentSettings.voting_accessibility) {
-                    result.tournamentSettings.voting_accessibility = '<?= EVALUATION_VOTING_UNRESTRICTED ?>'
+                if (!tournamentSettings.voting_accessibility) {
+                    tournamentSettings.voting_accessibility = '<?= EVALUATION_VOTING_UNRESTRICTED ?>'
                 }
-                $('#votingAccessbility').val(result.tournamentSettings.voting_accessibility)
+                $('#votingAccessbility').val(tournamentSettings.voting_accessibility)
                 changeVotingAccessbility(document.getElementById('votingAccessbility'))
-                if (result.tournamentSettings.voting_mechanism == undefined) {
-                    result.tournamentSettings.voting_mechanism = '<?= EVALUATION_VOTING_MECHANISM_ROUND ?>'
+                if (tournamentSettings.voting_mechanism == undefined) {
+                    tournamentSettings.voting_mechanism = '<?= EVALUATION_VOTING_MECHANISM_ROUND ?>'
                 }
-                $('#votingMechanism').val(result.tournamentSettings.voting_mechanism)
-                if (result.tournamentSettings.evaluation_method != '<?= EVALUATION_METHOD_MANUAL ?>') {
+                $('#votingMechanism').val(tournamentSettings.voting_mechanism)
+                if (tournamentSettings.evaluation_method != '<?= EVALUATION_METHOD_MANUAL ?>') {
                     changeVotingMechanism(document.getElementById('votingMechanism'))
                 }
-                $('#maxVotes').val(result.tournamentSettings.max_vote_value)
+                $('#maxVotes').val(tournamentSettings.max_vote_value)
 
-                if (result.tournamentSettings.vote_displaying == '<?= VOTE_DISPLAYING_IN_POINT ?>') {
+                if (tournamentSettings.vote_displaying == '<?= VOTE_DISPLAYING_IN_POINT ?>') {
                     $('#voting-settings-panel #voteDisplayPoint').prop('checked', true)
                     $('#voting-settings-panel #voteDisplayPercent').prop('checked', false)
                 } else {
@@ -1754,71 +1761,85 @@ const changeSettings = (event) => {
                     $('#voting-settings-panel #voteDisplayPercent').prop('checked', true)
                 }
 
-                if (result.tournamentSettings.voting_retain == 1) {
+                if (tournamentSettings.voting_retain == 1) {
                     $('#retainVotesCheckbox').prop('checked', true)
                 } else {
                     $('#retainVotesCheckbox').prop('checked', false)
                 }
 
-                if (result.tournamentSettings.allow_host_override == 1) {
+                if (tournamentSettings.allow_host_override == 1) {
                     $('#allowHostOverride').prop('checked', true)
                 } else {
                     $('#allowHostOverride').prop('checked', false)
                 }
 
-                if (result.tournamentSettings.round_duration_combine == 1) {
+                if (tournamentSettings.round_duration_combine == 1) {
                     $('#roundDurationCheckbox').prop('checked', true)
                 } else {
                     $('#roundDurationCheckbox').prop('checked', false)
                 }
 
-                if (result.tournamentSettings.pt_image_update_enabled == 1) {
+                if (tournamentSettings.pt_image_update_enabled == 1) {
                     $('#ptImageUpdatePermission').prop('checked', true)
                 } else {
                     $('#ptImageUpdatePermission').prop('checked', false)
                 }
 
-                if (result.tournamentSettings.timer_option == "<?= AUTOMATIC ?>") {
-                    document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="auto"]').checked = true
+                if (tournamentSettings.timer_option == "<?= AUTOMATIC ?>") {
+                    document.querySelector('.round-duration-settings input[name="timer_option"][value="auto"]').checked = true
                     document.getElementById('customTimerOptions').classList.add('d-none')
                     document.querySelectorAll('#customTimerOptions input').forEach(element => {
                         element.disabled = true
                     })
                 } else {
-                    document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="custom"]').checked = true
+                    document.querySelector('.round-duration-settings input[name="timer_option"][value="custom"]').checked = true
                     document.getElementById('customTimerOptions').classList.remove('d-none')
+                    document.querySelector('.custom-timer').classList.remove('d-none')
                     document.querySelectorAll('#customTimerOptions input').forEach(element => {
                         element.disabled = false
                     })
 
-                    if (parseInt(result.tournamentSettings.timer_auto_advance)) {
+                    if (tournamentSettings.rounds && tournamentSettings.rounds.length) {
+                        document.querySelector('input[name="round_time_type"][value="<?= TOURNAMENT_CUSTOM_TIMER_PER_ROUNDS ?>"]').disabled = false
+                    }
+
+                    if (tournamentSettings.round_time_type == "<?= TOURNAMENT_CUSTOM_TIMER_SAME ?>") {
+                        document.querySelector('input[name="round_time_type"][value="<?= TOURNAMENT_CUSTOM_TIMER_SAME ?>"]').checked = true
+                        changeRoundTimeMode(document.getElementById('customTimerSame'))
+                    } else {
+                        document.querySelector('input[name="round_time_type"][value="<?= TOURNAMENT_CUSTOM_TIMER_SAME ?>"]').checked = false
+                        document.querySelector('input[name="round_time_type"][value="<?= TOURNAMENT_CUSTOM_TIMER_PER_ROUNDS ?>"]').checked = true
+                        changeRoundTimeMode(document.getElementById('customTimerPerRounds'))
+                    }
+
+                    if (parseInt(tournamentSettings.timer_auto_advance)) {
                         $('#timerAutoAdvance').prop('checked', true)
                     } else {
                         $('#timerAutoAdvance').prop('checked', false)
                     }
 
-                    if (parseInt(result.tournamentSettings.timer_require_scores)) {
+                    if (parseInt(tournamentSettings.timer_require_scores)) {
                         $('#timerRequireScores').prop('checked', true)
                     } else {
                         $('#timerRequireScores').prop('checked', false)
                     }
 
-                    if (parseInt(result.tournamentSettings.timer_start_manually)) {
+                    if (parseInt(tournamentSettings.timer_start_manually)) {
                         $('#timerStartManually').prop('checked', true)
                     } else {
                         $('#timerStartManually').prop('checked', false)
                     }
                 }
 
-                $('#collapseAdvancedRoundSettings input[name="timer_option"]').on('change', (e) => {
+                $('.round-duration-settings input[name="timer_option"]').on('change', (e) => {
                     if (e.target.value == "auto") {
-                        document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="auto"]').checked = true
+                        document.querySelector('.round-duration-settings input[name="timer_option"][value="auto"]').checked = true
                         document.getElementById('customTimerOptions').classList.add('d-none')
                         document.querySelectorAll('#customTimerOptions input').forEach(element => {
                             element.disabled = true
                         })
                     } else {
-                        document.querySelector('#collapseAdvancedRoundSettings input[name="timer_option"][value="custom"]').checked = true
+                        document.querySelector('.round-duration-settings input[name="timer_option"][value="custom"]').checked = true
                         document.getElementById('customTimerOptions').classList.remove('d-none')
                         document.querySelectorAll('#customTimerOptions input').forEach(element => {
                             element.disabled = false
@@ -1826,19 +1847,19 @@ const changeSettings = (event) => {
                     }
                 })
 
-                if (result.tournamentSettings.timer_start_option == "<?= AUTOMATIC ?>") {
+                if (tournamentSettings.timer_start_option == "<?= AUTOMATIC ?>") {
                     document.querySelector('#collapseAdvancedRoundSettings input[name="timer_start_option"][value="<?= AUTOMATIC ?>"]').checked = true
                 } else {
                     document.querySelector('#collapseAdvancedRoundSettings input[name="timer_start_option"][value="<?= MANUAL ?>"]').checked = true
                 }
 
-                if (parseInt(result.tournamentSettings.round_score_editing)) {
+                if (parseInt(tournamentSettings.round_score_editing)) {
                     document.querySelector('#collapseAdvancedRoundSettings input[name="round_score_editing"][value="1"]').checked = true
                 } else {
                     document.querySelector('#collapseAdvancedRoundSettings input[name="round_score_editing"][value="0"]').checked = true
                 }
 
-                if (result.tournamentSettings.round_advance_method == "<?= AUTOMATIC ?>") {
+                if (tournamentSettings.round_advance_method == "<?= AUTOMATIC ?>") {
                     document.querySelector('#collapseAdvancedRoundSettings input[name="round_advance_method"][value="<?= AUTOMATIC ?>"]').checked = true
                 } else {
                     document.querySelector('#collapseAdvancedRoundSettings input[name="round_advance_method"][value="<?= MANUAL ?>"]').checked = true

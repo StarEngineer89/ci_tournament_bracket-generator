@@ -231,56 +231,63 @@
             </div>
         </div>
     </div>
-    <div class="advanced-round-duration-settings ps-md-3 ps-sm-2">
+    <div class="round-duration-settings ps-md-3 ps-sm-2 d-none">
+        <div class="ps-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="timer_option" value="auto" id="timerOptionAuto" onchange="changeRoundMode(this)" checked>
+                <label class="form-check-label" for="timerOptionAuto">
+                    Auto-calculate from Tournament Availability
+                </label>
+                <br />
+                <span class="form-text"><?= lang('Descriptions.roundAutoCalculateDescription') ?></span>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="timer_option" value="custom" id="timerOptionCustom" onchange="changeRoundMode(this)">
+                <label class="form-check-label" for="timerOptionCustom">
+                    Custom per Round
+                </label>
+                <br />
+                <span class="form-text"><?= lang('Descriptions.manualRoundDurationDescription') ?></span>
+
+                <div class="custom-timer d-none">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="round_time_type" value="<?= TOURNAMENT_CUSTOM_TIMER_SAME ?>" id="customTimerSame" onchange="changeRoundTimeMode(this)" checked>
+                        <label class="form-check-label" for="customTimerSame">Same for All Rounds</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="round_time_type" value="<?= TOURNAMENT_CUSTOM_TIMER_PER_ROUNDS ?>" id="customTimerPerRounds" onchange="changeRoundTimeMode(this)" disabled>
+                        <label class="form-check-label" for="customTimerPerRounds">Per rounds</label>
+                    </div>
+
+                    <div class="round-time-wrapper mt-1 mb-1 d-flex" id="roundTimeWrapper"></div>
+                </div>
+            </div>
+
+            <div class="custom-timer-options mt-3" id="customTimerOptions">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="timer_auto_advance" id="timerAutoAdvance" checked>
+                    <label class="form-check-label" for="timerAutoAdvance">
+                        Auto-Advance when timer ends
+                    </label>
+                    <br />
+                    <span class="form-text"><?= lang('Descriptions.autoAdvanceByTimerEndDescription') ?></span>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="timer_require_scores" id="timerRequireScores" checked>
+                    <label class="form-check-label" for="timerRequireScores">
+                        Require scores before deadline
+                    </label>
+                    <br />
+                    <span class="form-text"><?= lang('Descriptions.requireScoresBeforeDeadlineDescription') ?></span>
+                </div>
+            </div>
+        </div>
+
         <div class="collapse-toggle" role="button" data-bs-toggle="collapse" href="#collapseAdvancedRoundSettings" aria-expanded="false" aria-controls="collapseExample">
             Advanced Timer Options
         </div>
         <div class="collapse" id="collapseAdvancedRoundSettings">
             <div class="ps-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="timer_option" value="auto" id="timerOptionAuto" checked>
-                    <label class="form-check-label" for="timerOptionAuto">
-                        Auto-calculate from Tournament Availability
-                    </label>
-                    <br />
-                    <span class="form-text"><?= lang('Descriptions.roundAutoCalculateDescription') ?></span>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="timer_option" value="custom" id="timerOptionCustom">
-                    <label class="form-check-label" for="timerOptionCustom">
-                        Custom per Round
-                    </label>
-                    <br />
-                    <span class="form-text"><?= lang('Descriptions.manualRoundDurationDescription') ?></span>
-
-                    <div class="custom-timer-options" id="customTimerOptions">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="timer_auto_advance" id="timerAutoAdvance" checked>
-                            <label class="form-check-label" for="timerAutoAdvance">
-                                Auto-Advance when timer ends
-                            </label>
-                            <br />
-                            <span class="form-text"><?= lang('Descriptions.autoAdvanceByTimerEndDescription') ?></span>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="timer_require_scores" id="timerRequireScores" checked>
-                            <label class="form-check-label" for="timerRequireScores">
-                                Require scores before deadline
-                            </label>
-                            <br />
-                            <span class="form-text"><?= lang('Descriptions.requireScoresBeforeDeadlineDescription') ?></span>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="timer_start_manually" id="timerStartManually">
-                            <label class="form-check-label" for="timerStartManually">
-                                Start timer manually
-                            </label>
-                            <br />
-                            <span class="form-text"><?= lang('Descriptions.startTimerManuallyDescription') ?></span>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="ps-md-3 ps-sm-4 pt-2" id="manualRoundSettings">
                     <label class="form-label pt-2">⏱️ Timer Start</label>
                     <div class="timer-start-options ps-3">

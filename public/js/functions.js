@@ -742,6 +742,8 @@ let toggleRoundDuration = (checkbox) => {
             $('.round-duration-combine-required').removeClass('d-none')
             $('#roundDurationCheckbox').addClass('is-invalid')
         }
+
+        document.querySelector('.round-duration-settings').classList.remove('d-none')
     } else {
         $('#enableAvailability').attr('required', false)
         $('#enableAvailability').removeClass('is-invalid')
@@ -751,8 +753,118 @@ let toggleRoundDuration = (checkbox) => {
         }
 
         $('.round-duration-combine-required').addClass('d-none')
-        $('#roundDurationCheckbox').removeClass('is-invalid')
+        $( '#roundDurationCheckbox' ).removeClass( 'is-invalid' )
+
+        if ( document.getElementById( 'evaluationMethod' ).value == 'v' && document.getElementById( 'votingMechanism' ).value == 1 )
+        {
+            document.querySelector('.round-duration-settings').classList.remove('d-none')
+        } else
+        {
+            document.querySelector('.round-duration-settings').classList.add('d-none')    
+        }
     }
+}
+
+let changeRoundMode = ( element ) =>
+{
+    if ( element.value == 'auto' )
+    {
+        document.querySelector('.custom-timer').classList.add('d-none')
+    } else
+    {
+        if ( !document.getElementById( 'roundTimeWrapper' ).html )
+        {
+            const container = document.getElementById('roundTimeWrapper');
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'input-group';
+
+            wrapper.innerHTML = `
+                <span class="input-group-text">Time</span>
+                <input type="text" class="form-control" name="round_time" value="" placeholder="00D 00:00" pattern="\\d{2}D \\d{2}:\\d{2}" />
+            `;
+
+            container.appendChild( wrapper );
+            
+            $(container).find('input[name="round_time"]').inputmask(
+                "99D 29:59", {
+                    placeholder: "00D 00:00",
+                    insertMode: false,
+                    showMaskOnHover: false,
+                    definitions: {
+                        '2': {
+                            validator: "[0-2]",
+                            cardinality: 1
+                        },
+                        '5': {
+                            validator: "[0-5]",
+                            cardinality: 1
+                        }
+                    }
+                });
+        }
+
+        document.querySelector('.custom-timer').classList.remove('d-none')
+    }
+}
+
+let changeRoundTimeMode = ( element ) =>
+{
+    const container = document.getElementById('roundTimeWrapper');
+    container.innerHTML = ''
+
+    if ( element == document.getElementById( 'customTimerSame' ) )
+    {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'input-group';
+
+        wrapper.innerHTML = `
+            <span class="input-group-text">Time</span>
+            <input type="text" class="form-control" name="round_time" value="${tournamentSettings.round_duration ? tournamentSettings.round_duration : ''}" placeholder="00D 00:00" pattern="\\d{2}D \\d{2}:\\d{2}" />
+        `;
+
+        container.appendChild( wrapper );
+        
+        document.getElementById('customTimerSame').checked = true
+    } else
+    {
+        if (tournamentSettings.rounds) {
+            tournamentSettings.rounds.forEach((round, i) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'input-group';
+
+                wrapper.innerHTML = `
+                    <span class="input-group-text">Round ${i + 1}</span>
+                    <input type="text" class="form-control" name="round_time_${round.round_no}" value="${round.duration ?? ''}" placeholder="00D 00:00" pattern="\\d{2}D \\d{2}:\\d{2}" />
+                `;
+
+                container.appendChild(wrapper);
+            })
+        }
+
+        document.getElementById('customTimerPerRounds').disabled = false
+        document.getElementById('customTimerSame').checked = false
+        document.getElementById('customTimerPerRounds').checked = true
+    }
+
+    $('#roundTimeWrapper').find('input').each((i, element) => {
+        $(element).inputmask(
+            "99D 29:59", {
+                placeholder: "00D 00:00",
+                insertMode: false,
+                showMaskOnHover: false,
+                definitions: {
+                    '2': {
+                        validator: "[0-2]",
+                        cardinality: 1
+                    },
+                    '5': {
+                        validator: "[0-5]",
+                        cardinality: 1
+                    }
+                }
+            });
+    });
 }
 
 var changeEvaluationMethod = (element) => {
@@ -776,11 +888,12 @@ var changeEvaluationMethod = (element) => {
         $('.evaluation-method-manual-hint').addClass('d-none')
         $('.evaluation-method-voting-hint').removeClass('d-none')
         
-        $('.round-duration-combine, .round-duration-combine .form-text').addClass('d-none')
-
+        $('.round-duration-combine, .round-duration-combine .form-text, .round-duration-settings').addClass('d-none')
+        
         if ($('#votingMechanism').val() == 1) {
             $('#enableAvailability').prop('required', true)
-            $('.round-duration-combine .round-duration-manual-checkbox-hint').addClass('text-content')
+            $( '.round-duration-combine .round-duration-manual-checkbox-hint' ).addClass( 'text-content' )
+            $( '.round-duration-settings' ).removeClass( 'd-none' )
         }
 
         if ($('#votingMechanism').val() == 2) {
@@ -824,7 +937,7 @@ var changeVotingMechanism = (element) => {
     // EVALUATION_VOTING_MECHANISM_OPENEND = 3
     if (parseInt($(element).val()) == 1) {
         $('.max-vote-setting').addClass('d-none')
-        $('.evaluation-vote-round').removeClass('d-none')
+        $('.evaluation-vote-round, .round-duration-settings').removeClass('d-none')
         $('.evaluation-vote-max').addClass('d-none')
         $('.evaluation-open-ended').addClass('d-none')
         $('#maxVotes').attr('required', false)
@@ -843,7 +956,7 @@ var changeVotingMechanism = (element) => {
 
     if (parseInt($(element).val()) == 2) {
         $('.max-vote-setting').removeClass('d-none')
-        $('.evaluation-vote-round').addClass('d-none')
+        $('.evaluation-vote-round, .round-duration-settings').addClass('d-none')
         $('.evaluation-vote-max').removeClass('d-none')
         $('.evaluation-open-ended').addClass('d-none')
         $('#maxVotes').attr('required', true)
@@ -863,7 +976,7 @@ var changeVotingMechanism = (element) => {
     if (parseInt($(element).val()) == 3) {
         $('#maxVotes').attr('required', false)
         $('.max-vote-setting').addClass('d-none')
-        $('.evaluation-vote-round').addClass('d-none')
+        $('.evaluation-vote-round, .round-duration-settings').addClass('d-none')
         $('.evaluation-vote-max').addClass('d-none')
         $('.evaluation-open-ended').removeClass('d-none')
         $('.allow-host-override-setting').addClass('d-none')

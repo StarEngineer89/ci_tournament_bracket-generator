@@ -785,9 +785,9 @@ var changeVoteDisplayingMode = (element) => {
                         </p>
                         <?php endif; ?>
 
-                        <div class="advanced-timer-settings">
+                        <div class="round-settings ps-2">
                             <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                                <strong>Round Timer</strong>
+                                <strong>Mode</strong>
                                 <span>
                                     <?= $tournament['timer_option'] == AUTOMATIC ? "Auto-calculate" : "Custom per Round" ?>
                                     <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= $tournament['timer_option'] == AUTOMATIC ? lang('Descriptions.roundAutoCalculateDescription') : lang('Descriptions.manualRoundDurationDescription') ?>'>
@@ -811,15 +811,6 @@ var changeVoteDisplayingMode = (element) => {
                                 <span>
                                     <?= $tournament['timer_require_scores'] ? "On" : "Off" ?>
                                     <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= lang('Descriptions.requireScoresBeforeDeadlineDescription') ?>'>
-                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
-                                    </button>
-                                </span>
-                            </p>
-                            <p class="property-info d-flex justify-content-between mb-1 ps-3">
-                                <strong>Start timer manually</strong>
-                                <span>
-                                    <?= $tournament['timer_start_manually'] ? "On" : "Off" ?>
-                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content='<?= lang('Descriptions.startTimerManuallyDescription') ?>'>
                                         <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                                     </button>
                                 </span>

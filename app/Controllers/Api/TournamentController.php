@@ -16,6 +16,7 @@ class TournamentController extends BaseController
 {
     protected $notificationService;
     protected $tournamentModel;
+    protected $tournamentRoundSettingsModel;
     protected $tournamentMembersModel;
     protected $participantModel;
     protected $bracketModel;
@@ -27,6 +28,7 @@ class TournamentController extends BaseController
     {
         $this->notificationService = new NotificationService();
         $this->tournamentModel = model('\App\Models\TournamentModel');
+        $this->tournamentRoundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
         $this->tournamentMembersModel = model('\App\Models\TournamentMembersModel');
         $this->participantModel = model('\App\Models\ParticipantModel');
         $this->bracketModel = model('\App\Models\BracketModel');
@@ -354,6 +356,7 @@ class TournamentController extends BaseController
             'timer_start_option'=> $this->request->getPost('timer_start_option'),
             'round_score_editing'=> $this->request->getPost('round_score_editing'),
             'round_advance_method'=> $this->request->getPost('round_advance_method'),
+            'round_time_type' => $this->request->getPost('round_time_type'),
         ];
 
         if ($this->request->getPost('availability')) {
@@ -467,9 +470,20 @@ class TournamentController extends BaseController
 
     public function getSettings($id)
     {
-        $tournamentModel = model('\App\Models\TournamentModel');
-        $tournament = $tournamentModel->find($id);
+        $tournament = $this->tournamentModel->find($id);
 
+        $rounds = $this->bracketModel->where(['tournament_id' => $id])->select('roundNo as round_no')->groupBy('roundNo')->findAll();
+        if ($rounds) {
+            foreach ($rounds as $i => $round) {
+                $roundSetting = $this->tournamentRoundSettingsModel->where(['tournament_id' => $id, 'round_no'=> $round['round_no']])->first();
+                if ($roundSetting) {
+                    $rounds[$i] = $roundSetting;
+                }
+            }
+        }
+
+        $tournament['rounds'] = $rounds;
+        
         $audioSettingModel = model('\App\Models\AudioSettingModel');
 
         $settings = $audioSettingModel->where(['tournament_id' => $id])->findAll();
@@ -491,8 +505,7 @@ class TournamentController extends BaseController
 
     public function update($tournament_id)
     {
-        $tournamentModel = model('\App\Models\TournamentModel');
-        $tournament = $tournamentModel->find(intval($tournament_id));
+        $tournament = $this->tournamentModel->find(intval($tournament_id));
 
         $scheduleLibrary = new \App\Libraries\ScheduleLibrary();
 
@@ -703,6 +716,30 @@ class TournamentController extends BaseController
             $tournament['round_advance_method'] = $this->request->getPost('round_advance_method');
         }
 
+        if ($this->request->getPost('round_time_type')) {
+            $tournament['round_time_type'] = $this->request->getPost('round_time_type');
+
+            if ($tournament['round_time_type'] == TOURNAMENT_CUSTOM_TIMER_SAME) {
+                $tournament['round_duration'] = $this->request->getPost('round_time');
+            } else {
+                $rounds = $this->bracketModel->asObject()->where(['tournament_id' => $tournament_id])->select('roundNo')->groupBy('roundNo')->findAll();
+                if ($rounds) {
+                    foreach ($rounds as $round) {
+                        $roundSetting = $this->tournamentRoundSettingsModel->asObject()->where(['tournament_id' => $tournament_id, 'round_no' => $round->roundNo])->first();
+                        if (!$roundSetting) {
+                            $roundSetting = new \App\Entities\TournamentRoundSetting();
+                            $roundSetting->tournament_id = $tournament_id;
+                            $roundSetting->user_id = auth()->user()->id;
+                            $roundSetting->round_no = $round->roundNo;
+                        }
+
+                        $roundSetting->duration = $this->request->getPost("round_time_$round->roundNo");
+                        $this->tournamentRoundSettingsModel->save($roundSetting);
+                    }
+                }
+            }
+        }
+
         if ($this->request->getPost('participant_manage_metrics')) {
             $tournament['participant_manage_metrics'] = ($this->request->getPost('participant_manage_metrics') == 'on') ? 1 : 0;
         }
@@ -733,7 +770,7 @@ class TournamentController extends BaseController
             $tournament['archive'] = $this->request->getPost('archive');
         }
 
-        $tournamentModel->save($tournament);
+        $this->tournamentModel->save($tournament);
 
         /** Schedule to update the rounds by cron */
         if (isset($tournament['availability']) && $tournament['availability']) {
