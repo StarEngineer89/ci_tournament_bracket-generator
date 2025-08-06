@@ -107,7 +107,11 @@ class VoteLibrary
             if ($teams[0]) {
                 $pa_votes = $this->votesModel->where(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $teams[0]['id'], 'round_no' => $round_no])->countAllResults();
             }
-            
+
+            if (!isset($teams[1])) {
+                $teams[1] = null;
+            }
+
             if ($teams[1]) {
                 $pb_votes = $this->votesModel->where(['tournament_id' => $tournament_id, 'bracket_id' => $bracket['id'], 'participant_id' => $teams[1]['id'], 'round_no' => $round_no])->countAllResults();
             }
