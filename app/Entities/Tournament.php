@@ -53,7 +53,6 @@ class Tournament extends Entity
         'round_score_editing' => null,
         'round_advance_method' => null,
         'round_time_type' => null,
-        'round_time' => null,
         'round_duration' => null,
     ];
 }
