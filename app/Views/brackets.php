@@ -57,19 +57,21 @@ let manageMetricsPermission = false;
 let manageMetricsTarget = null;
 let editmetricsPermission = false;
 
-<?php if (intval($tournament['participant_manage_metrics']) && auth()->user()): ?>
-manageMetricsPermission = true;
-manageMetricsTarget = <?= auth()->user()->id ?>;
-<?php endif; ?>
+if ((tournament.evaluation_method == "<?= EVALUATION_METHOD_MANUAL ?>" && parseInt(tournament.round_duration_combine)) || (tournament.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>" && (tournament.voting_mechanism == "<?= EVALUATION_VOTING_MECHANISM_ROUND ?>" || tournament.voting_mechanism == "<?= EVALUATION_VOTING_MECHANISM_OPENEND ?>")) || (tournament.evaluation_method == "<?= EVALUATION_METHOD_VOTING ?>" && tournament.voting_mechanism == "<?= EVALUATION_VOTING_MECHANISM_MAXVOTE ?>" && parseInt(tournament.round_duration_combine))) {
+    <?php if (intval($tournament['participant_manage_metrics']) && auth()->user()): ?>
+    manageMetricsPermission = true;
+    manageMetricsTarget = <?= auth()->user()->id ?>;
+    <?php endif; ?>
 
-<?php if (intval($tournament['host_manage_metrics']) && auth()->user() && auth()->user()->id == intval($tournament['user_id'])): ?>
-manageMetricsPermission = true;
-manageMetricsTarget = 'all';
-<?php endif; ?>
+    <?php if (intval($tournament['host_manage_metrics']) && auth()->user() && auth()->user()->id == intval($tournament['user_id'])): ?>
+    manageMetricsPermission = true;
+    manageMetricsTarget = 'all';
+    <?php endif; ?>
 
-<?php if (intval($tournament['allow_metric_edits'])): ?>
-editmetricsPermission = true;
-<?php endif; ?>
+    <?php if (intval($tournament['allow_metric_edits'])): ?>
+    editmetricsPermission = true;
+    <?php endif; ?>
+}
 
 const UUID = getOrCreateDeviceId()
 

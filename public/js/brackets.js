@@ -771,6 +771,11 @@ function renderFFABrackets ( result, direction = 'ltr' )
         participant.dataset.round = bracket.roundNo;
         participant.textContent = ' ';
 
+        if ( bracket.start !== 'undefined' )
+        {
+            participant.dataset.start = bracket.start
+        }
+
         var pidBox = document.createElement('span')
         pidBox.classList.add('p-id')
 
@@ -1856,26 +1861,27 @@ let setMetrics = (key, opt, e) => {
 
     // Create a container element
     const content = document.createElement('div');
-    content.classList.add('d-flex', 'gap-3', 'align-items-end');
+    content.classList.add('d-flex', 'gap-1', 'align-items-end');
 
     content.innerHTML = `
-        <div>
+        <div style="min-width: 40px">
             <label class="form-label text-center m-0 d-block">Score</label>
-            <input type="text" class="form-control" name="score" />
+            <input type="text" class="form-control" name="score">
         </div>
-        <div>
+        <div class="flex-grow-1" style="min-width:160px;">
             <label class="form-label text-center m-0 d-block">Time</label>
             <div class="input-group">
-                <span class="input-group-text">
+                <span class="input-group-text" id="watchIcon">
                     <i class="bi bi-stopwatch"></i>
                 </span>
-                <input type="text" class="form-control" name="time" />
+                <input type="text" class="form-control" name="time">
             </div>
         </div>
-        <div>
-            <button class="btn btn-sm btn-success" id="saveMetricsBtn">Save</button>
+        <!-- Full width Save button on next line -->
+        <div class="w-100">
+            <button class="btn btn-success w-100" id="saveMetricsBtn"><i class="fa fa-save"></i></button>
         </div>
-    `;
+        `;
 
     // Create the popover
     const popover = new bootstrap.Popover(triggerEl, {
@@ -1894,14 +1900,65 @@ let setMetrics = (key, opt, e) => {
 
         // Start timer
         const timeInput = document.querySelector('.popover-body input[name="time"]');
-        let seconds = 0;
+        const startTime = opt.$trigger.data('start')
+        let seconds = getTimeProgress(startTime);
+        let isRunning = true;
+
+        // Helper: format seconds -> xxD hh:mm:ss
+        function formatTime(totalSeconds) {
+            const days = Math.floor(totalSeconds / (24 * 3600));
+            const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const secs = totalSeconds % 60;
+
+            return `${String(days).padStart(2, '0')}D `
+                + `${String(hours).padStart(2, '0')}:`
+                + `${String(minutes).padStart(2, '0')}:`
+                + `${String(secs).padStart(2, '0')}`;
+        }
+
+        // Helper: get time progressed
+        function getTimeProgress(startTime)
+        {
+            // Target datetime (NY time)
+            const target = new Date(startTime); 
+            // NOTE: -04:00 is Eastern Daylight Time offset in August
+
+            // Get current time in America/New_York
+            const now = new Date(
+                new Date().toLocaleString("en-US", { timeZone: timezone })
+            );
+
+            // Calculate difference in second
+            const diffSeconds = Math.floor((now - target) / 1000);
+            
+            return diffSeconds
+        }
 
         if (timeInput) {
             timerInterval = setInterval(() => {
                 seconds += 1;
-                timeInput.value = seconds;
+                timeInput.value = formatTime(seconds);
             }, 1000);
         }
+
+        // Handle stopwatch icon click
+        document.getElementById('watchIcon').addEventListener('click', () => {
+            if (isRunning) {
+                // Stop timer
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isRunning = false;
+            } else {
+                // Restart timer
+                seconds = getTimeProgress(startTime);
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    timeInput.value = formatTime(seconds);
+                }, 1000);
+                isRunning = true;
+            }
+        });
 
         // Handle Save click
         setTimeout(() => {
@@ -1916,7 +1973,7 @@ let setMetrics = (key, opt, e) => {
                 $.ajax({
                     type: "POST",
                     url: apiURL + '/brackets/save-score',
-                    data: {'tournament_id': parseInt(tournament.id), 'bracket_id': bracketId, 'participant_id': participantId, 'roundNo': roundNo, 'score': parseInt(score), 'time': parseInt(time)},
+                    data: {'tournament_id': parseInt(tournament.id), 'bracket_id': bracketId, 'participant_id': participantId, 'roundNo': roundNo, 'score': parseInt(score), 'time': time},
                     success: function (result) {
                         if (result.status == 'error') {
                             $('#errorModal .errorDetails').html(result.errors.file)
