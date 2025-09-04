@@ -1,99 +1,106 @@
-<div class="input-group mb-3">
-    <span class="input-group-text" id="tournamentTitleLabel">Tournament Title</span>
-    <input type="text" class="form-control music-source" id="tournamentTitle" name="title" required>
-    <div class="invalid-feedback">This field is required.</div>
+<div class="border-bottom mb-3 pb-3">
+    <div class="input-group pb-3">
+        <span class="input-group-text" id="tournamentTitleLabel">Tournament Title</span>
+        <input type="text" class="form-control music-source" id="tournamentTitle" name="title" required>
+        <div class="invalid-feedback">This field is required.</div>
+    </div>
+
+    <div class="input-group pb-3">
+        <span class="input-group-text" id="type">Elimination Type</span>
+        <select class="form-select" id="eliminationType" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
+            <option value="<?= TOURNAMENT_TYPE_SINGLE ?>" selected>Single</option>
+            <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
+            <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
+            <option value="<?= TOURNAMENT_TYPE_FFA ?>">Free For All (FFA) </option>
+            <option value="<?= TOURNEMENT_TYPE_RROBIN ?>">Round Robin</option>
+            <option value="<?= TOURNEMENT_TYPE_SWISS ?>">Swiss</option>
+        </select>
+        <div class="read-more-container ps-3">
+            <div class="single-type-hint form-text text-content">
+                <?= lang('Descriptions.tournamentSingleTypeDesc') ?>
+                <div class="elimination-type-update-note mt-2"></div>
+            </div>
+            <div class="double-type-hint form-text d-none">
+                <?= lang('Descriptions.tournamentDoubleTypeDesc') ?>
+                <div class="elimination-type-update-note mt-2"></div>
+            </div>
+            <div class="knockout-type-hint form-text d-none">
+                <?= lang('Descriptions.tournamentKockoutTypeDesc') ?>
+                <div class="elimination-type-update-note mt-2"></div>
+            </div>
+            <div class="elimination-type-hint d-none">
+                Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group pb-3">
+        <span class="input-group-text" id="theme">Theme</span>
+        <select class="form-select" id="tournamentTheme" name="theme" aria-label="Theme" onchange="changeTournamentTheme(this)" required>
+            <option value="<?= TOURNAMENT_THEME_CLASSIC ?>" selected>Classic</option>
+            <option value="<?= TOURNAMENT_THEME_CHAIMPIONSHIP ?>">Championship Gold</option>
+            <option value="<?= TOURNAMENT_THEME_DARKROYALE ?>">Dark Royale</option>
+            <option value="<?= TOURNAMENT_THEME_GRIDIRON ?>">Gridiron</option>
+            <option value="<?= TOURNAMENT_THEME_MODERNMETAL ?>">Modern Metal</option>
+        </select>
+        <div class="tournament-theme-settings-hints ms-2">
+            <div class="theme-classic-hint form-text ps-md-3"><?= lang('Descriptions.tournamentThemeClassicDesc') ?></div>
+            <div class="theme-champion-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeChampionDesc') ?></div>
+            <div class="theme-darkroyale-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeDarkroyaleDesc') ?></div>
+            <div class="theme-gridiron-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeGridironDesc') ?></div>
+            <div class="theme-modernmetal-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeModernmetaleDesc') ?></div>
+        </div>
+    </div>
+
+    <div class="input-group pb-3">
+        <textarea id="description" name="description"></textarea>
+        <div class="form-text">Enter an optional description that will be displayed in the tournament.</div>
+    </div>
 </div>
 
-<div class="input-group mb-3">
-    <span class="input-group-text" id="type">Elimination Type</span>
-    <select class="form-select" id="eliminationType" name="type" aria-label="type" onchange="changeEliminationType(this)" required>
-        <option value="<?= TOURNAMENT_TYPE_SINGLE ?>" selected>Single</option>
-        <option value="<?= TOURNAMENT_TYPE_DOUBLE ?>">Double</option>
-        <option value="<?= TOURNAMENT_TYPE_KNOCKOUT ?>">Knockout</option>
-        <option value="<?= TOURNAMENT_TYPE_FFA ?>">Free For All (FFA) </option>
-        <option value="<?= TOURNEMENT_TYPE_RROBIN ?>">Round Robin</option>
-        <option value="<?= TOURNEMENT_TYPE_SWISS ?>">Swiss</option>
-    </select>
-    <div class="read-more-container">
-        <div class="single-type-hint form-text text-content">
-            <?= lang('Descriptions.tournamentSingleTypeDesc') ?>
-            <div class="elimination-type-update-note mt-2"></div>
+<div class="border-bottom mb-3 pb-3 d-none" id="FFA_Option">
+    <div>
+        <label>
+            <h6>Free for All (FFA) properties</h6>
+        </label>
+    </div>
+
+    <div class="ps-3">
+        <div class="d-flex align-items-center">
+            <div class="col-4">
+                <label for="match_group_size" class="col-form-label">Max of group members <span class="text-danger">*</span></label>
+            </div>
+            <div class="col-4">
+                <input type="number" id="max_group_size" name="max_group_size" class="form-control" aria-describedby="matchGroupSizeHelpInline" required disabled>
+            </div>
         </div>
-        <div class="double-type-hint form-text d-none">
-            <?= lang('Descriptions.tournamentDoubleTypeDesc') ?>
-            <div class="elimination-type-update-note mt-2"></div>
+        <div class="d-flex align-items-center m-0">
+            <div class="col-12 ps-3 read-more-container">
+                <span id="matchGroupSizeHelpInline" class="form-text text-content">
+                    <?= lang('Descriptions.tournamentFFAMaxGroupSizeDesc') ?>
+                </span>
+            </div>
         </div>
-        <div class="knockout-type-hint form-text d-none">
-            <?= lang('Descriptions.tournamentKockoutTypeDesc') ?>
-            <div class="elimination-type-update-note mt-2"></div>
+        <div class="d-flex align-items-center">
+            <div class="col-4">
+                <label for="advance_count" class="col-form-label">Advancing Count <span class="text-danger">*</span></label>
+            </div>
+            <div class="col-4">
+                <input type="number" id="advance_count" name="advance_count" class="form-control" aria-describedby="matchGroupSizeHelpInline" required disabled>
+            </div>
         </div>
-        <div class="elimination-type-hint d-none">
-            Note that after updating the elimination type of the tournament, the dashboard will reflect this change once you click save and refresh, however the brackets will not actually change unless you execute "reset" action, select the tournament from the dashboard, and regenerate the brackets with the new settings.
+        <div class="d-flex align-items-center m-0">
+            <div class="col-12 ps-3 read-more-container">
+                <span id="matchGroupSizeHelpInline" class="form-text">
+                    <?= lang('Descriptions.tournamentFFAAdvancingSizeDesc') ?>
+                </span>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="row g-3 ms-2 mb-5 d-none" id="FFA_Option">
-    <div class="d-flex align-items-center">
-        <div class="col-4">
-            <label for="match_group_size" class="col-form-label">Max of group members <span class="text-danger">*</span></label>
-        </div>
-        <div class="col-4">
-            <input type="number" id="max_group_size" name="max_group_size" class="form-control" aria-describedby="matchGroupSizeHelpInline" required disabled>
-        </div>
-    </div>
-    <div class="d-flex align-items-center m-0">
-        <div class="col-12 ps-3 read-more-container">
-            <span id="matchGroupSizeHelpInline" class="form-text text-content">
-                <?= lang('Descriptions.tournamentFFAMaxGroupSizeDesc') ?>
-            </span>
-        </div>
-    </div>
-    <div class="d-flex align-items-center">
-        <div class="col-4">
-            <label for="advance_count" class="col-form-label">Advancing Count <span class="text-danger">*</span></label>
-        </div>
-        <div class="col-4">
-            <input type="number" id="advance_count" name="advance_count" class="form-control" aria-describedby="matchGroupSizeHelpInline" required disabled>
-        </div>
-    </div>
-    <div class="d-flex align-items-center m-0">
-        <div class="col-12 ps-3 read-more-container">
-            <span id="matchGroupSizeHelpInline" class="form-text">
-                <?= lang('Descriptions.tournamentFFAAdvancingSizeDesc') ?>
-            </span>
-        </div>
-    </div>
-</div>
-<div class="row g-3 ms-2 mb-5 align-items-center d-none" id="FFA_Option">
-
-</div>
-
-<div class="input-group mb-3">
-    <span class="input-group-text" id="theme">Theme</span>
-    <select class="form-select" id="tournamentTheme" name="theme" aria-label="Theme" onchange="changeTournamentTheme(this)" required>
-        <option value="<?= TOURNAMENT_THEME_CLASSIC ?>" selected>Classic</option>
-        <option value="<?= TOURNAMENT_THEME_CHAIMPIONSHIP ?>">Championship Gold</option>
-        <option value="<?= TOURNAMENT_THEME_DARKROYALE ?>">Dark Royale</option>
-        <option value="<?= TOURNAMENT_THEME_GRIDIRON ?>">Gridiron</option>
-        <option value="<?= TOURNAMENT_THEME_MODERNMETAL ?>">Modern Metal</option>
-    </select>
-    <div class="tournament-theme-settings-hints ms-2">
-        <div class="theme-classic-hint form-text ps-md-3"><?= lang('Descriptions.tournamentThemeClassicDesc') ?></div>
-        <div class="theme-champion-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeChampionDesc') ?></div>
-        <div class="theme-darkroyale-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeDarkroyaleDesc') ?></div>
-        <div class="theme-gridiron-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeGridironDesc') ?></div>
-        <div class="theme-modernmetal-hint form-text mb-1 ps-md-3 d-none"><?= lang('Descriptions.tournamentThemeModernmetaleDesc') ?></div>
-    </div>
-</div>
-
-<div class="input-group mb-3">
-    <textarea id="description" name="description"></textarea>
-    <div class="form-text">Enter an optional description that will be displayed in the tournament.</div>
-</div>
-
-<div class="form-check border-bottom mb-3 pb-3">
-    <div class="ps-2">
+<div class="border-bottom mb-3 ps-2 pb-3">
+    <div class="form-check">
         <input type="checkbox" class="form-check-input enable-visibility" name="visibility" id="enableVisibility" onChange="toggleVisibility(this)" checked>
         <label class="form-check-label" for="enableVisibility">
             <h6>Visibility</h6>
@@ -102,8 +109,8 @@
     </div>
 </div>
 
-<div class="form-check border-bottom mb-3 pb-3">
-    <div class="ps-2">
+<div class="border-bottom mb-3 ps-2 pb-3">
+    <div class="form-check">
         <input type="checkbox" class="form-check-input enable-availability" name="availability" id="enableAvailability" onChange="toggleAvailability(this)" checked>
         <label class="form-check-label" for="enableAvailability">
             <h6>Availability</h6>
@@ -283,7 +290,7 @@
             </div>
         </div>
 
-        <div class="collapse-toggle" role="button" data-bs-toggle="collapse" href="#collapseAdvancedRoundSettings" aria-expanded="false" aria-controls="collapseExample">
+        <div class="collapse-toggle mt-3" role="button" data-bs-toggle="collapse" href="#collapseAdvancedRoundSettings" aria-expanded="false" aria-controls="collapseExample">
             Advanced Timer Options
         </div>
         <div class="collapse" id="collapseAdvancedRoundSettings">
@@ -353,30 +360,30 @@
     <div class="ps-2">
         <div class="input-group mb-3">
             <span class="input-group-text" id="type">Scoring Method</span>
-            <select class="form-select" id="scoringMethod" name="scoring_method" aria-label="type" onchange="changeScoringMethod(this)" required>
+            <select class="form-select" id="scoringMethod" name="scoring_method" aria-label="type" onChange="changeScoringMethod(this)" required>
                 <option value="<?= TOURNAMENT_SCORE_SYSTEM_DEFINED ?>" data-option="system">System-Defined Scoring</option>
                 <option value="<?= TOURNAMENT_SCORE_MANUAL_ENTRY ?>" data-option="manual" selected>Manual Score Entry</option>
             </select>
         </div>
     </div>
-    <div class="ps-2" id="scoreOptions" class="d-none">
+    <div class="ps-2 d-none" id="scoreOptions">
         <div class="row mb-2">
             <div class="col-auto">
                 <label for="scorePerBracket" class="col-form-label">Score per bracket per round <span class="text-danger">*</span> :</label>
             </div>
             <div class="col-3">
-                <input type="number" name="score_bracket" id="scorePerBracket" class="form-control" min="0" required>
+                <input type="number" name="score_bracket" id="scorePerBracket" class="form-control" min="0" required disabled>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-4 col-sm-6 form-check ps-2">
+        <div class="d-flex align-items-center">
+            <div class="form-check me-3">
                 <input type="checkbox" id="enableIncrementScore" class="form-check-input ms-0" name="increment_score_enabled" onChange="toggleIncrementScore(this)" checked>
                 <label for="enableIncrementScore" class="form-check-label ms-1">Increment Score :</label>
             </div>
-            <div class="col-3 ms-1">
-                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" step=".01" required>
+            <div class="me-3">
+                <input type="number" name="increment_score" id="incrementScore" class="form-control" min="0" step=".01" required disabled>
             </div>
-            <div class="col-auto">
+            <div class="">
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="increment_score_type" id="incrementPlus" value="<?= TOURNAMENT_SCORE_INCREMENT_PLUS ?>" onchange="changeIncrementScoreType(this)" checked>
                     <label class="form-check-label" for="incrementPlus">Plus</label>
@@ -390,7 +397,7 @@
                 </div>
             </div>
         </div>
-        <div class="enable-increamentscoreoption-hint form-text ps-3">
+        <div class="enable-increamentscoreoption-hint form-text ps-3 mb-3">
             <div class="read-more-container">
                 <p><?= lang('Descriptions.tournamentIncrementScoreDesc') ?></p>
                 <div class="plus text-content"><?= lang('Descriptions.tournamentIncrementScoreTypePlusDesc') ?></div>
@@ -404,6 +411,44 @@
             </label>
             <div class="enable-scoreoverride-hint form-text"><?= lang('Descriptions.tournamentEnableScoreOverrideDesc') ?></div>
         </div>
+    </div>
+</div>
+
+<div class="ranking-settings border-bottom form-check mb-3 pb-3">
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="type">Ranking Method</span>
+        <select class="form-select" id="rankingMethod" name="ranking" aria-label="type" onChange="changeRankingMethod(this)" required>
+            <option value="<?= TOURNAMENT_RANKING_BY_SCORE ?>" data-option="score" selected>Score</option>
+            <option value="<?= TOURNAMENT_RANKING_BY_WEIGHTED_FORMULA ?>" data-option="formula">Weighted Formula</option>
+        </select>
+    </div>
+    <div id="weightedFormulaOptions" class="mb-3 d-none">
+        <div class="d-flex align-items-start">
+            <div class="input-group p-2">
+                <span class="input-group-text" id="scoreWeight">Score Weight</span>
+                <input type="number" class="form-control" name="score_weight" placeholder="0.7" step="0.01" min="0" aria-label="scoreWeight" required disabled>
+            </div>
+            <div class="input-group p-2">
+                <span class="input-group-text" id="timeWeight">Time Weight</span>
+                <input type="number" class="form-control" name="time_weight" placeholder="0.3" step="0.01" min="0" aria-label="timeWeight" required disabled>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex mt-2 g-3 align-items-start">
+        <div class="col-auto">
+            <label for="tiebreakerMethod" class="col-form-label me-3">⚖️ Tiebreaker Method</label>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="tiebreakerMethod" name="tiebreaker" aria-label="Tiebreaker Method" onchange="changeTiebreakerMethod(this)" required>
+                <option value="<?= TIEBREKER_BYTIME ?>" data-description="<?= lang('Descriptions.advanceTieBreakerByTimeHint') ?>" selected>By Time </option>
+                <option value="<?= TIEBREKER_RANDOM ?>" data-description="<?= lang('Descriptions.advanceTieBreakerRandomHint') ?>">Random</option>
+                <option value="<?= TIEBREKER_HOSTDECIDE ?>" data-description="<?= lang('Descriptions.advanceTieBreakerHostDecidesHint') ?>">Host Override</option>
+            </select>
+        </div>
+    </div>
+    <div class="read-more-container">
+        <div class="advance-tiebreaker-hint form-text ps-3"><?= lang('Descriptions.advanceTieBreakerWeightedFormulaHint') ?></div>
     </div>
 </div>
 

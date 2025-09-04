@@ -74,4 +74,17 @@ return [
     'requireScoresBeforeDeadlineDescription' => "
         When enabled, hosts and participants must submit all scores before the timer ends. Afterward, scores are locked and cannot be changed.
     ",
+    'advanceTieBreakerByTimeHint' => "
+        Participants with equal scores are ranked by how quickly they achieved them. The fastest completion time wins.
+    ",
+    'advanceTieBreakerRandomHint' => "
+        If scores are tied, the system randomly selects who advances. This method is less competitive but fair when time isn’t a factor.
+    ",
+    'advanceTieBreakerHostDecidesHint' => "
+        The tournament host manually chooses the participant to advance in case of a tie.
+    ",
+    'advanceTieBreakerWeightedFormulaHint' => "
+        Scores and time are combined into a weighted calculation to determine ranking.<br/>
+        Example: FinalRank = (Score * ScoreWeight) – (Time * TimeWeight)
+    ",
 ];

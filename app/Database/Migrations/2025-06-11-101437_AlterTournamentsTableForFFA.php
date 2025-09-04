@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddMaxGroupSizeColumnToTournamentsTable extends Migration
+class AlterTournamentsTableForFFA extends Migration
 {
     public function up()
     {
@@ -35,7 +35,7 @@ class AddMaxGroupSizeColumnToTournamentsTable extends Migration
                 'default' => 0
             ],
             'scoring_method' => [
-                'type' => 'varchar',
+                'type' => 'char',
                 'constraint' => 1,
                 'default' => TOURNAMENT_SCORE_MANUAL_ENTRY,
                 'after' => "score_enabled"
@@ -47,7 +47,7 @@ class AddMaxGroupSizeColumnToTournamentsTable extends Migration
                 'after' => "scoring_method"
             ],
             'timer_option' => [
-                'type' => 'varchar',
+                'type' => 'char',
                 'constraint' => 1,
                 'default' => AUTOMATIC,
             ],
@@ -67,7 +67,7 @@ class AddMaxGroupSizeColumnToTournamentsTable extends Migration
                 'default' => 0,
             ],
             'timer_start_option' => [
-                'type' => 'varchar',
+                'type' => 'char',
                 'constraint' => 1,
                 'default' => AUTOMATIC,
             ],
@@ -77,15 +77,37 @@ class AddMaxGroupSizeColumnToTournamentsTable extends Migration
                 'default' => 0,
             ],
             'round_advance_method' => [
-                'type' => 'varchar',
+                'type' => 'char',
                 'constraint' => 1,
                 'default' => AUTOMATIC,
             ],
+            'round_time_type' => ['type' => 'varchar', 'constraint' => 1, 'default' => TOURNAMENT_CUSTOM_TIMER_SAME],
+            'round_duration' => ['type' => 'varchar', 'constraint' => 11, 'null' => true],
+            'ranking' => [
+                'type' => 'char',
+                'constraint' => 1,
+                'default' => TOURNAMENT_RANKING_BY_SCORE,
+            ],
+            'tiebreaker' => [
+                'type' => 'char',
+                'constraint' => 1,
+                'default' => TIEBREKER_BYTIME,
+            ],
+            'score_weight' => [
+                'type' => 'decimal',
+                'constraint' => '10,2',
+                'default' => 0,
+            ],
+            'time_weight' => [
+                'type' => 'decimal',
+                'constraint' => '10,2',
+                'default' => 0,
+            ]
         ]);
     }
 
     public function down()
     {
-        $this->forge->dropColumn('tournaments', ['max_group_size', 'advance_count', 'participant_manage_metrics', 'host_manage_metrics', 'allow_metric_edits', 'scoring_method', 'score_manual_override', 'timer_option', 'timer_auto_advance', 'timer_require_scores', 'timer_start_manually', 'timer_start_option', 'round_score_editing', 'round_advance_method']);
+        $this->forge->dropColumn('tournaments', ['max_group_size', 'advance_count', 'participant_manage_metrics', 'host_manage_metrics', 'allow_metric_edits', 'scoring_method', 'score_manual_override', 'timer_option', 'timer_auto_advance', 'timer_require_scores', 'timer_start_manually', 'timer_start_option', 'round_score_editing', 'round_advance_method', 'round_time_type', 'round_duration', 'ranking', 'tiebreaker']);
     }
 }

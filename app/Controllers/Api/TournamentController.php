@@ -357,6 +357,10 @@ class TournamentController extends BaseController
             'round_score_editing'=> $this->request->getPost('round_score_editing'),
             'round_advance_method'=> $this->request->getPost('round_advance_method'),
             'round_time_type' => $this->request->getPost('round_time_type'),
+            'ranking' => $this->request->getPost('ranking'),
+            'score_weight' => $this->request->getPost('score_weight'),
+            'time_weight' => $this->request->getPost('time_weight'),
+            'tiebreaker' => $this->request->getPost('tiebreaker'),
         ];
 
         if ($this->request->getPost('availability')) {
@@ -738,6 +742,22 @@ class TournamentController extends BaseController
                     }
                 }
             }
+        }
+
+        if ($this->request->getPost('ranking')) {
+            $tournament['ranking'] = $this->request->getPost('ranking');
+        }
+
+        if ($this->request->getPost('score_weight')) {
+            $tournament['score_weight'] = $this->request->getPost('score_weight');
+        }
+
+        if ($this->request->getPost('time_weight')) {
+            $tournament['time_weight'] = $this->request->getPost('time_weight');
+        }
+
+        if ($this->request->getPost('tiebreaker')) {
+            $tournament['tiebreaker'] = $this->request->getPost('tiebreaker');
         }
 
         if ($this->request->getPost('participant_manage_metrics')) {

@@ -12,6 +12,7 @@ class TournamentLibrary
     protected $shareSettingsModel;
     protected $audioSettingsModel;
     protected $roundSettingsModel;
+    protected $roundRankingsModel;
     protected $schedulesModel;
     protected $logActionsModel;
     
@@ -27,6 +28,7 @@ class TournamentLibrary
         $this->shareSettingsModel = model('\App\Models\ShareSettingsModel');
         $this->audioSettingsModel = model('\App\Models\AudioSettingModel');
         $this->roundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
+        $this->roundRankingsModel = model('\App\Models\TournamentRoundRankingsModel');
         $this->schedulesModel = model('\App\Models\SchedulesModel');
         $this->logActionsModel = model('\App\Models\LogActionsModel');
     }
@@ -110,5 +112,181 @@ class TournamentLibrary
         }
         
         return true;
+    }
+
+    public function advanceFFABrackets($tournament_id, $round_no) {
+        helper('db');
+        helper('participant');
+
+        $user_id = auth()->user() ? auth()->user()->id : 0;
+
+        $tournament_settings = $this->tournamentsModel->asObject()->find($tournament_id);
+        $roundSetting = $this->roundSettingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->asObject()->first();
+        if (!$roundSetting) {
+            $roundSetting = new \App\Entities\TournamentRoundSetting();
+            $roundSetting->tournament_id = $tournament_id;
+            $roundSetting->round_no = $round_no;
+            $roundSetting->user_id = $user_id;
+        }
+
+        if ($tournament_settings->voting_mechanism == EVALUATION_VOTING_MECHANISM_MAXVOTE) {
+            return false;
+        }
+
+        $brackets = $this->bracketsModel->where(['tournament_id' => $tournament_id, 'roundNo' => $round_no])->asObject()->findAll();
+        foreach ($brackets as $bi => $bracket) {
+            $metricsData = $this->roundRankingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no, 'bracket_id' => $bracket->id])->asObject()->orderBy('score', 'DESC')->findAll();
+
+            /** Sort the metrics data by score and time */
+            if ($tournament_settings->ranking == TOURNAMENT_RANKING_BY_SCORE) {
+                /** Rank the participants by tiebreaker */
+                // Tiebreaker by time
+                if ($tournament_settings->tiebreaker == TIEBREKER_BYTIME) {
+                    usort($metricsData, function ($a, $b) {
+                        // First compare by score (higher score first)
+                        if ($a->score != $b->score) {
+                            return $b->score <=> $a->score; // descending
+                        }
+
+                        // If score is the same, compare by time (lower/earlier time first)
+                        return $a->time <=> $b->time; // ascending
+                    });
+                }
+
+                // Tiebreaker by random
+                if ($tournament_settings->tiebreaker == TIEBREKER_RANDOM) {
+                    usort($metricsData, function ($a, $b) {
+                        // Sort by score first (higher score first)
+                        if ($a->score != $b->score) {
+                            return $b->score <=> $a->score;
+                        }
+
+                        // If scores are equal, randomize order
+                        return rand(-1, 1);
+                    });
+                }
+            }
+
+            /** Sort the metrics by Weighted Formula */
+            if ($tournament_settings->ranking == TOURNAMENT_RANKING_BY_WEIGHTED_FORMULA) {
+                $score_weight = $tournament_settings->score_weight;
+                /** Rank the participants by tiebreaker */
+                // Tiebreaker by time
+                if ($tournament_settings->tiebreaker == TIEBREKER_BYTIME) {
+                    usort($metricsData, function ($a, $b) use ($tournament_settings) {
+                        // First compare by score (higher score first)
+                        $scoreWeight = (float) $tournament_settings->score_weight;
+                        $timeWeight  = (float) $tournament_settings->time_weight;
+
+                        $finalA = ((float) $a->score * $scoreWeight) - ((float) $a->time * $timeWeight);
+                        $finalB = ((float) $b->score * $scoreWeight) - ((float) $b->time * $timeWeight);
+
+                        if ($finalA != $finalB) {
+                            return $finalB <=> $finalA; // higher formula result first
+                        }
+
+                        return $a->time <=> $b->time; // ascending
+                    });
+                }
+
+                // Tiebreaker by random
+                if ($tournament_settings->tiebreaker == TIEBREKER_RANDOM) {
+                    usort($metricsData, function ($a, $b) use ($tournament_settings) {
+                        // Sort by score first (higher score first)
+                        $scoreWeight = (float) $tournament_settings->score_weight;
+                        $timeWeight  = (float) $tournament_settings->time_weight;
+
+                        $finalA = ((float) $a->score * $scoreWeight) - ((float) $a->time * $timeWeight);
+                        $finalB = ((float) $b->score * $scoreWeight) - ((float) $b->time * $timeWeight);
+
+                        if ($finalA != $finalB) {
+                            return $finalB <=> $finalA; // higher formula result first
+                        }
+
+                        // If scores are equal, randomize order
+                        return rand(-1, 1);
+                    });
+                }
+
+                // Tiebreaker by Host
+                if ($tournament_settings->tiebreaker == TIEBREKER_HOSTDECIDE) {
+                    usort($metricsData, function($a, $b) use ($tournament_settings) {
+                        $scoreWeight = (float) $tournament_settings->score_weight;
+                        $timeWeight  = (float) $tournament_settings->time_weight;
+
+                        $finalA = ((float) $a->score * $scoreWeight) - ((float) $a->time * $timeWeight);
+                        $finalB = ((float) $b->score * $scoreWeight) - ((float) $b->time * $timeWeight);
+
+                        return $finalB <=> $finalA; // higher weighted formula first
+                    });
+                }
+            }
+
+            // Save the rankings into DB and Advance the participants to the next round
+            $prevScore = 0;
+            $nextScore = 0;
+            $score = 0;
+            foreach ($metricsData as $index => $row) {
+                if ($tournament_settings->tiebreaker == TIEBREKER_HOSTDECIDE) {
+                    $tiebreaker = false;
+                    
+                    if ($tournament_settings->ranking == TOURNAMENT_RANKING_BY_SCORE) {
+                        if (isset($metricsData[$index - 1])) {
+                            $prev = $metricsData[$index - 1];
+                            $prevScore = $prev->score;
+                        }
+
+                        if (isset($metricsData[$index + 1])) {
+                            $next = $metricsData[$index + 1];
+                            $nextScore = $next->score;
+                        } else {
+                            $nextScore = 0;
+                        }
+
+                        $score = $row->score;
+                    }
+
+                    if ($tournament_settings->ranking == TOURNAMENT_RANKING_BY_WEIGHTED_FORMULA) {
+                        if (isset($metricsData[$index - 1])) {
+                            $prev = $metricsData[$index - 1];
+                            $prevScore = (float)$prev->score * (float)$tournament_settings->score_weight - (float)$prev->time * (float)$tournament_settings->time_weight;
+                        }
+
+                        if (isset($metricsData[$index + 1])) {
+                            $next = $metricsData[$index + 1];
+                            $nextScore = (float)$next->score * (float)$tournament_settings->score_weight - (float)$next->time * (float)$tournament_settings->time_weight;
+                        } else {
+                            $nextScore = 0;
+                        }
+
+                        $score = (float)$row->score * (float)$tournament_settings->score_weight - (float)$row->time * (float)$tournament_settings->time_weight;
+                    }
+
+                    if (($prevScore == $score) || ($nextScore == $score)) {
+                        if (intval($roundSetting->status) != TOURNAMENT_ROUND_STATUS_HOSTOVERRIDE) {
+                            $roundSetting->status = TOURNAMENT_ROUND_STATUS_HOSTOVERRIDE;
+
+                            if (!$user_id) {
+                                disableForeignKeyCheck();
+                            }
+
+                            $this->roundSettingsModel->save($roundSetting);
+
+                            if (!$user_id) {
+                                enableForeignKeyCheck();
+                            }
+                        }
+
+                        continue;
+                    }
+                }
+
+                $row->ranking = $index + 1;
+                $this->roundRankingsModel->save($row);
+                
+                // Advance the participants to the next round
+                advanceParticipantInFFABracket($tournament_id, $bracket->id, $round_no, $row->participant_id);
+            }
+        }
     }
 }

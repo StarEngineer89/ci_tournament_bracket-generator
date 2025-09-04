@@ -1785,6 +1785,24 @@ const changeSettings = (event) => {
                     $('#ptImageUpdatePermission').prop('checked', false)
                 }
 
+                if (tournamentSettings.ranking) {
+                    $('#rankingMethod').val(tournamentSettings.ranking)
+                    changeRankingMethod(document.getElementById('rankingMethod'))
+                }
+
+                if (tournamentSettings.tiebreaker) {
+                    $('#tiebreakerMethod').val(tournamentSettings.tiebreaker)
+                    changeTiebreakerMethod(document.getElementById('tiebreakerMethod'))
+                }
+
+                if (tournamentSettings.score_weight) {
+                    $('#weightedFormulaOptions input[name="score_weight"]').val(tournamentSettings.score_weight)
+                }
+
+                if (tournamentSettings.time_weight) {
+                    $('#weightedFormulaOptions input[name="time_weight"]').val(tournamentSettings.time_weight)
+                }
+
                 if (tournamentSettings.timer_option == "<?= AUTOMATIC ?>") {
                     document.querySelector('.round-duration-settings input[name="timer_option"][value="auto"]').checked = true
                     document.getElementById('customTimerOptions').classList.add('d-none')

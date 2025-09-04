@@ -54,5 +54,9 @@ class Tournament extends Entity
         'round_advance_method' => null,
         'round_time_type' => null,
         'round_duration' => null,
+        'ranking' => null,
+        'tiebreaker' => null,
+        'score_weight' => null,
+        'time_weight' => null,
     ];
 }

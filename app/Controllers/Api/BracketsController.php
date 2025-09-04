@@ -152,7 +152,7 @@ class BracketsController extends BaseController
                         $roundSettings[$bracket['roundNo']] = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
                     }
 
-                    if ($roundSettings[$bracket['roundNo']]) {
+                    if ($roundSettings[$bracket['roundNo']] && isset($roundSettings[$bracket['roundNo']]['round_name'])) {
                         $bracket['round_name'] = $roundSettings[$bracket['roundNo']]['round_name'];
                     }
 
@@ -161,6 +161,12 @@ class BracketsController extends BaseController
                         $bracket['start'] = $schedules[$bracket['roundNo'] - 1]['schedule_time'];
                         $bracket['end'] = $schedules[$bracket['roundNo']]['schedule_time'];
                     }
+
+                    if (!isset($roundSettings[$bracket['roundNo']]['status'])) {
+                        $roundSettings[$bracket['roundNo']]['status'] = 0;
+                    }
+
+                    $bracket['status'] = $roundSettings[$bracket['roundNo']]['status'];
 
                     /** Add final bracket id in knockout brackets */
                     if ($tournament_settings['type'] == TOURNAMENT_TYPE_KNOCKOUT && $bracket['final_match']) {
@@ -1172,7 +1178,8 @@ class BracketsController extends BaseController
         $bracketNo = $lastBracket ? $lastBracket->bracketNo : 0;
         $countInRound = 0;
         $matches = $this->_base / $max_group_size;
-
+        $group_size = $max_group_size;
+        
         if ($byes > 0 && $byes > intval($this->_base / $max_group_size)) {
             $moveCount = intval($byes / intval($this->_base / $max_group_size));
             $group_size = $max_group_size - $moveCount;
@@ -1302,6 +1309,8 @@ class BracketsController extends BaseController
             $round_no = $this->request->getPost('roundNo');
             $ranking = ($this->request->getPost('ranking') != '-') ? $this->request->getPost('ranking') : null;
             
+            $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
+            
             $originalRanking = null;
             if ($rankingEntity = $this->rankingsModel->asObject()->where(['tournament_id' => $tournament_id, 'bracket_id' => $bracket_id, 'participant_id' => $participant_id, 'round_no' => $round_no])->first()) {
                 $originalRanking = $rankingEntity->ranking;
@@ -1327,6 +1336,10 @@ class BracketsController extends BaseController
 
             $this->rankingsModel->save($rankingEntity);
 
+            /** Advance the participant to the next round */
+            helper('participant');
+            advanceParticipantInFFABracket($tournament_id, $bracket_id, $round_no, $participant_id);
+
             if (!$user_id) {
                 enableForeignKeyCheck();
             }
@@ -1342,7 +1355,6 @@ class BracketsController extends BaseController
                         $finalBracket->winner = $participant_id;
                         $this->bracketsModel->save($finalBracket);
 
-                        $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
                         $tournament->status = TOURNAMENT_STATUS_COMPLETED;
                         $this->tournamentsModel->save($tournament);
 
@@ -1360,14 +1372,13 @@ class BracketsController extends BaseController
                     $finalBracket->winner = null;
                     $this->bracketsModel->save($finalBracket);
 
-                    $tournament = $this->tournamentsModel->asObject()->find($tournament_id);
                     $tournament->status = TOURNAMENT_STATUS_INPROGRESS;
                     $this->tournamentsModel->save($tournament);
                 }
             }
 
-            $tournamentObj = $this->tournamentsModel->asObject()->find($tournament_id);
-            $advance_count = intval($tournamentObj->advance_count);
+            
+            $advance_count = intval($tournament->advance_count);
             $advanceParticipants = $this->rankingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->where('ranking <', $advance_count + 1)->findAll();
             $brackets = $this->bracketsModel->where(['tournament_id' => $tournament_id, 'roundNo' => $round_no])->findAll();
 

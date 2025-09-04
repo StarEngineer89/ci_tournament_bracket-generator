@@ -74,6 +74,7 @@ $(document).ready(function() {
         loadParticipants()
     } else {
         $('#tournamentSettings').modal('show');
+        document.getElementById('scoreOptions').classList.add('d-none')
     }
 
     const linkedPicker1Element = document.getElementById('startAvPicker');

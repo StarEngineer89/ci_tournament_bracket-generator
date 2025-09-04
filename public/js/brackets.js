@@ -390,6 +390,7 @@ function renderFFABrackets ( result, direction = 'ltr' )
             round = $('<div class="round r' + g + '" style="min-width: 350px"></div>');
         }
         
+        /** Define the timer icon */
         let timerIcon = ''
         if (parseInt(tournament.availability) && (parseInt(tournament.round_duration_combine) || (parseInt(tournament.evaluation_method) == evaluationMethodVotingCode && parseInt(tournament.voting_mechanism) == votingMechanismRoundDurationCode))) {
             let roundDuration = $(`<div class="round-duration-wrapper text-center p-2 m-2 d-none"></div>`)
@@ -402,6 +403,7 @@ function renderFFABrackets ( result, direction = 'ltr' )
             timerIcon = '<button type="button" class="timerTrigger btn btn-light p-0" data-bs-toggle="popover" data-bs-placement="top"><span class="fa-solid fa-clock"></span></button>'
         }
 
+        /** Define the rename icon of round name */
         let editIcon = ''
         if (hasEditPermission) {
             editIcon = `<span class="fa fa-pencil" onclick="enableChangeRoundName(event)"></span>`
@@ -414,11 +416,17 @@ function renderFFABrackets ( result, direction = 'ltr' )
         }
 
         roundName.html( `<span class="round-name">${ round_name }</span> ${ editIcon } ${ timerIcon }` )
+
+        const roundStatus = document.createElement( 'div' )
+        roundStatus.className = "roundStatus mt-2"
+        roundName.append(roundStatus)
+
+        /** Define the status bar */
         if ( advanceStatus && advanceStatus.round == g )
         {
             const progressContainer = document.createElement( 'div' );
             progressContainer.id = "progressContainer"
-            roundName.append(progressContainer)
+            roundStatus.append(progressContainer)
             
             const progressDiv = document.createElement('div');
             progressDiv.className = 'progress';
@@ -451,6 +459,26 @@ function renderFFABrackets ( result, direction = 'ltr' )
             }, 300);
         }
 
+        /** Update the round status */
+        
+        const badgeCompleted = '<div class="text-bg-secondary">Closed</div>'
+        const badgePending = '<div class="text-bg-danger">Closed: Awaiting Host Decision</div>'
+
+        const currentTime = new Date()
+        const startTime = new Date(grouped[g][0].start)
+        const endtTime = new Date(grouped[g][0].end)
+        if ( currentTime > endtTime )
+        {
+            if ( parseInt(grouped[g][0].status) == 2 )
+            {
+                roundStatus.innerHTML = badgePending
+            } else
+            {
+                roundStatus.innerHTML = badgeCompleted
+            }
+        }
+
+        /** Add the round names */
         roundNames.append(roundName)
 
         var bracketBoxList = $('<div class="bracketbox-list"></div>')
@@ -460,8 +488,14 @@ function renderFFABrackets ( result, direction = 'ltr' )
             teamwrapper.className = "participants"
 
             var teams = JSON.parse(gg.teamnames);
-            teams.forEach((team, i) => {
-                teamwrapper.append(drawParticipant(gg, i, direction))
+            teams.forEach( ( team, i ) => {
+                const participant = drawParticipant(gg, i, direction)
+                teamwrapper.append( participant )
+                
+                if ( gg.status == 2 && !team.ranking )
+                {
+                    participant.classList.add('host-required')
+                }
             })
             var lastGames = JSON.parse(gg.lastGames)
             if (!lastGames) {

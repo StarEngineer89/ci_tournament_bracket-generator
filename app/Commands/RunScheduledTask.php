@@ -57,6 +57,7 @@ class RunScheduledTask extends BaseCommand
     public function run(array $params)
     {
         $voteLibrary = new \App\Libraries\VoteLibrary();
+        $tournamentLibrary = new \App\Libraries\TournamentLibrary();
         $schedulesModel = model('\App\Models\SchedulesModel');
         $schedules = $schedulesModel->where(['result' => 0])->findAll();
         $userProvider = auth()->getProvider();
@@ -172,7 +173,11 @@ class RunScheduledTask extends BaseCommand
                 }
                 
                 if (($schedule['schedule_name'] == SCHEDULE_NAME_ROUNDUPDATE || $schedule['schedule_name'] == SCHEDULE_NAME_TOURNAMENTEND) && $current_time >= $schedule_time) {
-                    $voteLibrary->finalizeRound($schedule['tournament_id'], $schedule['round_no']);
+                    if ($tournament->type == TOURNAMENT_TYPE_FFA) {
+                        $tournamentLibrary->advanceFFABrackets($schedule['tournament_id'], $schedule['round_no']);
+                    } else {
+                        $voteLibrary->finalizeRound($schedule['tournament_id'], $schedule['round_no']);
+                    }
 
                     $schedulesModel->update($schedule['id'], ['result' => 1]);
                 }

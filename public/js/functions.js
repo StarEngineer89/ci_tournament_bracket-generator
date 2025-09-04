@@ -911,6 +911,37 @@ var changeEvaluationMethod = (element) => {
     toggleAvailability($('#enableAvailability'))
 }
 
+var changeRankingMethod = ( element ) =>
+{
+    const selectedOption = element.options[element.selectedIndex]
+    const elements = document.querySelectorAll( '#weightedFormulaOptions input' )
+
+    if ( selectedOption.dataset.option == 'formula' )
+    {
+        document.getElementById( 'weightedFormulaOptions' ).classList.remove( 'd-none' )
+        elements.forEach( e => {
+            e.disabled = false
+            e.required = true
+        })
+    } else
+    {
+        document.getElementById( 'weightedFormulaOptions' ).classList.add( 'd-none' )
+        elements.forEach( e => {
+            e.disabled = true
+            e.required = false
+        })
+    }
+}
+
+var changeTiebreakerMethod = ( element ) =>
+{
+    const selectEl = document.querySelector('#tiebreakerMethod');
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const hint = selectedOption.dataset.description
+
+    document.querySelector('.advance-tiebreaker-hint').innerHTML = hint
+}
+
 var changeVotingAccessbility = (element) => {
     // EVALUATION_VOTING_RESTRICTED = 1
     // EVALUATION_VOTING_UNRESTRICTED = 0
@@ -1020,6 +1051,7 @@ var changeScoringMethod = ( element ) =>
         document.querySelectorAll( '#scoreOptions input' ).forEach( ele =>
         {
             ele.disabled = false
+            ele.required = true
         } )
         
         document.querySelectorAll("#tournamentSettings .scoring-settings .read-more-container").forEach(container => {
@@ -1031,6 +1063,7 @@ var changeScoringMethod = ( element ) =>
         document.querySelectorAll( '#scoreOptions input' ).forEach( ele =>
         {
             ele.disabled = true
+            ele.required = false
         })
     }
 }
