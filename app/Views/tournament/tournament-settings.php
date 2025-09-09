@@ -264,7 +264,7 @@
                         <label class="form-check-label" for="customTimerSame">Same for All Rounds</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="round_time_type" value="<?= TOURNAMENT_CUSTOM_TIMER_PER_ROUNDS ?>" id="customTimerPerRounds" onchange="changeRoundTimeMode(this)" disabled>
+                        <input class="form-check-input" type="radio" name="round_time_type" value="<?= TOURNAMENT_CUSTOM_TIMER_PER_ROUNDS ?>" id="customTimerPerRounds" onchange="changeRoundTimeMode(this)">
                         <label class="form-check-label" for="customTimerPerRounds">Per rounds</label>
                     </div>
 

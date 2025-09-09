@@ -965,7 +965,7 @@ var changeVoteDisplayingMode = (element) => {
         </div>
 
         <div id="roundTimerPlaceholder"></div>
-        <div id="brackets" class="brackets <?= ($tournament['type'] == TOURNAMENT_TYPE_FFA) ? "ffa" : '' ?> p-5 pt-2"></div>
+        <div id="brackets" class="brackets <?= ($tournament['type'] == TOURNAMENT_TYPE_FFA) ? "ffa" : 'd-flex' ?> p-5 pt-2"></div>
     </div>
 </div>
 

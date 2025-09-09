@@ -596,7 +596,6 @@ a.disabled {
 }
 
 .brackets {
-  max-width: 100%;
   overflow-x: scroll;
   overflow-y: clip;
   padding-bottom: 50px;
@@ -1787,6 +1786,7 @@ li.context-menu-item.context-menu-disabled span {
   0% {
     box-shadow: 0 0 1px 1px rgba(206, 9, 9, 1);
     /* Initial glow */
+
   }
 
     50% {

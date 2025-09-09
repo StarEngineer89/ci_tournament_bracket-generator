@@ -363,6 +363,10 @@ class TournamentController extends BaseController
             'tiebreaker' => $this->request->getPost('tiebreaker'),
         ];
 
+        if ($this->request->getPost('round_time_type') && $this->request->getPost('round_time_type') == TOURNAMENT_CUSTOM_TIMER_SAME) {
+            $data['round_duration'] = $this->request->getPost('round_time');
+        }
+
         if ($this->request->getPost('availability')) {
             $data['available_start'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('startAvPicker')));
             $data['available_end'] = date('Y-m-d H:i:s', strtotime($this->request->getPost('endAvPicker')));
@@ -419,6 +423,25 @@ class TournamentController extends BaseController
                     }
 
                     $data['audio'][$index] = $setting;
+                }
+            }
+        }
+
+        /** Save the custom round duration */
+        if ($this->request->getPost('round_time_type') && $this->request->getPost('round_time_type') !== TOURNAMENT_CUSTOM_TIMER_SAME) {
+            $roundTimes = $this->request->getPost('round_time');
+            if ($roundTimes) {
+                foreach ($roundTimes as $index => $round) {
+                    $roundSetting = $this->tournamentRoundSettingsModel->asObject()->where(['tournament_id' => $tournament_id, 'round_no' => $index])->first();
+                    if (!$roundSetting) {
+                        $roundSetting = new \App\Entities\TournamentRoundSetting();
+                        $roundSetting->tournament_id = $tournament_id;
+                        $roundSetting->user_id = auth()->user()->id;
+                        $roundSetting->round_no = $index;
+                    }
+
+                    $roundSetting->duration = $roundTimes[$index];
+                    $this->tournamentRoundSettingsModel->save($roundSetting);
                 }
             }
         }
@@ -727,6 +750,7 @@ class TournamentController extends BaseController
                 $tournament['round_duration'] = $this->request->getPost('round_time');
             } else {
                 $rounds = $this->bracketModel->asObject()->where(['tournament_id' => $tournament_id])->select('roundNo')->groupBy('roundNo')->findAll();
+                $roundTimes = $this->request->getPost('round_time');
                 if ($rounds) {
                     foreach ($rounds as $round) {
                         $roundSetting = $this->tournamentRoundSettingsModel->asObject()->where(['tournament_id' => $tournament_id, 'round_no' => $round->roundNo])->first();
@@ -737,7 +761,7 @@ class TournamentController extends BaseController
                             $roundSetting->round_no = $round->roundNo;
                         }
 
-                        $roundSetting->duration = $this->request->getPost("round_time_$round->roundNo");
+                        $roundSetting->duration = $roundTimes[$round->roundNo];
                         $this->tournamentRoundSettingsModel->save($roundSetting);
                     }
                 }

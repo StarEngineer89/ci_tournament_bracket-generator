@@ -822,6 +822,8 @@ class BracketsController extends BaseController
         $list = $this->request->getPost('list');
         $hash = $this->request->getPost('hash');
 
+        helper('db');
+
         if ($notAllowedList = $this->request->getPost('notAllowedList')) {
             foreach ($notAllowedList as $item) {
                 $this->tournamentMembersModel->delete($item);
@@ -866,8 +868,24 @@ class BracketsController extends BaseController
             // Generate the string for searchable field
             foreach ($all_participants as $item) {
                 $member = $this->tournamentMembersModel->asObject()->where(['tournament_id' => $tournament_id, 'participant_id' => $item['id']])->first();
+                if (!$member) {
+                    $member = new \App\Entities\TournamentMember();
+                    $member->tournament_id = $tournament_id;
+                    $member->participant_id = $item['id'];
+                    $member->hash = $hash;
+                    $member->created_by = $user_id;
+                }
                 $member->order = $item['order'];
+
+                if (!$user_id) {
+                    disableForeignKeyCheck();
+                }
+
                 $this->tournamentMembersModel->save($member);
+
+                if (!$user_id) {
+                    enableForeignKeyCheck();
+                }
 
                 $participant = $this->participantsModel->asObject()->find($item['id']);
                 $participant_name = $participant->name;
@@ -1236,9 +1254,13 @@ class BracketsController extends BaseController
 
                 $matches = $this->_base / $group_size;
                 
-                if ($byes > 0 && $byes > intval($this->_base / $group_size)) {
+                if ($byes > 0 && $byes >= intval($this->_base / $group_size)) {
                     $moveCount = intval($byes / intval($this->_base / $group_size));
                     $group_size = $group_size - $moveCount;
+                }
+
+                if ($group_size == $advanceCount && $advanceCount > 1) {
+                    $advanceCount--;
                 }
             }
         }

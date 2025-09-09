@@ -828,14 +828,96 @@ let changeRoundTimeMode = ( element ) =>
         document.getElementById('customTimerSame').checked = true
     } else
     {
-        if (tournamentSettings.rounds) {
-            tournamentSettings.rounds.forEach((round, i) => {
+        let rounds = 1
+        if ( tournamentSettings.rounds )
+        {
+            rounds = tournamentSettings.rounds
+        } else
+        {
+            let base = document.querySelectorAll( '#newList .participant' ).length
+            let max_group_size = parseInt(document.getElementById( 'max_group_size' ).value)
+            let advanceCount = parseInt(document.getElementById( 'advance_count' ).value)
+            
+            const type = document.getElementById( 'eliminationType' ).value
+            
+            if ( [1, 2, 3].includes(type) )
+            {
+                max_group_size = 2
+                advanceCount = 1
+            }
+
+            // Find the closest number like n * max_group_size
+            let closest = Math.ceil(base / max_group_size) * max_group_size;
+            let byes = closest - base;
+
+            if (byes > 0) {
+                base = closest;
+            }
+
+            let countInRound = 0;
+            let matches = base / max_group_size;
+            let group_size = max_group_size;
+
+            if (byes > 0 && byes > parseInt(base / max_group_size)) {
+                let moveCount = parseInt(byes / parseInt(base / max_group_size));
+                group_size = max_group_size - moveCount;
+            }
+
+            // Create brackets in round 1
+            while (matches >= 1) {
+                countInRound++;
+
+                if (matches === 1) {
+                    matches = 0;
+                }
+
+                // Reset for next round
+                if (countInRound === matches) {
+                    rounds++;
+                    countInRound = 0;
+                    group_size = max_group_size;
+
+                    base = matches * advanceCount;
+                    closest = Math.ceil(base / group_size) * group_size;
+                    byes = closest - base;
+                    if (byes > 0) base = closest;
+
+                    matches = base / group_size;
+
+                    if (byes > 0 && byes >= parseInt(base / group_size)) {
+                        let moveCount = parseInt(byes / parseInt(base / group_size));
+                        group_size = group_size - moveCount;
+                    }
+
+                    if ( group_size == advanceCount && advanceCount > 1 )
+                    {
+                        advanceCount--;
+                    }
+                }
+            }
+        }
+
+        if ( rounds )
+        {
+            if ( !Array.isArray(rounds) )
+            {
+                let arr = []
+                for ( i = 0; i < rounds; i++ )
+                {
+                    arr.push({'round_no': i + 1, 'duration': null})
+                }
+
+                rounds = arr;
+            }
+
+            rounds.forEach( ( round, i ) =>
+            {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'input-group';
 
                 wrapper.innerHTML = `
                     <span class="input-group-text">Round ${i + 1}</span>
-                    <input type="text" class="form-control" name="round_time_${round.round_no}" value="${round.duration ?? ''}" placeholder="00D 00:00" pattern="\\d{2}D \\d{2}:\\d{2}" />
+                    <input type="text" class="form-control" name="round_time[${round.round_no}]" value="${round.duration ?? ''}" placeholder="00D 00:00" pattern="\\d{2}D \\d{2}:\\d{2}" />
                 `;
 
                 container.appendChild(wrapper);
