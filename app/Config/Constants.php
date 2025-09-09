@@ -132,6 +132,11 @@ define('BRACKET_ACTIONCODE_REMOVE_PARTICIPANT', 'remove');
 define('BRACKET_ACTIONCODE_DELETE', 'delete');
 define('BRACKET_ACTIONCODE_CLEAR', 'clear');
 define('BRACKET_ACTIONCODE_VOTE', 'vote');
+define('BRACKET_ACTIONCODE_SAVE_RANKING', 'rank');
+define('BRACKET_ACTIONCODE_UNRANKING', 'unrank');
+define('BRACKET_ACTIONCODE_UPDATE_RANKING', 'chrank');
+define('BRACKET_ACTIONCODE_SAVE_METRICS', 'setmtc');
+define('BRACKET_ACTIONCODE_UPDATE_METRICS', 'uptmtc');
 
 define('SHARE_TO_USERS', 'u');
 define('SHARE_TO_EVERYONE', 'a');

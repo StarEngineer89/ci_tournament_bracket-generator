@@ -15,7 +15,7 @@ class CreateLogActionsTable extends Migration
             'user_id'        => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'tournament_id'  => ['type' => 'int', 'constraint' => 11, 'unsigned' => true],
             'action'         => ['type' => 'varchar', 'constraint' => 6],
-            'params'         => ['type' => 'varchar', 'constraint' => 128],
+            'params'         => ['type' => 'varchar', 'constraint' => 255],
             'created_at'     => ['type' => 'datetime', 'null' => false],
             'updated_at'     => ['type' => 'datetime', 'null' => false],
             'deleted_at'     => ['type' => 'datetime', 'null' => true],

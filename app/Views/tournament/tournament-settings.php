@@ -157,14 +157,14 @@
                 <option value="<?= EVALUATION_METHOD_VOTING ?>">Voting</option>
             </select>
         </div>
-        <div class="read-more-container">
+        <div class="read-more-container mt-1">
             <div class="evaluation-method-hint form-text ps-3">Determines how tournament bracket participants advance through the rounds.</div>
             <div class="evaluation-method-manual-hint form-text text-content mb-1 ps-3"><?= lang('Descriptions.tournamentEvaluationManualDesc') ?></div>
             <div class="evaluation-method-voting-hint form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentEvaluationVotingDesc') ?></div>
         </div>
     </div>
-    <div class="clearfix"></div>
-    <div class="voting-settings-panel ps-md-3 ps-sm-2 d-none" id="voting-settings-panel">
+
+    <div class="voting-settings-panel mt-2 ps-md-3 ps-sm-2 d-none" id="voting-settings-panel">
         <div class="row g-2 align-items-center">
             <div class="col-auto">
                 <label for="votingAccessbility" class="col-form-label"><strong>Voting Accessibility</strong></label>
@@ -199,34 +199,35 @@
                 <div class="evaluation-vote-round form-text text-content mb-1 ps-3"><?= lang('Descriptions.tournamentVotingRoundDurationDesc') ?></div>
                 <div class="evaluation-vote-max form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingMaxVotesDesc') ?></div>
                 <div class="evaluation-open-ended form-text mb-1 ps-3 d-none"><?= lang('Descriptions.tournamentVotingOpenEndedDesc') ?></div>
-
-                <div class="row mb-2 max-vote-setting d-none">
-                    <div class="col-auto">
-                        <label for="maxVotes" class="col-form-label">Max Votes <span class="text-danger">*</span> :</label>
-                    </div>
-                    <div class="col-3">
-                        <input type="number" name="max_vote_value" id="maxVotes" class="form-control" min="0">
-                    </div>
-                    <div class="evaluation-vote-max-limit form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?></div>
-                </div>
             </div>
         </div>
 
-        <div class="mt-2">
+        <div class="row ms-3 mb-3 max-vote-setting d-none">
+            <div class="col-auto ps-3">
+                <label for="maxVotes" class="col-form-label">Max Votes <span class="text-danger">*</span> :</label>
+            </div>
+            <div class="col-3">
+                <input type="number" name="max_vote_value" id="maxVotes" class="form-control" min="0">
+            </div>
+            <div class="evaluation-vote-max-limit form-text mb-1 ps-3"><?= lang('Descriptions.tournamentVotingMaxVoteLimitDesc') ?></div>
+        </div>
+
+        <div class="ms-2 mb-2">
             <input type="checkbox" class="form-check-input" name="voting_retain" id="retainVotesCheckbox">
             <label class="form-check-label" for="retainVotesCheckbox">Retain vote count across rounds</label>
             <div class="read-more-container">
                 <div class="retain-votes-checkbox-hint form-text text-content ps-3"><?= lang('Descriptions.tournamentRetainVoteCountDesc') ?></div>
             </div>
         </div>
-        <div class="mt-2 allow-host-override-setting">
+        <div class="ms-2 mb-2 allow-host-override-setting">
             <input type="checkbox" class="form-check-input" name="allow_host_override" id="allowHostOverride">
             <label class="form-check-label" for="allowHostOverride">Allow Host override</label>
             <div class="retain-votes-checkbox-hint form-text ps-3"><?= lang('Descriptions.tournamentAllowHostOverrideDesc') ?></div>
         </div>
     </div>
-    <div class="round-duration-combine ps-md-3 ps-sm-2">
-        <div class="mt-2">
+
+    <div class="round-duration-combine mt-2">
+        <div class="ms-2">
             <input type="checkbox" class="form-check-input" name="round_duration_combine" id="roundDurationCheckbox" onchange="toggleRoundDuration(this)">
             <label class="form-check-label" for="roundDurationCheckbox">Round Duration</label>
             <div class="round-duration-combine-required text-danger form-text mb-1 ps-3 d-none">
@@ -238,7 +239,8 @@
             </div>
         </div>
     </div>
-    <div class="round-duration-settings ps-md-3 ps-sm-2 d-none">
+
+    <div class="round-duration-settings d-none">
         <div class="ps-3">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="timer_option" value="auto" id="timerOptionAuto" onchange="changeRoundMode(this)" checked>
@@ -456,7 +458,7 @@
     <div class="form-check mb-3">
         <div class="ps-2">
             <input type="checkbox" class="form-check-input" name="participant_manage_metrics" id="allowParticipantManageMetrics" checked>
-            <label class="form-check-label" for="allowParticipantMatchMetrics">
+            <label class="form-check-label" for="allowParticipantManageMetrics">
                 <h6>Allow Participants to Manage Match Metrics</h6>
             </label>
             <div class="allow-participant-match-metrics-hint form-text"><?= lang('Descriptions.allowParticipantMatchMetrics') ?></div>
@@ -466,7 +468,7 @@
     <div class="form-check mb-3">
         <div class="ps-2">
             <input type="checkbox" class="form-check-input" name="host_manage_metrics" id="allowHostManageMetrics" checked>
-            <label class="form-check-label" for="allowHostMatchMetrics">
+            <label class="form-check-label" for="allowHostManageMetrics">
                 <h6>Allow Organizer/Host to Manage Match Metrics</h6>
             </label>
             <div class="allow-host-match-metrics-hint form-text"><?= lang('Descriptions.allowHostMatchMetrics') ?></div>

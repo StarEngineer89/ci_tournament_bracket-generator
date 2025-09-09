@@ -459,23 +459,80 @@ function renderFFABrackets ( result, direction = 'ltr' )
             }, 300);
         }
 
-        /** Update the round status */
-        
+        /** Update the round status */        
         const badgeCompleted = '<div class="text-bg-secondary">Closed</div>'
-        const badgePending = '<div class="text-bg-danger">Closed: Awaiting Host Decision</div>'
+        const badgeAwaiting = '<div class="text-bg-danger">Closed: Awaiting Host Decision</div>'
 
         const currentTime = new Date()
         const startTime = new Date(grouped[g][0].start)
-        const endtTime = new Date(grouped[g][0].end)
-        if ( currentTime > endtTime )
+        const endTime = new Date(grouped[g][0].end)
+        if ( currentTime > endTime )
         {
             if ( parseInt(grouped[g][0].status) == 2 )
             {
-                roundStatus.innerHTML = badgePending
+                roundStatus.innerHTML = badgeAwaiting
             } else
             {
                 roundStatus.innerHTML = badgeCompleted
             }
+        }
+
+        // Add the button start the time manually
+        if ( (tournament.timer_start_option == 'm' && grouped[g][0].timer_start == undefined) && (endTime > currentTime && currentTime >= startTime) )
+        {
+            const timerStartBtn = document.createElement( 'button' )
+            timerStartBtn.className = "btn btn-primary btn-sm"
+            timerStartBtn.textContent = "Start timer"
+            timerStartBtn.addEventListener( 'click', () =>
+            {
+                const roundNo = event.target.parentElement.parentElement.dataset.roundNo
+                $.ajax({
+                    type: "POST",
+                    url: apiURL + '/brackets/start-round-time',
+                    data: {'tournament_id': parseInt(tournament.id), 'round_no': roundNo},
+                    success: function (result) {
+                        loadBrackets()
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                }).done(() => {
+                    setTimeout(function () {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+            } )
+            
+            roundStatus.append(timerStartBtn)
+        }
+
+        // Add the button to approve the advancing
+        if ( grouped[g][0].status == 2 || (tournament.round_advance_method !== 'a' && (currentTime >= startTime && currentTime < endTime)) )
+        {
+            const approveBtn = document.createElement( 'button' )
+            approveBtn.className = "btn btn-success btn-sm"
+            approveBtn.textContent = "Approve Advancing"
+            approveBtn.addEventListener( 'click', () =>
+            {
+                const roundNo = event.target.parentElement.parentElement.dataset.roundNo
+                $.ajax({
+                    type: "POST",
+                    url: apiURL + '/brackets/approve-round',
+                    data: {'tournament_id': parseInt(tournament.id), 'round_no': roundNo},
+                    success: function (result) {
+                        loadBrackets()
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                }).done(() => {
+                    setTimeout(function () {
+                        $("#overlay").fadeOut(300);
+                    }, 500);
+                });
+            } )
+            
+            roundStatus.append(approveBtn)
         }
 
         /** Add the round names */
@@ -565,11 +622,28 @@ function renderFFABrackets ( result, direction = 'ltr' )
 
                 if ( manageMetricsPermission && ( manageMetricsTarget == 'all' || manageMetricsTarget == $triggerElement.attr( 'data-id' ) ) )
                 {
-                    items.metrics = {
-                        name: "🏆 Set the metrics",
-                        callback: (key, opt, e) => {
-                            setMetrics(key, opt, e)
-                        },
+                    let allowMetricsEdit = false;
+
+                    const currentTime = new Date()
+                    const startTime = new Date($triggerElement.data('start'))
+                    const endTime = new Date( $triggerElement.data('end') )
+                    
+                    if ( (endTime > currentTime && currentTime >= startTime) || (parseInt(tournament.round_score_editing) == 1 && currentTime >= endTime) )
+                    {
+                        allowMetricsEdit = true
+                    }
+
+
+
+                    if ( allowMetricsEdit )
+                    {
+                        items.metrics = {
+                            name: "🏆 Set the metrics",
+                            callback: ( key, opt, e ) =>
+                            {
+                                setMetrics( key, opt, e )
+                            },
+                        }
                     }
                 }
 
@@ -805,9 +879,19 @@ function renderFFABrackets ( result, direction = 'ltr' )
         participant.dataset.round = bracket.roundNo;
         participant.textContent = ' ';
 
-        if ( bracket.start !== 'undefined' )
+        if ( bracket.start !== undefined )
         {
             participant.dataset.start = bracket.start
+        }
+        
+        if ( bracket.end !== undefined )
+        {
+            participant.dataset.end = bracket.end
+        }
+
+        if ( bracket.timer_start !== undefined )
+        {
+            participant.dataset.timerStart = bracket.timer_start
         }
 
         var pidBox = document.createElement('span')
@@ -1007,6 +1091,15 @@ function renderFFABrackets ( result, direction = 'ltr' )
                 {
                     participant.classList.add('third')
                 }
+            }
+            
+            if ( teams[team_index].score )
+            {
+                participant.dataset.score = teams[team_index].score;
+            }
+            if ( teams[team_index].time )
+            {
+                participant.dataset.time = teams[team_index].time;
             }
 
             participant.appendChild(wrapper)
@@ -1814,7 +1907,8 @@ let setRanking = ( key, opt, e ) =>
     
     // Create the select element
     const selectElement = document.createElement('select');
-    selectElement.className = 'form-select form-select';
+    selectElement.className = 'form-select';
+    selectElement.name = "ranking"
 
     // Add options to the select element (you can customize these)
     let options = ['-'];
@@ -1883,7 +1977,25 @@ let setRanking = ( key, opt, e ) =>
 let setMetrics = (key, opt, e) => {
     const bracketId = parseInt(opt.$trigger.data('bracket'));
     const participantId = parseInt(opt.$trigger.data('id'));
-    const roundNo = parseInt(opt.$trigger.data('round'));
+    const roundNo = parseInt( opt.$trigger.data( 'round' ) );
+    let editingMode = false;
+    
+    let score = opt.$trigger.data( 'score' )
+    let time = opt.$trigger.data( 'time' )
+    if ( opt.$trigger.data( 'score' ) == undefined )
+    {
+        score = null
+    }
+
+    if ( opt.$trigger.data( 'time' ) == undefined )
+    {
+        time = null
+    }
+
+    if ( score || time )
+    {
+        editingMode = true
+    }
 
     const triggerEl = opt.$trigger[0];
 
@@ -1900,7 +2012,7 @@ let setMetrics = (key, opt, e) => {
     content.innerHTML = `
         <div style="min-width: 40px">
             <label class="form-label text-center m-0 d-block">Score</label>
-            <input type="text" class="form-control" name="score">
+            <input type="text" class="form-control" name="score" value="${score ?? ''}">
         </div>
         <div class="flex-grow-1" style="min-width:160px;">
             <label class="form-label text-center m-0 d-block">Time</label>
@@ -1908,7 +2020,7 @@ let setMetrics = (key, opt, e) => {
                 <span class="input-group-text" id="watchIcon">
                     <i class="bi bi-stopwatch"></i>
                 </span>
-                <input type="text" class="form-control" name="time">
+                <input type="text" class="form-control" name="time" value="${time ?? ''}">
             </div>
         </div>
         <!-- Full width Save button on next line -->
@@ -1934,7 +2046,7 @@ let setMetrics = (key, opt, e) => {
 
         // Start timer
         const timeInput = document.querySelector('.popover-body input[name="time"]');
-        const startTime = opt.$trigger.data('start')
+        const startTime = opt.$trigger.data( 'timerStart' ) ?? opt.$trigger.data( 'start' );
         let seconds = getTimeProgress(startTime);
         let isRunning = true;
 
@@ -1969,7 +2081,7 @@ let setMetrics = (key, opt, e) => {
             return diffSeconds
         }
 
-        if (timeInput) {
+        if (timeInput && !editingMode) {
             timerInterval = setInterval(() => {
                 seconds += 1;
                 timeInput.value = formatTime(seconds);

@@ -18,6 +18,7 @@ class BracketsController extends BaseController
     protected $votesModel;
     protected $tournamentRoundSettingsModel;
     protected $rankingsModel;
+    protected $logActionsModel;
     protected $_base;
     protected $_bracketNo;
 
@@ -37,6 +38,7 @@ class BracketsController extends BaseController
         $this->votesModel = model('\App\Models\VotesModel');
         $this->tournamentRoundSettingsModel = model('\App\Models\TournamentRoundSettingsModel');
         $this->rankingsModel = model('\App\Models\TournamentRoundRankingsModel');
+        $this->logActionsModel = model('\App\Models\LogActionsModel');
     }
 
     public function getBrackets($id)
@@ -146,14 +148,20 @@ class BracketsController extends BaseController
                     }
 
                     $bracket['teamnames'] = json_encode($teams);
-
+                    
                     /** Get round name */
                     if (!isset($roundSettings[$bracket['roundNo']])) {
                         $roundSettings[$bracket['roundNo']] = $this->tournamentRoundSettingsModel->where(['tournament_id' => $bracket['tournament_id'], 'round_no' => $bracket['roundNo']])->first();
                     }
+                    
+                    if ($roundSettings[$bracket['roundNo']]) {
+                        if (isset($roundSettings[$bracket['roundNo']]['round_name'])) {
+                            $bracket['round_name'] = $roundSettings[$bracket['roundNo']]['round_name'];
+                        }
 
-                    if ($roundSettings[$bracket['roundNo']] && isset($roundSettings[$bracket['roundNo']]['round_name'])) {
-                        $bracket['round_name'] = $roundSettings[$bracket['roundNo']]['round_name'];
+                        if (isset($roundSettings[$bracket['roundNo']]['timer_start'])) {
+                            $bracket['timer_start'] = date('Y-m-d H:i:s', $roundSettings[$bracket['roundNo']]['timer_start']);
+                        }
                     }
 
                     /** Get the round duration for the Round mechanism */
@@ -1303,6 +1311,7 @@ class BracketsController extends BaseController
     public function saveRanking() {
         // Check if it's an AJAX request
         if ($this->request->isAJAX()) {
+            $user_id = auth()->user() ? auth()->user()->id : 0;
             $tournament_id = $this->request->getPost('tournament_id');
             $bracket_id = $this->request->getPost('bracket_id');
             $participant_id = $this->request->getPost('participant_id');
@@ -1324,7 +1333,6 @@ class BracketsController extends BaseController
                 $rankingEntity->ranking = $ranking;
             }
             
-            $user_id = auth()->user() ? auth()->user()->id : 0;
             $rankingEntity->created_by = $user_id;
 
             helper('db');
@@ -1335,6 +1343,23 @@ class BracketsController extends BaseController
             }
 
             $this->rankingsModel->save($rankingEntity);
+
+            /** Save the log */
+            $actionCode = $originalRanking ? BRACKET_ACTIONCODE_UPDATE_RANKING : BRACKET_ACTIONCODE_SAVE_RANKING;
+            if (!$ranking) {
+                $actionCode = BRACKET_ACTIONCODE_UNRANKING;
+            }
+            
+            $data = [];
+            $data['bracket_no'] = $bracket_id;
+            $data['round_no'] = $round_no;
+
+            if ($participant = $this->participantsModel->asObject()->find($participant_id)) {
+                $data['participants'] = ['name' => $participant->name, 'type' => $participant->is_group ? 'group' : null, 'ranking' => $ranking, 'origin' => $originalRanking];
+            }
+
+            $insert_data = ['tournament_id' => $tournament_id, 'action' => $actionCode, 'user_id' => $user_id, 'params' => json_encode($data)];
+            $this->logActionsModel->insert($insert_data);
 
             /** Advance the participant to the next round */
             helper('participant');
@@ -1376,7 +1401,6 @@ class BracketsController extends BaseController
                     $this->tournamentsModel->save($tournament);
                 }
             }
-
             
             $advance_count = intval($tournament->advance_count);
             $advanceParticipants = $this->rankingsModel->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->where('ranking <', $advance_count + 1)->findAll();
@@ -1413,6 +1437,8 @@ class BracketsController extends BaseController
                 $rankingEntity->participant_id = $participant_id;
                 $rankingEntity->round_no = $round_no;
             }
+
+            $original = ['score' => $rankingEntity->score, 'time' => $rankingEntity->time];
             
             $rankingEntity->score = $score;
             $rankingEntity->time = $time;
@@ -1428,6 +1454,20 @@ class BracketsController extends BaseController
             }
 
             $this->rankingsModel->save($rankingEntity);
+
+            /** Log the action */
+            $actionCode = $original['score'] ? BRACKET_ACTIONCODE_UPDATE_METRICS : BRACKET_ACTIONCODE_SAVE_METRICS;
+            
+            $data = [];
+            $data['bracket_no'] = $bracket_id;
+            $data['round_no'] = $round_no;
+
+            if ($participant = $this->participantsModel->asObject()->find($participant_id)) {
+                $data['participants'] = ['name' => $participant->name, 'type' => $participant->is_group ? 'group' : null, 'metrics' => ['score' => $rankingEntity->score, 'time' => $rankingEntity->time], 'origin' => $original];
+            }
+
+            $insert_data = ['tournament_id' => $tournament_id, 'action' => $actionCode, 'user_id' => $user_id, 'params' => json_encode($data)];
+            $this->logActionsModel->insert($insert_data);
 
             if (!$user_id) {
                 enableForeignKeyCheck();
@@ -1463,5 +1503,65 @@ class BracketsController extends BaseController
         }
 
         return true;
+    }
+
+    public function saveStartTime() {
+        // Check if it's an AJAX request
+        if ($this->request->isAJAX()) {
+            $user_id = auth()->user() ? auth()->user()->id : 0;
+            $tournament_id = $this->request->getPost('tournament_id');
+            $round_no = $this->request->getPost('round_no');
+
+            $roundSetting = $this->tournamentRoundSettingsModel->asObject()->where(['tournament_id' => $tournament_id, 'round_no' => $round_no])->first();
+            if (!$roundSetting) {
+                $roundSetting = new \App\Entities\TournamentRoundSetting();
+                $roundSetting->tournament_id = $tournament_id;
+                $roundSetting->round_no = $round_no;
+                $roundSetting->user_id = $user_id;
+            }
+
+            $roundSetting->timer_start = time();
+
+            /** Disable foreign key check for the guest users */
+            if (!$user_id) {
+                disableForeignKeyCheck();
+            }
+
+            $this->tournamentRoundSettingsModel->save($roundSetting);
+
+            if (!$user_id) {
+                helper('db');
+                enableForeignKeyCheck();
+            }
+
+            $wsClient = new \App\Libraries\WebSocketClient();
+            $wsClient->sendMessage("tournamentUpdated");
+            
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                ->setJSON(['status' => 'success']);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+
+    public function approveRound() {
+        // Check if it's an AJAX request
+        if ($this->request->isAJAX()) {
+            $user_id = auth()->user() ? auth()->user()->id : 0;
+            $tournament_id = $this->request->getPost('tournament_id');
+            $round_no = $this->request->getPost('round_no');
+
+            $tournamentLibrary = new \App\Libraries\TournamentLibrary();
+            $tournamentLibrary->advanceFFABrackets($tournament_id, $round_no, true);
+            
+            return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
+                                ->setJSON(['status' => 'success']);
+        }
+
+        // If not an AJAX request, return a 403 error
+        return $this->response->setStatusCode(ResponseInterface::HTTP_FORBIDDEN)
+                              ->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 }

@@ -73,8 +73,7 @@ $(document).ready(function() {
         document.querySelector('.card-title .tournament-name').textContent = tournament.name
         loadParticipants()
     } else {
-        $('#tournamentSettings').modal('show');
-        document.getElementById('scoreOptions').classList.add('d-none')
+        // $('#tournamentSettings').modal('show');
     }
 
     const linkedPicker1Element = document.getElementById('startAvPicker');
@@ -296,6 +295,7 @@ $(document).ready(function() {
                         document.querySelector('.card-title .tournament-name').textContent = tournament.name
 
                         $('#tournamentSettings').modal('hide');
+                        document.getElementById('generate').click()
                     }
                 }, remainingDelay);
             },

@@ -114,7 +114,7 @@ class TournamentLibrary
         return true;
     }
 
-    public function advanceFFABrackets($tournament_id, $round_no) {
+    public function advanceFFABrackets($tournament_id, $round_no, $approve = false) {
         helper('db');
         helper('participant');
 
@@ -285,7 +285,12 @@ class TournamentLibrary
                 $this->roundRankingsModel->save($row);
                 
                 // Advance the participants to the next round
-                advanceParticipantInFFABracket($tournament_id, $bracket->id, $round_no, $row->participant_id);
+                if ($tournament_settings->round_advance_method == AUTOMATIC || $approve) {
+                    advanceParticipantInFFABracket($tournament_id, $bracket->id, $round_no, $row->participant_id);
+                } else {
+                    $roundSetting->status = TOURNAMENT_ROUND_STATUS_HOSTOVERRIDE;
+                    $this->roundSettingsModel->save($roundSetting);
+                }
             }
         }
     }

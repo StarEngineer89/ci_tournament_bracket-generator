@@ -1318,6 +1318,43 @@ class TournamentController extends BaseController
 
                         $description = "$name in bracket #$params->bracket_no of $roundName was voted";
                     }
+
+                    if ($row['action'] == BRACKET_ACTIONCODE_SAVE_RANKING) {
+                        $type = 'Rank';
+                        $name = $participants->type ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+
+                        $description = "Set the ranking of $name in bracket #$params->bracket_no of $roundName to $participants->ranking";
+                    }
+
+                    if ($row['action'] == BRACKET_ACTIONCODE_UPDATE_RANKING) {
+                        $type = 'Update Rank';
+                        $name = $participants->type ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+
+                        $description = "Update the ranking of $name in bracket #$params->bracket_no of $roundName from $participants->origin to $participants->ranking";
+                    }
+
+                    if ($row['action'] == BRACKET_ACTIONCODE_UNRANKING) {
+                        $type = 'Unrank';
+                        $name = $participants->type ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+
+                        $description = "Remove the ranking of $name in bracket #$params->bracket_no of $roundName";
+                    }
+
+                    if ($row['action'] == BRACKET_ACTIONCODE_SAVE_METRICS) {
+                        $type = 'Set Metrics';
+                        $name = $participants->type ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+
+                        $description = "Set the metrics data of $name in bracket #$params->bracket_no of $roundName";
+                    }
+
+                    if ($row['action'] == BRACKET_ACTIONCODE_UPDATE_METRICS) {
+                        $type = 'Update Metrics';
+                        $name = $participants->type ? "Group \"$participants->name\"" : "Participant \"$participants->name\"";
+                        $origin = $participants->origin;
+                        $metrics = $participants->metrics;
+
+                        $description = "Update the metrics data of $name in bracket #$params->bracket_no of $roundName from [\"score:\" $origin->score, \"time:\" $origin->time] to [\"score:\" $metrics->score, \"time:\" $metrics->time]";
+                    }
                 }
 
                 $time = auth()->user() ? convert_to_user_timezone($row['updated_at'], user_timezone(auth()->user()->id)) : $row['updated_at'];

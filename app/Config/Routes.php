@@ -50,6 +50,8 @@ $routes->group('api', static function ($routes) {
         $routes->post('save-round', 'Api\BracketsController::saveRoundSettings');
         $routes->post('save-ranking', 'Api\BracketsController::saveRanking');
         $routes->post('save-score', 'Api\BracketsController::saveScore');
+        $routes->post('start-round-time', 'Api\BracketsController::saveStartTime');
+        $routes->post('approve-round', 'Api\BracketsController::approveRound');
     });
 
     $routes->group('participants', static function ($routes) {

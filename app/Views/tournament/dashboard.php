@@ -1849,6 +1849,25 @@ const changeSettings = (event) => {
                     }
                 }
 
+
+                if (tournamentSettings.participant_manage_metrics == 1) {
+                    $('#allowParticipantManageMetrics').prop('checked', true)
+                } else {
+                    $('#allowParticipantManageMetrics').prop('checked', false)
+                }
+
+                if (tournamentSettings.host_manage_metrics == 1) {
+                    $('#allowHostManageMetrics').prop('checked', true)
+                } else {
+                    $('#allowHostManageMetrics').prop('checked', false)
+                }
+
+                if (tournamentSettings.allow_metric_edits == 1) {
+                    $('#allowMetricEdits').prop('checked', true)
+                } else {
+                    $('#allowMetricEdits').prop('checked', false)
+                }
+
                 $('.round-duration-settings input[name="timer_option"]').on('change', (e) => {
                     if (e.target.value == "auto") {
                         document.querySelector('.round-duration-settings input[name="timer_option"][value="auto"]').checked = true

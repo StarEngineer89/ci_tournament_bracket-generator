@@ -61,11 +61,6 @@ class AlterTournamentsTableForFFA extends Migration
                 'null' => false,
                 'default' => 0,
             ],
-            'timer_start_manually' => [
-                'type' => 'tinyint',
-                'null' => false,
-                'default' => 0,
-            ],
             'timer_start_option' => [
                 'type' => 'char',
                 'constraint' => 1,
@@ -108,6 +103,6 @@ class AlterTournamentsTableForFFA extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('tournaments', ['max_group_size', 'advance_count', 'participant_manage_metrics', 'host_manage_metrics', 'allow_metric_edits', 'scoring_method', 'score_manual_override', 'timer_option', 'timer_auto_advance', 'timer_require_scores', 'timer_start_manually', 'timer_start_option', 'round_score_editing', 'round_advance_method', 'round_time_type', 'round_duration', 'ranking', 'tiebreaker']);
+        $this->forge->dropColumn('tournaments', ['max_group_size', 'advance_count', 'participant_manage_metrics', 'host_manage_metrics', 'allow_metric_edits', 'scoring_method', 'score_manual_override', 'timer_option', 'timer_auto_advance', 'timer_require_scores', 'timer_start_option', 'round_score_editing', 'round_advance_method', 'round_time_type', 'round_duration', 'ranking', 'tiebreaker', 'score_weight', 'time_weight']);
     }
 }
