@@ -436,7 +436,7 @@ class TournamentController extends BaseController
                     if (!$roundSetting) {
                         $roundSetting = new \App\Entities\TournamentRoundSetting();
                         $roundSetting->tournament_id = $tournament_id;
-                        $roundSetting->user_id = auth()->user()->id;
+                        $roundSetting->user_id = $user_id;
                         $roundSetting->round_no = $index;
                     }
 
