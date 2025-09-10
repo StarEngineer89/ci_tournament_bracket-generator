@@ -648,119 +648,127 @@ function renderFFABrackets ( result, direction = 'ltr' )
                 }
 
                 items.change = {
-                            name: "✏️ Change participant",
-                            callback: (key, opt, e) => {
-                                const element = opt.$trigger;
-                                $.ajax({
-                                    type: "GET",
-                                    url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
-                                    success: function (result) {
-                                        let originalWrapper = document.createElement('div')
-                                        originalWrapper.classList.add('original-wrapper', 'd-none')
-                                        originalWrapper.innerHTML = element.html()
+                    name: "✏️ Change participant",
+                    callback: (key, opt, e) => {
+                        const element = opt.$trigger;
+                        $.ajax({
+                            type: "GET",
+                            url: apiURL + '/tournaments/' + tournament_id + '/get-participants',
+                            success: function ( result )
+                            {
+                                let bracketBox = element.parent();
+                                let children = bracketBox.children().toArray();
+                                let index = children.indexOf( element[0] );
+                                
+                                let originalWrapper = document.createElement('div')
+                                originalWrapper.classList.add('original-wrapper', 'd-none')
+                                originalWrapper.innerHTML = element.html()
 
-                                        element.contents().remove();
-                                        element.append(originalWrapper)
+                                element.contents().remove();
+                                element.append(originalWrapper)
 
-                                        var select = document.createElement('select');
-                                        select.setAttribute('id', "participantSelector");
-                                        select.setAttribute('class', "form-control");
-                                        var index = (element.hasClass("teama")) ? 0 : 1;
+                                var select = document.createElement('select');
+                                select.setAttribute('id', "participantSelector");
+                                select.setAttribute('class', "form-control");
 
-                                        if (result.participants.length > 0) {
-                                            let group_ids = []
-                                            result.participants.forEach((participant, i) => {
-                                                let pt_group
-                                                if (participant.group_id) {
-                                                    if (group_ids.includes(participant.group_id)) {
-                                                        return
-                                                    }
+                                if (result.participants.length > 0) {
+                                    let group_ids = []
+                                    result.participants.forEach((participant, i) => {
+                                        let pt_group
+                                        if (participant.group_id) {
+                                            if (group_ids.includes(participant.group_id)) {
+                                                return
+                                            }
 
-                                                    pt_group = true
-                                                    group_ids.push(participant.group_id)
-                                                }
-
-                                                var option = document.createElement('option');
-                                                option.setAttribute('value', participant.id);
-                                                option.textContent = participant.name;
-                                                if (participant.id == element.data('id')) {
-                                                    option.setAttribute('selected', true)
-                                                }
-
-                                                if (pt_group) {
-                                                    option.setAttribute('data-group', true)
-                                                }
-
-                                                select.appendChild(option);
-                                            });
-
-                                            var saveBtn = document.createElement('button')
-                                            saveBtn.setAttribute('class', 'btn btn-primary p-1')
-                                            saveBtn.setAttribute('onclick', `changeParticipant($('#participantSelector'), ${index})`)
-                                            saveBtn.textContent = 'Save'
-                                            
-                                            var cancelBtn = document.createElement('button')
-                                            cancelBtn.textContent = 'Cancel'
-                                            cancelBtn.setAttribute('class', 'btn btn-secondary p-1')
-                                            cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
-                                            
-                                            var elementGroup = document.createElement('div')
-                                            elementGroup.setAttribute('class', 'input-group')
-                                            elementGroup.append(select)
-                                            elementGroup.append(saveBtn)
-                                            elementGroup.append(cancelBtn)
-
-                                            element.append(elementGroup)
-
-                                            editing_mode = true;
-                                        } else {
-                                            alert("There is no participants to be selected");
+                                            pt_group = true
+                                            group_ids.push(participant.group_id)
                                         }
 
-                                        $(select).select2({
-                                            width: 115
-                                        })
+                                        var option = document.createElement('option');
+                                        option.setAttribute('value', participant.id);
+                                        option.textContent = participant.name;
+                                        if (participant.id == element.data('id')) {
+                                            option.setAttribute('selected', true)
+                                        }
 
-                                        $('.select2-search input').atwho({
-                                            at: "@",
-                                            searchKey: 'username',
-                                            data: initialUsers,
-                                            limit: 5, // Show only 5 suggestions
-                                            displayTpl: "<li data-value='@${id}'>${username}</li>",
-                                            insertTpl: "@${username},",
-                                            callbacks: {
-                                                remoteFilter: function (query, callback) {
-                                                    if (query.length < 1) return; // Don't fetch on empty query
-                                                    $.ajax({
-                                                        url: apiURL + '/tournaments/get-users', // Your API endpoint
-                                                        type: "GET",
-                                                        data: {
-                                                            query: query
-                                                        },
-                                                        dataType: "json",
-                                                        success: function(data) {
-                                                            callback(data);
-                                                        }
-                                                    });
+                                        if (pt_group) {
+                                            option.setAttribute('data-group', true)
+                                        }
+
+                                        select.appendChild(option);
+                                    });
+
+                                    var saveBtn = document.createElement('button')
+                                    saveBtn.setAttribute('class', 'btn btn-primary p-1')
+                                    saveBtn.setAttribute('onclick', `changeParticipant($('#participantSelector'), ${index})`)
+                                    saveBtn.textContent = 'Save'
+                                    
+                                    var cancelBtn = document.createElement('button')
+                                    cancelBtn.textContent = 'Cancel'
+                                    cancelBtn.setAttribute('class', 'btn btn-secondary p-1')
+                                    cancelBtn.setAttribute('onClick', 'cancelEditing(this)')
+                                    
+                                    var elementGroup = document.createElement('div')
+                                    elementGroup.setAttribute('class', 'input-group')
+                                    elementGroup.append(select)
+                                    elementGroup.append(saveBtn)
+                                    elementGroup.append(cancelBtn)
+
+                                    element.append(elementGroup)
+
+                                    editing_mode = true;
+                                } else {
+                                    alert("There is no participants to be selected");
+                                }
+
+                                $(select).select2({
+                                    width: 115
+                                })
+
+                                $('.select2-search input').atwho({
+                                    at: "@",
+                                    searchKey: 'username',
+                                    data: initialUsers,
+                                    limit: 5, // Show only 5 suggestions
+                                    displayTpl: "<li data-value='@${id}'>${username}</li>",
+                                    insertTpl: "@${username},",
+                                    callbacks: {
+                                        remoteFilter: function (query, callback) {
+                                            if (query.length < 1) return; // Don't fetch on empty query
+                                            $.ajax({
+                                                url: apiURL + '/tournaments/get-users', // Your API endpoint
+                                                type: "GET",
+                                                data: {
+                                                    query: query
+                                                },
+                                                dataType: "json",
+                                                success: function(data) {
+                                                    callback(data);
                                                 }
-                                            }
-                                        });
-                                    },
-                                    error: function (error) {
-                                        console.log(error);
+                                            });
+                                        }
                                     }
-                                }).done(() => {
-                                    setTimeout(function () {
-                                        $("#overlay").fadeOut(300);
-                                    }, 500);
                                 });
+                            },
+                            error: function (error) {
+                                console.log(error);
                             }
+                        }).done(() => {
+                            setTimeout(function () {
+                                $("#overlay").fadeOut(300);
+                            }, 500);
+                        });
+                    }
                 }
                 if (!$triggerElement.attr('data-id')) {
                     items.create = {
                         name: "➕ Add participant",
-                        callback: (key, opt, e) => {
-                            var index = (opt.$trigger.hasClass("teama")) ? 0 : 1;
+                        callback: ( key, opt, e ) =>
+                        {
+                            let bracketBox = opt.$trigger.parent();
+                            let children = bracketBox.children().toArray();
+                            let index = children.indexOf( opt.$trigger[0] );
+                            
                             var originalInput = document.getElementById('newParticipantNameInput')
                             if (originalInput) {
                                 originalInput.parentElement.remove()
@@ -819,37 +827,38 @@ function renderFFABrackets ( result, direction = 'ltr' )
                     items.remove = {
                         name: "➖️ Remove participant",
                         callback: (key, opt, e) => {
-                            const element = opt.$trigger;
-                            var index = (element.hasClass("teama")) ? 0 : 1;
+                            let bracketBox = opt.$trigger.parent();
+                            let children = bracketBox.children().toArray();
+                            let index = children.indexOf( opt.$trigger[0] );
                                 
                             updateBracket(opt.$trigger, { index: index, action_code: removeParticipantActionCode });
                         }
                     }
                 }
                 items.delete = {
-                            name: "🗑️ Delete Bracket",
-                            callback: (key, opt, e) => {
-                                var element_id = opt.$trigger.data('bracket');
-                                let triggerElement = opt.$trigger
-                                $.ajax({
-                                    type: "delete",
-                                    url: apiURL + '/brackets/delete/' + element_id,
-                                    success: function (result) {
-                                        loadBrackets()
+                    name: "🗑️ Delete Bracket",
+                    callback: (key, opt, e) => {
+                        var element_id = opt.$trigger.data('bracket');
+                        let triggerElement = opt.$trigger
+                        $.ajax({
+                            type: "delete",
+                            url: apiURL + '/brackets/delete/' + element_id,
+                            success: function (result) {
+                                loadBrackets()
 
-                                        // triggerElement.parent().parent().remove();
-                                        ws.send(['Deleted Brackets!', tournament_id]);
-                                    },
-                                    error: function (error) {
-                                        console.log(error);
-                                    }
-                                }).done(() => {
-                                    setTimeout(function () {
-                                        $("#overlay").fadeOut(300);
-                                    }, 500);
-                                });
+                                // triggerElement.parent().parent().remove();
+                                ws.send(['Deleted Brackets!', tournament_id]);
+                            },
+                            error: function (error) {
+                                console.log(error);
                             }
-                        }
+                        }).done(() => {
+                            setTimeout(function () {
+                                $("#overlay").fadeOut(300);
+                            }, 500);
+                        });
+                    }
+                }
                 return {
                     items: items
                 }

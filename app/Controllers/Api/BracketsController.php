@@ -607,15 +607,18 @@ class BracketsController extends BaseController
         $user_id = auth()->user() ? auth()->user()->id : 0;
 
         /** Delete a bracket - Delete the participants in a bracket */
-        $bracket['teamnames'] = json_encode([null, null]);
+        $bracket['teamnames'] = json_encode(array_fill(0, count($teams), null));
         $bracket['deleted_by'] = $user_id;
         $this->bracketsModel->update($id, $bracket);
 
         /**
          * Update tournament searchable data
          */
-        $tournament = $this->tournamentsModel->find($bracket['tournament_id']);
-        $tournamentEntity = new \App\Entities\Tournament($tournament);
+        $tournament = $this->tournamentsModel->asObject()->find($bracket['tournament_id']);
+        if (!$tournament) {
+            $tournament = new \App\Entities\Tournament();
+        }
+        
         $brackets = $this->bracketsModel->where(array('tournament_id' => $bracket['tournament_id']))->findAll();
 
         $participant_names_string = '';
@@ -633,7 +636,7 @@ class BracketsController extends BaseController
             }
         }
 
-        $tournamentEntity->searchable = $tournamentEntity->name . ',' . $participant_names_string;
+        $tournament->searchable = $tournament->name . ',' . $participant_names_string;
         // $this->tournamentsModel->save($tournamentEntity);
 
         /** Check if the participant exists in other brackets and send the notification */
@@ -644,7 +647,7 @@ class BracketsController extends BaseController
             $teamInfo = [];
             foreach ($teams as $index => $team) {
                 if ($team) {
-                    $checkExist = checkParticipantExistingInTournament($tournamentEntity->id, $team->id);
+                    $checkExist = checkParticipantExistingInTournament($tournament->id, $team->id);
 
                     $deletedParticipants = [];
 
@@ -675,10 +678,10 @@ class BracketsController extends BaseController
                             }
 
                             $user = auth()->getProvider()->findById($participantInfo['registered_user_id']);
-                            $creator = auth()->getProvider()->findById($tournamentEntity->user_id);
+                            $creator = auth()->getProvider()->findById($tournament->user_id);
 
-                            $message = "You've been removed from tournament \"$tournamentEntity->name\"!";
-                            $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournamentEntity->id/view"]);
+                            $message = "You've been removed from tournament \"$tournament->name\"!";
+                            $notificationService->addNotification(['user_id' => $user_id, 'user_to' => $user->id, 'message' => $message, 'type' => NOTIFICATION_TYPE_FOR_PARTICIPANT_REMOVED, 'link' => "tournaments/$tournament->id/view"]);
 
                             if (!$userSettingsService->get('email_notification', $user->id) || $userSettingsService->get('email_notification', $user->id) == 'on') {
                                 $email = service('email');
@@ -687,7 +690,7 @@ class BracketsController extends BaseController
                                 $email->setSubject(lang('Emails.removedFromTournamentEmailSubject'));
                                 $email->setMessage(view(
                                     'email/removed-from-tournament',
-                                    ['username' => $user->username, 'tournament' => $tournamentEntity, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
+                                    ['username' => $user->username, 'tournament' => $tournament, 'creator' => $creator, 'tournamentCreatorName' => setting('Email.fromName')],
                                     ['debug' => false]
                                 ));
 
