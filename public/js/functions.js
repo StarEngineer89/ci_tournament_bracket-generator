@@ -997,6 +997,9 @@ var changeRankingMethod = ( element ) =>
 {
     const selectedOption = element.options[element.selectedIndex]
     const elements = document.querySelectorAll( '#weightedFormulaOptions input' )
+    const hint = selectedOption.dataset.description
+
+    document.querySelector('.ranking-method-hint').innerHTML = hint
 
     if ( selectedOption.dataset.option == 'formula' )
     {
@@ -1017,8 +1020,7 @@ var changeRankingMethod = ( element ) =>
 
 var changeTiebreakerMethod = ( element ) =>
 {
-    const selectEl = document.querySelector('#tiebreakerMethod');
-    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const selectedOption = element.options[element.selectedIndex];
     const hint = selectedOption.dataset.description
 
     document.querySelector('.advance-tiebreaker-hint').innerHTML = hint

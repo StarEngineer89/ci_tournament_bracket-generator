@@ -83,7 +83,8 @@ return [
     'advanceTieBreakerHostDecidesHint' => "
         The tournament host manually chooses the participant to advance in case of a tie.
     ",
-    'advanceTieBreakerWeightedFormulaHint' => "
+    'advanceRankingMethodByScore' => " ",
+    'advanceRankingMethodWeightedFormulaHint' => "
         Scores and time are combined into a weighted calculation to determine ranking.<br/>
         Example: FinalRank = (Score * ScoreWeight) – (Time * TimeWeight)
     ",

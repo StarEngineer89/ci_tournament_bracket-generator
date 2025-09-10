@@ -471,6 +471,7 @@ class BracketsController extends BaseController
 
             $wsClient->sendMessage("tournamentUpdated");
         }
+        
         /** Change the tournament status
          *  If mark as winner in final, set status to completed
          *  If unmark a winner, set status to progress
