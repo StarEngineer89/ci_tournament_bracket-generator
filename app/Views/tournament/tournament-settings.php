@@ -420,12 +420,12 @@
     <div class="input-group mb-3">
         <span class="input-group-text" id="type">Ranking Method</span>
         <select class="form-select" id="rankingMethod" name="ranking" aria-label="type" onChange="changeRankingMethod(this)" required>
-            <option value="<?= TOURNAMENT_RANKING_BY_SCORE ?>" data-option="score" data-description="<?= lang('Descriptions.advanceRankingMethodByScore') ?>" selected>Score</option>
+            <option value="<?= TOURNAMENT_RANKING_BY_SCORE ?>" data-option="score" data-description="<?= lang('Descriptions.advanceRankingMethodByScoreHint') ?>" selected>Score</option>
             <option value="<?= TOURNAMENT_RANKING_BY_WEIGHTED_FORMULA ?>" data-option="formula" data-description="<?= lang('Descriptions.advanceRankingMethodWeightedFormulaHint') ?>">Weighted Formula</option>
         </select>
     </div>
     <div class="read-more-container ps-3">
-        <div class="ranking-method-hint form-text p3"><?= lang('Descriptions.advanceRankingMethodByScore') ?></div>
+        <div class="ranking-method-hint form-text p3"><?= lang('Descriptions.advanceRankingMethodByScoreHint') ?></div>
     </div>
     <div id="weightedFormulaOptions" class="mb-3 d-none">
         <div class="d-flex align-items-start">

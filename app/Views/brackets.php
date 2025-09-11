@@ -891,42 +891,108 @@ var changeVoteDisplayingMode = (element) => {
                         </p>
 
                         <?php if ($tournament['score_enabled']): ?>
-                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                            <strong>Score per bracket per round</strong>
+                        <p class="property-info d-flex justify-content-between ps-2">
+                            <strong>Scoring Method</strong>
                             <span>
-                                <?= $tournament['score_bracket'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <?= $tournament['scoring_method'] == TOURNAMENT_SCORE_SYSTEM_DEFINED ? "System-Defined" : "Manual" ?>
                             </span>
                         </p>
+                        <?php if ($tournament['scoring_method'] == TOURNAMENT_SCORE_SYSTEM_DEFINED): ?>
+                        <div class="system-defined-scoring ps-2">
+                            <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                                <strong>Score per bracket per round</strong>
+                                <span>
+                                    <?= $tournament['score_bracket'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                </span>
+                            </p>
+
+                            <p class="property-info d-flex justify-content-between mb-1 ps-2">
+                                <strong>Increment Score</strong>
+                                <span>
+                                    <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentIncrementScoreDesc') ?>">
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+
+                            <?php if ($tournament['increment_score_enabled']): ?>
+                            <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                                <strong>Increment Type</strong>
+                                <span>
+                                    <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>
+                                    <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? lang('Descriptions.tournamentIncrementScoreTypePlusDesc') : lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?>">
+                                        <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                    </button>
+                                </span>
+                            </p>
+
+                            <p class="property-info d-flex justify-content-between mb-1 ps-4">
+                                <strong>Increment Value</strong>
+                                <span>
+                                    <?= $tournament['increment_score'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                </span>
+                            </p>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
                         <?php endif; ?>
 
-                        <p class="property-info d-flex justify-content-between mb-1 ps-2">
-                            <strong>Increment Score</strong>
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Ranking By</strong>
                             <span>
-                                <?= $tournament['increment_score_enabled'] ? "On" : "Off" ?>
-                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.tournamentIncrementScoreDesc') ?>">
+                                <?= $tournament['ranking'] == TOURNAMENT_RANKING_BY_SCORE ? "Score" : "Weighted Formula" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['ranking'] == TOURNAMENT_RANKING_BY_SCORE ? lang('Descriptions.advanceRankingMethodByScoreHint') : lang('Descriptions.advanceRankingMethodWeightedFormulaHint') ?>">
                                     <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                                 </button>
                             </span>
                         </p>
 
-                        <?php if ($tournament['increment_score_enabled']): ?>
-                        <p class="property-info d-flex justify-content-between mb-1 ps-4">
-                            <strong>Increment Type</strong>
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Tiebreaker</strong>
                             <span>
-                                <?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? "Plus" : "Multiply" ?>
-                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tournament['increment_score_type'] == TOURNAMENT_SCORE_INCREMENT_PLUS ? lang('Descriptions.tournamentIncrementScoreTypePlusDesc') : lang('Descriptions.tournamentIncrementScoreTypeMultipleDesc') ?>">
+                                <?php $tiebreaker = ($tournament['tiebreaker'] == TIEBREKER_BYTIME) ? "Score" : '' ?>
+                                <?php $tiebreaker = ($tournament['tiebreaker'] == TIEBREKER_RANDOM) ? "Random" : '' ?>
+                                <?php $tiebreaker = ($tournament['tiebreaker'] == TIEBREKER_BYTIME) ? "Host Override" : '' ?>
+                                <?php $tiebreakerHint = ($tournament['tiebreaker'] == TIEBREKER_BYTIME) ? lang('Descriptions.advanceTieBreakerByTimeHint') : '' ?>
+                                <?php $tiebreakerHint = ($tournament['tiebreaker'] == TIEBREKER_RANDOM) ? lang('Descriptions.advanceTieBreakerRandomHint') : '' ?>
+                                <?php $tiebreakerHint = ($tournament['tiebreaker'] == TIEBREKER_BYTIME) ? lang('Descriptions.advanceTieBreakerHostDecidesHint') : '' ?>
+                                <?= $tiebreaker ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= $tiebreakerHint ?>">
                                     <i class="fa-classic fa-solid fa-circle-exclamation"></i>
                                 </button>
                             </span>
                         </p>
 
-                        <p class="property-info d-flex justify-content-between mb-1 ps-4">
-                            <strong>Increment Value</strong>
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Allow Participants to Manage Match Metrics</strong>
                             <span>
-                                <?= $tournament['increment_score'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <?= intval($tournament['participant_manage_metrics']) ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.allowParticipantMatchMetrics') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
                             </span>
                         </p>
-                        <?php endif; ?>
+
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Allow Organizer/Host to Manage Match Metrics</strong>
+                            <span>
+                                <?= intval($tournament['host_manage_metrics']) ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.allowHostMatchMetrics') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
+
+                        <p class="property-info d-flex justify-content-between mb-1">
+                            <strong>Allow Metric Edits After Submission</strong>
+                            <span>
+                                <?= intval($tournament['allow_metric_edits']) ? "On" : "Off" ?>
+                                <button type="button" class="btn btn-light p-0 bg-transparent border-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-html="true" data-bs-content="<?= lang('Descriptions.allowMetricEdits') ?>">
+                                    <i class="fa-classic fa-solid fa-circle-exclamation"></i>
+                                </button>
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
